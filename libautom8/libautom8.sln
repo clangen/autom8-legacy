@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libautom8", "src\libautom8.vcproj", "{4602D866-D98D-4AC6-A501-A2463CD41355}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B2165720-B4B2-4F4B-8888-8C390C3CB4DB} = {B2165720-B4B2-4F4B-8888-8C390C3CB4DB}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3rdparty", "..\3rdparty\3rdparty.vcproj", "{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cm15a_controller", "contrib\cm15a_controller\cm15a_controller.vcproj", "{310C912B-FFCB-4681-AB10-EE91C7DCF39E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4602D866-D98D-4AC6-A501-A2463CD41355}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4602D866-D98D-4AC6-A501-A2463CD41355}.Debug|Win32.Build.0 = Debug|Win32
+		{4602D866-D98D-4AC6-A501-A2463CD41355}.Release|Win32.ActiveCfg = Release|Win32
+		{4602D866-D98D-4AC6-A501-A2463CD41355}.Release|Win32.Build.0 = Release|Win32
+		{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}.Debug|Win32.Build.0 = Debug|Win32
+		{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}.Release|Win32.ActiveCfg = Release|Win32
+		{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}.Release|Win32.Build.0 = Release|Win32
+		{310C912B-FFCB-4681-AB10-EE91C7DCF39E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{310C912B-FFCB-4681-AB10-EE91C7DCF39E}.Debug|Win32.Build.0 = Debug|Win32
+		{310C912B-FFCB-4681-AB10-EE91C7DCF39E}.Release|Win32.ActiveCfg = Release|Win32
+		{310C912B-FFCB-4681-AB10-EE91C7DCF39E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

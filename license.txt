@@ -1,0 +1,9 @@
+By installing autom8 you agree to the following set of terms:
+
+* autom8 comes with ABSOLUTELY NO WARRANTY. Use at your own risk.
+
+* autom8 is free for personal and educational use.
+
+* autom8 may not be redistribuited in any way, shape, or form without written consent from the author.
+
+Please visit http://autom8.clangen.org for upgrades and contact information.

@@ -1,0 +1,68 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/EditButton"
+        android:background="@drawable/connection_item_button"
+        android:textColor="@color/connection_item_button_text"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:focusable="true"
+        android:textSize="16dp"
+        android:padding="4dp"
+        android:text="@string/connection_mgr_button_edit"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:background="@android:drawable/list_selector_background"
+        android:id="@+id/ConnectionItem"
+        android:layout_weight="1.0"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:focusable="true"
+        android:padding="8sp" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/Name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:gravity="center"
+                android:textColor="@color/connection_item_primary_text"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/Details"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:gravity="center" />
+
+           </LinearLayout>
+
+       </FrameLayout>
+
+    <TextView
+        android:id="@+id/DeleteButton"
+        android:background="@drawable/connection_item_button"
+        android:textColor="@color/connection_item_button_text"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:focusable="true"
+        android:textSize="16dp"
+        android:text="@string/connection_mgr_button_delete"
+        android:textStyle="bold" />
+
+</LinearLayout>

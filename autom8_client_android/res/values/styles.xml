@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DeviceActivityTheme" parent="@android:style/Theme.Wallpaper.NoTitleBar">
+    </style>
+
+    <style name="DefaultText">
+        <item name="android:shadowColor">@color/device_row_text_shadow</item>
+        <item name="android:shadowRadius">1.0</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+    </style>
+
+    <style name="DeviceStatusText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:shadowColor">@color/device_row_text_shadow</item>
+        <item name="android:shadowRadius">1.0</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DeviceItemText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:shadowColor">@color/device_row_text_shadow</item>
+        <item name="android:shadowRadius">2.0</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">left</item>
+        <item name="android:layout_weight">1.0</item>
+    </style>
+
+    <style name="DeviceItemPrimaryText" parent="DeviceItemText">
+        <item name="android:textColor">@color/device_row_default_primary_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_marginLeft">8sp</item>
+        <item name="android:layout_marginRight">8sp</item>
+        <item name="android:layout_marginTop">6sp</item>
+    </style>
+
+    <style name="DeviceItemSecondaryText" parent="DeviceItemText">
+        <item name="android:shadowRadius">1.0</item>
+        <item name="android:textColor">@color/device_row_default_secondary_text</item>
+        <item name="android:layout_marginLeft">8sp</item>
+        <item name="android:layout_marginRight">8sp</item>
+        <item name="android:layout_marginTop">2sp</item>
+    </style>
+</resources>

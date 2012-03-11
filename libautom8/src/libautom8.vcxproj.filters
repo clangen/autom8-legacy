@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="devices\device_base.cpp">
+      <Filter>libautom8\device</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\device_model.cpp">
+      <Filter>libautom8\device</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\device_system.cpp">
+      <Filter>libautom8\device</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\x10_appliance.cpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\x10_device.cpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\x10_device_factory.cpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\x10_lamp.cpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\x10_security_sensor.cpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\cm15a\cm15a_device_system.cpp">
+      <Filter>libautom8\device\x10\cm15a</Filter>
+    </ClCompile>
+    <ClCompile Include="session.cpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClCompile>
+    <ClCompile Include="server.cpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClCompile>
+    <ClCompile Include="requests\get_device_list.cpp">
+      <Filter>libautom8\protocol\server\request_handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="requests\get_security_alert_count.cpp">
+      <Filter>libautom8\protocol\server\request_handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="requests\send_device_command.cpp">
+      <Filter>libautom8\protocol\server\request_handlers</Filter>
+    </ClCompile>
+    <ClCompile Include="client.cpp">
+      <Filter>libautom8\protocol\client</Filter>
+    </ClCompile>
+    <ClCompile Include="request_handler_factory.cpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClCompile>
+    <ClCompile Include="request_handler_registrar.cpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClCompile>
+    <ClCompile Include="message.cpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="request.cpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="response.cpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="message_queue.hpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ssl_certificate.cpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="preferences.cpp">
+      <Filter>libautom8\util</Filter>
+    </ClCompile>
+    <ClCompile Include="json.cpp">
+      <Filter>libautom8\util</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>libautom8\util</Filter>
+    </ClCompile>
+    <ClCompile Include="common_messages.cpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="utility.cpp">
+      <Filter>libautom8\util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="devices\device_model.hpp">
+      <Filter>libautom8\device</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\device_base.hpp">
+      <Filter>libautom8\device</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\device_factory.hpp">
+      <Filter>libautom8\device</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\constants.hpp">
+      <Filter>libautom8\device</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\device_system.hpp">
+      <Filter>libautom8\device</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\null_device_system.hpp">
+      <Filter>libautom8\device</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_security_sensor.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_appliance.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_device.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_device_factory.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_device_system.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_lamp.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\cm15a\cm15a_device_system.hpp">
+      <Filter>libautom8\device\x10\cm15a</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\x10_device_controller.hpp">
+      <Filter>libautom8\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="session.hpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClInclude>
+    <ClInclude Include="server.hpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClInclude>
+    <ClInclude Include="requests\get_device_list.hpp">
+      <Filter>libautom8\protocol\server\request_handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="requests\get_security_alert_count.hpp">
+      <Filter>libautom8\protocol\server\request_handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="requests\send_device_command.hpp">
+      <Filter>libautom8\protocol\server\request_handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="client.hpp">
+      <Filter>libautom8\protocol\client</Filter>
+    </ClInclude>
+    <ClInclude Include="request_handler.hpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClInclude>
+    <ClInclude Include="request_handler_registrar.hpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClInclude>
+    <ClInclude Include="request_handler_factory.hpp">
+      <Filter>libautom8\protocol\server</Filter>
+    </ClInclude>
+    <ClInclude Include="autom8.hpp">
+      <Filter>libautom8</Filter>
+    </ClInclude>
+    <ClInclude Include="message.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="message_formatter.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="message_matcher.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="request.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="response.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="ssl_certificate.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="preferences.hpp">
+      <Filter>libautom8\util</Filter>
+    </ClInclude>
+    <ClInclude Include="utility.hpp">
+      <Filter>libautom8\util</Filter>
+    </ClInclude>
+    <ClInclude Include="signal_handler.hpp">
+      <Filter>libautom8\util</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>libautom8\util</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.hpp">
+      <Filter>libautom8\util</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="common_messages.hpp">
+      <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="libautom8">
+      <UniqueIdentifier>{2022d4ed-25f5-42e5-882a-3cb959d89eb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\device">
+      <UniqueIdentifier>{5a488cd3-58cb-4e62-b6c4-82b846820074}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\device\x10">
+      <UniqueIdentifier>{7a105e4e-c3b6-4b99-a8c1-bf9cbf20f9aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\device\x10\cm15a">
+      <UniqueIdentifier>{4e379d70-ab4c-4491-bba2-aeed61d82a31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\protocol">
+      <UniqueIdentifier>{e55e9be4-4e08-4ee9-bec3-53beef93ee21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\util">
+      <UniqueIdentifier>{aca5b1af-4287-4385-bb90-c8ff9a94f2d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\protocol\client">
+      <UniqueIdentifier>{42f6d0c1-5a4d-4681-be6f-43e5f65762f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\protocol\server">
+      <UniqueIdentifier>{f51b2842-b401-4e30-b021-1efcb0317211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\protocol\server\request_handlers">
+      <UniqueIdentifier>{0eb3c203-9f1c-4c7b-8a16-ef4658b8fdce}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4602D866-D98D-4AC6-A501-A2463CD41355}</ProjectGuid>
+    <RootNamespace>autom8</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./;../../3rdparty/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;TIXML_USE_TICPP;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>./;../../3rdparty/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;NDEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;TIXML_USE_TICPP;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="client.cpp" />
+    <ClCompile Include="common_messages.cpp" />
+    <ClCompile Include="request.cpp" />
+    <ClCompile Include="response.cpp" />
+    <ClCompile Include="devices\device_base.cpp" />
+    <ClCompile Include="devices\device_model.cpp" />
+    <ClCompile Include="devices\device_system.cpp" />
+    <ClCompile Include="devices\x10\x10_appliance.cpp" />
+    <ClCompile Include="devices\x10\x10_device.cpp" />
+    <ClCompile Include="devices\x10\x10_device_factory.cpp" />
+    <ClCompile Include="devices\x10\x10_lamp.cpp" />
+    <ClCompile Include="devices\x10\x10_security_sensor.cpp" />
+    <ClCompile Include="devices\x10\cm15a\cm15a_device_system.cpp" />
+    <ClCompile Include="requests\get_device_list.cpp" />
+    <ClCompile Include="requests\get_security_alert_count.cpp" />
+    <ClCompile Include="requests\send_device_command.cpp" />
+    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="json.cpp" />
+    <ClCompile Include="main.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="message.cpp" />
+    <ClCompile Include="preferences.cpp" />
+    <ClCompile Include="request_handler_factory.cpp" />
+    <ClCompile Include="request_handler_registrar.cpp" />
+    <ClCompile Include="server.cpp" />
+    <ClCompile Include="session.cpp" />
+    <ClCompile Include="ssl_certificate.cpp" />
+    <ClCompile Include="message_queue.hpp" />
+    <ClCompile Include="utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="client.hpp" />
+    <ClInclude Include="common_messages.hpp" />
+    <ClInclude Include="devices\x10\x10_device_controller.hpp" />
+    <ClInclude Include="message_formatter.hpp" />
+    <ClInclude Include="message_matcher.hpp" />
+    <ClInclude Include="devices\constants.hpp" />
+    <ClInclude Include="devices\device_base.hpp" />
+    <ClInclude Include="devices\device_factory.hpp" />
+    <ClInclude Include="devices\device_model.hpp" />
+    <ClInclude Include="devices\device_system.hpp" />
+    <ClInclude Include="devices\null_device_system.hpp" />
+    <ClInclude Include="devices\x10\x10_appliance.hpp" />
+    <ClInclude Include="devices\x10\x10_device.hpp" />
+    <ClInclude Include="devices\x10\x10_device_factory.hpp" />
+    <ClInclude Include="devices\x10\x10_device_system.hpp" />
+    <ClInclude Include="devices\x10\x10_lamp.hpp" />
+    <ClInclude Include="devices\x10\x10_security_sensor.hpp" />
+    <ClInclude Include="devices\x10\cm15a\cm15a_device_system.hpp" />
+    <ClInclude Include="requests\get_device_list.hpp" />
+    <ClInclude Include="requests\get_security_alert_count.hpp" />
+    <ClInclude Include="requests\send_device_command.hpp" />
+    <ClInclude Include="autom8.hpp" />
+    <ClInclude Include="constants.hpp" />
+    <ClInclude Include="debug.hpp" />
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="message.hpp" />
+    <ClInclude Include="preferences.hpp" />
+    <ClInclude Include="request.hpp" />
+    <ClInclude Include="request_handler.hpp" />
+    <ClInclude Include="request_handler_factory.hpp" />
+    <ClInclude Include="request_handler_registrar.hpp" />
+    <ClInclude Include="response.hpp" />
+    <ClInclude Include="server.hpp" />
+    <ClInclude Include="session.hpp" />
+    <ClInclude Include="signal_handler.hpp" />
+    <ClInclude Include="ssl_certificate.hpp" />
+    <ClInclude Include="utility.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rdparty\3rdparty.vcxproj">
+      <Project>{b2165720-b4b2-4f4b-8888-8c390c3cb4db}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\contrib\cm15a_controller\cm15a_controller.vcxproj">
+      <Project>{310c912b-ffcb-4681-ab10-ee91c7dcf39e}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/autom8_client_qt">
+        <file>res/css/main.css</file>
+        <file>res/js/autom8.js</file>
+        <file>res/js/autom8.ui.main.js</file>
+        <file>res/js/autom8.ui.settings.js</file>
+        <file>res/js/jquery-1.6.2.js</file>
+        <file>res/js/json2.js</file>
+        <file>res/index.html</file>
+        <file>res/settings.html</file>
+        <file>res/js/autom8.ui.dialog.js</file>
+        <file>res/js/2.3.0-crypto-sha1.js</file>
+    </qresource>
+</RCC>

@@ -46,7 +46,7 @@ autom8.main = function() {
     sessionTimeout: 1800000, /* half hour, millis */
     server: {
       port: program['listen'],
-      pem: program['creds'],
+      pem: program['creds']
     },
     client: {
       host: program['clienthost'],
@@ -81,7 +81,9 @@ autom8.server = (function() {
       },
 
       put: function (fn, data) {
-        ( ! autom8.config.debug) && (cache[fn] = data);
+        if (!autom8.config.debug) {
+          cache[fn] = data;
+        }
       }
     };
   }());
@@ -90,29 +92,23 @@ autom8.server = (function() {
     /*
      * The actual HTTP server instance lives here.
      */
-    var http = express.createServer({
+    var app = express();
+
+    var serverOptions = {
       key: fs.readFileSync(autom8.config.server.pem),
       cert: fs.readFileSync(autom8.config.server.pem)
-    });
+    };
 
-    /*
-     * Required for session tracking
-     */
-    http.use(express.cookieParser());
-    http.use(express.session({ secret: "autom84Lyfe" }));
+    var httpServer = require('https').createServer(serverOptions, app);
 
-    /*
-     * Required for getting the body from an HTTP post
-     */
-    http.use(express.bodyParser());
-
-    // not supported in current release :(
-    //http.use(gzippo.gzip());
+    app.use(express.cookieParser("autom84Lyfe"));
+    app.use(express.bodyParser());
+    app.use(express.session());
 
     /*
      * Handler for the signin POST action.
      */
-    http.post('/signin.action', function(req, res) {
+    app.post('/signin.action', function(req, res) {
       if (req.body.password === autom8.config.client.password) {
         req.session.authenticated = true;
         req.session.cookie.maxAge = autom8.config.sessionTimeout;
@@ -128,7 +124,7 @@ autom8.server = (function() {
     /*
      * Handler for the signin POST action.
      */
-    http.post('/signout.action', function(req, res) {
+    app.post('/signout.action', function(req, res) {
       req.session.authenticated = false;
       req.session.cookie.maxAge = 0;
       res.writeHead(200);
@@ -140,7 +136,7 @@ autom8.server = (function() {
      * which file to return. Deals with caching and unathenticated
      * clients.
      */
-    http.get(/.*/, function(req, res) {
+    app.get(/.*/, function(req, res) {
       var fn = url.parse(req.url).pathname;
 
       /* check-remove leading slash */
@@ -148,7 +144,7 @@ autom8.server = (function() {
         fn = fn.substr(1);
       }
 
-      /* empty root (or those trying to game relative paths) 
+      /* empty root (or those trying to game relative paths)
          receive index.html */
       if (fn === "" || fn.indexOf("..") > -1) {
         fn = "index.html";
@@ -157,8 +153,8 @@ autom8.server = (function() {
       /* determine the MIME type we'll write in the response */
       var mimeType = autom8.util.getMimeType(fn);
 
-      if (( ! req.session.authenticated) && (mimeType == "text/html")) {
-        fn = "signin.html"
+      if ((!req.session.authenticated) && (mimeType == "text/html")) {
+        fn = "signin.html";
       }
 
       fn = __dirname + '/' + fn;
@@ -199,18 +195,18 @@ autom8.server = (function() {
     /*
      * start the http server now!
      */
-    http.listen(autom8.config.server.port);
+    httpServer.listen(autom8.config.server.port);
 
     /*
      * these are the web socket connections
      */
     autom8.sessions = (function() {
-      var webSocketServer = io.listen(http);
+      var webSocketServer = io.listen(httpServer);
 
       /*
        * disable verbose socket.io logging in non-debug runs.
        */
-      if ( ! program['debug']) {
+      if (!program['debug']) {
         webSocketServer.set('log level', 1);
       }
 
@@ -219,7 +215,7 @@ autom8.server = (function() {
         console.log("client connected (" + addr.address + ":" + addr.port + ")");
 
         socket.on('sendMessage', function(message) {
-          autom8.client.send(message.uri, message.body);        
+          autom8.client.send(message.uri, message.body);
         });
       });
 
@@ -230,7 +226,7 @@ autom8.server = (function() {
         broadcast: function(message) {
           webSocketServer.sockets.emit('recvMessage', message);
         }
-      }
+      };
     }());
   }
 
@@ -264,12 +260,12 @@ autom8.client = (function() {
           autom8.client.connect();
         }
       }, 5000);
-    }
+    };
 
     var connectionSevered = function() {
       autom8.client.disconnect();
       reconnect();
-    }
+    };
   
     var cfg = autom8.config.client;
 
@@ -281,8 +277,7 @@ autom8.client = (function() {
       socketStream.on('end', connectionSevered);
 
       autom8.client.send(
-        autom8.requests.authenticate,
-        {
+        autom8.requests.authenticate, {
           password: cfg.password
         }
       );
@@ -295,7 +290,7 @@ autom8.client = (function() {
         setTimeout(sendPing, 20000);
       }
 
-      if ( ! pingTimeout) {
+      if (!pingTimeout) {
         sendPing();
         pingTimeout = true;
       }
@@ -320,7 +315,7 @@ autom8.client = (function() {
   }
 
   function send(uri, body) {
-    if ( ! socketStream) {
+    if (!socketStream) {
       return;
     }
 
@@ -340,7 +335,7 @@ autom8.client = (function() {
 
     if (message) {
       /*
-       * The only message we special case is the failed authentication 
+       * The only message we special case is the failed authentication
        * response, because it's a critical error. Everything other type
        * of error is retried until the the user exists the process.
        */
@@ -393,11 +388,13 @@ autom8.client = (function() {
 
       /* parse the payload */
       if (parts.length === 2) {
+        var message = null;
+
         try {
-          var message = {
+          message = {
             uri: parts[0],
             body: JSON.parse(parts[1])
-          }
+          };
         }
         catch (parseError) {
           console.log("ERROR: message parsed failed, disconnecting...");
@@ -405,7 +402,10 @@ autom8.client = (function() {
           disconnect();
         }
 
-        if (autom8.config.debug) { console.log("server said: " + JSON.stringify(message)); }
+        if (autom8.config.debug) {
+          console.log("server said: " + JSON.stringify(message));
+        }
+
         return message;
       }
     }
@@ -421,7 +421,7 @@ autom8.client = (function() {
     "connect": connect,
     "disconnect": disconnect,
     "send": send
-  }
+  };
 }());
 
 /*
@@ -433,7 +433,7 @@ autom8.util = {
    */
   sha1: function(data) {
     var checksum = crypto.createHash('sha1');
-    checksum.update(data);  
+    checksum.update(data);
     return checksum.digest('hex');
   },
 
@@ -454,9 +454,9 @@ autom8.util = {
     return function(fn) {
         var last = fn.lastIndexOf(".");
         var extension = (last && -1) &&  fn.substr(last).toLowerCase();
-        return (types[extension] || fallback); 
+        return (types[extension] || fallback);
     };
-  }()),
+  }())
 };
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -480,11 +480,11 @@ program
  * from stdin now, hash it, and cache it.
  */
 if ( ! program['clientpw']) {
-  var host = program['clienthost'];  
+  var host = program['clienthost'];
   program.password('Password for ' + host + ': ', '*', function(pass){
     program['clientpw'] = autom8.util.sha1(pass);
     autom8.main();
-  });  
+  });
 }
 /*
  * Start everything up!

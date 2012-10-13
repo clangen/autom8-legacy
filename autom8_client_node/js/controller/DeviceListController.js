@@ -4,25 +4,21 @@ autom8.Controller.DeviceListController = (function() {
    */
   var deviceList;
 
-  /* view templates */
-  var newGenericDeviceRow =
-    Handlebars.compile($("#autom8-View-DeviceRow").html());
+  /* templates as html strings */
+  var deviceListTemplate = $("#autom8-View-DeviceList").html();
+  var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
 
-  var newDeviceList =
-    Handlebars.compile($("#autom8-View-DeviceList").html());
+  function htmlFromTemplate(template, params) {
+    var compiled = Handlebars.compile(template);
+    return compiled(params || { });
+  }
+
+  function elementFromTemplate(template, params) {
+    return $(htmlFromTemplate(template, params));
+  }
 
   /* document ready handling */
   $(document).ready(function() {
-    var settings = $('#settings');
-    if (autom8Client.isNode) {
-      settings.hide();
-    }
-    else {
-      settings.click(function() {
-        window.location = "settings.html";
-      });
-    }
-
     $('#connectButton').click(function() {
       autom8.Controller.DeviceListController.reconnect();
     });
@@ -54,7 +50,7 @@ autom8.Controller.DeviceListController = (function() {
     $('#hostname').html("");
     $('#devices').html("");
     $('#error').show();
-    $('#errorText').html(getDisconnectMessage(reason));
+    $('#error-text').html(getDisconnectMessage(reason));
   }
 
   function onRequestReceived(uri, body) {
@@ -160,7 +156,7 @@ autom8.Controller.DeviceListController = (function() {
       view.action = turnOn;
     }
 
-    return newGenericDeviceRow(view);
+    return elementFromTemplate(deviceRowTemplate, view);
   }
 
   function renderSecuritySensorRow (device) {
@@ -196,7 +192,7 @@ autom8.Controller.DeviceListController = (function() {
       view.action = "autom8.Util.setSecuritySensorArmed('" + address + "', true)";
     }
 
-    return newGenericDeviceRow(view);
+    return elementFromTemplate(deviceRowTemplate, view);
   }
 
   function renderDevice(device) {
@@ -212,32 +208,24 @@ autom8.Controller.DeviceListController = (function() {
       console.log('unknown device type! ' + device.get('type'));
     }
 
-    return "";
+    return $("<div/>");
   }
 
   function redrawDeviceList() {
-    if (( ! deviceList) || (_.size(deviceList) < 1)) {
-      $('#devices').html("");
+    var container = $('#devices');
+    container.empty();
+
+    if ((!deviceList) || (_.size(deviceList) < 1)) {
       return;
     }
 
-    /*
-     * each item in the container, rendered once at a time and
-     * contat'd together
-     */
-    var listHtml = "";
+    var deviceListElement = elementFromTemplate(deviceListTemplate);
+
     deviceList.each(function(device) {
-      listHtml += renderDevice(device);
+      deviceListElement.append(renderDevice(device));
     });
 
-    /*
-     * nest the devices inside the container. gotta use SafeString
-     * on the inner html or else it will be rendered as a string,
-     * and not html.
-     */
-    $('#devices').html(newDeviceList({
-      list: new Handlebars.SafeString(listHtml)
-    }));
+    container.append(deviceListElement);
   }
 
   /*
@@ -253,14 +241,10 @@ autom8.Controller.DeviceListController = (function() {
       var ls = localStorage;
       var prefs = autom8.Prefs;
       var dirty = ls[prefs.ConnectionDirty];
-      var configured = autom8Client.isNode || autom8.Prefs.hasConfiguredConnection();
       var connected = autom8Client.isConnected();
 
-      if (dirty || (configured && !connected)) {
+      if (dirty || !connected) {
         this.reconnect();
-      }
-      else if (!configured) {
-        window.location = "settings.html";
       }
       else if (connected) {
         onConnected();

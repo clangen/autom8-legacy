@@ -4,6 +4,8 @@
   <head> 
     <title>autom8</title> 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="no" />
     <link rel="stylesheet" href="css/main.css"></link> 
     <script src="js/3rdparty/jquery-1.6.2.js" type="text/javascript"></script> 
     <script src="js/3rdparty/json2.js" type="text/javascript"></script> 
@@ -16,17 +18,14 @@
       <span class="headerText">welcome to <b>autom8</b></span>
       <br style="clear:both;" /> <!-- fix background stretch issue -->
     </div>
-    <div class="settingsForm">
-      <table>
-        <tr>
-          <td>password:</td>
-          <td><input name="password" id="password" type="password"></td>
-          <td><div class="headerButton" id="signInButton">sign in</div></td>
-        </tr>
-      </table>
-
+    <form class="sign-in-form">
+      <div class="password-row">
+        <div>password:</div>
+        <input name="password" id="password" class="password" type="password"></input>
+        <div class="sign-in-button" id="signInButton">sign in</div>
+      </div>
       <div class="error" id="error" style="color: #ff2222;"></div>
-    </div>
+    </form>
     <br/>
   </body> 
 </html> 

@@ -1,3 +1,7 @@
+html {
+  background-color: #333333;
+}
+
 body {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -5,7 +9,6 @@ body {
   margin: 0px;
   padding: 0px;
   color: #cccccc;
-  background-color: #333333;
   font-size: 14px;
   cursor: default;
 }
@@ -20,29 +23,6 @@ table {
   padding: 0px;
   margin: 0px;
   border-style: none;
-}
-
-form {
-  padding: 0px;
-  margin: 0px;
-}
-
-.settingsForm {
-}
-
-.settingsForm input {
-  border: 1px solid #aaaaaa;
-  padding: 4px;
-  width: 150px;
-}
-
-.settingsForm label {
-  display: inline-block;
-  padding: 0px;
-}
-
-.settingsForm td {
-  padding: 4px;
 }
 
 .header {
@@ -79,85 +59,45 @@ form {
   width: 100%;
 }
 
-.onButton {
-  text-align: center;
-  font-weight: bold;
-  font-size: 110%;
-  width: 48px;
-  height: 48px;
-  margin-left: 4px;
-  background-color: #666666;
-  color: #eeeeee;
-  vertical-align: middle;
-  display: table-cell;
+.row {
   cursor: pointer;
 }
 
-.offButton {
-  text-align: center;
-  font-weight: bold;
-  font-size: 110%;
-  width: 48px;
-  height: 48px;
-  margin-left: 4px;
-  background-color: #3f3f3f;
-  color: #afafaf;
-  vertical-align: middle;
-  display: table-cell;
-  cursor: pointer;
-}
-
-.alertButton {
-  text-align: center;
-  font-weight: bold;
-  font-size: 110%;
-  width: 48px;
-  height: 48px;
-  margin-left: 4px;
-  background-color: #cc0000;
-  color: #ffffff;
-  vertical-align: middle;
-  display: table-cell;
-  cursor: pointer;
-}
-
-.offRow {
+.row.off {
   border-bottom: 1px solid #2a2a2a;
-  cursor: pointer;
 }
 
-.offRow:hover {
+.row.off:hover {
   background-color: #373737;
 }
 
-.alertRow {
+.row.alert {
   border-bottom: 1px solid #2a2a2a;
   background-color: #ee0000;
   cursor: pointer;
 }
 
-.alertRow:hover {
+.row.alert:hover {
   background-color: #f30000;
 }
 
-.onRow {
+.row.on {
   border-bottom: 1px solid #2a2a2a;
   background-color: #555555;
-  cursor: pointer;
 }
 
-.onRow:hover {
+.row.on:hover {
   background-color: #595959;
 }
 
-.headerText {
+.header-text {
   padding: 2px;
   vertical-align: middle;
   display: table-cell;
   float: left;
 }
 
-.headerHostText {
+.header-host-text {
   padding: 2px;
   vertical-align: middle;
   display: table-cell;
@@ -165,7 +105,7 @@ form {
   float: left;
 }
 
-.headerButton {
+.header-button {
   text-align: center;
   width: 72px;
   background-color: #555555;
@@ -175,9 +115,10 @@ form {
   float: right;
   vertical-align: middle;
   display: table-cell;
+  border-radius: 10px;
 }
 
-.headerButton:hover {
+.header-button:hover {
   background-color: #595959;
 }
 
@@ -185,16 +126,64 @@ form {
   padding: 4px;
 }
 
-#connectButton {
+.button {
   text-align: center;
-  width: 100px;
-  background-color: #aaaaaa;
-  color: #222222;
+  font-weight: bold;
+  font-size: 110%;
+  width: 48px;
+  height: 48px;
+  margin-left: 4px;
+  vertical-align: middle;
+  display: table-cell;
   cursor: pointer;
-  border: 1px solid #222222;
-  padding: 2px;
 }
 
-.formRow {
+.button.on {
+  background-color: #666666;
+  color: #eeeeee;
+}
+
+.button.off {
+  background-color: #3f3f3f;
+  color: #afafaf;
+}
+
+.button.alert {
+  background-color: #cc0000;
+  color: #ffffff;
+}
+
+.password {
+  -webkit-box-flex: 1;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.password-row {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: center;
+}
+
+.sign-in-button {
+  text-align: center;
+  width: 72px;
+  background-color: #555555;
+  border: 1px solid #777777;
+  padding: 2px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.settings-form,
+.sign-in-form {
+  padding: 8px;
+}
+
+.settings-form input,
+.sign-in-form input {
+  display: block;
+  border: 1px solid #aaaaaa;
   padding: 4px;
+  width: 150px;
 }

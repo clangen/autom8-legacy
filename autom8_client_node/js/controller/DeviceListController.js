@@ -147,15 +147,15 @@ autom8.Controller.DeviceListController = (function() {
     }
 
     if (device.get('status') == autom8.DeviceStatus.On) {
-      view.buttonClass = "onButton";
+      view.buttonClass = "button on";
       view.buttonText = "on";
-      view.rowClass = "onRow";
+      view.rowClass = "row on";
       view.action = turnOff;
     }
     else {
-      view.buttonClass = "offButton";
+      view.buttonClass = "button off";
       view.buttonText = "off";
-      view.rowClass = "offRow";
+      view.rowClass = "row off";
       view.action = turnOn;
     }
 
@@ -170,7 +170,7 @@ autom8.Controller.DeviceListController = (function() {
 
     var view = {
       action: "",
-      rowClass: "offRow",
+      rowClass: "row off",
       buttonText: "",
       buttonClass: "",
       text: device.get('label'),
@@ -178,19 +178,19 @@ autom8.Controller.DeviceListController = (function() {
     };
 
     if (on && tripped) {
-      view.buttonClass = "alertButton";
+      view.buttonClass = "button alert";
       view.buttonText = "alert";
-      view.rowClass = "alertRow";
+      view.rowClass = "row alert";
       view.action = "autom8.Util.confirmResetSecuritySensor('" + address + "')";
     }
     else if (armed) {
-      view.buttonClass = "onButton";
-      view.rowClass = "onRow"
+      view.buttonClass = "button on";
+      view.rowClass = "row on";
       view.buttonText = "armed";
       view.action = "autom8.Util.confirmDisarmSecuritySensor('" + address + "')";
     }
     else {
-      view.buttonClass = "offButton";
+      view.buttonClass = "button off";
       view.buttonText = "off";
       view.action = "autom8.Util.setSecuritySensorArmed('" + address + "', true)";
     }

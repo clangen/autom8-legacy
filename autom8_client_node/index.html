@@ -5,6 +5,9 @@
     <title>autom8</title> 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
     
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="no" />
+
     <link rel="stylesheet" href="css/main.css"></link> 
     <link rel="stylesheet" href="css/autom8-theme/jquery-ui-1.8.16.custom.css"></link> 
 
@@ -43,16 +46,16 @@
   </head> 
   <body> 
     <div class="header" id="header">
-      <span class="headerText" id="status"></span>
-      <span class="headerHostText" id="hostname"></span>
-      <div class="headerButton" id="signout" >sign out</div>
+      <span class="header-text" id="status"></span>
+      <span class="header-host-text" id="hostname"></span>
+      <div class="header-button" id="signout" >sign out</div>
       <br style="clear:both;" /> <!-- fix background stretch issue -->
     </div>
     <div id="devices"></div>
     <div id="error" class="error">
       <br/>
-      <div id="errorText"></div><br/>
-      <div id="connectButton">reconnect</div>
+      <div id="error-text"></div><br/>
+      <div id="sign-in-button">reconnect</div>
     </div>
     <div id="dialog"></div>
   </body> 

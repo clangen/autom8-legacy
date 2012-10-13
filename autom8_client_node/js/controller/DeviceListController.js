@@ -29,13 +29,13 @@ autom8.Controller.DeviceListController = (function() {
 
     $('#signout').click(function() {
         $.ajax({
-        url: 'signout.action',
-        type: 'POST',
-        success: function(data) {
-          window.location = "/";
-        },
-        error: function (xhr, status, error) {
-        }
+          url: 'signout.action',
+          type: 'POST',
+          success: function(data) {
+            window.location = "/";
+          },
+          error: function (xhr, status, error) {
+          }
       });
     });
 
@@ -58,20 +58,20 @@ autom8.Controller.DeviceListController = (function() {
   }
 
   function onRequestReceived(uri, body) {
-    //alert(uri);
   }
 
   function onResponseReceived(uri, body) {
     body = JSON.parse(body);
 
-    if (uri === "autom8://response/get_device_list")
-    {
-      onGetDeviceListResponse(body);
-    }
-    else if ((uri === "autom8://response/device_status_updated") ||
-             (uri === "autom8://response/sensor_status_changed"))
-    {
-      onDeviceUpdatedResponse(body);
+    switch (uri) {
+      case "autom8://response/get_device_list":
+        onGetDeviceListResponse(body);
+        break;
+
+      case "autom8://response/device_status_updated":
+      case "autom8://response/sensor_status_changed":
+        onDeviceUpdatedResponse(body);
+        break;
     }
   }
 
@@ -209,7 +209,7 @@ autom8.Controller.DeviceListController = (function() {
       return renderSecuritySensorRow(device);
 
     default:
-      alert('unknown device type! ' + device.get('type'));
+      console.log('unknown device type! ' + device.get('type'));
     }
 
     return "";
@@ -259,7 +259,7 @@ autom8.Controller.DeviceListController = (function() {
       if (dirty || (configured && !connected)) {
         this.reconnect();
       }
-      else if ( ! configured) {
+      else if (!configured) {
         window.location = "settings.html";
       }
       else if (connected) {
@@ -268,9 +268,11 @@ autom8.Controller.DeviceListController = (function() {
     },
 
     reconnect: function() {
-      $('#status').html("connecting...");
-      $('#hostname').html("");
-      $('#error').hide();
+      _.defer(function() {
+        $('#status').html("connecting...");
+        $('#hostname').html("");
+        $('#error').hide();
+      });
 
       var ls = localStorage;
       var prefs = autom8.Prefs;

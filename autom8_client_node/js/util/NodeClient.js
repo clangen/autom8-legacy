@@ -4,6 +4,7 @@
 var autom8Client = (function () {
   var socket;
   var pinging = false;
+  var connected = false, connecting = false;
 
   /* Constructor for QT-like signal object */
   function Signal() {
@@ -29,45 +30,65 @@ var autom8Client = (function () {
     };
   }
 
-  var connected = new Signal();
-  var disconnected = new Signal();
-  var requestReceived = new Signal();
-  var responseReceived = new Signal();
+  var connectedSignal = new Signal();
+  var disconnectedSignal = new Signal();
+  var requestReceivedSignal = new Signal();
+  var responseReceivedSignal = new Signal();
 
   function connect(host, port, pw) {
-    if (socket) {
+    if (connected || connecting) {
       return;
     }
 
-    var connected = false;
+    connected = false;
+    connecting = true;
+
     var href = document.location.href;
+    host = href.substring(0, href.indexOf('/', 'https://'.length));
 
-    var host = href.substring(0, href.indexOf('/', 'https://'.length));
-
-    socket = io.connect(host, {
+    var newSocket = io.connect(host, {
       'reconnect': true,
       'reconnection delay': 2000
     });
 
-    socket.on('connect', function(data) {
-      connected = true;
-      autom8Client.connected.raise();
-    });
-
-    socket.on('disconnect', function(data) {
+    function onSocketDisconnected(data) {
       socket = null;
       connected = false;
-      autom8Client.disconnected.raise(0);
+      connecting = false;
+      disconnectedSignal.raise(0);
+    }
+
+    function onSocketConnected(data) {
+      socket = newSocket;
+      connected = true;
+      connecting = false;
+      connectedSignal.raise();
+    }
+
+    newSocket.on('connect', function(data) {
+      onSocketConnected(data);
     });
 
-    socket.on('recvMessage', function(data) {
+    newSocket.on('disconnect', function(data) {
+      onSocketDisconnected(data);
+    });
+
+    newSocket.on('error', function(data) {
+      onSocketDisconnected(data);
+    });
+
+    newSocket.on('connect_failed', function(data) {
+      onSocketDisconnected(data);
+    });
+
+    newSocket.on('recvMessage', function(data) {
       var uri = data.uri;
       if (uri.indexOf("autom8://request") === 0) {
-        autom8Client.requestReceived.raise(
+        requestReceivedSignal.raise(
           data.uri, JSON.stringify(data.body));
       }
       else if (uri.indexOf("autom8://response") === 0) {
-        autom8Client.responseReceived.raise(
+        responseReceivedSignal.raise(
           data.uri, JSON.stringify(data.body));
       }
       else {
@@ -97,7 +118,7 @@ var autom8Client = (function () {
   }
 
   function isConnected() {
-    return true;
+    return connected;
   }
 
   var hostname = "node.js proxy";
@@ -123,10 +144,10 @@ var autom8Client = (function () {
 
   /* public api */
   return {
-    "connected": connected,
-    "disconnected": disconnected,
-    "requestReceived": requestReceived,
-    "responseReceived": responseReceived,
+    "connected": connectedSignal,
+    "disconnected": disconnectedSignal,
+    "requestReceived": requestReceivedSignal,
+    "responseReceived": responseReceivedSignal,
     "connect": connect,
     "send": send,
     "isConnected": isConnected,

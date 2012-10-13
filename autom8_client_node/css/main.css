@@ -26,16 +26,6 @@ table {
   border-style: none;
 }
 
-.header {
-  background-color: #262626;
-  color: #cccccc;
-  padding: 4px;
-  font-size: 85%;
-  display: -webkit-box;
-  -webkit-box-orient: horizontal;
-  border-bottom: 1px solid #1f1f1f;
-}
-
 .label {
   color: #eeeeee;
 }
@@ -56,7 +46,6 @@ table {
 }
 
 .device-list {
-  width: 100%;
 }
 
 .device-row {
@@ -99,7 +88,7 @@ table {
 }
 
 .header-text {
-  padding: 2px;
+  font-size: 85%;
 }
 
 .header-host-text {
@@ -107,6 +96,17 @@ table {
   vertical-align: middle;
   display: table-cell;
   font-weight: bold;
+  font-size: 85%;
+}
+
+.header {
+  background-color: #262626;
+  color: #cccccc;
+  padding: 8px;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: center;
+  border-bottom: 1px solid #1f1f1f;
 }
 
 .header-spacer {

@@ -7,7 +7,7 @@ autom8.Controller.SignIn = (function() {
       $.ajax({
         url: 'signin.action',
         type: 'POST',
-        data: { 
+        data: {
           password: hash
         },
         success: function(data) {
@@ -31,6 +31,7 @@ autom8.Controller.SignIn = (function() {
     /* enter press attempts to sign in */
     $('body').bind("keydown", function(e) {
       if (e.keyCode == 13) {
+        e.stopPropagation();
         signIn();
       }
     });
@@ -39,5 +40,5 @@ autom8.Controller.SignIn = (function() {
   });
 
   return {
-  }
+  };
 }());

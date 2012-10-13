@@ -22,16 +22,19 @@
 
     <!-- templates -->
     <script id="autom8-View-DeviceList" type="text/x-handlebars-template">
-      <table class="deviceList">
+      <div class="device-list">
         {{list}}
-      </table>
+      </div>
     </script>
 
     <script id="autom8-View-DeviceRow" type="text/x-handlebars-template">
-      <tr class="{{rowClass}}" onclick="{{action}}">
-        <td class="{{buttonClass}}">{{buttonText}}</td>
-        <td class="label">{{text}} <div class="subtext">{{subtext}}</div></td>
-      </tr>
+      <div class="{{rowClass}}" onclick="{{action}}">
+        <div class="{{buttonClass}}">{{buttonText}}</div>
+        <div class="device-row-info">
+          <div class="label">{{text}}</div>
+          <div class="subtext">{{subtext}}</div>
+        </div>
+      </div>
     </script>
 
     <!-- autom8 -->
@@ -46,10 +49,10 @@
   </head> 
   <body> 
     <div class="header" id="header">
-      <span class="header-text" id="status"></span>
-      <span class="header-host-text" id="hostname"></span>
+      <div class="header-text" id="status"></div>
+      <div class="header-host-text" id="hostname"></div>
+      <div class="header-spacer"></div>
       <div class="header-button" id="signout" >sign out</div>
-      <br style="clear:both;" /> <!-- fix background stretch issue -->
     </div>
     <div id="devices"></div>
     <div id="error" class="error">

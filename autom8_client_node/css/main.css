@@ -6,22 +6,23 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   font-family: arial;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   color: #cccccc;
   font-size: 14px;
   cursor: default;
+  zoom: 1.15;
 }
 
 div {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 table {
   border-collapse: collapse;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   border-style: none;
 }
 
@@ -30,14 +31,13 @@ table {
   color: #cccccc;
   padding: 4px;
   font-size: 85%;
-  vertical-align: middle;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
   border-bottom: 1px solid #1f1f1f;
 }
 
 .label {
-  padding: 8px;
   color: #eeeeee;
-  text-align: left;
 }
 
 .subtext {
@@ -55,46 +55,51 @@ table {
   cursor: pointer;
 }
 
-.deviceList {
+.device-list {
   width: 100%;
 }
 
-.row {
+.device-row {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  border-bottom: 1px solid #2a2a2a;
   cursor: pointer;
 }
 
-.row.off {
-  border-bottom: 1px solid #2a2a2a;
+.device-row-info {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-flex: 1;
+  -webkit-box-pack: center;
+  padding-left: 8px;
 }
 
-.row.off:hover {
+.device-row.off {
+}
+
+.device-row.off:hover {
   background-color: #373737;
 }
 
-.row.alert {
-  border-bottom: 1px solid #2a2a2a;
+.device-row.alert {
   background-color: #ee0000;
   cursor: pointer;
 }
 
-.row.alert:hover {
+.device-row.alert:hover {
   background-color: #f30000;
 }
 
-.row.on {
-  border-bottom: 1px solid #2a2a2a;
+.device-row.on {
   background-color: #555555;
 }
 
-.row.on:hover {
+.device-row.on:hover {
   background-color: #595959;
 }
 
 .header-text {
   padding: 2px;
-  vertical-align: middle;
-  display: table-cell;
-  float: left;
 }
 
 .header-host-text {
@@ -102,20 +107,10 @@ table {
   vertical-align: middle;
   display: table-cell;
   font-weight: bold;
-  float: left;
 }
 
-.header-button {
-  text-align: center;
-  width: 72px;
-  background-color: #555555;
-  border: 1px solid #777777;
-  padding: 2px;
-  cursor: pointer;
-  float: right;
-  vertical-align: middle;
-  display: table-cell;
-  border-radius: 10px;
+.header-spacer {
+  -webkit-box-flex: 1;
 }
 
 .header-button:hover {
@@ -165,7 +160,8 @@ table {
   -webkit-box-align: center;
 }
 
-.sign-in-button {
+.sign-in-button,
+.header-button {
   text-align: center;
   width: 72px;
   background-color: #555555;

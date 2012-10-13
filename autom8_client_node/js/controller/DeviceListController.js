@@ -89,12 +89,12 @@ autom8.Controller.DeviceListController = (function() {
         var tripped = autom8.Util.deviceIsTrippedSensor(device);
         return (tripped ? "0-" : "1-") + address;
       }
-    }
+    };
 
     deviceList = new autom8.Model.DeviceList(deviceList, options);
 
     redrawDeviceList();
-  };
+  }
 
   function onDeviceUpdatedResponse(body) {
     var address = body.address;
@@ -114,13 +114,13 @@ autom8.Controller.DeviceListController = (function() {
 
   function getDisconnectMessage(reason) {
     switch(reason) {
-      case 1: return "Could not connect to server"; break;
-      case 2: return "SSL handshake failed"; break;
-      case 3: return "Invalid username or password"; break;
-      case 4: return "Server sent an invalid message"; break;
-      case 5: return "Disconnected (read failed)"; break;
-      case 6: return "Disconnected (write failed)"; break;
-      default: return "Unknown error"; break;
+      case 1: return "Could not connect to server";
+      case 2: return "SSL handshake failed";
+      case 3: return "Invalid username or password";
+      case 4: return "Server sent an invalid message";
+      case 5: return "Disconnected (read failed)";
+      case 6: return "Disconnected (write failed)";
+      default: return "Unknown error";
     }
   }
 
@@ -149,13 +149,13 @@ autom8.Controller.DeviceListController = (function() {
     if (device.get('status') == autom8.DeviceStatus.On) {
       view.buttonClass = "button on";
       view.buttonText = "on";
-      view.rowClass = "row on";
+      view.rowClass = "device-row on";
       view.action = turnOff;
     }
     else {
       view.buttonClass = "button off";
       view.buttonText = "off";
-      view.rowClass = "row off";
+      view.rowClass = "device-row off";
       view.action = turnOn;
     }
 
@@ -170,7 +170,7 @@ autom8.Controller.DeviceListController = (function() {
 
     var view = {
       action: "",
-      rowClass: "row off",
+      rowClass: "device-row off",
       buttonText: "",
       buttonClass: "",
       text: device.get('label'),
@@ -180,12 +180,12 @@ autom8.Controller.DeviceListController = (function() {
     if (on && tripped) {
       view.buttonClass = "button alert";
       view.buttonText = "alert";
-      view.rowClass = "row alert";
+      view.rowClass = "device-row alert";
       view.action = "autom8.Util.confirmResetSecuritySensor('" + address + "')";
     }
     else if (armed) {
       view.buttonClass = "button on";
-      view.rowClass = "row on";
+      view.rowClass = "device-row on";
       view.buttonText = "armed";
       view.action = "autom8.Util.confirmDisarmSecuritySensor('" + address + "')";
     }
@@ -279,5 +279,5 @@ autom8.Controller.DeviceListController = (function() {
         ls[prefs.ConnectionPort],
         ls[prefs.ConnectionPw]);
     }
-  }
+  };
 }()); // autom8.Controller.DeviceListController

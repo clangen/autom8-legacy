@@ -31,7 +31,6 @@ autom8.Controller.SignIn = (function() {
     /* enter press attempts to sign in */
     $('body').bind("keydown", function(e) {
       if (e.keyCode == 13) {
-        e.stopPropagation();
         signIn();
       }
     });

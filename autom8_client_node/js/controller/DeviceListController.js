@@ -51,6 +51,7 @@ autom8.Controller.DeviceListController = (function() {
 
   function onDisconnected(reason) {
     $('#status').html("not connected");
+    $('#hostname').html("");
     $('#devices').html("");
     $('#error').show();
     $('#errorText').html(getDisconnectMessage(reason));

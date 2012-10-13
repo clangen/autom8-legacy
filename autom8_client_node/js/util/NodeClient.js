@@ -11,7 +11,7 @@ var autom8Client = (function () {
 
     this.connect = function(callback) {
       cbs[cbs.length] = callback;
-    }
+    };
 
     this.disconnect = function(callback) {
       for (var i = 0; i < cbs.length; i++) {
@@ -20,13 +20,13 @@ var autom8Client = (function () {
           return;
         }
       }
-    }
+    };
 
     this.raise = function() {
       for (var i = 0; i < cbs.length; i++) {
         cbs[i].apply(null, arguments);
       }
-    }
+    };
   }
 
   var connected = new Signal();
@@ -46,7 +46,7 @@ var autom8Client = (function () {
 
     socket = io.connect(host, {
       'reconnect': true,
-      'reconnection delay': 2000,
+      'reconnection delay': 2000
     });
 
     socket.on('connect', function(data) {
@@ -85,7 +85,7 @@ var autom8Client = (function () {
     setTimeout(sendPing, 20000);
   }
 
-  if ( ! pinging) {
+  if (!pinging) {
     sendPing();
     pinging = true;
   }
@@ -101,7 +101,7 @@ var autom8Client = (function () {
   }
 
   var hostname = "node.js proxy";
-  var hostRegex = /(.*\/\/)(.*)/
+  var hostRegex = /(.*\/\/)(.*)/;
   var match = hostRegex.exec(window.location);
 
   /* it's too late and i'm too tired to do the regex */
@@ -131,7 +131,7 @@ var autom8Client = (function () {
     "send": send,
     "isConnected": isConnected,
     "isNode": true
-  }
+  };
 }());
 
 autom8.Environment.trigger('initialized');

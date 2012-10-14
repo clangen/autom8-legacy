@@ -112,14 +112,16 @@ autom8.Util = {
 
   addTouchSupport: function(rootSelector, itemSelector) {
     $(rootSelector).delegate(itemSelector, 'touchstart', function(e) {
-      if (e.currentTarget) {
-        $(e.currentTarget).addClass("touched");
+      var target = $(e.currentTarget);
+      if (target && !target.hasClass("touched")) {
+        target.addClass("touched");
       }
     });
 
     $(rootSelector).delegate(itemSelector, 'touchend touchcancel', function(e) {
-      if (e.currentTarget) {
-        $(e.currentTarget).removeClass("touched");
+      var target = $(e.currentTarget);
+      if (target && target.hasClass("touched")) {
+        target.removeClass("touched");
       }
     });
   }

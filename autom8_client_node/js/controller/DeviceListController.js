@@ -10,7 +10,7 @@ autom8.Controller.DeviceListController = (function() {
 
   function htmlFromTemplate(template, params) {
     var compiled = Handlebars.compile(template);
-    return compiled(params || { });
+    return compiled(params || {});
   }
 
   function elementFromTemplate(template, params) {

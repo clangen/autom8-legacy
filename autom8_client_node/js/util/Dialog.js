@@ -12,7 +12,7 @@ autom8.Util.Dialog = (function() {
         DialogHelper.showDialog(JSON.stringify(dialogParams));
       }
     }
-  }
+  };
 }()); // autom8.Util.Dialog
 
 autom8.Util.Dialog.Node = (function() {
@@ -29,7 +29,7 @@ autom8.Util.Dialog.Node = (function() {
           }
     
           $(this).dialog("close");
-        }
+        };
       }(b.callback));
     }
 
@@ -46,7 +46,7 @@ autom8.Util.Dialog.Node = (function() {
       });
 
     closed = false;
-  }
+  };
 
   $(window).resize(function() {
     if ( ! closed) {

@@ -1,5 +1,6 @@
 html {
   background-color: #333333;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -11,7 +12,7 @@ body {
   color: #cccccc;
   font-size: 14px;
   cursor: default;
-  zoom: 1.15;
+  zoom: 1.18;
 }
 
 div {
@@ -46,6 +47,7 @@ table {
 }
 
 .device-list {
+  -webkit-transform: translate3d(0, 0, 0);
 }
 
 .device-row {
@@ -67,7 +69,7 @@ table {
 }
 
 .device-row.off.touched {
-  background-color: #373737;
+  background-color: #878787;
 }
 
 .device-row.alert {
@@ -84,7 +86,7 @@ table {
 }
 
 .device-row.on.touched {
-  background-color: #595959;
+  background-color: #898989;
 }
 
 .header-text {
@@ -114,7 +116,16 @@ table {
 }
 
 .error {
+  padding: 0px;
+}
+
+.error.device-list {
   padding: 8px;
+  padding-top: 4px;
+}
+
+.sign-in-form .error {
+  margin-top: 24px;
 }
 
 #error-text {
@@ -162,9 +173,8 @@ table {
 
 .sign-in-button.touched,
 .header-button.touched {
-  background-color: #595959;
+  background-color: #898989;
 }
-
 
 .sign-in-button,
 .header-button {

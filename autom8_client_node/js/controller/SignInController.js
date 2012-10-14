@@ -23,8 +23,7 @@ autom8.Controller.SignIn = (function() {
        color won't show up the first time the page loads... */
     $('body').width("100%");
 
-    /* sign in button */
-    $('#signInButton').click(function() {
+    autom8.Touchable.add('.password-row', '#signInButton', function(e) {
       signIn();
     });
 
@@ -36,8 +35,6 @@ autom8.Controller.SignIn = (function() {
     });
 
     $("#password").focus();
-
-    autom8.Util.addTouchSupport('.password-row', '.sign-in-button');
   });
 
   return {

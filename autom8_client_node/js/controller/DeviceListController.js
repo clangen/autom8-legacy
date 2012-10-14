@@ -1,11 +1,8 @@
 autom8.Controller.DeviceListController = (function() {
-  /*
-   * the current device list
-   */
+  /* current device list, as a Backbone.Collection */
   var deviceList;
 
   /* templates as html strings */
-  var deviceListTemplate = $("#autom8-View-DeviceList").html();
   var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
 
   function htmlFromTemplate(template, params) {
@@ -19,27 +16,28 @@ autom8.Controller.DeviceListController = (function() {
 
   /* document ready handling */
   $(document).ready(function() {
-    $('#connectButton').click(function() {
-      autom8.Controller.DeviceListController.reconnect();
-    });
-
-    $('#signout').click(function() {
-        $.ajax({
-          url: 'signout.action',
-          type: 'POST',
-          success: function(data) {
-            window.location = "/";
-          },
-          error: function (xhr, status, error) {
-          }
-      });
-    });
-
     $('#error').hide();
 
-    autom8.Util.addTouchSupport('#devices', '.device-row');
-    autom8.Util.addTouchSupport('#header', '.header-button');
-    autom8.Util.addTouchSupport('#error', '.sign-in-button');
+    autom8.Touchable.add('#device-list', '.device-row', function(e) {
+      var $el = $(e.currentTarget);
+      var index = parseInt($el.attr("data-index"), 10);
+      onDeviceRowClicked(deviceList.at(index));
+    });
+
+    autom8.Touchable.add('#header', '#signout', function(e) {
+      $.ajax({
+        url: 'signout.action',
+        type: 'POST',
+        success: function(data) {
+          window.location = "/";
+        },
+        error: function (xhr, status, error) {
+      }});
+    });
+
+    autom8.Touchable.add('#error', '.sign-in-button', function(e) {
+      autom8.Controller.DeviceListController.reconnect();
+    });
   });
 
   function onConnected() {
@@ -52,7 +50,7 @@ autom8.Controller.DeviceListController = (function() {
   function onDisconnected(reason) {
     $('#status').html("disconnected");
     $('#hostname').html("");
-    $('#devices').html("");
+    $('#device-list').empty();
     $('#error').show();
 
     var errorMessage = getDisconnectMessage(reason);
@@ -120,6 +118,47 @@ autom8.Controller.DeviceListController = (function() {
     });
   }
 
+  function onDeviceRowClicked(device) {
+    switch (device.get('type')) {
+      case autom8.DeviceType.Lamp:
+      case autom8.DeviceType.Appliance:
+        onLampOrApplianceRowClicked(device);
+        break;
+
+      case autom8.DeviceType.SecuritySensor:
+        onSecuritySensorRowClicked(device);
+        break;
+    }
+  }
+
+  function onLampOrApplianceRowClicked(device) {
+    var address = device.get('address');
+
+    if (device.get('status') === autom8.DeviceStatus.On) {
+      autom8.Util.setDeviceStatus(address, autom8.DeviceStatus.Off);
+    }
+    else {
+      autom8.Util.setDeviceStatus(address, autom8.DeviceStatus.On);
+    }
+  }
+
+  function onSecuritySensorRowClicked(device) {
+    var address = device.get('address');
+    var tripped = device.tripped();
+    var armed = device.armed();
+    var on = device.on();
+
+    if (on && tripped) {
+      autom8.Util.confirmResetSecuritySensor(address);
+    }
+    else if (armed) {
+      autom8.Util.confirmDisarmSecuritySensor(address);
+    }
+    else {
+      autom8.Util.setSecuritySensorArmed(address, true);
+    }
+  }
+
   function getDisconnectMessage(reason) {
     switch(reason) {
       case 1: return "could not connect to server";
@@ -132,7 +171,7 @@ autom8.Controller.DeviceListController = (function() {
     }
   }
 
-  function renderLampOrApplianceRow(device) {
+  function renderLampOrApplianceRow(device, type) {
     var address = device.get('address');
 
     var view = {
@@ -140,12 +179,8 @@ autom8.Controller.DeviceListController = (function() {
       buttonClass: "",
       buttonText: "",
       text: device.get('label'),
-      subtext: "",
-      action: ""
+      subtext: ""
     };
-
-    var turnOn = "autom8.Util.setDeviceStatus('" + address + "', autom8.DeviceStatus.On)";
-    var turnOff = "autom8.Util.setDeviceStatus('" + address + "', autom8.DeviceStatus.Off)";
 
     if (device.get('type') == autom8.DeviceType.Lamp) {
       view.subtext = "lamp module " + address;
@@ -158,13 +193,11 @@ autom8.Controller.DeviceListController = (function() {
       view.buttonClass = "button on";
       view.buttonText = "on";
       view.rowClass = "device-row on";
-      view.action = turnOff;
     }
     else {
       view.buttonClass = "button off";
       view.buttonText = "off";
       view.rowClass = "device-row off";
-      view.action = turnOn;
     }
 
     return elementFromTemplate(deviceRowTemplate, view);
@@ -189,18 +222,15 @@ autom8.Controller.DeviceListController = (function() {
       view.buttonClass = "button alert";
       view.buttonText = "alert";
       view.rowClass = "device-row alert";
-      view.action = "autom8.Util.confirmResetSecuritySensor('" + address + "')";
     }
     else if (armed) {
       view.buttonClass = "button on";
       view.rowClass = "device-row on";
       view.buttonText = "armed";
-      view.action = "autom8.Util.confirmDisarmSecuritySensor('" + address + "')";
     }
     else {
       view.buttonClass = "button off";
       view.buttonText = "off";
-      view.action = "autom8.Util.setSecuritySensorArmed('" + address + "', true)";
     }
 
     return elementFromTemplate(deviceRowTemplate, view);
@@ -209,8 +239,10 @@ autom8.Controller.DeviceListController = (function() {
   function renderDevice(device) {
     switch (device.get('type')) {
     case autom8.DeviceType.Lamp:
+      return renderLampOrApplianceRow(device, "lamp");
+
     case autom8.DeviceType.Appliance:
-      return renderLampOrApplianceRow(device);
+      return renderLampOrApplianceRow(device, "appliance");
 
     case autom8.DeviceType.SecuritySensor:
       return renderSecuritySensorRow(device);
@@ -223,20 +255,18 @@ autom8.Controller.DeviceListController = (function() {
   }
 
   function redrawDeviceList() {
-    var container = $('#devices');
+    var container = $('#device-list');
     container.empty();
 
     if ((!deviceList) || (_.size(deviceList) < 1)) {
       return;
     }
 
-    var deviceListElement = elementFromTemplate(deviceListTemplate);
-
-    deviceList.each(function(device) {
-      deviceListElement.append(renderDevice(device));
+    deviceList.each(function(device, index) {
+      var $el = renderDevice(device);
+      $el.attr("data-index", index);
+      container.append($el);
     });
-
-    container.append(deviceListElement);
   }
 
   /*

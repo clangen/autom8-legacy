@@ -85,7 +85,7 @@ autom8.Util = {
         type: autom8.CommandType.PowerLine,
         address: deviceAddress,
         parameters: {
-          set_armed: (armed == true)
+          set_armed: !!armed
         }
       }
     };
@@ -108,21 +108,5 @@ autom8.Util = {
       (device.get('attrs').tripped);
     
     return result;
-  },
-
-  addTouchSupport: function(rootSelector, itemSelector) {
-    $(rootSelector).delegate(itemSelector, 'touchstart', function(e) {
-      var target = $(e.currentTarget);
-      if (target && !target.hasClass("touched")) {
-        target.addClass("touched");
-      }
-    });
-
-    $(rootSelector).delegate(itemSelector, 'touchend touchcancel', function(e) {
-      var target = $(e.currentTarget);
-      if (target && target.hasClass("touched")) {
-        target.removeClass("touched");
-      }
-    });
   }
 };

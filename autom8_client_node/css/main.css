@@ -1,11 +1,13 @@
 html {
+  -webkit-user-select: none;
+  -moz-user-select: none;
   background-color: #333333;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  -webkit-user-select: none;
-  -moz-user-select: none;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
   font-family: arial;
   margin: 0;
   padding: 0;
@@ -35,19 +37,6 @@ table {
   text-align: left;
   color: #cccccc;
   font-size: 70%;
-}
-
-.toggle {
-  text-align: center;
-  width: 72px;
-  margin-left: 4px;
-  background-color: #666666;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.device-list {
-  -webkit-transform: translate3d(0, 0, 0);
 }
 
 .device-row {

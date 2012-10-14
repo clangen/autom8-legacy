@@ -1,4 +1,4 @@
-if ( ! autom8) {
+if (!autom8) {
   alert("Error: autom8 namespace doesn't exist yet!");
 }
 

@@ -118,18 +118,18 @@ table {
 }
 
 .error {
-  padding: 4px;
+  padding: 8px;
 }
 
 .button {
+  display: -webkit-box;
+  -webkit-box-pack: center;
+  -webkit-box-align: center;
   text-align: center;
   font-weight: bold;
   font-size: 110%;
   width: 48px;
   height: 48px;
-  margin-left: 4px;
-  vertical-align: middle;
-  display: table-cell;
   cursor: pointer;
 }
 

@@ -66,7 +66,7 @@ table {
 .device-row.off {
 }
 
-.device-row.off:hover {
+.device-row.off.touched {
   background-color: #373737;
 }
 
@@ -75,7 +75,7 @@ table {
   cursor: pointer;
 }
 
-.device-row.alert:hover {
+.device-row.alert.touched {
   background-color: #f30000;
 }
 
@@ -83,7 +83,7 @@ table {
   background-color: #555555;
 }
 
-.device-row.on:hover {
+.device-row.on.touched {
   background-color: #595959;
 }
 
@@ -113,12 +113,12 @@ table {
   -webkit-box-flex: 1;
 }
 
-.header-button:hover {
-  background-color: #595959;
-}
-
 .error {
   padding: 8px;
+}
+
+#error-text {
+  padding-bottom: 8px;
 }
 
 .button {
@@ -159,6 +159,12 @@ table {
   -webkit-box-orient: horizontal;
   -webkit-box-align: center;
 }
+
+.sign-in-button.touched,
+.header-button.touched {
+  background-color: #595959;
+}
+
 
 .sign-in-button,
 .header-button {

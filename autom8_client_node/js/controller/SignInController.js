@@ -36,6 +36,8 @@ autom8.Controller.SignIn = (function() {
     });
 
     $("#password").focus();
+
+    autom8.Util.addTouchSupport('.password-row', '.sign-in-button');
   });
 
   return {

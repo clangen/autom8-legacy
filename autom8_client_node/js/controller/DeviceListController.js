@@ -36,6 +36,10 @@ autom8.Controller.DeviceListController = (function() {
     });
 
     $('#error').hide();
+
+    autom8.Util.addTouchSupport('#devices', '.device-row');
+    autom8.Util.addTouchSupport('#header', '.header-button');
+    autom8.Util.addTouchSupport('#error', '.sign-in-button');
   });
 
   function onConnected() {
@@ -46,11 +50,18 @@ autom8.Controller.DeviceListController = (function() {
   }
 
   function onDisconnected(reason) {
-    $('#status').html("not connected");
+    $('#status').html("disconnected");
     $('#hostname').html("");
     $('#devices').html("");
     $('#error').show();
-    $('#error-text').html(getDisconnectMessage(reason));
+
+    var errorMessage = getDisconnectMessage(reason);
+    if (errorMessage) {
+      $("#error-text").show().html(errorMessage);
+    }
+    else {
+      $("#error-text").hide();
+    }
   }
 
   function onRequestReceived(uri, body) {
@@ -111,13 +122,13 @@ autom8.Controller.DeviceListController = (function() {
 
   function getDisconnectMessage(reason) {
     switch(reason) {
-      case 1: return "Could not connect to server";
-      case 2: return "SSL handshake failed";
-      case 3: return "Invalid username or password";
-      case 4: return "Server sent an invalid message";
-      case 5: return "Disconnected (read failed)";
-      case 6: return "Disconnected (write failed)";
-      default: return "Unknown error";
+      case 1: return "could not connect to server";
+      case 2: return "ssl handshake failed";
+      case 3: return "invalid username or password";
+      case 4: return "server sent an invalid message";
+      case 5: return "read failed";
+      case 6: return "write failed";
+      default: return "connection error";
     }
   }
 

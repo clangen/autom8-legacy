@@ -33,8 +33,8 @@ autom8.Util = {
   },
 
   confirmResetSecuritySensor: function(deviceAddress) {
-    var confirmCallback = 
-      'autom8.Util.resetSecuritySensor("' + deviceAddress + '");'
+    var confirmCallback =
+      'autom8.Util.resetSecuritySensor("' + deviceAddress + '");';
 
     var dialog = {
       title: "Confirm reset alert",
@@ -43,11 +43,11 @@ autom8.Util = {
       buttons: [
         {
           caption: "Yes",
-          callback: confirmCallback    
+          callback: confirmCallback
         },
         {
           caption: "No",
-          callback: null   
+          callback: null
         }
       ]
     };
@@ -56,8 +56,8 @@ autom8.Util = {
   },
 
   confirmDisarmSecuritySensor: function(deviceAddress) {
-    var confirmCallback = 
-      'autom8.Util.setSecuritySensorArmed("' + deviceAddress + '", false);'
+    var confirmCallback =
+      'autom8.Util.setSecuritySensorArmed("' + deviceAddress + '", false);';
 
     var dialog = {
       title: "Confirm sensor disarm",
@@ -66,11 +66,11 @@ autom8.Util = {
       buttons: [
         {
           caption: "Yes",
-          callback: confirmCallback    
+          callback: confirmCallback
         },
         {
           caption: "No",
-          callback: null   
+          callback: null
         }
       ]
     };
@@ -108,5 +108,19 @@ autom8.Util = {
       (device.get('attrs').tripped);
     
     return result;
+  },
+
+  addTouchSupport: function(rootSelector, itemSelector) {
+    $(rootSelector).delegate(itemSelector, 'touchstart', function(e) {
+      if (e.currentTarget) {
+        $(e.currentTarget).addClass("touched");
+      }
+    });
+
+    $(rootSelector).delegate(itemSelector, 'touchend touchcancel', function(e) {
+      if (e.currentTarget) {
+        $(e.currentTarget).removeClass("touched");
+      }
+    });
   }
 };

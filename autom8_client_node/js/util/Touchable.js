@@ -1,24 +1,48 @@
 autom8.Touchable = {
   add: function(rootSelector, itemSelector, clickHandler) {
+    var touchSupported = !!document.createTouch;
+    var startEvent = touchSupported ? "touchstart" : "mousedown";
+    var moveEvent = touchSupported ? "touchmove" : "mousemove";
+    var endEvent = touchSupported ? "touchend touchcancel" : "mouseup";
+    var started = false;
+
     var startX = 0, startY = 0;
     var endX = 0, endY = 0;
-    $(rootSelector).delegate(itemSelector, 'touchstart', function(e) {
+    $(rootSelector).delegate(itemSelector, startEvent, function(e) {
       var target = $(e.currentTarget);
       if (target && !target.hasClass("touched")) {
-        startX = endX = e.originalEvent.touches[0].clientX;
-        startY = endY = e.originalEvent.touches[0].clientY;
+        started = true;
+
+        if (touchSupported) {
+          startX = endX = e.originalEvent.touches[0].clientX;
+          startY = endY = e.originalEvent.touches[0].clientY;
+        }
+        else {
+          startX = endX = e.originalEvent.clientX;
+          startY = endY = e.originalEvent.clientY;
+        }
         target.addClass("touched");
       }
     });
 
-    $(rootSelector).delegate(itemSelector, 'touchmove', function(e) {
-      endX = e.originalEvent.touches[0].clientX;
-      endY = e.originalEvent.touches[0].clientY;
+    $(rootSelector).delegate(itemSelector, moveEvent, function(e) {
+      if (started) {
+        if (touchSupported) {
+          endX = e.originalEvent.touches[0].clientX;
+          endY = e.originalEvent.touches[0].clientY;        
+        }
+        else {
+          endX = e.clientX;
+          endY = e.clientY;      
+        }
+      }
     });
 
-    $(rootSelector).delegate(itemSelector, 'touchend touchcancel', function(e) {
+    $(rootSelector).delegate(itemSelector, endEvent, function(e) {
       var target = $(e.currentTarget);
       if (target && target.hasClass("touched")) {
+        started = false;
+
         target.removeClass("touched");
         dx = Math.abs(startX - endX);
         dy = Math.abs(startY - endY);

@@ -17,18 +17,6 @@ body {
   zoom: 1.18;
 }
 
-div {
-  padding: 0;
-  margin: 0;
-}
-
-table {
-  border-collapse: collapse;
-  padding: 0;
-  margin: 0;
-  border-style: none;
-}
-
 .label {
   color: #eeeeee;
 }
@@ -63,7 +51,6 @@ table {
 
 .device-row.alert {
   background-color: #ee0000;
-  cursor: pointer;
 }
 
 .device-row.alert.touched {
@@ -84,8 +71,6 @@ table {
 
 .header-host-text {
   padding: 2px;
-  vertical-align: middle;
-  display: table-cell;
   font-weight: bold;
   font-size: 85%;
 }
@@ -125,7 +110,6 @@ table {
   display: -webkit-box;
   -webkit-box-pack: center;
   -webkit-box-align: center;
-  text-align: center;
   font-weight: bold;
   font-size: 110%;
   width: 48px;
@@ -176,12 +160,10 @@ table {
   border-radius: 10px;
 }
 
-.settings-form,
 .sign-in-form {
   padding: 8px;
 }
 
-.settings-form input,
 .sign-in-form input {
   display: block;
   border: 1px solid #aaaaaa;

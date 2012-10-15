@@ -3,14 +3,15 @@ autom8.Touchable = {
     var touchSupported = !!document.createTouch;
     var startEvent = touchSupported ? "touchstart" : "mousedown";
     var moveEvent = touchSupported ? "touchmove" : "mousemove";
-    var endEvent = touchSupported ? "touchend touchcancel" : "mouseup";
+    var endEvent = touchSupported ? "touchend touchcancel" : "mouseup mouseout";
     var started = false;
+    var touchedAdded = false;
 
     var startX = 0, startY = 0;
     var endX = 0, endY = 0;
     $(rootSelector).delegate(itemSelector, startEvent, function(e) {
       var target = $(e.currentTarget);
-      if (target && !target.hasClass("touched")) {
+      if (!started) {
         started = true;
 
         if (touchSupported) {
@@ -40,15 +41,17 @@ autom8.Touchable = {
 
     $(rootSelector).delegate(itemSelector, endEvent, function(e) {
       var target = $(e.currentTarget);
-      if (target && target.hasClass("touched")) {
+      if (started) {
         started = false;
-
         target.removeClass("touched");
-        dx = Math.abs(startX - endX);
-        dy = Math.abs(startY - endY);
 
-        if (clickHandler && dx < 10 && dy < 10) {
-          clickHandler(e);
+        if (e.type !== "mouseout") {
+          dx = Math.abs(startX - endX);
+          dy = Math.abs(startY - endY);
+
+          if (clickHandler && dx < 10 && dy < 10) {
+            clickHandler(e);
+          }
         }
       }
     });

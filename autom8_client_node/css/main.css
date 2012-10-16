@@ -106,6 +106,29 @@ body {
   padding-bottom: 8px;
 }
 
+#loading-row {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: center;
+  -webkit-box-align: center;
+  padding: 8px 0px;
+}
+
+#loading-text {
+  display: inline-block;
+}
+
+#loading-spinner {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+}
+
+#sign-in-error {
+  color: #ff4444;
+  padding: 16px 0px;
+}
+
 .button {
   display: -webkit-box;
   -webkit-box-pack: center;

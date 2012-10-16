@@ -5,6 +5,9 @@ autom8.Controller.DeviceListController = (function() {
   /* templates as html strings */
   var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
 
+  /* need to make sure we stop this before hiding it */
+  var loadingSpinner;
+
   function htmlFromTemplate(template, params) {
     var compiled = Handlebars.compile(template);
     return compiled(params || {});
@@ -14,8 +17,8 @@ autom8.Controller.DeviceListController = (function() {
     return $(htmlFromTemplate(template, params));
   }
 
-  /* document ready handling */
   $(document).ready(function() {
+    /* dom just finished loaded... */
     $('#error').hide();
 
     autom8.Touchable.add('#device-list', '.device-row', function(e) {
@@ -38,6 +41,9 @@ autom8.Controller.DeviceListController = (function() {
     autom8.Touchable.add('#error', '.sign-in-button', function(e) {
       autom8.Controller.DeviceListController.reconnect();
     });
+
+    loadingSpinner = autom8.Spinner.create("loading-spinner");
+    loadingSpinner.start();
   });
 
   function onConnected() {
@@ -52,6 +58,7 @@ autom8.Controller.DeviceListController = (function() {
     $('#hostname').html("");
     $('#device-list').empty();
     $('#error').show();
+    $('#loading-row').hide();
 
     var errorMessage = getDisconnectMessage(reason);
     if (errorMessage) {
@@ -82,6 +89,9 @@ autom8.Controller.DeviceListController = (function() {
 
   function onGetDeviceListResponse(body) {
     deviceList = body.devices;
+
+    loadingSpinner.stop();
+    $("#loading-row").hide();
 
     /* unfortunate: backbone model has a property name attributes */
     _.each(deviceList, function(device) {

@@ -1,6 +1,40 @@
 autom8.Controller.SignIn = (function() {
+  var spinner;
+
+  function setState(state) {
+    var $passwordRow = $('.password-row');
+    var $loadingRow = $('#loading-row');
+    var $errorText = $("#sign-in-error");
+
+    switch (state) {
+      case "loading":
+        $errorText.hide();
+        $loadingRow.show();
+        $passwordRow.hide();
+        spinner.start();
+        break;
+
+      case "error":
+        $errorText.html("could not sign in. please re-enter your password").show();
+        $loadingRow.hide();
+        $passwordRow.show();
+        spinner.stop();
+        break;
+
+      default:
+        $errorText.hide();
+        $loadingRow.hide();
+        $passwordRow.show();
+        $("#password").focus();
+        spinner.stop();
+        break;
+    }
+  }
+
   $(document).ready(function() {
     function signIn() {
+      setState("loading");
+
       var hash = Crypto.util.bytesToHex(
           Crypto.SHA1($("#password").val(), { asBytes: true }));
 
@@ -14,14 +48,12 @@ autom8.Controller.SignIn = (function() {
           window.location = "/";
         },
         error: function (xhr, status, error) {
-          $('#error').html("Could not sign in. Please re-enter your password.");
+          setState("error");
         }
       });
     }
 
-    /* why is this necessary? if we don't do it the background
-       color won't show up the first time the page loads... */
-    $('body').width("100%");
+    spinner = autom8.Spinner.create("loading-spinner");
 
     autom8.Touchable.add('.password-row', '#signInButton', function(e) {
       signIn();
@@ -34,7 +66,7 @@ autom8.Controller.SignIn = (function() {
       }
     });
 
-    $("#password").focus();
+    setState("initialized");
   });
 
   return {

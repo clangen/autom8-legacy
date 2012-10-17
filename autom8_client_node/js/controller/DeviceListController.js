@@ -5,8 +5,13 @@ autom8.Controller.DeviceListController = (function() {
   /* templates as html strings */
   var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
 
+  /* current connection state */
+  var currentState = {state: "loading", options: undefined};
+  var documentReady = false;
+
   /* need to make sure we stop this before hiding it */
   var loadingSpinner;
+  var $loadingRow;
 
   function htmlFromTemplate(template, params) {
     var compiled = Handlebars.compile(template);
@@ -17,10 +22,25 @@ autom8.Controller.DeviceListController = (function() {
     return $(htmlFromTemplate(template, params));
   }
 
-  $(document).ready(function() {
-    /* dom just finished loaded... */
-    $('#error').hide();
+  function showLoadingSpinner(show) {
+    show = (show !== undefined) ? show : true;
 
+    if (!loadingSpinner) {
+      loadingSpinner = autom8.Spinner.create("loading-spinner");
+      $loadingRow = $("#loading-row");
+    }
+
+    if (show) {
+      $loadingRow.show();
+      loadingSpinner.start();
+    }
+    else {
+      $loadingRow.hide();
+      loadingSpinner.stop();
+    }
+  }
+
+  $(document).ready(function() {
     autom8.Touchable.add('#device-list', '.device-row', function(e) {
       var $el = $(e.currentTarget);
       var index = parseInt($el.attr("data-index"), 10);
@@ -42,31 +62,69 @@ autom8.Controller.DeviceListController = (function() {
       autom8.Controller.DeviceListController.reconnect();
     });
 
-    loadingSpinner = autom8.Spinner.create("loading-spinner");
-    loadingSpinner.start();
+    documentReady = true;
+    setState(); /* set to currentState */
   });
 
+  function setState(state, options) {
+    if (!state && !options && currentState) {
+      state = currentState.state;
+      options = currentState.options;
+    }
+    else {
+      options = options || { };
+    }
+
+    currentState = {state: state, options: options};
+
+    if (!documentReady) {
+      return;
+    }
+
+    switch(state) {
+      case "loaded":
+        $('#status').html('connected<span style="font-size: 85%;"> @</span>');
+        $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
+        $('#error').hide();
+
+        var loading = (!deviceList || !deviceList.length);
+        showLoadingSpinner(loading);
+        break;
+
+      case "loading":
+        $('#status').html("refreshing...");
+        $('#hostname').empty();
+        $('#error').hide();
+        $('#device-list').empty();
+        showLoadingSpinner();
+        break;
+
+      case "disconnected":
+        $('#status').html("disconnected");
+        $('#hostname').empty();
+        $('#device-list').empty();
+        $('#error').show();
+        showLoadingSpinner(false);
+
+        if (options.errorMessage) {
+          $("#error-text").show().html(options.errorMessage);
+        }
+        else {
+          $("#error-text").hide();
+        }
+        break;
+    }
+  }
+
   function onConnected() {
-    $('#status').html('connected<span style="font-size: 85%;"> @</span>');
-    $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
-    $('#error').hide();
+    setState("loading");
     autom8.Util.getDeviceList();
   }
 
   function onDisconnected(reason) {
-    $('#status').html("disconnected");
-    $('#hostname').html("");
-    $('#device-list').empty();
-    $('#error').show();
-    $('#loading-row').hide();
-
-    var errorMessage = getDisconnectMessage(reason);
-    if (errorMessage) {
-      $("#error-text").show().html(errorMessage);
-    }
-    else {
-      $("#error-text").hide();
-    }
+    setState("disconnected", {
+      errorMessage: getDisconnectMessage(reason)
+    });
   }
 
   function onRequestReceived(uri, body) {
@@ -89,9 +147,10 @@ autom8.Controller.DeviceListController = (function() {
 
   function onGetDeviceListResponse(body) {
     deviceList = body.devices;
-
-    loadingSpinner.stop();
-    $("#loading-row").hide();
+    
+    if (currentState.state !== "loaded") {
+      setState("loaded");
+    }
 
     /* unfortunate: backbone model has a property name attributes */
     _.each(deviceList, function(device) {
@@ -193,10 +252,10 @@ autom8.Controller.DeviceListController = (function() {
     };
 
     if (device.get('type') == autom8.DeviceType.Lamp) {
-      view.subtext = "lamp module " + address;
+      view.subtext = "lamp " + address;
     }
     else {
-      view.subtext = "appliance module " + address;
+      view.subtext = "appliance " + address;
     }
 
     if (device.get('status') == autom8.DeviceStatus.On) {
@@ -303,11 +362,7 @@ autom8.Controller.DeviceListController = (function() {
     },
 
     reconnect: function() {
-      _.defer(function() {
-        $('#status').html("connecting...");
-        $('#hostname').html("");
-        $('#error').hide();
-      });
+      setState("loading");
 
       var ls = localStorage;
       var prefs = autom8.Prefs;

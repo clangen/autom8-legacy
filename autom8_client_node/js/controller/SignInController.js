@@ -1,10 +1,18 @@
 autom8.Controller.SignIn = (function() {
   var spinner;
+  var loadingTimeout;
 
   function setState(state) {
     var $passwordRow = $('.password-row');
     var $loadingRow = $('#loading-row');
     var $errorText = $("#sign-in-error");
+
+    function cancelLoadingTimeout() {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
+      }
+    }
 
     switch (state) {
       case "loading":
@@ -15,7 +23,8 @@ autom8.Controller.SignIn = (function() {
         break;
 
       case "error":
-        $errorText.html("could not sign in. please re-enter your password").show();
+        cancelLoadingTimeout();
+        $errorText.html("failed to sign in. check your password and try again").show();
         $loadingRow.hide();
         $passwordRow.show();
         spinner.stop();
@@ -33,7 +42,9 @@ autom8.Controller.SignIn = (function() {
 
   $(document).ready(function() {
     function signIn() {
-      setState("loading");
+      loadingTimeout = setTimeout(function() {
+        setState("loading");
+      }, 500);
 
       var hash = Crypto.util.bytesToHex(
           Crypto.SHA1($("#password").val(), { asBytes: true }));

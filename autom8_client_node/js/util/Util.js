@@ -33,21 +33,21 @@ autom8.Util = {
   },
 
   confirmResetSecuritySensor: function(deviceAddress) {
-    var confirmCallback =
-      'autom8.Util.resetSecuritySensor("' + deviceAddress + '");';
-
     var dialog = {
-      title: "Confirm reset alert",
+      title: "Confirm reset",
       message: "Are you sure you want to reset this security alert?",
       icon: autom8.Util.Dialog.Icon.Question,
       buttons: [
         {
           caption: "Yes",
-          callback: confirmCallback
+          callback: function() {
+            autom8.Uti.resetSecuritySensor(deviceAddress);
+          }
         },
         {
           caption: "No",
-          callback: null
+          callback: null,
+          cancel: true
         }
       ]
     };
@@ -56,21 +56,21 @@ autom8.Util = {
   },
 
   confirmDisarmSecuritySensor: function(deviceAddress) {
-    var confirmCallback =
-      'autom8.Util.setSecuritySensorArmed("' + deviceAddress + '", false);';
-
     var dialog = {
-      title: "Confirm sensor disarm",
+      title: "Confirm disarm",
       message: "Are you sure you want to disarm this security sensor?",
       icon: autom8.Util.Dialog.Icon.Question,
       buttons: [
         {
           caption: "Yes",
-          callback: confirmCallback
+          callback: function() {
+            autom8.Util.setSecuritySensorArmed(deviceAddress, false);
+          }
         },
         {
           caption: "No",
-          callback: null
+          callback: null,
+          cancel: true
         }
       ]
     };

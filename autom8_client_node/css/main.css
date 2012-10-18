@@ -50,11 +50,11 @@ body {
 }
 
 .device-row.alert {
-  background-color: #ee0000;
+  background-color: #dd0000;
 }
 
 .device-row.alert.touched {
-  background-color: #f30000;
+  background-color: #ff0000;
 }
 
 .device-row.on {
@@ -192,4 +192,59 @@ body {
   border: 1px solid #aaaaaa;
   padding: 4px;
   width: 150px;
+}
+
+.dialog-overlay {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-container {
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: white;
+  padding: 10px;
+  margin-top: 40px;
+  max-width: 80%;
+  -webkit-box-shadow: 5px 5px 25px black;
+}
+
+.dialog-title {
+  font-weight: bold;
+  font-size: 120%;
+  margin-bottom: 8px;
+}
+
+.dialog-message {
+  margin-bottom: 12px;
+}
+
+.dialog-buttons {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: end;
+}
+
+.dialog-button {
+  text-align: center;
+  background-color: #555555;
+  border: 1px solid #777777;
+  padding: 2px;
+  cursor: pointer;
+  border-radius: 10px;
+  min-width: 64px;
+  margin-left: 8px;
+}
+
+.dialog-button.touched {
+  background-color: #898989;
 }

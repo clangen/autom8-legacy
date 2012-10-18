@@ -8,12 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="no" />
 
     <link rel="stylesheet" href="css/main.css"></link> 
-    <link rel="stylesheet" href="css/autom8-theme/jquery-ui-1.8.16.custom.css"></link> 
 
     <!-- 3rd party -->
     <script src="js/3rdparty/underscore-1.4.2.js" type="text/javascript"></script> 
     <script src="js/3rdparty/jquery-1.6.2.js" type="text/javascript"></script> 
-    <script src="js/3rdparty/jquery-ui-1.8.16.js" type="text/javascript"></script> 
     <script src="js/3rdparty/backbone-0.9.2.js" type="text/javascript"></script> 
     <script src="js/3rdparty/spin-1.2.7.js" type="text/javascript"></script> 
     <script src="js/3rdparty/handlebars-1.0.0.rc.1.js" type="text/javascript"></script> 
@@ -28,6 +26,21 @@
           <div class="subtext">{{subtext}}</div>
         </div>
       </div>
+    </script>
+
+    <!-- dialog templates -->
+    <script id="autom8-Dialog" type="text/x-handlebars-template">
+      <div class="dialog-overlay">
+        <div class="dialog-container">
+          <div class="dialog-title">{{title}}</div>
+          <div class="dialog-message">{{message}}</div>
+          <div class="dialog-buttons"></div>
+        </div>
+      </div>
+    </script>
+
+    <script id="autom8-Dialog-Button" type="text/x-handlebars-template">
+      <div class="dialog-button" data-id="{{id}}">{{caption}}</div>
     </script>
 
     <!-- autom8 -->

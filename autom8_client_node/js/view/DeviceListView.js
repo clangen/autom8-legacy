@@ -1,6 +1,4 @@
 autom8.View.DeviceListView = (function() {
-  var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
-
   var View = Backbone.View.extend({
     initialize: function(options) {
       Backbone.View.prototype.initialize.call(this, options);

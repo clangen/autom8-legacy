@@ -5,57 +5,45 @@ if (!autom8) {
 autom8.Util.Dialog = (function() {
   return {
     show: function(dialogParams) {
-      if (autom8Client.isNode) {
-        autom8.Util.Dialog.Node(dialogParams);
-      }
-      else {
-        DialogHelper.showDialog(JSON.stringify(dialogParams));
-      }
+      autom8.Util.Dialog.Mobile.showDialog(dialogParams);
     }
   };
 }()); // autom8.Util.Dialog
 
-autom8.Util.Dialog.Node = (function() {
-  var closed = true;
+autom8.Util.Dialog.Mobile = (function() {
+  var dialogTemplate = $("#autom8-Dialog").html();
+  var dialogButtonTemplate = $("#autom8-Dialog-Button").html();
+  var viewUtil = autom8.View.Util;
 
-  var showDialog = function(params) {
-    var dialogButtons = { };
-    for (var i = 0; i < params.buttons.length; i++) {
-      var b = params.buttons[i];
-      dialogButtons[b.caption] = (function(message) {
-        return function() {
-          if (message) {
-            eval(message); // eep, dangerous!
-          }
-    
-          $(this).dialog("close");
-        };
-      }(b.callback));
-    }
+  return {
+    showDialog: function(params) {
+      var $dialog = viewUtil.elementFromTemplate(dialogTemplate, params);
+      var $buttonContainer = $dialog.find('.dialog-buttons');
 
-    var dialog = $('#dialog')
-      .html(params.message)
-      .dialog({
-        autoOpen: true,
-        title: params.title,
-        buttons: dialogButtons,
-        modal: true,
-        close: function() {
-          closed = true;
-        }
+      function buttonHandler(event) {
+        autom8.Touchable.remove('.dialog-buttons', '.dialog-button');
+        $dialog.remove();
+
+        var id = parseInt($(event.target).attr('data-id'), 10);
+        var callback = params.buttons[id].callback;
+        eval(callback); // eep, dangerous! TODO FIXME
+      }
+
+      _.each(params.buttons, function(button, index) {
+        var $button = viewUtil.elementFromTemplate(dialogButtonTemplate, {
+          caption: button.caption,
+          id: index
+        });
+
+        $buttonContainer.append($button);
       });
 
-    closed = false;
-  };
+      $('body').append($dialog);
 
-  $(window).resize(function() {
-    if ( ! closed) {
-      $("#dialog").dialog({ position: "center"});
+      autom8.Touchable.add('.dialog-buttons', '.dialog-button', buttonHandler);
     }
-  });
-
-  return showDialog;
-}()); // autom8.Util.Dialog.Node
+  };
+}());
 
 autom8.Util.Dialog.Icon = {
   Question: "question",

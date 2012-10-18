@@ -3,39 +3,46 @@ if (!autom8) {
 }
 
 autom8.Util.Dialog = (function() {
-  return {
-    show: function(dialogParams) {
-      autom8.Util.Dialog.Mobile.showDialog(dialogParams);
-    }
-  };
-}()); // autom8.Util.Dialog
-
-autom8.Util.Dialog.Mobile = (function() {
   var dialogTemplate = $("#autom8-Dialog").html();
   var dialogButtonTemplate = $("#autom8-Dialog-Button").html();
   var viewUtil = autom8.View.Util;
   var nextId = 0;
+  var visibleCount = 0;
 
   return {
-    showDialog: function(params) {
+    show: function(params) {
+      params = params || { };
+      if (!params.buttons || !params.buttons.length) {
+        return;
+      }
+
       var dialogId = "dialog-" + (nextId++);
       var $dialog = viewUtil.elementFromTemplate(dialogTemplate, params);
-      $dialog.attr("id", dialogId);
+      var $buttonContainer = $dialog.find('.dialog-buttons');
       var cancelCallback;
 
-      var $buttonContainer = $dialog.find('.dialog-buttons');
+      $dialog.attr("id", dialogId);
+
+      function showDialog() {
+        $('body').append($dialog);
+        addTouchEvents();
+        ++visibleCount;
+        $('#main-content').addClass('dialog-overlay-blur');
+      }
 
       function closeDialog() {
         removeTouchEvents();
         $dialog.remove();
+        --visibleCount;
+
+        if (visibleCount === 0) {
+          $('#main-content').removeClass('dialog-overlay-blur');
+        }
       }
 
       function addTouchEvents() {
         autom8.Touchable.add('#' + dialogId, '.dialog-button', buttonHandler);
-        
-        if (cancelCallback) {
-          autom8.Touchable.add('body', '#' + dialogId + '.dialog-overlay', cancelHandler);
-        }
+        autom8.Touchable.add('body', '#' + dialogId + '.dialog-overlay', cancelHandler);
       }
 
       function removeTouchEvents() {
@@ -74,9 +81,7 @@ autom8.Util.Dialog.Mobile = (function() {
         $buttonContainer.append($button);
       });
 
-      $('body').append($dialog);
-
-      addTouchEvents();
+      showDialog();
     }
   };
 }());

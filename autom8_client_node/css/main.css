@@ -234,6 +234,10 @@ body {
   -webkit-box-pack: end;
 }
 
+.dialog-overlay-blur {
+  -webkit-filter: blur(2px);
+}
+
 .dialog-button {
   text-align: center;
   background-color: #555555;

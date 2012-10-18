@@ -1,5 +1,5 @@
 // npm install commander express socket.io socket.io-client
-// node.exe autom8/autom8Node.js --listen 7902 --creds ./autom8/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
+// node.exe autom8Node.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 var express = require('express');
 var tls = require('tls');

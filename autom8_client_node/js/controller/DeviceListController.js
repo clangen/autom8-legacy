@@ -1,202 +1,13 @@
 autom8.Controller.DeviceListController = (function() {
-  /* current device list, as a Backbone.Collection */
-  var deviceList;
-
-  /* templates as html strings */
-  var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
-
-  /* current connection state */
-  var currentState = {state: "loading", options: undefined};
-  var documentReady = false;
-
-  /* need to make sure we stop this before hiding it */
-  var loadingSpinner;
-  var $loadingRow;
-
-  function htmlFromTemplate(template, params) {
-    var compiled = Handlebars.compile(template);
-    return compiled(params || {});
-  }
-
-  function elementFromTemplate(template, params) {
-    return $(htmlFromTemplate(template, params));
-  }
-
-  function showLoadingSpinner(show) {
-    show = (show !== undefined) ? show : true;
-
-    if (!loadingSpinner) {
-      loadingSpinner = autom8.Spinner.create("loading-spinner");
-      $loadingRow = $("#loading-row");
-    }
-
-    if (show) {
-      $loadingRow.show();
-      loadingSpinner.start();
-    }
-    else {
-      $loadingRow.hide();
-      loadingSpinner.stop();
-    }
-  }
-
-  $(document).ready(function() {
-    autom8.Touchable.add('#device-list', '.device-row', function(e) {
-      var $el = $(e.currentTarget);
-      var index = parseInt($el.attr("data-index"), 10);
-      onDeviceRowClicked(deviceList.at(index));
-    });
-
-    autom8.Touchable.add('#header', '#signout', function(e) {
-      $.ajax({
-        url: 'signout.action',
-        type: 'POST',
-        success: function(data) {
-          window.location = "/";
-        },
-        error: function (xhr, status, error) {
-      }});
-    });
-
-    autom8.Touchable.add('#error', '.sign-in-button', function(e) {
-      autom8.Controller.DeviceListController.reconnect();
-    });
-
-    documentReady = true;
-    setState(); /* set to currentState */
-  });
-
-  function setState(state, options) {
-    if (!state && !options && currentState) {
-      state = currentState.state;
-      options = currentState.options;
-    }
-    else {
-      options = options || { };
-    }
-
-    currentState = {state: state, options: options};
-
-    if (!documentReady) {
-      return;
-    }
-
-    switch(state) {
-      case "loaded":
-        $('#status').html('connected<span style="font-size: 85%;"> @</span>');
-        $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
-        $('#error').hide();
-
-        var loading = (!deviceList || !deviceList.length);
-        showLoadingSpinner(loading);
-        break;
-
-      case "loading":
-        $('#status').html("refreshing...");
-        $('#hostname').empty();
-        $('#error').hide();
-        $('#device-list').empty();
-        showLoadingSpinner();
-        break;
-
-      case "disconnected":
-        $('#status').html("disconnected");
-        $('#hostname').empty();
-        $('#device-list').empty();
-        $('#error').show();
-        showLoadingSpinner(false);
-
-        if (options.errorMessage) {
-          $("#error-text").show().html(options.errorMessage);
-        }
-        else {
-          $("#error-text").hide();
-        }
-        break;
-    }
-  }
-
-  function onConnected() {
-    setState("loading");
-    autom8.Util.getDeviceList();
-  }
-
-  function onDisconnected(reason) {
-    setState("disconnected", {
-      errorMessage: getDisconnectMessage(reason)
-    });
-  }
-
-  function onRequestReceived(uri, body) {
-  }
-
-  function onResponseReceived(uri, body) {
-    body = JSON.parse(body);
-
-    switch (uri) {
-      case "autom8://response/get_device_list":
-        onGetDeviceListResponse(body);
-        break;
-
-      case "autom8://response/device_status_updated":
-      case "autom8://response/sensor_status_changed":
-        onDeviceUpdatedResponse(body);
-        break;
-    }
-  }
-
-  function onGetDeviceListResponse(body) {
-    deviceList = body.devices;
-    
-    if (currentState.state !== "loaded") {
-      setState("loaded");
-    }
-
-    /* unfortunate: backbone model has a property name attributes */
-    _.each(deviceList, function(device) {
-      device.attrs = device.attributes;
-      delete device.attributes;
-    });
-
-    var options = {
-      comparator: function(device) {
-        var address = device.get('address');
-        var tripped = autom8.Util.deviceIsTrippedSensor(device);
-        return (tripped ? "0-" : "1-") + address;
-      }
-    };
-
-    deviceList = new autom8.Model.DeviceList(deviceList, options);
-
-    redrawDeviceList();
-  }
-
-  function onDeviceUpdatedResponse(body) {
-    var address = body.address;
-
-    deviceList.find(function(device) {
-      if (device.get('address') === address) {
-        device.set({'attrs': body.attributes});
-        device.set({'status': body.status});
-        deviceList.sort();
-        redrawDeviceList();
-        return true;
-      }
-
-      return false;
-    });
-  }
-
-  function onDeviceRowClicked(device) {
-    switch (device.get('type')) {
-      case autom8.DeviceType.Lamp:
-      case autom8.DeviceType.Appliance:
-        onLampOrApplianceRowClicked(device);
-        break;
-
-      case autom8.DeviceType.SecuritySensor:
-        onSecuritySensorRowClicked(device);
-        break;
+  function getDisconnectMessage(reason) {
+    switch(reason) {
+      case 1: return "could not connect to server";
+      case 2: return "ssl handshake failed";
+      case 3: return "invalid username or password";
+      case 4: return "server sent an invalid message";
+      case 5: return "read failed";
+      case 6: return "write failed";
+      default: return "connection error";
     }
   }
 
@@ -228,125 +39,24 @@ autom8.Controller.DeviceListController = (function() {
     }
   }
 
-  function getDisconnectMessage(reason) {
-    switch(reason) {
-      case 1: return "could not connect to server";
-      case 2: return "ssl handshake failed";
-      case 3: return "invalid username or password";
-      case 4: return "server sent an invalid message";
-      case 5: return "read failed";
-      case 6: return "write failed";
-      default: return "connection error";
-    }
-  }
-
-  function renderLampOrApplianceRow(device, type) {
-    var address = device.get('address');
-
-    var view = {
-      rowClass: "",
-      buttonClass: "",
-      buttonText: "",
-      text: device.get('label'),
-      subtext: ""
-    };
-
-    if (device.get('type') == autom8.DeviceType.Lamp) {
-      view.subtext = "lamp " + address;
-    }
-    else {
-      view.subtext = "appliance " + address;
-    }
-
-    if (device.get('status') == autom8.DeviceStatus.On) {
-      view.buttonClass = "button on";
-      view.buttonText = "on";
-      view.rowClass = "device-row on";
-    }
-    else {
-      view.buttonClass = "button off";
-      view.buttonText = "off";
-      view.rowClass = "device-row off";
-    }
-
-    return elementFromTemplate(deviceRowTemplate, view);
-  }
-
-  function renderSecuritySensorRow (device) {
-    var address = device.address();
-    var tripped = device.tripped();
-    var armed = device.armed();
-    var on = device.on();
-
-    var view = {
-      action: "",
-      rowClass: "device-row off",
-      buttonText: "",
-      buttonClass: "",
-      text: device.get('label'),
-      subtext: "security sensor " + address
-    };
-
-    if (on && tripped) {
-      view.buttonClass = "button alert";
-      view.buttonText = "alert";
-      view.rowClass = "device-row alert";
-    }
-    else if (armed) {
-      view.buttonClass = "button on";
-      view.rowClass = "device-row on";
-      view.buttonText = "armed";
-    }
-    else {
-      view.buttonClass = "button off";
-      view.buttonText = "off";
-    }
-
-    return elementFromTemplate(deviceRowTemplate, view);
-  }
-
-  function renderDevice(device) {
-    switch (device.get('type')) {
-    case autom8.DeviceType.Lamp:
-      return renderLampOrApplianceRow(device, "lamp");
-
-    case autom8.DeviceType.Appliance:
-      return renderLampOrApplianceRow(device, "appliance");
-
-    case autom8.DeviceType.SecuritySensor:
-      return renderSecuritySensorRow(device);
-
-    default:
-      console.log('unknown device type! ' + device.get('type'));
-    }
-
-    return $("<div/>");
-  }
-
-  function redrawDeviceList() {
-    var container = $('#device-list');
-    container.empty();
-
-    if ((!deviceList) || (_.size(deviceList) < 1)) {
-      return;
-    }
-
-    deviceList.each(function(device, index) {
-      var $el = renderDevice(device);
-      $el.attr("data-index", index);
-      container.append($el);
-    });
-  }
-
   /*
    * public api
    */
-  return {
-    init: function() {
-      autom8Client.connected.connect(onConnected);
-      autom8Client.disconnected.connect(onDisconnected);
-      autom8Client.requestReceived.connect(onRequestReceived);
-      autom8Client.responseReceived.connect(onResponseReceived);
+  function Controller() {
+  }
+
+  _.extend(Controller.prototype, {
+    start: function() {
+      this.view = new autom8.View.DeviceListView();
+
+      this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
+      this.view.on('signout:clicked', this.onSignOutClicked, this);
+      this.view.on('signin:clicked', this.reconnect, this);
+
+      autom8Client.connected.connect(_.bind(this.onConnected, this));
+      autom8Client.disconnected.connect(_.bind(this.onDisconnected, this));
+      autom8Client.requestReceived.connect(_.bind(this.onRequestReceived, this));
+      autom8Client.responseReceived.connect(_.bind(this.onResponseReceived, this));
 
       var ls = localStorage;
       var prefs = autom8.Prefs;
@@ -362,7 +72,7 @@ autom8.Controller.DeviceListController = (function() {
     },
 
     reconnect: function() {
-      setState("loading");
+      this.view.setState("loading");
 
       var ls = localStorage;
       var prefs = autom8.Prefs;
@@ -371,6 +81,102 @@ autom8.Controller.DeviceListController = (function() {
         ls[prefs.ConnectionHost],
         ls[prefs.ConnectionPort],
         ls[prefs.ConnectionPw]);
+    },
+
+    onDeviceRowClicked: function(device) {
+      switch (device.get('type')) {
+        case autom8.DeviceType.Lamp:
+        case autom8.DeviceType.Appliance:
+          onLampOrApplianceRowClicked(device);
+          break;
+
+        case autom8.DeviceType.SecuritySensor:
+          onSecuritySensorRowClicked(device);
+          break;
+      }
+    },
+
+    onSignOutClicked: function() {
+      $.ajax({
+        url: 'signout.action',
+        type: 'POST',
+        success: function(data) {
+          window.location = "/";
+        },
+        error: function (xhr, status, error) {
+      }});
+    },
+
+    onConnected: function() {
+      this.view.setState("loading");
+      autom8.Util.getDeviceList();
+    },
+
+    onDisconnected: function(reason) {
+      this.view.setState("disconnected", {
+        errorMessage: getDisconnectMessage(reason)
+      });
+    },
+
+    onRequestReceived: function(uri, body) {
+    },
+
+    onResponseReceived: function(uri, body) {
+      body = JSON.parse(body);
+
+      switch (uri) {
+        case "autom8://response/get_device_list":
+          this.onGetDeviceListResponse(body);
+          break;
+
+        case "autom8://response/device_status_updated":
+        case "autom8://response/sensor_status_changed":
+          this.onDeviceUpdatedResponse(body);
+          break;
+      }
+    },
+
+    onGetDeviceListResponse: function(body) {
+      var devices = body.devices;
+      
+      /* unfortunate: backbone model has a property name attributes */
+      _.each(devices, function(device) {
+        device.attrs = device.attributes;
+        delete device.attributes;
+      });
+
+      var options = {
+        comparator: function(device) {
+          var address = device.get('address');
+          var tripped = autom8.Util.deviceIsTrippedSensor(device);
+          return (tripped ? "0-" : "1-") + address;
+        }
+      };
+
+      this.deviceList = new autom8.Model.DeviceList(devices, options);
+      this.view.setDeviceList(this.deviceList);
+
+      if (this.view.currentState.state !== "loaded") {
+        this.view.setState("loaded");
+      }
+    },
+
+    onDeviceUpdatedResponse: function(body) {
+      var address = body.address;
+
+      this.deviceList.find(_.bind(function(device) {
+        if (device.get('address') === address) {
+          device.set({'attrs': body.attributes});
+          device.set({'status': body.status});
+          this.deviceList.sort();
+          this.view.setDeviceList(this.deviceList);
+          return true;
+        }
+
+        return false;
+      }, this));
     }
-  };
+  });
+
+  return Controller;
 }()); // autom8.Controller.DeviceListController

@@ -154,5 +154,3 @@ var autom8Client = (function () {
     "isNode": true
   };
 }());
-
-autom8.Environment.trigger('initialized');

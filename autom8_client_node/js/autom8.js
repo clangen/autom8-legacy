@@ -1,13 +1,10 @@
 autom8 = { };
 autom8.Environment = { };
-autom8.Controller = { };
 autom8.Model = { };
+autom8.View = { };
+autom8.Controller = { };
 
 _.extend(autom8.Environment, Backbone.Events);
-
-autom8.Environment.bind('initialized', function() {
-  autom8.Controller.DeviceListController.init();
-});
 
 autom8.DeviceType = {
   Unknown: -1,

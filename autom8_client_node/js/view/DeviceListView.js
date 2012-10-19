@@ -6,7 +6,7 @@ autom8.View.DeviceListView = (function() {
       this.deviceList = null;
       this.loadingSpinner = null;
       this.$loadingRow = null;
-      this.currentState = {state: "loading"};
+      this.currentState = null;
 
       var self = this;
 
@@ -18,10 +18,6 @@ autom8.View.DeviceListView = (function() {
 
       autom8.Touchable.add('#header', '#signout', function(e) {
         self.trigger('signout:clicked');
-      });
-
-      autom8.Touchable.add('#error', '.sign-in-button', function(e) {
-        self.trigger('signin:clicked');
       });
 
       this.setState("loading"); /* init state machine */
@@ -48,46 +44,61 @@ autom8.View.DeviceListView = (function() {
     },
 
     setState: function(state, options) {
-      if (!state && !options && this.currentState) {
-        state = this.currentState.state;
-        options = this.currentState.options;
-      }
-      else {
-        options = options || { };
+      if (state === this.currentState) {
+        return;
       }
 
-      this.currentState = {state: state, options: options};
+      options = options || { };
+      this.currentState = state;
 
       switch(state) {
         case "loaded":
           $('#status').html('connected<span style="font-size: 85%;"> @</span>');
           $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
-          $('#error').hide();
 
           var loading = (!this.deviceList || !this.deviceList.length);
           this.showLoadingSpinner(loading);
+
+          if (this.errorDialog) {
+            this.errorDialog.close();
+          }
           break;
 
         case "loading":
           $('#status').html("refreshing...");
           $('#hostname').empty();
-          $('#error').hide();
           $('#device-list').empty();
           this.showLoadingSpinner();
+
+          if (this.errorDialog) {
+            this.errorDialog.close();
+          }
           break;
 
         case "disconnected":
           $('#status').html("disconnected");
           $('#hostname').empty();
           $('#device-list').empty();
-          $('#error').show();
           this.showLoadingSpinner(false);
 
-          if (options.errorMessage) {
-            $("#error-text").show().html(options.errorMessage);
-          }
-          else {
-            $("#error-text").hide();
+          if (!this.errorDialog) {
+            var self = this;
+            this.errorDialog = autom8.Util.Dialog.show({
+              title: "Disconnected",
+              message: options.errorMessage,
+              icon: autom8.Util.Dialog.Icon.Information,
+              buttons: [{
+                  caption: "reconnect",
+                  callback: function() {
+                    self.trigger('signin:clicked');
+                  },
+                  positive: true,
+                  negative: true
+              }],
+              onClosed: function() {
+                self.errorDialog = null;
+              }
+            });
           }
           break;
       }

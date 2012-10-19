@@ -44,7 +44,7 @@ autom8.View.SignInView = (function() {
             message: "Please check your password and try again.",
             icon: autom8.Util.Dialog.Icon.Information,
             buttons: [{
-                caption: "OK",
+                caption: "ok",
                 callback: function() {
                   $("#password").focus();
                 },

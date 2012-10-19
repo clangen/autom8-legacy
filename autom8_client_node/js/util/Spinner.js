@@ -1,15 +1,15 @@
 autom8.Spinner = (function() {
   var options = {
-    lines: 10, // The number of lines to draw
-    length: 2, // The length of each line
-    width: 2, // The line thickness
-    radius: 6, // The radius of the inner circle
-    corners: 1, // Corner roundness (0..1)
-    rotate: 19, // The rotation offset
-    color: '#fff', // #rgb or #rrggbb
-    speed: 1, // Rounds per second
-    trail: 74, // Afterglow percentage
-    shadow: true // Whether to render a shadow
+    lines: 10,
+    length: 2,
+    width: 2,
+    radius: 6,
+    corners: 1,
+    rotate: 19,
+    color: '#fff',
+    speed: 1,
+    trail: 74,
+    shadow: true
   };
 
   return {

@@ -51,6 +51,10 @@ autom8.Util.Dialog = (function() {
         if (visibleCount === 0) {
           $('#main-content').removeClass('dialog-overlay-blur');
         }
+
+        if (params.onClosed) {
+          params.onClosed();
+        }
       }
 
       function addEventHandlers() {
@@ -103,6 +107,12 @@ autom8.Util.Dialog = (function() {
       showDialog();
 
       $dialog.focus();
+
+      return {
+        close: function() {
+          closeDialog();
+        }
+      };
     }
   };
 }());

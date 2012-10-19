@@ -1,13 +1,13 @@
 autom8.Controller.DeviceListController = (function() {
   function getDisconnectMessage(reason) {
     switch(reason) {
-      case 1: return "could not connect to server";
-      case 2: return "ssl handshake failed";
-      case 3: return "invalid username or password";
-      case 4: return "server sent an invalid message";
-      case 5: return "read failed";
-      case 6: return "write failed";
-      default: return "connection error";
+      case 1: return "Could not connect to server.";
+      case 2: return "SSL handshake failed.";
+      case 3: return "Invalid username or password.";
+      case 4: return "Server sent an invalid message.";
+      case 5: return "Read failed.";
+      case 6: return "Write failed.";
+      default: return "Connection timeout.";
     }
   }
 
@@ -155,10 +155,7 @@ autom8.Controller.DeviceListController = (function() {
 
       this.deviceList = new autom8.Model.DeviceList(devices, options);
       this.view.setDeviceList(this.deviceList);
-
-      if (this.view.currentState.state !== "loaded") {
-        this.view.setState("loaded");
-      }
+      this.view.setState("loaded");
     },
 
     onDeviceUpdatedResponse: function(body) {

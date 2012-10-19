@@ -89,23 +89,6 @@ body {
   -webkit-box-flex: 1;
 }
 
-.error {
-  padding: 0px;
-}
-
-.error.device-list {
-  padding: 8px;
-  padding-top: 4px;
-}
-
-.sign-in-form .error {
-  margin-top: 24px;
-}
-
-#error-text {
-  padding-bottom: 8px;
-}
-
 #loading-row {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
@@ -122,11 +105,6 @@ body {
   width: 26px;
   height: 26px;
   margin-right: 8px;
-}
-
-#sign-in-error {
-  color: #ff4444;
-  padding: 16px 0px;
 }
 
 .button {
@@ -216,6 +194,7 @@ body {
   padding: 10px;
   margin-top: 40px;
   max-width: 80%;
+  min-width: 80%;
   -webkit-box-shadow: 5px 5px 25px black;
 }
 
@@ -243,7 +222,7 @@ body {
   text-align: center;
   background-color: #555555;
   border: 1px solid #777777;
-  padding: 2px;
+  padding: 2px 8px;
   cursor: pointer;
   border-radius: 10px;
   min-width: 64px;

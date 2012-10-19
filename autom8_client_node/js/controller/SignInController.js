@@ -1,53 +1,23 @@
-autom8.Controller.SignIn = (function() {
-  var spinner;
-  var loadingTimeout;
-
-  function setState(state) {
-    var $passwordRow = $('.password-row');
-    var $loadingRow = $('#loading-row');
-    var $errorText = $("#sign-in-error");
-
-    function cancelLoadingTimeout() {
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout);
-        loadingTimeout = null;
-      }
-    }
-
-    switch (state) {
-      case "loading":
-        $errorText.hide();
-        $loadingRow.show();
-        $passwordRow.hide();
-        spinner.start();
-        break;
-
-      case "error":
-        cancelLoadingTimeout();
-        $errorText.html("failed to sign in. check your password and try again").show();
-        $loadingRow.hide();
-        $passwordRow.show();
-        spinner.stop();
-        break;
-
-      default:
-        $errorText.hide();
-        $loadingRow.hide();
-        $passwordRow.show();
-        $("#password").focus();
-        spinner.stop();
-        break;
-    }
+autom8.Controller.SignInController = (function() {
+  function SignInController() {
   }
 
-  $(document).ready(function() {
-    function signIn() {
-      loadingTimeout = setTimeout(function() {
-        setState("loading");
-      }, 500);
+  _.extend(SignInController.prototype, {
+    start: function() {
+      this.view = new autom8.View.SignInView();
+      this.loadingTimeout = null;
+      this.view.on("signin:clicked", this.signIn, this);
+    },
+
+    signIn: function(password) {
+      this.loadingTimeout = setTimeout(_.bind(function() {
+        this.view.setState("loading");
+      }, this), 500);
+
+      var self = this;
 
       var hash = Crypto.util.bytesToHex(
-          Crypto.SHA1($("#password").val(), { asBytes: true }));
+          Crypto.SHA1(password, { asBytes: true }));
 
       $.ajax({
         url: 'signin.action',
@@ -56,30 +26,24 @@ autom8.Controller.SignIn = (function() {
           password: hash
         },
         success: function(data) {
+          self.cancelLoadingTimeout();
+          self.view.setState("loaded");
           window.location = "/";
         },
         error: function (xhr, status, error) {
-          setState("error");
+          self.cancelLoadingTimeout();
+          self.view.setState("error");
         }
       });
-    }
+    },
 
-    spinner = autom8.Spinner.create("loading-spinner");
-
-    autom8.Touchable.add('.password-row', '#signInButton', function(e) {
-      signIn();
-    });
-
-    /* enter press attempts to sign in */
-    $('body').bind("keydown", function(e) {
-      if (e.keyCode == 13) {
-        signIn();
+    cancelLoadingTimeout: function() {
+      if (this.loadingTimeout) {
+        clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = null;
       }
-    });
-
-    setState("initialized");
+    }
   });
 
-  return {
-  };
+  return SignInController;
 }());

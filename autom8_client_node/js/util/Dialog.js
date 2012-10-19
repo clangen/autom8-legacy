@@ -5,7 +5,6 @@ if (!autom8) {
 autom8.Util.Dialog = (function() {
   var dialogTemplate = $("#autom8-Dialog").html();
   var dialogButtonTemplate = $("#autom8-Dialog-Button").html();
-  var viewUtil = autom8.View.Util;
   var nextId = 0;
   var visibleCount = 0;
 
@@ -17,21 +16,35 @@ autom8.Util.Dialog = (function() {
       }
 
       var dialogId = "dialog-" + (nextId++);
-      var $dialog = viewUtil.elementFromTemplate(dialogTemplate, params);
+      var $dialog = autom8.View.Util.elementFromTemplate(dialogTemplate, params);
       var $buttonContainer = $dialog.find('.dialog-buttons');
-      var cancelCallback;
+      var negativeCallback, positiveCallback;
 
       $dialog.attr("id", dialogId);
+      $dialog.attr("tabindex", 1);
 
       function showDialog() {
         $('body').append($dialog);
-        addTouchEvents();
+        addEventHandlers();
         ++visibleCount;
         $('#main-content').addClass('dialog-overlay-blur');
       }
 
+      function keydownHandler(event) {
+        event.stopPropagation();
+
+        if (event.keyCode === 13 && positiveCallback) {
+          closeDialog();
+          positiveCallback();
+        }
+        else if (event.keyCode === 27 && negativeCallback) {
+          closeDialog();
+          negativeCallback();
+        }
+      }
+
       function closeDialog() {
-        removeTouchEvents();
+        removeEventHandlers();
         $dialog.remove();
         --visibleCount;
 
@@ -40,20 +53,22 @@ autom8.Util.Dialog = (function() {
         }
       }
 
-      function addTouchEvents() {
+      function addEventHandlers() {
         autom8.Touchable.add('#' + dialogId, '.dialog-button', buttonHandler);
-        autom8.Touchable.add('body', '#' + dialogId + '.dialog-overlay', cancelHandler);
+        autom8.Touchable.add('body', '#' + dialogId + '.dialog-overlay', negativeHandler);
+        $('#' + dialogId).bind("keydown", keydownHandler);
       }
 
-      function removeTouchEvents() {
+      function removeEventHandlers() {
         autom8.Touchable.remove('#' + dialogId, '.dialog-button');
         autom8.Touchable.remove('body', '#' + dialogId + '.dialog-overlay');
+        $('#' + dialogId).unbind("keydown", keydownHandler);
       }
 
-      function cancelHandler(event) {
-        if (cancelCallback) {
+      function negativeHandler(event) {
+        if (negativeCallback) {
           closeDialog();
-          cancelCallback();
+          negativeCallback();
         }
       }
 
@@ -69,19 +84,25 @@ autom8.Util.Dialog = (function() {
       }
 
       _.each(params.buttons, function(button, index) {
-        var $button = viewUtil.elementFromTemplate(dialogButtonTemplate, {
+        var $button = autom8.View.Util.elementFromTemplate(dialogButtonTemplate, {
           caption: button.caption,
           id: index
         });
 
-        if (button.cancel) {
-          cancelCallback = button.callback || function() { };
+        if (button.negative) {
+          negativeCallback = button.callback || function() { };
+        }
+
+        if (button.positive) {
+          positiveCallback = button.callback || function() { };
         }
 
         $buttonContainer.append($button);
       });
 
       showDialog();
+
+      $dialog.focus();
     }
   };
 }());

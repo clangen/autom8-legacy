@@ -42,12 +42,13 @@ autom8.Util = {
           caption: "Yes",
           callback: function() {
             autom8.Uti.resetSecuritySensor(deviceAddress);
-          }
+          },
+          positive: true
         },
         {
           caption: "No",
           callback: null,
-          cancel: true
+          negative: true
         }
       ]
     };
@@ -65,12 +66,13 @@ autom8.Util = {
           caption: "Yes",
           callback: function() {
             autom8.Util.setSecuritySensorArmed(deviceAddress, false);
-          }
+          },
+          positive: true
         },
         {
           caption: "No",
           callback: null,
-          cancel: true
+          negative: true
         }
       ]
     };

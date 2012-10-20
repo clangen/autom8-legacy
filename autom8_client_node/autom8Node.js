@@ -93,21 +93,22 @@ autom8.server = (function() {
     var path = __dirname + '/templates/';
     var files = fs.readdirSync(path) || [];
     for (var i = 0; i < files.length; i++) {
-      result += fs.readFileSync(path + files[i], "utf8");
-      result += "\n\n";
+      if (files[i].match(/.*\.html$/)) {
+        result += fs.readFileSync(path + files[i], "utf8");
+        result += "\n\n";
+      }
     }
     
     return doc.replace("{{templates}}", result);
   }
 
   function renderScripts(doc) {
-    var result = { };
-
     var path = __dirname + '/templates/';
     var files = fs.readdirSync(path) || [];
+    var contents;
     for (var i = 0; i < files.length; i++) {
       if (files[i].match(/.*\.(scripts|styles)$/)) {
-        var contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
+        contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
         doc = doc.replace("{{" + files[i] + "}}", contents);
       }
     }
@@ -213,9 +214,12 @@ autom8.server = (function() {
             return res.end('error loading: ' + fn);
           }
 
-          data = data.toString();
-          data = renderTemplates(data);
-          data = renderScripts(data);
+          if (fn.match(/.*\.html$/)) {
+            data = data.toString();
+            data = renderTemplates(data);
+            data = renderScripts(data);
+          }
+
           fileCache.put(fn, data);
           writeResponse(data);
         });

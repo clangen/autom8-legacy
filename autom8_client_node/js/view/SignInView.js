@@ -7,7 +7,7 @@ autom8.View.SignInView = (function() {
 
       var self = this;
 
-      autom8.Touchable.add('.password-row', '#signInButton', function(e) {
+      autom8.Touchable.add('.password-row', '#sign-in-button', function(e) {
         self.trigger("signin:clicked", $("#password").val());
       });
 

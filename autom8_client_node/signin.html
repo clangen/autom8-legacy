@@ -5,40 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" /> 
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="no" />
-    
-    <!-- templates -->
-    <script id="autom8-Dialog" type="text/x-handlebars-template">
-      <div class="dialog-overlay">
-        <div class="dialog-container">
-          <div class="dialog-title">{{title}}</div>
-          <div class="dialog-message">{{message}}</div>
-          <div class="dialog-buttons"></div>
-        </div>
-      </div>
-    </script>
 
-    <script id="autom8-Dialog-Button" type="text/x-handlebars-template">
-      <div class="dialog-button" data-id="{{id}}">{{caption}}</div>
-    </script>
-    <!-- end templates -->
-
-    <link rel="stylesheet" href="css/main.css"></link> 
-
-    <script src="js/3rdparty/underscore-1.4.2.js" type="text/javascript"></script> 
-    <script src="js/3rdparty/jquery-1.6.2.js" type="text/javascript"></script> 
-    <script src="js/3rdparty/backbone-0.9.2.js" type="text/javascript"></script> 
-    <script src="js/3rdparty/spin-1.2.7.js" type="text/javascript"></script> 
-    <script src="js/3rdparty/handlebars-1.0.0.rc.1.js" type="text/javascript"></script> 
-    <script src="js/3rdparty/2.3.0-crypto-sha1.js" type="text/javascript"></script> 
-
-    <script src="js/autom8.js" type="text/javascript"></script> 
-    <script src="js/util/Util.js" type="text/javascript"></script> 
-    <script src="js/util/Spinner.js" type="text/javascript"></script> 
-    <script src="js/util/Touchable.js" type="text/javascript"></script> 
-    <script src="js/util/Dialog.js" type="text/javascript"></script> 
-    <script src="js/util/View.js" type="text/javascript"></script> 
-    <script src="js/controller/SignInController.js" type="text/javascript"></script> 
-    <script src="js/view/SignInView.js" type="text/javascript"></script> 
+{{autom8ui.styles}}
+{{templates}}
+{{3rdparty.scripts}}
+{{autom8ui.scripts}}
 
     <script>
       $(document).ready(function() {

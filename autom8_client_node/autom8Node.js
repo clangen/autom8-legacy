@@ -77,7 +77,7 @@ autom8.server = (function() {
 
     return {
       get: function (fn) {
-        return ( ! autom8.config.debug) && cache[fn];
+        return (!autom8.config.debug) && cache[fn];
       },
 
       put: function (fn, data) {
@@ -87,7 +87,34 @@ autom8.server = (function() {
       }
     };
   }());
+
+  function renderTemplates(doc) {
+    var result = "";
+    var path = __dirname + '/templates/';
+    var files = fs.readdirSync(path) || [];
+    for (var i = 0; i < files.length; i++) {
+      result += fs.readFileSync(path + files[i], "utf8");
+      result += "\n\n";
+    }
     
+    return doc.replace("{{templates}}", result);
+  }
+
+  function renderScripts(doc) {
+    var result = { };
+
+    var path = __dirname + '/templates/';
+    var files = fs.readdirSync(path) || [];
+    for (var i = 0; i < files.length; i++) {
+      if (files[i].match(/.*\.(scripts|styles)$/)) {
+        var contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
+        doc = doc.replace("{{" + files[i] + "}}", contents);
+      }
+    }
+
+    return doc;
+  }
+
   function start() {
     /*
      * The actual HTTP server instance lives here.
@@ -186,6 +213,9 @@ autom8.server = (function() {
             return res.end('error loading: ' + fn);
           }
 
+          data = data.toString();
+          data = renderTemplates(data);
+          data = renderScripts(data);
           fileCache.put(fn, data);
           writeResponse(data);
         });

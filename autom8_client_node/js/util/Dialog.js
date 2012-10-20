@@ -70,6 +70,10 @@ autom8.Util.Dialog = (function() {
       }
 
       function negativeHandler(event) {
+        if (event.target !== event.currentTarget) {
+          return;
+        }
+
         if (negativeCallback) {
           closeDialog();
           negativeCallback();

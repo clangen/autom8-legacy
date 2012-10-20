@@ -41,7 +41,7 @@ autom8.Util = {
         {
           caption: "yes",
           callback: function() {
-            autom8.Uti.resetSecuritySensor(deviceAddress);
+            autom8.Util.resetSecuritySensor(deviceAddress);
           },
           positive: true
         },

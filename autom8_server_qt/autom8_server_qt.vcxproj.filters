@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DevicesListModel.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_EditDeviceDialog.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_EditDeviceDialog.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_LogListModel.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_LogListModel.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DevicesListModel.cpp">
+      <Filter>moc</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_autom8_server_qt.cpp">
+      <Filter>gen</Filter>
+    </ClCompile>
+    <ClCompile Include="DevicesListModel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EditDeviceDialog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="LogListModel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="GeneratedFiles\ui_autom8_server_qt.h">
+      <Filter>gen</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_autom8_server_edit_device.h">
+      <Filter>gen</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="autom8_server_edit_device.ui">
+      <Filter>res</Filter>
+    </CustomBuild>
+    <CustomBuild Include="autom8_server_qt.qrc">
+      <Filter>res</Filter>
+    </CustomBuild>
+    <CustomBuild Include="autom8_server_qt.ui">
+      <Filter>res</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MainWindow.h">
+      <Filter>src</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DevicesListModel.h">
+      <Filter>src</Filter>
+    </CustomBuild>
+    <CustomBuild Include="EditDeviceDialog.h">
+      <Filter>src</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LogListModel.h">
+      <Filter>src</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="moc">
+      <UniqueIdentifier>{cd8d6bd2-c892-4378-a35f-cbfb7342e4c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gen">
+      <UniqueIdentifier>{eedf13b2-2e18-4f8a-a008-29b5f0f0f464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{b586db37-585b-4d5f-8a38-60fe33c06b44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{3aa5fbb1-7847-431c-a029-4876bc70995e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="autom8_server_qt.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

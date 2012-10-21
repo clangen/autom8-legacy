@@ -6,7 +6,6 @@ autom8.opensdf
 autom8.sdf
 autom8_client_qt/GeneratedFiles/
 autom8_client_qt/Release/
-autom8_server_qt/
 libautom8/contrib/cm15a_controller/Debug/
 libautom8/contrib/cm15a_controller/Release/
 libautom8/contrib/cm15a_controller/cm15a_controller.vcxproj.user

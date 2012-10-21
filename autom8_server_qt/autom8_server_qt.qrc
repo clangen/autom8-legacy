@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/autom8_server_qt">
+        <file>Resources/icon.png</file>
+    </qresource>
+</RCC>

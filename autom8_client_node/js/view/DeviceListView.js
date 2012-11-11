@@ -1,8 +1,18 @@
 autom8.View.DeviceListView = (function() {
-  var View = Backbone.View.extend({
-    initialize: function(options) {
-      Backbone.View.prototype.initialize.call(this, options);
+  function getDisconnectMessage(reason) {
+    switch(reason) {
+      case 1: return "Could not connect to server.";
+      case 2: return "SSL handshake failed.";
+      case 3: return "Invalid username or password.";
+      case 4: return "Server sent an invalid message.";
+      case 5: return "Read failed.";
+      case 6: return "Write failed.";
+      default: return "Connection timeout.";
+    }
+  }
 
+  var View = autom8.mvc.View.extend({
+    onCreate: function(options) {
       this.deviceList = null;
       this.loadingSpinner = null;
       this.$loadingRow = null;
@@ -85,7 +95,7 @@ autom8.View.DeviceListView = (function() {
             var self = this;
             this.errorDialog = autom8.Util.Dialog.show({
               title: "Disconnected",
-              message: options.errorMessage,
+              message: getDisconnectMessage(options.errorCode),
               icon: autom8.Util.Dialog.Icon.Information,
               buttons: [{
                   caption: "reconnect",

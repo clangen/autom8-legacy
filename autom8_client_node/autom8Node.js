@@ -77,7 +77,9 @@ autom8.server = (function() {
 
     return {
       get: function (fn) {
-        return (!autom8.config.debug) && cache[fn];
+        if (!autom8.config.debug) {
+          return cache[fn];
+        } 
       },
 
       put: function (fn, data) {
@@ -200,10 +202,12 @@ autom8.server = (function() {
       /* check to see if the file is cached. if it is, return it now */
       var cachedFile = fileCache.get(fn);
       if (cachedFile) {
-        if (autom8.config.debug) { console.log("cache hit for " + fn); }
+        console.log("cache hit: " + fn);
         writeResponse(cachedFile);
       }
       else {
+        console.log("cache miss: " + fn);
+
         /* file not cached yet, read it from disk */
         fs.readFile(
         fn,

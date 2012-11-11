@@ -11,12 +11,13 @@
     {{autom8ui.styles}}
     {{templates}}
     {{3rdparty.scripts}}
+    {{autom8mvc.scripts}}
     {{autom8ui.scripts}}
 
     <script>
       $(document).ready(function() {
         var controller = new autom8.Controller.SignInController();
-        controller.start();
+        controller.resume();
       });
     </script>
   </head> 

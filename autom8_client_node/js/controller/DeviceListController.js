@@ -1,16 +1,4 @@
 autom8.Controller.DeviceListController = (function() {
-  function getDisconnectMessage(reason) {
-    switch(reason) {
-      case 1: return "Could not connect to server.";
-      case 2: return "SSL handshake failed.";
-      case 3: return "Invalid username or password.";
-      case 4: return "Server sent an invalid message.";
-      case 5: return "Read failed.";
-      case 6: return "Write failed.";
-      default: return "Connection timeout.";
-    }
-  }
-
   function onLampOrApplianceRowClicked(device) {
     var address = device.get('address');
 
@@ -42,11 +30,8 @@ autom8.Controller.DeviceListController = (function() {
   /*
    * public api
    */
-  function Controller() {
-  }
-
-  _.extend(Controller.prototype, {
-    start: function() {
+  var Controller = autom8.mvc.Controller.extend({
+    onCreate: function(options) {
       this.view = new autom8.View.DeviceListView();
 
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
@@ -114,7 +99,7 @@ autom8.Controller.DeviceListController = (function() {
 
     onDisconnected: function(reason) {
       this.view.setState("disconnected", {
-        errorMessage: getDisconnectMessage(reason)
+        errorCode: reason
       });
     },
 

@@ -1,7 +1,3 @@
-if (!autom8) {
-  alert("Error: autom8 namespace doesn't exist yet!");
-}
-
 autom8.Util.Dialog = (function() {
   var dialogTemplate = $("#autom8-Dialog").html();
   var dialogButtonTemplate = $("#autom8-Dialog-Button").html();

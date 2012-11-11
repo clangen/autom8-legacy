@@ -1,8 +1,6 @@
 autom8.View.SignInView = (function() {
-  var View = Backbone.View.extend({
-    initialize: function(options) {
-      Backbone.View.prototype.initialize.call(this, options);
-
+  var View = autom8.mvc.View.extend({
+    onCreate: function(options) {
       this.spinner = autom8.Spinner.create("loading-spinner");
 
       var self = this;
@@ -18,9 +16,6 @@ autom8.View.SignInView = (function() {
       });
 
       this.setState("initialized");
-    },
-
-    render: function() {
     },
 
     setState: function(state) {

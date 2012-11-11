@@ -1,10 +1,7 @@
-autom8 = { };
-autom8.Environment = { };
-autom8.Model = { };
-autom8.View = { };
-autom8.Controller = { };
-
-_.extend(autom8.Environment, Backbone.Events);
+var autom8 = window.autom8 = (window.autom8 || { });
+autom8.Model = (autom8.Model || { });
+autom8.View = (autom8.View || { });
+autom8.Controller = (autom8.Controller || { });
 
 autom8.DeviceType = {
   Unknown: -1,

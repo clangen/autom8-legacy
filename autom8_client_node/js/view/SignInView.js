@@ -1,5 +1,7 @@
 autom8.View.SignInView = (function() {
   var View = autom8.mvc.View.extend({
+    mixins: [],
+
     onCreate: function(options) {
       this.spinner = autom8.Spinner.create("loading-spinner");
 

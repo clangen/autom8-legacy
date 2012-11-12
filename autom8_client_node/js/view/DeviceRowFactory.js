@@ -30,7 +30,7 @@ autom8.View.DeviceRowFactory = (function() {
       args.rowClass = "device-row off";
     }
 
-    return autom8.View.Util.elementFromTemplate(deviceRowTemplate, args);
+    return autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args);
   }
 
   function createFromSecuritySensor(device) {
@@ -63,7 +63,7 @@ autom8.View.DeviceRowFactory = (function() {
       args.buttonText = "off";
     }
 
-    return autom8.View.Util.elementFromTemplate(deviceRowTemplate, args);
+    return autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args);
   }
 
   /*

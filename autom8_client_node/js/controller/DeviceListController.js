@@ -32,7 +32,7 @@ autom8.Controller.DeviceListController = (function() {
    */
   var Controller = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.View.DeviceListView();
+      this.view = new autom8.View.DeviceListView({el: $('#main-content')});
 
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
       this.view.on('signout:clicked', this.onSignOutClicked, this);

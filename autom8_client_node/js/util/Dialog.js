@@ -54,14 +54,14 @@ autom8.Util.Dialog = (function() {
       }
 
       function addEventHandlers() {
-        autom8.Touchable.add('#' + dialogId, '.dialog-button', buttonHandler);
-        autom8.Touchable.add('body', '#' + dialogId + '.dialog-overlay', negativeHandler);
+        autom8.mvc.View.addTouchable('#' + dialogId, '.dialog-button', buttonHandler);
+        autom8.mvc.View.addTouchable('body', '#' + dialogId + '.dialog-overlay', negativeHandler);
         $('#' + dialogId).bind("keydown", keydownHandler);
       }
 
       function removeEventHandlers() {
-        autom8.Touchable.remove('#' + dialogId, '.dialog-button');
-        autom8.Touchable.remove('body', '#' + dialogId + '.dialog-overlay');
+        autom8.mvc.View.removeTouchable('#' + dialogId, '.dialog-button');
+        autom8.mvc.View.removeTouchable('body', '#' + dialogId + '.dialog-overlay');
         $('#' + dialogId).unbind("keydown", keydownHandler);
       }
 

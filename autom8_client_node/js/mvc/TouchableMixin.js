@@ -1,4 +1,4 @@
-autom8.mvc.mixins.Touchable = (function() {
+ (function() {
   var touchSupported = !!document.createTouch;
   var startEvent = touchSupported ? "touchstart" : "mousedown mouseenter";
   var moveEvent = touchSupported ? "touchmove" : "mousemove";
@@ -85,7 +85,17 @@ autom8.mvc.mixins.Touchable = (function() {
     $el.undelegate(selector, endEvent);
   }
 
-  return {
+  autom8.mvc.mixins.Touchable = {
+    'class': {
+      addTouchable: function(el, selector, touchHandler, context) {
+        add(context, el, selector, touchHandler);
+      },
+
+      removeTouchable: function(el, selector) {
+        remove(el, selector);
+      }
+    },
+
     'lifecycle': {
       onDelegateEvents: function(events) {
         var self = this;

@@ -12,25 +12,24 @@ autom8.View.DeviceListView = (function() {
   }
 
   var View = autom8.mvc.View.extend({
+    events: {
+      "touch .device-row": function(e) {
+        var $el = $(e.currentTarget);
+        var index = parseInt($el.attr("data-index"), 10);
+        this.trigger('devicerow:clicked', this.deviceList.at(index));
+      },
+
+      "touch #signout": function(e) {
+        this.trigger('signout:clicked');
+      }
+    },
+
     onCreate: function(options) {
       this.deviceList = null;
       this.loadingSpinner = null;
       this.$loadingRow = null;
       this.currentState = null;
-
-      var self = this;
-
-      autom8.Touchable.add('#device-list', '.device-row', function(e) {
-        var $el = $(e.currentTarget);
-        var index = parseInt($el.attr("data-index"), 10);
-        self.trigger('devicerow:clicked', self.deviceList.at(index));
-      });
-
-      autom8.Touchable.add('#header', '#signout', function(e) {
-        self.trigger('signout:clicked');
-      });
-
-      this.setState("loading"); /* init state machine */
+      this.setState("loading"); /* init default view */
     },
 
     render: function() {

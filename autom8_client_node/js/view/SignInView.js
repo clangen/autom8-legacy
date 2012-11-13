@@ -5,19 +5,17 @@ autom8.View.SignInView = (function() {
     events: {
       "touch #sign-in-button": function() {
         this.trigger("signin:clicked", $("#password").val());
+      },
+
+      "keydown": function(e) {
+        if (e.keyCode == 13) {
+          this.trigger("signin:clicked", $("#password").val());
+        }
       }
     },
 
     onCreate: function(options) {
       this.spinner = autom8.Spinner.create("loading-spinner");
-
-      var self = this;
-      $('body').bind("keydown", function(e) {
-        if (e.keyCode == 13) {
-          self.trigger("signin:clicked", $("#password").val());
-        }
-      });
-
       this.setState("initialized");
     },
 

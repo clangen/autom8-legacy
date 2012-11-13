@@ -1,4 +1,4 @@
-autom8.View.DeviceRowFactory = (function() {
+namespace("autom8.view").DeviceRowFactory = (function() {
   var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
 
   function createFromLampOrAppliance(device, type) {
@@ -66,9 +66,7 @@ autom8.View.DeviceRowFactory = (function() {
     return autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args);
   }
 
-  /*
-   * public api
-   */
+  /* public api */
   return {
     create: function(device) {
       switch (device.get('type')) {
@@ -88,4 +86,4 @@ autom8.View.DeviceRowFactory = (function() {
       return $("<div/>");
     }
   };
-}()); // autom8.Controller.DeviceListController
+}());

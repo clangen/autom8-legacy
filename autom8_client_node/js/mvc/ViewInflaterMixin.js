@@ -1,5 +1,5 @@
 (function() {
-  autom8.mvc.mixins.ViewInflater = {
+  namespace("autom8.mvc.mixins").ViewInflater = {
     'class': {
       htmlFromTemplate: function(template, params) {
         var compiled = Handlebars.compile(template);

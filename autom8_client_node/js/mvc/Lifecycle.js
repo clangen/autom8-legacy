@@ -86,5 +86,5 @@
   }
 
   Lifecycle.extend = Backbone.View.extend = extend;
-  autom8.mvc.Lifecycle = Lifecycle;
+  namespace("autom8.mvc").Lifecycle = Lifecycle;
 }());

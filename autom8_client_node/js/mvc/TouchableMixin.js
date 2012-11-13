@@ -1,19 +1,24 @@
  (function() {
   var touchSupported = !!document.createTouch;
-  var startEvent = touchSupported ? "touchstart" : "mousedown mouseenter";
-  var moveEvent = touchSupported ? "touchmove" : "mousemove";
-  var endEvent = touchSupported ? "touchend touchcancel" : "mouseup mouseleave";  
+  var startEvent = touchSupported ? "touchstart{{suffix}}" : "mousedown{{suffix}} mouseenter{{suffix}}";
+  var moveEvent = touchSupported ? "touchmove{{suffix}}" : "mousemove{{suffix}}";
+  var endEvent = touchSupported ? "touchend{{suffix}} touchcancel{{suffix}}" : "mouseup{{suffix}} mouseleave{{suffix}}";  
 
   var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+  var touchEventNamespace = ".delegateTouchEvent";
 
-  function add(context, el, selector, touchHandler) {
+  function suffix(event, cid) {
+    return cid ? event.replace('{{suffix}}', touchEventNamespace + cid) : event;
+  }
+
+  function add(context, el, selector, cid, touchHandler) {
     var started = null;
     var startX = 0, startY = 0;
     var endX = 0, endY = 0;
     var $el = _.isString(el) ? $(el) : el;
 
     /* start */
-    $el.delegate(selector, startEvent, function(e) {
+    $el.delegate(selector, suffix(startEvent, cid), function(e) {
       var target = $(e.currentTarget);
       /* mouse-specific, used to reset states after detecting an
       unsent mouseleave while touched. we'll be called with a mousedown
@@ -46,7 +51,7 @@
     });
 
     /* move */
-    $el.delegate(selector, moveEvent, function(e) {
+    $el.delegate(selector, suffix(moveEvent, cid), function(e) {
       if (started) {
         if (touchSupported) {
           endX = e.originalEvent.touches[0].clientX;
@@ -60,7 +65,7 @@
     });
 
     /* end */
-    $el.delegate(selector, endEvent, function(e) {
+    $el.delegate(selector, suffix(endEvent, cid), function(e) {
       var target = $(e.currentTarget);
       if (started) {
         target.removeClass("touched");
@@ -78,17 +83,17 @@
     });
   }
 
-  function remove(el, selector) {
+  function remove(el, selector, cid) {
     var $el = _.isString(el) ? $(el) : el;
-    $el.undelegate(selector, startEvent);
-    $el.undelegate(selector, moveEvent);
-    $el.undelegate(selector, endEvent);
+    $el.undelegate(selector, suffix(startEvent, cid));
+    $el.undelegate(selector, suffix(moveEvent, cid));
+    $el.undelegate(selector, suffix(endEvent, cid));
   }
 
-  autom8.mvc.mixins.Touchable = {
+  namespace("autom8.mvc.mixins").Touchable = {
     'class': {
       addTouchable: function(el, selector, touchHandler, context) {
-        add(context, el, selector, touchHandler);
+        add(context, el, selector, null, touchHandler);
       },
 
       removeTouchable: function(el, selector) {
@@ -99,22 +104,16 @@
     'lifecycle': {
       onDelegateEvents: function(events) {
         var self = this;
-        this.__touchables = [];
         _.each(events, function(value, key) {
           var match = key.match(delegateEventSplitter);
           if (match && match.length === 3 && match[1] === "touch") {
-            add(self, self.$el, match[2], value);
-            self.__touchables.push(match[2]);
+            add(self, self.$el, match[2], self.cid, value);
           }
         });
       },
 
       onUndelegateEvents: function() {
-        var $el = this.$el;
-        _.each(this.__touchables, function(touchable) {
-          remove($el, touchable);
-        });
-        this.__touchables = [];
+        this.$el.unbind(touchEventNamespace + this.cid);
       }
     }
   }

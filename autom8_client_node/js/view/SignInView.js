@@ -1,4 +1,4 @@
-autom8.View.SignInView = (function() {
+namespace("autom8.view").SignInView = (function() {
   var View = autom8.mvc.View.extend({
     mixins: [],
 
@@ -15,7 +15,7 @@ autom8.View.SignInView = (function() {
     },
 
     onCreate: function(options) {
-      this.spinner = autom8.Spinner.create("loading-spinner");
+      this.spinner = autom8.util.Spinner.create("loading-spinner");
       this.setState("initialized");
     },
 
@@ -35,10 +35,10 @@ autom8.View.SignInView = (function() {
           $passwordRow.show();
           this.spinner.stop();
 
-          autom8.Util.Dialog.show({
+          autom8.util.Dialog.show({
             title: "Failed to sign in",
             message: "Please check your password and try again.",
-            icon: autom8.Util.Dialog.Icon.Information,
+            icon: autom8.util.Dialog.Icon.Information,
             buttons: [{
                 caption: "ok",
                 callback: function() {
@@ -63,7 +63,7 @@ autom8.View.SignInView = (function() {
       show = (show !== undefined) ? show : true;
 
       if (!this.loadingSpinner) {
-        this.loadingSpinner = autom8.Spinner.create("loading-spinner");
+        this.loadingSpinner = autom8.util.Spinner.create("loading-spinner");
         this.$loadingRow = $("#loading-row");
       }
 
@@ -79,4 +79,4 @@ autom8.View.SignInView = (function() {
   });
 
   return View;
-}()); /* autom8.Controller.SignInView */
+}());

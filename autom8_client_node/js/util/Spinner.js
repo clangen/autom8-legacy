@@ -1,4 +1,4 @@
-autom8.Spinner = (function() {
+namespace("autom8.util").Spinner = (function() {
   var options = {
     lines: 10,
     length: 2,

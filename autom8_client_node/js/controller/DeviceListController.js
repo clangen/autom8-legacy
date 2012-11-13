@@ -1,12 +1,12 @@
-autom8.Controller.DeviceListController = (function() {
+namespace("autom8.controller").DeviceListController = (function() {
   function onLampOrApplianceRowClicked(device) {
     var address = device.get('address');
 
     if (device.get('status') === autom8.DeviceStatus.On) {
-      autom8.Util.setDeviceStatus(address, autom8.DeviceStatus.Off);
+      autom8.util.Device.setDeviceStatus(address, autom8.DeviceStatus.Off);
     }
     else {
-      autom8.Util.setDeviceStatus(address, autom8.DeviceStatus.On);
+      autom8.util.Device.setDeviceStatus(address, autom8.DeviceStatus.On);
     }
   }
 
@@ -17,22 +17,19 @@ autom8.Controller.DeviceListController = (function() {
     var on = device.on();
 
     if (on && tripped) {
-      autom8.Util.confirmResetSecuritySensor(address);
+      autom8.util.Device.confirmResetSecuritySensor(address);
     }
     else if (armed) {
-      autom8.Util.confirmDisarmSecuritySensor(address);
+      autom8.util.Device.confirmDisarmSecuritySensor(address);
     }
     else {
-      autom8.Util.setSecuritySensorArmed(address, true);
+      autom8.util.Device.setSecuritySensorArmed(address, true);
     }
   }
 
-  /*
-   * public api
-   */
   var Controller = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.View.DeviceListView({el: $('#main-content')});
+      this.view = new autom8.view.DeviceListView({el: $('#main-content')});
 
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
       this.view.on('signout:clicked', this.onSignOutClicked, this);
@@ -94,7 +91,7 @@ autom8.Controller.DeviceListController = (function() {
 
     onConnected: function() {
       this.view.setState("loading");
-      autom8.Util.getDeviceList();
+      autom8.util.Device.getDeviceList();
     },
 
     onDisconnected: function(reason) {
@@ -133,12 +130,12 @@ autom8.Controller.DeviceListController = (function() {
       var options = {
         comparator: function(device) {
           var address = device.get('address');
-          var tripped = autom8.Util.deviceIsTrippedSensor(device);
+          var tripped = autom8.util.Device.deviceIsTrippedSensor(device);
           return (tripped ? "0-" : "1-") + address;
         }
       };
 
-      this.deviceList = new autom8.Model.DeviceList(devices, options);
+      this.deviceList = new autom8.model.DeviceList(devices, options);
       this.view.setDeviceList(this.deviceList);
       this.view.setState("loaded");
     },
@@ -161,4 +158,4 @@ autom8.Controller.DeviceListController = (function() {
   });
 
   return Controller;
-}()); // autom8.Controller.DeviceListController
+}());

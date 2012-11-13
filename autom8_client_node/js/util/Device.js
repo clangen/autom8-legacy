@@ -1,4 +1,4 @@
-autom8.Util = {
+namespace("autom8.util").Device = {
   setDeviceStatus: function(deviceAddress, newStatus) {
     var body = {
       command: {
@@ -36,12 +36,12 @@ autom8.Util = {
     var dialog = {
       title: "Confirm reset",
       message: "Are you sure you want to reset this security alert?",
-      icon: autom8.Util.Dialog.Icon.Question,
+      icon: autom8.util.Dialog.Icon.Question,
       buttons: [
         {
           caption: "yes",
           callback: function() {
-            autom8.Util.resetSecuritySensor(deviceAddress);
+            autom8.util.Device.resetSecuritySensor(deviceAddress);
           },
           positive: true
         },
@@ -53,19 +53,19 @@ autom8.Util = {
       ]
     };
 
-    autom8.Util.Dialog.show(dialog);
+    autom8.util.Dialog.show(dialog);
   },
 
   confirmDisarmSecuritySensor: function(deviceAddress) {
     var dialog = {
       title: "Confirm disarm",
       message: "Are you sure you want to disarm this security sensor?",
-      icon: autom8.Util.Dialog.Icon.Question,
+      icon: autom8.util.Dialog.Icon.Question,
       buttons: [
         {
           caption: "yes",
           callback: function() {
-            autom8.Util.setSecuritySensorArmed(deviceAddress, false);
+            autom8.util.Device.setSecuritySensorArmed(deviceAddress, false);
           },
           positive: true
         },
@@ -77,7 +77,7 @@ autom8.Util = {
       ]
     };
 
-    autom8.Util.Dialog.show(dialog);
+    autom8.util.Dialog.show(dialog);
   },
 
   setSecuritySensorArmed: function(deviceAddress, armed) {

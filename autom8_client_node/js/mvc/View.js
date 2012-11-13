@@ -4,7 +4,8 @@
   var View = Backbone.View.extend({
     mixins: [
       autom8.mvc.mixins.ViewInflater, 
-      autom8.mvc.mixins.Touchable
+      autom8.mvc.mixins.Touchable,
+      autom8.mvc.mixins.ViewContainer
     ],
 
     initialize: function(options) {
@@ -66,5 +67,5 @@
   _.extend(View.prototype, autom8.mvc.Lifecycle.prototype);
   View.extend = autom8.mvc.Lifecycle.extend;
 
-  autom8.mvc.View = View;
+  namespace("autom8.mvc").View = View;
 }());

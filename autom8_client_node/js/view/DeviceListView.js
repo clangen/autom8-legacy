@@ -1,4 +1,4 @@
-autom8.View.DeviceListView = (function() {
+namespace("autom8.view").DeviceListView = (function() {
   function getDisconnectMessage(reason) {
     switch(reason) {
       case 1: return "Could not connect to server.";
@@ -41,7 +41,7 @@ autom8.View.DeviceListView = (function() {
       }
 
       this.deviceList.each(function(device, index) {
-        var $el = autom8.View.DeviceRowFactory.create(device);
+        var $el = autom8.view.DeviceRowFactory.create(device);
         $el.attr("data-index", index);
         container.append($el);
       });
@@ -92,10 +92,10 @@ autom8.View.DeviceListView = (function() {
 
           if (!this.errorDialog) {
             var self = this;
-            this.errorDialog = autom8.Util.Dialog.show({
+            this.errorDialog = autom8.util.Dialog.show({
               title: "Disconnected",
               message: getDisconnectMessage(options.errorCode),
-              icon: autom8.Util.Dialog.Icon.Information,
+              icon: autom8.util.Dialog.Icon.Information,
               buttons: [{
                   caption: "reconnect",
                   callback: function() {
@@ -117,7 +117,7 @@ autom8.View.DeviceListView = (function() {
       show = (show !== undefined) ? show : true;
 
       if (!this.loadingSpinner) {
-        this.loadingSpinner = autom8.Spinner.create("loading-spinner");
+        this.loadingSpinner = autom8.util.Spinner.create("loading-spinner");
         this.$loadingRow = $("#loading-row");
       }
 
@@ -133,4 +133,4 @@ autom8.View.DeviceListView = (function() {
   });
 
   return View;
-}()); /* autom8.Controller.DeviceListView */
+}());

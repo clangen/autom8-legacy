@@ -37,8 +37,8 @@
     },
   });
 
-  Controller.extend = Backbone.View.extend;
+  Controller.extend = autom8.mvc.Lifecycle.extend;
   _.extend(Controller.prototype, autom8.mvc.Lifecycle.prototype);
 
-  autom8.mvc.Controller = Controller;
+  namespace("autom8.mvc").Controller = Controller;
 }());

@@ -1,4 +1,4 @@
-autom8.Model.Device = Backbone.Model.extend({
+namespace("autom8.model").Device = Backbone.Model.extend({
   on: function() {
     return this.get('status') == autom8.DeviceStatus.On;
   },
@@ -16,6 +16,6 @@ autom8.Model.Device = Backbone.Model.extend({
   }
 });
 
-autom8.Model.DeviceList = Backbone.Collection.extend({
-  model: autom8.Model.Device,
+namespace("autom8.model").DeviceList = Backbone.Collection.extend({
+  model: autom8.model.Device,
 });

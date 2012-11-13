@@ -1,4 +1,4 @@
-autom8.Util.Dialog = (function() {
+namespace("autom8.util").Dialog = (function() {
   var dialogTemplate = $("#autom8-Dialog").html();
   var dialogButtonTemplate = $("#autom8-Dialog-Button").html();
   var nextId = 0;
@@ -117,7 +117,7 @@ autom8.Util.Dialog = (function() {
   };
 }());
 
-autom8.Util.Dialog.Icon = {
+namespace("autom8.util").Dialog.Icon = {
   Question: "question",
   Information: "information",
   Warning: "warning",

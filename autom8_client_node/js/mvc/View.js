@@ -49,7 +49,7 @@
 
     delegateEvents: function(events) {
       __super__.delegateEvents.call(this, events);
-      this.applyStateChange('delegateEvents', events);
+      this.applyStateChange('delegateEvents', events || this.events);
     },
 
     undelegateEvents: function() {

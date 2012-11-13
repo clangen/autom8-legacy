@@ -4,15 +4,13 @@ autom8.mvc.mixins.Touchable = (function() {
   var moveEvent = touchSupported ? "touchmove" : "mousemove";
   var endEvent = touchSupported ? "touchend touchcancel" : "mouseup mouseleave";  
 
-  function add(el, selector, touchHandler) {
+  var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+
+  function add(context, el, selector, touchHandler) {
     var started = null;
     var startX = 0, startY = 0;
     var endX = 0, endY = 0;
-
-    var $el = el;
-    if (_.isString(el)) {
-      $el = $(el);
-    }
+    var $el = _.isString(el) ? $(el) : el;
 
     /* start */
     $el.delegate(selector, startEvent, function(e) {
@@ -73,7 +71,7 @@ autom8.mvc.mixins.Touchable = (function() {
           dy = Math.abs(startY - endY);
 
           if (touchHandler && dx < 20 && dy < 20) {
-            touchHandler(e);
+            touchHandler.call(context, e);
           }
         }
       }
@@ -81,11 +79,7 @@ autom8.mvc.mixins.Touchable = (function() {
   }
 
   function remove(el, selector) {
-    var $el = el;
-    if (_.isString(el)) {
-      $el = $(el);
-    }
-
+    var $el = _.isString(el) ? $(el) : el;
     $el.undelegate(selector, startEvent);
     $el.undelegate(selector, moveEvent);
     $el.undelegate(selector, endEvent);
@@ -94,9 +88,23 @@ autom8.mvc.mixins.Touchable = (function() {
   return {
     'lifecycle': {
       onDelegateEvents: function(events) {
+        var self = this;
+        this.__touchables = [];
+        _.each(events, function(value, key) {
+          var match = key.match(delegateEventSplitter);
+          if (match && match.length === 3 && match[1] === "touch") {
+            add(self, self.$el, match[2], value);
+            self.__touchables.push(match[2]);
+          }
+        });
       },
 
       onUndelegateEvents: function() {
+        var $el = this.$el;
+        _.each(this.__touchables, function(touchable) {
+          remove($el, touchable);
+        });
+        this.__touchables = [];
       }
     }
   }

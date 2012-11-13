@@ -2,15 +2,16 @@ autom8.View.SignInView = (function() {
   var View = autom8.mvc.View.extend({
     mixins: [],
 
+    events: {
+      "touch #sign-in-button": function() {
+        this.trigger("signin:clicked", $("#password").val());
+      }
+    },
+
     onCreate: function(options) {
       this.spinner = autom8.Spinner.create("loading-spinner");
 
       var self = this;
-
-      autom8.Touchable.add('.password-row', '#sign-in-button', function(e) {
-        self.trigger("signin:clicked", $("#password").val());
-      });
-
       $('body').bind("keydown", function(e) {
         if (e.keyCode == 13) {
           self.trigger("signin:clicked", $("#password").val());

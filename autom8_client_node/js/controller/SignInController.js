@@ -4,7 +4,7 @@ autom8.Controller.SignInController = (function() {
 
   var SignInController = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.View.SignInView();
+      this.view = new autom8.View.SignInView({el: $('body')});
       this.loadingTimeout = null;
       this.view.on("signin:clicked", this.signIn, this);
     },

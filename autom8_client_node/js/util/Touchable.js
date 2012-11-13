@@ -5,13 +5,18 @@ autom8.Touchable = (function() {
   var endEvent = touchSupported ? "touchend touchcancel" : "mouseup mouseleave";  
 
   return {
-    add: function(rootSelector, itemSelector, touchHandler) {
+    add: function(el, selector, touchHandler) {
       var started = null;
       var startX = 0, startY = 0;
       var endX = 0, endY = 0;
 
+      var $el = el;
+      if (_.isString(el)) {
+        $el = $(el);
+      }
+
       /* start */
-      $(rootSelector).delegate(itemSelector, startEvent, function(e) {
+      $el.delegate(selector, startEvent, function(e) {
         var target = $(e.currentTarget);
         /* mouse-specific, used to reset states after detecting an
         unsent mouseleave while touched. we'll be called with a mousedown
@@ -44,7 +49,7 @@ autom8.Touchable = (function() {
       });
 
       /* move */
-      $(rootSelector).delegate(itemSelector, moveEvent, function(e) {
+      $el.delegate(selector, moveEvent, function(e) {
         if (started) {
           if (touchSupported) {
             endX = e.originalEvent.touches[0].clientX;
@@ -58,7 +63,7 @@ autom8.Touchable = (function() {
       });
 
       /* end */
-      $(rootSelector).delegate(itemSelector, endEvent, function(e) {
+      $el.delegate(selector, endEvent, function(e) {
         var target = $(e.currentTarget);
         if (started) {
           target.removeClass("touched");
@@ -76,10 +81,15 @@ autom8.Touchable = (function() {
       });
     },
 
-    remove: function(rootSelector, itemSelector) {
-      $(rootSelector).undelegate(itemSelector, startEvent);
-      $(rootSelector).undelegate(itemSelector, moveEvent);
-      $(rootSelector).undelegate(itemSelector, endEvent);
+    remove: function(el, selector) {
+      var $el = el;
+      if (_.isString(el)) {
+        $el = $(el);
+      }
+
+      $el.undelegate(selector, startEvent);
+      $el.undelegate(selector, moveEvent);
+      $el.undelegate(selector, endEvent);
     }
   };
 }());

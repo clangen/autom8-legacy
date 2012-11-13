@@ -12,7 +12,7 @@ autom8.Util.Dialog = (function() {
       }
 
       var dialogId = "dialog-" + (nextId++);
-      var $dialog = autom8.View.Util.elementFromTemplate(dialogTemplate, params);
+      var $dialog = autom8.mvc.View.elementFromTemplate(dialogTemplate, params);
       var $buttonContainer = $dialog.find('.dialog-buttons');
       var negativeCallback, positiveCallback;
 
@@ -88,7 +88,7 @@ autom8.Util.Dialog = (function() {
       }
 
       _.each(params.buttons, function(button, index) {
-        var $button = autom8.View.Util.elementFromTemplate(dialogButtonTemplate, {
+        var $button = autom8.mvc.View.elementFromTemplate(dialogButtonTemplate, {
           caption: button.caption,
           id: index
         });

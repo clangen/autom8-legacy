@@ -2,7 +2,10 @@
   var __super__ = Backbone.View.prototype;
 
   var View = Backbone.View.extend({
-    mixins: [autom8.mvc.mixins.ViewInflater],
+    mixins: [
+      autom8.mvc.mixins.ViewInflater, 
+      autom8.mvc.mixins.Touchable
+    ],
 
     initialize: function(options) {
       Backbone.View.prototype.initialize.apply(this, arguments);

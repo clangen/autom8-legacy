@@ -76,15 +76,15 @@
 
       /* if we already have lifecycles, append otherwise, assign */
       var current = extended.prototype.lifecycles;
-      
+
+      /* _.uniq() is n^2 in this case, we should be able to do better */
       extended.prototype.lifecycles =
-        current ? current.concat(lifecycles) : lifecycles;
+        current ? _.uniq(current.concat(lifecycles)) : lifecycles;
     }
 
     return extended;
   }
 
   Lifecycle.extend = Backbone.View.extend = extend;
-
   autom8.mvc.Lifecycle = Lifecycle;
 }());

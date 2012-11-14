@@ -60,8 +60,8 @@ namespace("autom8.util").Dialog = (function() {
       }
 
       function removeEventHandlers() {
-        autom8.mvc.View.removeTouchable('#' + dialogId, '.dialog-button');
-        autom8.mvc.View.removeTouchable('body', '#' + dialogId + '.dialog-overlay');
+        autom8.mvc.View.removeTouchable('#' + dialogId, '.dialog-button', buttonHandler);
+        autom8.mvc.View.removeTouchable('body', '#' + dialogId + '.dialog-overlay', negativeHandler);
         $('#' + dialogId).unbind("keydown", keydownHandler);
       }
 

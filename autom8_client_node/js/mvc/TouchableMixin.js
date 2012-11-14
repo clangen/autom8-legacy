@@ -8,7 +8,7 @@
   var touchEventNamespace = ".delegateTouchEvent";
 
   function suffix(event, cid) {
-    return cid ? event.replace('{{suffix}}', touchEventNamespace + cid) : event;
+    return event.replace(/\{\{suffix\}\}/g, touchEventNamespace + (cid || ""));
   }
 
   function add(context, el, selector, cid, touchHandler) {
@@ -83,11 +83,11 @@
     });
   }
 
-  function remove(el, selector, cid) {
+  function remove(el, selector, cid, touchHandler) {
     var $el = _.isString(el) ? $(el) : el;
-    $el.undelegate(selector, suffix(startEvent, cid));
-    $el.undelegate(selector, suffix(moveEvent, cid));
-    $el.undelegate(selector, suffix(endEvent, cid));
+    $el.undelegate(selector, suffix(startEvent, cid), touchHandler);
+    $el.undelegate(selector, suffix(moveEvent, cid), touchHandler);
+    $el.undelegate(selector, suffix(endEvent, cid), touchHandler);
   }
 
   namespace("autom8.mvc.mixins").Touchable = {
@@ -96,8 +96,8 @@
         add(context, el, selector, null, touchHandler);
       },
 
-      removeTouchable: function(el, selector) {
-        remove(el, selector);
+      removeTouchable: function(el, selector, touchHandler) {
+        remove(el, selector, null, touchHandler);
       }
     },
 

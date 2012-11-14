@@ -70,7 +70,7 @@ body {
 }
 
 .header-host-text {
-  padding: 2px;
+  padding-left: 4px;
   font-weight: bold;
   font-size: 85%;
 }

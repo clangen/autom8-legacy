@@ -62,7 +62,8 @@ namespace("autom8.view").DeviceListView = (function() {
 
       switch(state) {
         case "loaded":
-          $('#status').html('connected<span style="font-size: 85%;"> @</span>');
+          $('#status').html('connected');
+          $('.header-host-separator').html('@');
           $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
 
           var loading = (!this.deviceList || !this.deviceList.length);
@@ -75,7 +76,8 @@ namespace("autom8.view").DeviceListView = (function() {
 
         case "loading":
           $('#status').html("refreshing...");
-          $('#hostname').empty();
+          $('.header-host-separator').html('');
+          $('#hostname').html('');
           $('#device-list').empty();
           this.showLoadingSpinner();
 
@@ -86,6 +88,7 @@ namespace("autom8.view").DeviceListView = (function() {
 
         case "disconnected":
           $('#status').html("disconnected");
+          $('.header-host-separator').html('');
           $('#hostname').empty();
           $('#device-list').empty();
           this.showLoadingSpinner(false);

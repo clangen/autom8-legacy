@@ -96,7 +96,7 @@ body {
   -webkit-box-flex: 1;
 }
 
-#loading-row {
+.loading-row {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   -webkit-box-pack: center;
@@ -104,11 +104,11 @@ body {
   padding: 8px 0px;
 }
 
-#loading-text {
+.loading-text {
   display: inline-block;
 }
 
-#loading-spinner {
+.loading-spinner {
   width: 26px;
   height: 26px;
   margin-right: 8px;
@@ -150,6 +150,7 @@ body {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   -webkit-box-align: center;
+  padding: 8px;
 }
 
 .sign-in-button.touched,
@@ -168,11 +169,7 @@ body {
   border-radius: 10px;
 }
 
-.sign-in-form {
-  padding: 8px;
-}
-
-.sign-in-form input {
+.password-row input {
   display: block;
   border: 1px solid #aaaaaa;
   padding: 4px;

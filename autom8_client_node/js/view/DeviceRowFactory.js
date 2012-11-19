@@ -69,21 +69,26 @@ namespace("autom8.view").DeviceRowFactory = (function() {
   /* public api */
   return {
     create: function(device) {
+      var result = $("<div/>");
+
       switch (device.get('type')) {
       case autom8.DeviceType.Lamp:
-        return createFromLampOrAppliance(device, "lamp");
+        result = createFromLampOrAppliance(device, "lamp");
+        break;
 
       case autom8.DeviceType.Appliance:
-        return createFromLampOrAppliance(device, "appliance");
+        result = createFromLampOrAppliance(device, "appliance");
+        break;
 
       case autom8.DeviceType.SecuritySensor:
-        return createFromSecuritySensor(device);
+        result = createFromSecuritySensor(device);
+        break;
 
       default:
         console.log('unknown device type! ' + device.get('type'));
       }
 
-      return $("<div/>");
+      return new autom8.mvc.View({el: result});
     }
   };
 }());

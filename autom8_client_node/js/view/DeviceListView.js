@@ -1,4 +1,6 @@
 namespace("autom8.view").DeviceListView = (function() {
+  var View = autom8.mvc.View;
+
   function getDisconnectMessage(reason) {
     switch(reason) {
       case 1: return "Could not connect to server.";
@@ -11,7 +13,7 @@ namespace("autom8.view").DeviceListView = (function() {
     }
   }
 
-  var View = autom8.mvc.View.extend({
+  var DeviceListView = View.extend({
     events: {
       "touch .device-row": function(e) {
         var $el = $(e.currentTarget);
@@ -25,25 +27,29 @@ namespace("autom8.view").DeviceListView = (function() {
     },
 
     onCreate: function(options) {
+      this.listView = this.addChild(
+        new autom8.mvc.View({el: $('#device-list')}));
+
+      this.spinnerView = this.addChild(new autom8.view.SpinnerView());
+
       this.deviceList = null;
-      this.loadingSpinner = null;
-      this.$loadingRow = null;
       this.currentState = null;
+
       this.setState("loading"); /* init default view */
     },
 
     render: function() {
-      var container = $('#device-list');
-      container.empty();
+      this.listView.clearChildren();
 
       if ((!this.deviceList) || (_.size(this.deviceList) < 1)) {
         return;
       }
 
+      var self = this;
       this.deviceList.each(function(device, index) {
-        var $el = autom8.view.DeviceRowFactory.create(device);
-        $el.attr("data-index", index);
-        container.append($el);
+        var deviceRow = autom8.view.DeviceRowFactory.create(device);
+        deviceRow.$el.attr("data-index", index);
+        self.listView.addChild(deviceRow);
       });
     },
 
@@ -67,7 +73,7 @@ namespace("autom8.view").DeviceListView = (function() {
           $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
 
           var loading = (!this.deviceList || !this.deviceList.length);
-          this.showLoadingSpinner(loading);
+          loading ? this.spinnerView.start() : this.spinnerView.stop();
 
           if (this.errorDialog) {
             this.errorDialog.close();
@@ -79,7 +85,7 @@ namespace("autom8.view").DeviceListView = (function() {
           $('.header-host-separator').html('');
           $('#hostname').html('');
           $('#device-list').empty();
-          this.showLoadingSpinner();
+          this.spinnerView.start();
 
           if (this.errorDialog) {
             this.errorDialog.close();
@@ -91,7 +97,7 @@ namespace("autom8.view").DeviceListView = (function() {
           $('.header-host-separator').html('');
           $('#hostname').empty();
           $('#device-list').empty();
-          this.showLoadingSpinner(false);
+          this.spinnerView.stop();
 
           if (!this.errorDialog) {
             var self = this;
@@ -114,26 +120,8 @@ namespace("autom8.view").DeviceListView = (function() {
           }
           break;
       }
-    },
-
-    showLoadingSpinner: function(show) {
-      show = (show !== undefined) ? show : true;
-
-      if (!this.loadingSpinner) {
-        this.loadingSpinner = autom8.util.Spinner.create("loading-spinner");
-        this.$loadingRow = $("#loading-row");
-      }
-
-      if (show) {
-        this.$loadingRow.show();
-        this.loadingSpinner.start();
-      }
-      else {
-        this.$loadingRow.hide();
-        this.loadingSpinner.stop();
-      }
     }
   });
 
-  return View;
+  return DeviceListView;
 }());

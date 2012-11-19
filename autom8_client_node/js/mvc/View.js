@@ -4,11 +4,13 @@
   var View = Backbone.View.extend({
     mixins: [
       autom8.mvc.mixins.ViewInflater, 
+      autom8.mvc.mixins.ViewContainer,
       autom8.mvc.mixins.Touchable,
-      autom8.mvc.mixins.ViewContainer
     ],
 
     initialize: function(options) {
+      options = options || { };
+      this.instanceEvents = options.events || { };
       Backbone.View.prototype.initialize.apply(this, arguments);
       this.create(options);
     },
@@ -17,6 +19,7 @@
       this.applyStateChange('create', options);
       this.destroyed = false;
       this.paused = true;
+      this.hidden = false;
       return this;
     },
 
@@ -29,7 +32,7 @@
       return this;
     },
 
-    pause: function() {
+    pause: function(options) {
       this.applyStateChange('pause', options, function() {
         this.undelegateEvents();
       });
@@ -49,6 +52,10 @@
     },
 
     delegateEvents: function(events) {
+      /* delegate all events from the prototype, the instance, and
+      the specified hash */
+      events = _.extend({ }, this.events, this.instanceEvents, events);
+
       __super__.delegateEvents.call(this, events);
       this.applyStateChange('delegateEvents', events || this.events);
     },
@@ -56,6 +63,20 @@
     undelegateEvents: function() {
       __super__.undelegateEvents.call(this);
       this.applyStateChange('undelegateEvents');
+    },
+
+    hide: function(options) {
+      this.applyStateChange('hide', options, function() {
+        this.$el.hide();
+      });
+
+      this.hidden = true;
+    },
+
+    show: function(options) {
+      this.applyStateChange('show', options, function() {
+        this.$el.show();
+      });
     },
 
     render: function(options) {

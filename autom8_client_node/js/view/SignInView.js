@@ -15,23 +15,20 @@ namespace("autom8.view").SignInView = (function() {
     },
 
     onCreate: function(options) {
-      this.spinner = autom8.util.Spinner.create("loading-spinner");
+      this.spinner = this.addChild(new autom8.view.SpinnerView());
       this.setState("initialized");
     },
 
     setState: function(state) {
       var $passwordRow = $('.password-row');
-      var $loadingRow = $('#loading-row');
 
       switch (state) {
         case "loading":
-          $loadingRow.show();
           $passwordRow.hide();
           this.spinner.start();
           break;
 
         case "error":
-          $loadingRow.hide();
           $passwordRow.show();
           this.spinner.stop();
 
@@ -51,29 +48,10 @@ namespace("autom8.view").SignInView = (function() {
           break;
 
         default:
-          $loadingRow.hide();
           $passwordRow.show();
           $("#password").focus();
           this.spinner.stop();
           break;
-      }
-    },
-
-    showLoadingSpinner: function(show) {
-      show = (show !== undefined) ? show : true;
-
-      if (!this.loadingSpinner) {
-        this.loadingSpinner = autom8.util.Spinner.create("loading-spinner");
-        this.$loadingRow = $("#loading-row");
-      }
-
-      if (show) {
-        this.$loadingRow.show();
-        this.loadingSpinner.start();
-      }
-      else {
-        this.$loadingRow.hide();
-        this.loadingSpinner.stop();
       }
     }
   });

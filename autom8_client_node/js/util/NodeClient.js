@@ -31,6 +31,7 @@ var autom8Client = (function () {
   }
 
   var connectedSignal = new Signal();
+  var connectingSignal = new Signal();
   var disconnectedSignal = new Signal();
   var requestReceivedSignal = new Signal();
   var responseReceivedSignal = new Signal();
@@ -41,7 +42,9 @@ var autom8Client = (function () {
     }
 
     connected = false;
+    
     connecting = true;
+    connectingSignal.raise();
 
     var href = document.location.href;
     host = href.substring(0, href.indexOf('/', 'https://'.length));
@@ -145,6 +148,7 @@ var autom8Client = (function () {
   /* public api */
   return {
     "connected": connectedSignal,
+    "connecting": connectingSignal,
     "disconnected": disconnectedSignal,
     "requestReceived": requestReceivedSignal,
     "responseReceived": responseReceivedSignal,

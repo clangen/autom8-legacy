@@ -29,10 +29,9 @@ namespace("autom8.controller").DeviceListController = (function() {
 
   var Controller = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.view.DeviceListView({el: $('#main-content')});
+      this.view = new autom8.view.DeviceListView();
 
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
-      this.view.on('signout:clicked', this.onSignOutClicked, this);
       this.view.on('signin:clicked', this.reconnect, this);
 
       autom8Client.connected.connect(_.bind(this.onConnected, this));
@@ -76,17 +75,6 @@ namespace("autom8.controller").DeviceListController = (function() {
           onSecuritySensorRowClicked(device);
           break;
       }
-    },
-
-    onSignOutClicked: function() {
-      $.ajax({
-        url: 'signout.action',
-        type: 'POST',
-        success: function(data) {
-          window.location = "/";
-        },
-        error: function (xhr, status, error) {
-      }});
     },
 
     onConnected: function() {

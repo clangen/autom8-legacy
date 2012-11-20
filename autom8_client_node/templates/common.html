@@ -4,3 +4,21 @@
     <div class="loading-text">please wait...</div>
   </div>
 </script>
+
+<script id="autom8-View-HeaderView" type="text/x-handlebars-template">
+  <div class="header">
+    <div class="header-text" id="status">{{{headerText}}}</div>
+    <div class="header-host-separator">@</div>
+    <div class="header-host-text" id="hostname">{{hostName}}</div>
+    <div class="header-spacer"></div>
+    <div class="header-button" id="signout">sign out</div>
+  </div>
+</script>
+
+<script id="autom8-View-PasswordRow" type="text/x-handlebars-template">
+  <div class="password-row">
+    <div>password:</div>
+    <input name="password" id="password" class="password" type="password"></input>
+    <div class="sign-in-button" id="sign-in-button">sign in</div>
+  </div>
+</script>

@@ -20,15 +20,11 @@ namespace("autom8.view").DeviceListView = (function() {
         var index = parseInt($el.attr("data-index"), 10);
         this.trigger('devicerow:clicked', this.deviceList.at(index));
       },
-
-      "touch #signout": function(e) {
-        this.trigger('signout:clicked');
-      }
     },
 
     onCreate: function(options) {
       this.listView = this.addChild(
-        new autom8.mvc.View({el: $('#device-list')}));
+        new autom8.mvc.View({el: $('<div class="device-list"></div>')}));
 
       this.spinnerView = this.addChild(new autom8.view.SpinnerView());
 
@@ -38,7 +34,7 @@ namespace("autom8.view").DeviceListView = (function() {
       this.setState("loading"); /* init default view */
     },
 
-    render: function() {
+    onRender: function() {
       this.listView.clearChildren();
 
       if ((!this.deviceList) || (_.size(this.deviceList) < 1)) {
@@ -68,10 +64,6 @@ namespace("autom8.view").DeviceListView = (function() {
 
       switch(state) {
         case "loaded":
-          $('#status').html('connected');
-          $('.header-host-separator').html('@');
-          $('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
-
           var loading = (!this.deviceList || !this.deviceList.length);
           loading ? this.spinnerView.start() : this.spinnerView.stop();
 
@@ -81,10 +73,7 @@ namespace("autom8.view").DeviceListView = (function() {
           break;
 
         case "loading":
-          $('#status').html("refreshing...");
-          $('.header-host-separator').html('');
-          $('#hostname').html('');
-          $('#device-list').empty();
+          this.listView.clearChildren();
           this.spinnerView.start();
 
           if (this.errorDialog) {
@@ -93,10 +82,7 @@ namespace("autom8.view").DeviceListView = (function() {
           break;
 
         case "disconnected":
-          $('#status').html("disconnected");
-          $('.header-host-separator').html('');
-          $('#hostname').empty();
-          $('#device-list').empty();
+          this.listView.clearChildren();
           this.spinnerView.stop();
 
           if (!this.errorDialog) {

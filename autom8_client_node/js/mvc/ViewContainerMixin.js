@@ -21,6 +21,12 @@
         else if (options.appendToElement && view.$el) {
           options.appendToElement.append(view.$el);
         }
+        else if (options.appendBeforeElement && view.$el) {
+          options.appendBeforeElement.before(view.$el);
+        }
+        else if (options.appendAfterElement && view.$el) {
+          options.appendAfterElement.after(view.$el);
+        }
 
         this.views.push(view);
         view.parent = this;

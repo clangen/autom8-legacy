@@ -34,7 +34,7 @@
         }
       });
       return this;
-    },
+    }
   });
 
   Controller.extend = autom8.mvc.Lifecycle.extend;

@@ -1,7 +1,14 @@
 namespace("autom8.view").SignInView = (function() {
-  var View = autom8.mvc.View.extend({
-    mixins: [],
+  var View = autom8.mvc.View;
 
+  var headerOptions = {
+    headerType: 'sign-in',
+    headerParams: { 
+      headerText: 'welcome to <b>autom8</b>'
+    }
+  };
+
+  return View.extend({
     events: {
       "touch #sign-in-button": function() {
         this.trigger("signin:clicked", $("#password").val());
@@ -15,22 +22,24 @@ namespace("autom8.view").SignInView = (function() {
     },
 
     onCreate: function(options) {
-      this.spinner = this.addChild(new autom8.view.SpinnerView());
+      this.headerView = this.addChild(new autom8.view.HeaderView(headerOptions));
+      this.headerView.setState("unrecognized");
+
+      this.passwordRow = this.addChild(new View({el: View.elementFromTemplateId('autom8-View-PasswordRow')}));
+      this.spinnerRow = this.addChild(new autom8.view.SpinnerView());
       this.setState("initialized");
     },
 
     setState: function(state) {
-      var $passwordRow = $('.password-row');
-
       switch (state) {
         case "loading":
-          $passwordRow.hide();
-          this.spinner.start();
+          this.passwordRow.hide();
+          this.spinnerRow.start();
           break;
 
         case "error":
-          $passwordRow.show();
-          this.spinner.stop();
+          this.passwordRow.show();
+          this.spinnerRow.stop();
 
           autom8.util.Dialog.show({
             title: "Failed to sign in",
@@ -48,13 +57,11 @@ namespace("autom8.view").SignInView = (function() {
           break;
 
         default:
-          $passwordRow.show();
+          this.spinnerRow.stop();
+          this.passwordRow.show();
           $("#password").focus();
-          this.spinner.stop();
           break;
       }
     }
   });
-
-  return View;
 }());

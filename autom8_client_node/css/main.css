@@ -66,31 +66,35 @@ body {
 }
 
 .header-text {
-  font-size: 85%;
+  font-size: 125%;
   color: #cccccc;
+  text-shadow: 2px 2px 2px #000;
 }
 
 .header-host-separator {
-  padding-left: 2px;
+  font-size: 70%;
+  color: #999;
+  padding-left: 4px;
   padding-right: 2px;
-  color: #999999;
-  font-size: 95%;
+  text-shadow: 1px 1px 1px #000;
 }
 
 .header-host-text {
   font-weight: bold;
-  font-size: 85%;
+  padding: 0px;
+  font-size: 70%;
+  text-shadow: 2px 2px 2px #000;
 }
 
 .header {
   background-color: #262626;
+  -webkit-box-align: baseline;
   color: #cccccc;
   padding: 8px;
   min-height: 40px;
   box-sizing: border-box;
   display: -webkit-box;
   -webkit-box-orient: horizontal;
-  -webkit-box-align: center;
   border-bottom: 1px solid #1f1f1f;
 }
 
@@ -99,15 +103,8 @@ body {
 }
 
 .header.unrecognized {
-  .header-host-separator,
-  .header-host-text,
-  .header-spacer,
   .header-button {
     display: none;
-  }
-
-  .header-text {
-    font-size: 125%;
   }
 }
 
@@ -182,6 +179,12 @@ body {
   padding: 2px;
   cursor: pointer;
   border-radius: 10px;
+}
+
+.sign-in-button,
+.header-button {
+  width: auto;
+  padding: 4px;
 }
 
 .password-row input {

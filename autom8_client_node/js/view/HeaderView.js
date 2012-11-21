@@ -18,28 +18,25 @@ namespace("autom8.view").HeaderView = (function() {
       /* remove old substates */
       this.$el.removeClass('unrecognized');
 
+      this.$('#status').html('autom8.');
+      this.$('#hostname').html(window.location.hostname);
+
       switch (state) {
         case "connecting":
-          this.$('#status').html("refreshing...");
-          this.$('.header-host-separator').html('');
-          this.$('#hostname').html('');
+          this.$('.header-host-separator').html('refreshing');
           break;
 
         case "connected":
-          this.$('#status').html('connected');
-          this.$('.header-host-separator').html('@');
-          this.$('#hostname').html(localStorage[autom8.Prefs.ConnectionName]);
+          this.$('.header-host-separator').html('controlling');
           break;
 
         case "disconnected":
-          this.$('#status').html("disconnected");
-          this.$('.header-host-separator').html('');
-          this.$('#hostname').empty();
+          this.$('.header-host-separator').html('connecting to');
           break;
 
         case "unrecognized":
-          this.$('#status').html('<span style="font-size: 60%"><u>welcome</u> to</span> autom8');
           this.$el.addClass('unrecognized');
+          this.$('.header-host-separator').html('welcome to');
           break;
       }
     }

@@ -1,10 +1,15 @@
 namespace("autom8.view").HeaderView = (function() {
   var View = autom8.mvc.View;
 
-  return View.extend({
+  var HeaderView = View.extend({
     events: {
-      "touch .header-button": function() {
-        this.trigger("signout:clicked");
+      "touch #header-button": function() {
+        if (this.$el.hasClass('unrecognized')) {
+          HeaderView.staticEvents.trigger('signin:clicked');
+        }
+        else {
+          this.trigger("signout:clicked");
+        }
       }
     },
 
@@ -20,6 +25,7 @@ namespace("autom8.view").HeaderView = (function() {
 
       this.$('#status').html('autom8.');
       this.$('#hostname').html(window.location.hostname);
+      this.$('#header-button').html('close');
 
       switch (state) {
         case "connecting":
@@ -37,8 +43,13 @@ namespace("autom8.view").HeaderView = (function() {
         case "unrecognized":
           this.$el.addClass('unrecognized');
           this.$('.header-host-separator').html('welcome to');
+          this.$('#header-button').html('sign in');
           break;
       }
     }
   });
+
+  HeaderView.staticEvents = _.extend({ }, Backbone.Events);
+
+  return HeaderView;
 }());

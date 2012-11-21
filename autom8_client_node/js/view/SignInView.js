@@ -3,13 +3,9 @@ namespace("autom8.view").SignInView = (function() {
 
   return View.extend({
     events: {
-      "touch #sign-in-button": function() {
-        this.trigger("signin:clicked", this.$("#password").val());
-      },
-
       "keydown": function(e) {
         if (e.keyCode == 13) {
-          this.trigger("signin:clicked", this.$("#password").val());
+          this.trigger("return:pressed", this.$("#password").val());
         }
       }
     },

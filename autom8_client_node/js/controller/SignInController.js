@@ -3,13 +3,21 @@ namespace("autom8.controller").SignInController = (function() {
     onCreate: function(options) {
       this.view = new autom8.view.SignInView();
       this.loadingTimeout = null;
-      this.view.on("signin:clicked", this.signIn, this);
+
+      this.view.on("return:pressed", this.signIn, this);
+      autom8.view.HeaderView.staticEvents.on("signin:clicked", this.signIn, this);
     },
 
-    signIn: function(password) {
+    onDestroy: function() {
+      autom8.view.HeaderView.staticEvents.off("signin:clicked", this.signIn, this);
+    },
+
+    signIn: function() {
       this.loadingTimeout = setTimeout(_.bind(function() {
         this.view.setState("loading");
       }, this), 500);
+
+      var password = this.view.$('#password').val();
 
       var self = this;
 

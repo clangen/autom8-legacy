@@ -89,24 +89,24 @@ body {
 
 .header {
   background-color: #262626;
-  -webkit-box-align: baseline;
+  -webkit-box-align: center;
   color: #cccccc;
   padding: 8px;
-  min-height: 40px;
+  min-height: 44px;
   box-sizing: border-box;
   display: -webkit-box;
   -webkit-box-orient: horizontal;
   border-bottom: 1px solid #1f1f1f;
 }
 
-.header-spacer {
-  -webkit-box-flex: 1;
+.header-left {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: baseline;
 }
 
-.header.unrecognized {
-  .header-button {
-    display: none;
-  }
+.header-spacer {
+  -webkit-box-flex: 1;
 }
 
 .loading-row {
@@ -156,7 +156,7 @@ body {
 .password {
   -webkit-box-flex: 1;
   margin-left: 8px;
-  margin-right: 8px;
+  margin-right: 0px;
 }
 
 .password-row {

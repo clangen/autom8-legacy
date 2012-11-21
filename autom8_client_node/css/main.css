@@ -105,6 +105,10 @@ body {
   .header-button {
     display: none;
   }
+
+  .header-text {
+    font-size: 125%;
+  }
 }
 
 .loading-row {

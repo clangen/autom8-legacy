@@ -1,5 +1,5 @@
 namespace("autom8.controller").SignInController = (function() {
-  var SignInController = autom8.mvc.Controller.extend({
+  return autom8.mvc.Controller.extend({
     onCreate: function(options) {
       this.view = new autom8.view.SignInView();
       this.loadingTimeout = null;
@@ -41,6 +41,4 @@ namespace("autom8.controller").SignInController = (function() {
       }
     }
   });
-
-  return SignInController;
 }());

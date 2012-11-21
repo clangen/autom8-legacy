@@ -38,7 +38,7 @@ namespace("autom8.view").HeaderView = (function() {
           break;
 
         case "unrecognized":
-          this.$('#status').html("welcome to <b>autom8</b>");
+          this.$('#status').html('<span style="font-size: 60%"><u>welcome</u> to</span> autom8');
           this.$el.addClass('unrecognized');
           break;
       }

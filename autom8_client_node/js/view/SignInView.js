@@ -4,12 +4,12 @@ namespace("autom8.view").SignInView = (function() {
   return View.extend({
     events: {
       "touch #sign-in-button": function() {
-        this.trigger("signin:clicked", $("#password").val());
+        this.trigger("signin:clicked", this.$("#password").val());
       },
 
       "keydown": function(e) {
         if (e.keyCode == 13) {
-          this.trigger("signin:clicked", $("#password").val());
+          this.trigger("signin:clicked", this.$("#password").val());
         }
       }
     },
@@ -49,7 +49,11 @@ namespace("autom8.view").SignInView = (function() {
         default:
           this.spinnerRow.stop();
           this.passwordRow.show();
-          $("#password").focus();
+          
+          /* focus is more reliable if we defer after show */
+          _.defer(function() {
+            this.$("#password").focus();
+          }, this);
           break;
       }
     }

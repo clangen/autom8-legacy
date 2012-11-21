@@ -1,13 +1,6 @@
 namespace("autom8.view").SignInView = (function() {
   var View = autom8.mvc.View;
 
-  var headerOptions = {
-    headerType: 'sign-in',
-    headerParams: { 
-      headerText: 'welcome to <b>autom8</b>'
-    }
-  };
-
   return View.extend({
     events: {
       "touch #sign-in-button": function() {
@@ -22,9 +15,6 @@ namespace("autom8.view").SignInView = (function() {
     },
 
     onCreate: function(options) {
-      this.headerView = this.addChild(new autom8.view.HeaderView(headerOptions));
-      this.headerView.setState("unrecognized");
-
       this.passwordRow = this.addChild(new View({el: View.elementFromTemplateId('autom8-View-PasswordRow')}));
       this.spinnerRow = this.addChild(new autom8.view.SpinnerView());
       this.setState("initialized");

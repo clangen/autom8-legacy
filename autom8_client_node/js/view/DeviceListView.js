@@ -13,7 +13,7 @@ namespace("autom8.view").DeviceListView = (function() {
     }
   }
 
-  var DeviceListView = View.extend({
+  return View.extend({
     events: {
       "touch .device-row": function(e) {
         var $el = $(e.currentTarget);
@@ -108,6 +108,4 @@ namespace("autom8.view").DeviceListView = (function() {
       }
     }
   });
-
-  return DeviceListView;
 }());

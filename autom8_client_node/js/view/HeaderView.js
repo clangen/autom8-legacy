@@ -11,6 +11,7 @@ namespace("autom8.view").HeaderView = (function() {
     onCreate: function(options) {
       options = options || { };
       this.setElement(View.elementFromTemplateId('autom8-View-HeaderView'));
+      this.setState("unrecognized");
     },
 
     setState: function(state) {

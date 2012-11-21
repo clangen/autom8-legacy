@@ -1,7 +1,7 @@
 namespace("autom8.controller").SignInController = (function() {
   var SignInController = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.view.SignInView({el: $('#main-content')});
+      this.view = new autom8.view.SignInView();
       this.loadingTimeout = null;
       this.view.on("signin:clicked", this.signIn, this);
     },

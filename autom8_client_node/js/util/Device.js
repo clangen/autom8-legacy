@@ -11,7 +11,7 @@ namespace("autom8.util").Device = {
       }
     };
 
-    autom8Client.send(
+    autom8.client.send(
       "autom8://request/send_device_command",
       JSON.stringify(body));
   },
@@ -27,7 +27,7 @@ namespace("autom8.util").Device = {
       }
     };
 
-    autom8Client.send(
+    autom8.client.send(
       "autom8://request/send_device_command",
       JSON.stringify(body));
   },
@@ -92,13 +92,13 @@ namespace("autom8.util").Device = {
       }
     };
 
-    autom8Client.send(
+    autom8.client.send(
       "autom8://request/send_device_command",
       JSON.stringify(body));
   },
 
   getDeviceList: function() {
-    autom8Client.send(
+    autom8.client.send(
       "autom8://request/get_device_list",
       JSON.stringify({ }));
   },

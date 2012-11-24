@@ -5,8 +5,8 @@ namespace("autom8.controller").SignInController = (function() {
       
       this.view.on("return:pressed", this.signIn, this);
       autom8.view.HeaderView.staticEvents.on("signin:clicked", this.signIn, this);
-      autom8Client.authenticated.connect(_.bind(this.onAuthenticated, this));
-      autom8Client.disconnected.connect(_.bind(this.onDisconnected, this));
+      autom8.client.on('authenticated', _.bind(this.onAuthenticated, this));
+      autom8.client.on('disconnected', _.bind(this.onDisconnected, this));
     },
 
     onDestroy: function() {
@@ -23,7 +23,7 @@ namespace("autom8.controller").SignInController = (function() {
 
     signIn: function() {
       this.view.setState("loading");
-      autom8Client.authenticate(this.view.$('#password').val());
+      autom8.client.authenticate(this.view.$('#password').val());
     }
   });
 }());

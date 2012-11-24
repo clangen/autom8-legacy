@@ -34,12 +34,12 @@ namespace("autom8.controller").DeviceListController = (function() {
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
       this.view.on('signin:clicked', this.reconnect, this);
 
-      autom8Client.connected.connect(_.bind(this.onConnected, this));
-      autom8Client.disconnected.connect(_.bind(this.onDisconnected, this));
-      autom8Client.requestReceived.connect(_.bind(this.onRequestReceived, this));
-      autom8Client.responseReceived.connect(_.bind(this.onResponseReceived, this));
+      autom8.client.on('connected', _.bind(this.onConnected, this));
+      autom8.client.on('disconnected', _.bind(this.onDisconnected, this));
+      autom8.client.on('requestReceived', _.bind(this.onRequestReceived, this));
+      autom8.client.on('responseReceived', _.bind(this.onResponseReceived, this));
 
-      var connected = autom8Client.isConnected();
+      var connected = autom8.client.isConnected();
 
       if (!connected) {
         this.reconnect();
@@ -51,7 +51,7 @@ namespace("autom8.controller").DeviceListController = (function() {
 
     reconnect: function() {
       this.view.setState("loading");
-      autom8Client.connect();
+      autom8.client.connect();
     },
 
     onDeviceRowClicked: function(device) {

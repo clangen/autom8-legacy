@@ -5,11 +5,11 @@ namespace("autom8.controller").HeaderController = (function() {
       this.view = new autom8.view.HeaderView();
       this.view.on('signout:clicked', this.onSignOutClicked, this);
 
-      autom8Client.connecting.connect(_.bind(this.onConnecting, this));
-      autom8Client.authenticating.connect(_.bind(this.onAuthenticating, this));
-      autom8Client.authenticated.connect(_.bind(this.onAuthenticated, this));
-      autom8Client.connected.connect(_.bind(this.onConnected, this));
-      autom8Client.disconnected.connect(_.bind(this.onDisconnected, this));
+      autom8.client.on('connecting', _.bind(this.onConnecting, this));
+      autom8.client.on('authenticating', _.bind(this.onAuthenticating, this));
+      autom8.client.on('authenticated', _.bind(this.onAuthenticated, this));
+      autom8.client.on('connected', _.bind(this.onConnected, this));
+      autom8.client.on('disconnected', _.bind(this.onDisconnected, this));
     },
 
     onSignOutClicked: function() {

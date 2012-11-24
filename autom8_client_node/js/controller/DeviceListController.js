@@ -39,29 +39,19 @@ namespace("autom8.controller").DeviceListController = (function() {
       autom8Client.requestReceived.connect(_.bind(this.onRequestReceived, this));
       autom8Client.responseReceived.connect(_.bind(this.onResponseReceived, this));
 
-      var ls = localStorage;
-      var prefs = autom8.Prefs;
-      var dirty = ls[prefs.ConnectionDirty];
       var connected = autom8Client.isConnected();
 
-      if (dirty || !connected) {
+      if (!connected) {
         this.reconnect();
       }
-      else if (connected) {
+      else {
         onConnected();
       }
     },
 
     reconnect: function() {
       this.view.setState("loading");
-
-      var ls = localStorage;
-      var prefs = autom8.Prefs;
-
-      autom8Client.connect(
-        ls[prefs.ConnectionHost],
-        ls[prefs.ConnectionPort],
-        ls[prefs.ConnectionPw]);
+      autom8Client.connect();
     },
 
     onDeviceRowClicked: function(device) {

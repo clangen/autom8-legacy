@@ -152,7 +152,7 @@ autom8.server = (function() {
     });
 
     /*
-     * Handler for the signin POST action.
+     * Handler for the signout POST action.
      */
     app.post('/signout.action', function(req, res) {
       req.session.authenticated = false;
@@ -175,7 +175,7 @@ autom8.server = (function() {
       }
 
       /* empty root (or those trying to game relative paths)
-         receive index.html */
+      receive index.html */
       if (fn === "" || fn.indexOf("..") > -1) {
         fn = "index.html";
       }
@@ -183,6 +183,7 @@ autom8.server = (function() {
       /* determine the MIME type we'll write in the response */
       var mimeType = autom8.util.getMimeType(fn);
 
+      /* unauthenticated clients get a signin page */
       if ((!req.session.authenticated) && (mimeType == "text/html")) {
         fn = "signin.html";
       }
@@ -517,7 +518,7 @@ program
  * If a password hash wasn't supplied via command-line, read one
  * from stdin now, hash it, and cache it.
  */
-if ( ! program['clientpw']) {
+if (!program['clientpw']) {
   var host = program['clienthost'];
   program.password('Password for ' + host + ': ', '*', function(pass){
     program['clientpw'] = autom8.util.sha1(pass);

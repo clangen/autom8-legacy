@@ -19,6 +19,7 @@ namespace("autom8.view").SignInView = (function() {
     setState: function(state) {
       switch (state) {
         case "loading":
+        case "loaded":
           this.passwordRow.hide();
           this.spinnerRow.start();
           break;

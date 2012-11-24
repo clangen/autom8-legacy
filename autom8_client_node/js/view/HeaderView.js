@@ -20,16 +20,19 @@ namespace("autom8.view").HeaderView = (function() {
     },
 
     setState: function(state) {
-      /* remove old substates */
+      /* remove old sub-states */
       this.$el.removeClass('unrecognized');
 
       this.$('#status').html('autom8.');
       this.$('#hostname').html(window.location.hostname);
-      this.$('#header-button').html('close');
+      this.$('#header-button').html('sign out').show();
 
       switch (state) {
+        case "authenticated":
+        case "authenticating":
         case "connecting":
           this.$('.header-host-separator').html('refreshing');
+          this.$('#header-button').hide();
           break;
 
         case "connected":
@@ -37,6 +40,7 @@ namespace("autom8.view").HeaderView = (function() {
           break;
 
         case "disconnected":
+          this.$('#header-button').html('sign in');
           this.$('.header-host-separator').html('connecting to');
           break;
 

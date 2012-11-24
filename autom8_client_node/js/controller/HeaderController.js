@@ -6,6 +6,8 @@ namespace("autom8.controller").HeaderController = (function() {
       this.view.on('signout:clicked', this.onSignOutClicked, this);
 
       autom8Client.connecting.connect(_.bind(this.onConnecting, this));
+      autom8Client.authenticating.connect(_.bind(this.onAuthenticating, this));
+      autom8Client.authenticated.connect(_.bind(this.onAuthenticated, this));
       autom8Client.connected.connect(_.bind(this.onConnected, this));
       autom8Client.disconnected.connect(_.bind(this.onDisconnected, this));
     },
@@ -19,6 +21,14 @@ namespace("autom8.controller").HeaderController = (function() {
         },
         error: function (xhr, status, error) {
       }});
+    },
+
+    onAuthenticating: function() {
+      this.view.setState("authenticating");
+    },
+
+    onAuthenticated: function() {
+      this.view.setState("authenticated");
     },
 
     onConnecting: function() {

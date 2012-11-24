@@ -1,53 +1,53 @@
-/*
- * autom8Client interface for Node.js
- */
-var autom8Client = (function () {
+var autom8Client = namespace("autom8").client = (function () {
   var socket;
   var pinging = false;
   var connected = false, connecting = false;
 
-  /* Constructor for QT-like signal object */
+  /* legacy cruft, should be replaced by Backbone.Event */
   function Signal() {
-    var cbs = [ ];
+    this.cbs = [];
+  }
 
-    this.connect = function(callback) {
-      cbs[cbs.length] = callback;
-    };
+  _.extend(Signal.prototype, {
+    connect: function(callback) {
+      this.cbs[this.cbs.length] = callback;
+    },
 
-    this.disconnect = function(callback) {
-      for (var i = 0; i < cbs.length; i++) {
-        if (cbs[i] === callback) {
-          cbs = cbs.splice(i);
+    disconnect: function(callback) {
+      for (var i = 0; i < this.cbs.length; i++) {
+        if (this.cbs[i] === callback) {
+          this.cbs = this.cbs.splice(i);
           return;
         }
       }
-    };
+    },
 
-    this.raise = function() {
-      for (var i = 0; i < cbs.length; i++) {
-        cbs[i].apply(null, arguments);
+    raise: function() {
+      for (var i = 0; i < this.cbs.length; i++) {
+        this.cbs[i].apply(null, arguments);
       }
-    };
-  }
+    }
+  });
 
+  var authenticatingSignal = new Signal();
+  var authenticatedSignal = new Signal();
   var connectedSignal = new Signal();
   var connectingSignal = new Signal();
   var disconnectedSignal = new Signal();
   var requestReceivedSignal = new Signal();
   var responseReceivedSignal = new Signal();
 
-  function connect(host, port, pw) {
+  function connect() {
     if (connected || connecting) {
       return;
     }
 
     connected = false;
-    
     connecting = true;
     connectingSignal.raise();
 
     var href = document.location.href;
-    host = href.substring(0, href.indexOf('/', 'https://'.length));
+    var host = href.substring(0, href.indexOf('/', 'https://'.length));
 
     var newSocket = io.connect(host, {
       'reconnect': true,
@@ -124,6 +124,25 @@ var autom8Client = (function () {
     return connected;
   }
 
+  function authenticate(password) {
+    this.authenticating.raise();
+
+    $.ajax({
+      url: 'signin.action',
+      type: 'POST',
+      data: {
+        password: Crypto.util.bytesToHex(
+          Crypto.SHA1(password, { asBytes: true }))
+      },
+      success: function(data) {
+        authenticatedSignal.raise();
+      },
+      error: function (xhr, status, error) {
+        disconnectedSignal.raise(-99);
+      }
+    });
+  }
+
   var hostname = "node.js proxy";
   var hostRegex = /(.*\/\/)(.*)/;
   var match = hostRegex.exec(window.location);
@@ -139,22 +158,20 @@ var autom8Client = (function () {
     hostname = (endPos == -1) ? str : str.substr(0, endPos);
   }
 
-  /* values are all stubbed! */
-  localStorage["autom8.pref.connection.name"] = hostname;
-  localStorage["autom8.pref.connection.host"] = "node.js";
-  localStorage["autom8.pref.connection.port"] = 0;
-  localStorage["autom8.pref.connection.dirty"] = false;
-
   /* public api */
   return {
-    "connected": connectedSignal,
+    /* signals */
+    "authenticating": authenticatingSignal,
+    "authenticated": authenticatedSignal,
     "connecting": connectingSignal,
+    "connected": connectedSignal,
     "disconnected": disconnectedSignal,
     "requestReceived": requestReceivedSignal,
     "responseReceived": responseReceivedSignal,
+    /* methods */
+    "authenticate": authenticate,
     "connect": connect,
     "send": send,
-    "isConnected": isConnected,
-    "isNode": true
+    "isConnected": isConnected
   };
 }());

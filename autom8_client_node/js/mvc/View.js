@@ -48,6 +48,11 @@
 
       this.applyStateChange('destroy', options);
       this.destroyed = true;
+
+      if (this.$el) {
+        this.$el.empty();
+      }
+
       return this;
     },
 

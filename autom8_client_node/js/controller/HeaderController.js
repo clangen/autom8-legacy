@@ -2,7 +2,7 @@ namespace("autom8.controller").HeaderController = (function() {
 
   return autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.view.HeaderView();
+      this.view = new autom8.view.HeaderView({el: $('#header')});
       this.view.on('signout:clicked', this.onSignOutClicked, this);
 
       autom8.client.on('connecting', _.bind(this.onConnecting, this));

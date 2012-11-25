@@ -17,15 +17,13 @@
 
     <script>
       $(document).ready(function() {
-        var controller = new autom8.controller.MainController({
-          ControllerType: autom8.controller.DeviceListController
-        });
-
+        controller = new autom8.controller.MainController();
         controller.resume();
       });
     </script>
   </head> 
   <body>
+    <div id="header"></div>
     <div id="main-content"></div>
   </body> 
 </html> 

@@ -45,7 +45,7 @@ namespace("autom8.controller").DeviceListController = (function() {
         this.reconnect();
       }
       else {
-        onConnected();
+        this.onConnected();
       }
     },
 

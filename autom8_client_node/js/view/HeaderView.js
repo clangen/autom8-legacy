@@ -15,7 +15,7 @@ namespace("autom8.view").HeaderView = (function() {
 
     onCreate: function(options) {
       options = options || { };
-      this.setElement(View.elementFromTemplateId('autom8-View-HeaderView'));
+      this.$el.append(View.elementFromTemplateId('autom8-View-HeaderView'));
       this.setState("unrecognized");
     },
 
@@ -23,7 +23,7 @@ namespace("autom8.view").HeaderView = (function() {
       /* remove old sub-states */
       this.$el.removeClass('unrecognized');
 
-      this.$('#hostname').html(window.location.hostname);
+      this.$('#hostname').html(/*window.location.hostname*/'home.autom8.cx');
       this.$('#header-button').html('sign out').show();
 
       switch (state) {

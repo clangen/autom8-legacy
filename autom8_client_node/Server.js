@@ -183,11 +183,6 @@ autom8.server = (function() {
       /* determine the MIME type we'll write in the response */
       var mimeType = autom8.util.getMimeType(fn);
 
-      /* unauthenticated clients get a signin page */
-      if ((!req.session.authenticated) && (mimeType == "text/html")) {
-        fn = "signin.html";
-      }
-
       fn = __dirname + '/' + fn;
 
       /* method to write the response once we have the file data

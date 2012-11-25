@@ -40,6 +40,7 @@ namespace("autom8.view").HeaderView = (function() {
           break;
 
         case "disconnected":
+          this.$el.addClass('unrecognized');
           this.$('#header-button').html('sign in');
           this.$('.header-host-separator').html('connecting to');
           break;

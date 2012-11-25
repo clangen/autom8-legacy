@@ -33,7 +33,7 @@ namespace("autom8").client = (function () {
   }
 
   function Client() {
-    this.socket;
+    this.socket = null;
     this.pinging = false;
     this.connected = false, connecting = false;
   }

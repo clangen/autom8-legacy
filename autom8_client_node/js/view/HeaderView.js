@@ -23,7 +23,6 @@ namespace("autom8.view").HeaderView = (function() {
       /* remove old sub-states */
       this.$el.removeClass('unrecognized');
 
-      this.$('#status').html('autom8.');
       this.$('#hostname').html(window.location.hostname);
       this.$('#header-button').html('sign out').show();
 

@@ -74,7 +74,6 @@ body {
 .header-host-separator {
   font-size: 70%;
   color: #999;
-  padding-left: 4px;
   padding-right: 4px;
   text-shadow: 1px 1px 1px #000;
 }
@@ -99,10 +98,20 @@ body {
   border-bottom: 1px solid #1f1f1f;
 }
 
-.header-left {
+.header-logo {
+  font-size: 110%;
+  font-weight: bold;
+}
+
+.header-status {
   display: -webkit-box;
   -webkit-box-orient: horizontal;
-  -webkit-box-align: baseline;
+  -webkit-box-align: baseline;  
+}
+
+.header-left {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
 }
 
 .header-spacer {

@@ -363,6 +363,7 @@ autom8.client = (function() {
       }
     }
 
+    lastBuffer = null;
     connected = connecting = false;
     if (stream === socketStream) {
       socketStream = null;
@@ -454,9 +455,9 @@ autom8.client = (function() {
           };
         }
         catch (parseError) {
-          console.log("ERROR: message parsed failed, disconnecting...");
+          console.log("ERROR: message parsed failed, reconnecting...");
           lastBuffer = null;
-          disconnect();
+          reconnect();
         }
 
         if (autom8.config.debug) {

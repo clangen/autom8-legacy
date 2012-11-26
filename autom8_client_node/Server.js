@@ -284,73 +284,91 @@ autom8.client = (function() {
   var socketStream = null;
   var lastBuffer = null;
   var connected = false;
-  var pingTimeout = null;
+  var connecting = false;
+
+  /* ping server every 20 seconds when connected */
+  (function sendPing() {
+    if (connected) {
+      autom8.client.send(autom8.requests.ping, { });
+    }
+
+    setTimeout(sendPing, 20000);
+  }());
+
+  function reconnect() {
+    if (connecting) {
+      console.log("reconnect() called but already connecting.");
+      return;
+    }
+
+    console.log("attempting to reconnect...");
+    disconnect();
+
+    setTimeout(function() {
+      if (!connected) {
+        autom8.client.connect();
+      }
+    }, 5000);
+  }
 
   function connect() {
     if (connected) {
-      disconnect();
+      console.log('connect() called, but already connected. bailing...');
+      return;
     }
 
-    var reconnect = function() {
-      console.log("attempting to reconnect...");
-
-      setTimeout(function() {
-        if ( ! connected) {
-          autom8.client.connect();
-        }
-      }, 5000);
-    };
-
-    var connectionSevered = function() {
-      autom8.client.disconnect();
-      reconnect();
-    };
-  
     var cfg = autom8.config.client;
 
     socketStream = tls.connect(cfg.port, cfg.host, function() {
-      console.log('connected to autom8 server');
-      connected = true;
+      console.log("**** " + this);
 
-      socketStream.on('data', dispatchReceivedMessage);
-      socketStream.on('end', connectionSevered);
-
-      autom8.client.send(
-        autom8.requests.authenticate, {
-          password: cfg.password
-        }
-      );
-
-      function sendPing() {
-        if (connected) {
-          autom8.client.send(autom8.requests.ping, { });
-        }
-
-        setTimeout(sendPing, 20000);
+      if (socketStream !== this) {
+        /* some other reconnect attempt won */
+        disconnect(this);
       }
+      else {
+        /* successful connection, authenticate */
+        console.log('connected to autom8 server');
+        connecting = false;
+        connected = true;
 
-      if (!pingTimeout) {
-        sendPing();
-        pingTimeout = true;
+        autom8.client.send(
+          autom8.requests.authenticate, {
+            password: cfg.password
+          }
+        );
       }
     });
 
     socketStream.on('error', reconnect);
+    socketStream.on('end', reconnect);
+    socketStream.on('data', dispatchReceivedMessage);
   }
 
-  function disconnect() {
-    if (socketStream) {
+  function disconnect(stream) {
+    console.log('disconnecting...');
+
+    stream = stream || socketStream;
+
+    if (stream) {
+      stream.removeAllListeners('error');
+      stream.removeAllListeners('end');
+      stream.removeAllListeners('data');
+
       try {
-        socketStream.destroy();
+        stream.destroy();
       }
       catch (e) {
         console.log('socket.destroy() threw');
       }
     }
 
-    connected = false;
-    socketStream = null;
-    console.log('disconnected');
+    connected = connecting = false;
+    if (stream === socketStream) {
+      socketStream = null;
+    }
+
+    console.log('disconnected.');
   }
 
   function send(uri, body) {

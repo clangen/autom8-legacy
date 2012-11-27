@@ -1,15 +1,18 @@
 namespace("autom8").client = (function () {
-  function onSocketDisconnected(context, data) {
+  var MAX_RECONNECT_ATTEMPTS = 4;
+
+  function onSocketDisconnected(context, data, code) {
     context.socket = null;
     context.connected = false;
     context.connecting = false;
-    context.trigger('disconnected', 0);
+    context.trigger('disconnected', code || 0);
   }
 
   function onSocketConnected(context, newSocket, data) {
     context.socket = newSocket;
     context.connected = true;
     context.connecting = false;
+    context.reconnectAttempts = 0;
     context.trigger('connected');
   }
 
@@ -47,13 +50,15 @@ namespace("autom8").client = (function () {
       this.connected = false;
       this.connecting = true;
       this.trigger('connecting');
+      this.reconnectAttempts = 0;
 
       var href = document.location.href;
       var host = href.substring(0, href.indexOf('/', 'https://'.length));
 
       var newSocket = io.connect(host, {
         'reconnect': true,
-        'reconnection delay': 2000
+        'reconnection delay': 2000,
+        'max reconnection attempts': MAX_RECONNECT_ATTEMPTS
       });
 
       var self = this;
@@ -74,6 +79,17 @@ namespace("autom8").client = (function () {
 
       newSocket.on('connect_failed', function(data) {
         onSocketDisconnected(self, data);
+      });
+
+      newSocket.on('reconnect_failed', function(data) {
+        onSocketDisconnected(self, data);
+      });
+
+      newSocket.on('reconnecting', function(data) {
+        ++self.reconnectAttempts;
+        if (self.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+          onSocketDisconnected(self, data, -100);
+        }
       });
 
       newSocket.on('recvMessage', function(data) {

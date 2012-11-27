@@ -32,7 +32,8 @@ namespace("autom8.controller").DeviceListController = (function() {
       this.view = new autom8.view.DeviceListView();
 
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
-      this.view.on('signin:clicked', this.reconnect, this);
+      this.view.on('reconnect:clicked', this.reconnect, this);
+      this.view.on('signin:clicked', this.signIn, this);
 
       autom8.client.on('connected', _.bind(this.onConnected, this));
       autom8.client.on('disconnected', _.bind(this.onDisconnected, this));
@@ -52,6 +53,10 @@ namespace("autom8.controller").DeviceListController = (function() {
     reconnect: function() {
       this.view.setState("loading");
       autom8.client.connect();
+    },
+
+    signIn: function() {
+      window.location = "/";
     },
 
     onDeviceRowClicked: function(device) {

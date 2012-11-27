@@ -35,10 +35,11 @@ namespace("autom8.controller").DeviceListController = (function() {
       this.view.on('reconnect:clicked', this.reconnect, this);
       this.view.on('signin:clicked', this.signIn, this);
 
-      autom8.client.on('connected', _.bind(this.onConnected, this));
-      autom8.client.on('disconnected', _.bind(this.onDisconnected, this));
-      autom8.client.on('requestReceived', _.bind(this.onRequestReceived, this));
-      autom8.client.on('responseReceived', _.bind(this.onResponseReceived, this));
+      autom8.client.on('connected', this.onConnected, this);
+      autom8.client.on('disconnected', this.onDisconnected, this);
+      autom8.client.on('requestReceived', this.onRequestReceived, this);
+      autom8.client.on('responseReceived', this.onResponseReceived, this);
+      autom8.client.on('expired', this.onDisconnected, this);
 
       var connected = autom8.client.isConnected();
 
@@ -78,6 +79,9 @@ namespace("autom8.controller").DeviceListController = (function() {
     },
 
     onDisconnected: function(reason) {
+      /* a bit hacky? -1 means expired session */
+      reason = autom8.client.expired ? -1 : reason;
+
       this.view.setState("disconnected", {
         errorCode: reason
       });

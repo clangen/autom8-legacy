@@ -1,19 +1,52 @@
 namespace("autom8").client = (function () {
-  var MAX_RECONNECT_ATTEMPTS = 4;
-
   function onSocketDisconnected(context, data, code) {
+    checkSignedIn(context);
+    stopPinging(context);
+
     context.socket = null;
     context.connected = false;
     context.connecting = false;
-    context.trigger('disconnected', code || 0);
+
+    /* if we're expired don't raise a disconnect signal because
+    it will just be confusing for the user */
+    if (!context.expired) {
+      context.trigger('disconnected', code || 0);
+    }
   }
 
   function onSocketConnected(context, newSocket, data) {
+    startPinging(context);
+
     context.socket = newSocket;
+    context.expired = false;
     context.connected = true;
     context.connecting = false;
     context.reconnectAttempts = 0;
     context.trigger('connected');
+  }
+
+  function checkSignedIn(context) {
+    if (context.checkingSignIn) {
+      return;
+    }
+
+    context.checkingSignIn = true;
+
+    $.ajax({
+      url: 'signedin.action',
+      type: 'GET',
+      success: function(data) {
+        context.checkingSignIn = false;
+      },
+      error: function (xhr, status, error) {
+        context.checkingSignIn = false;
+
+        if (xhr.status === 401) {
+          context.expired = true;
+          context.trigger('expired');
+        }
+      }
+    });
   }
 
   function stopPinging(context) {
@@ -47,6 +80,11 @@ namespace("autom8").client = (function () {
         return;
       }
 
+      if (this.expired) {
+        this.trigger('expired');
+        return;
+      }
+
       this.connected = false;
       this.connecting = true;
       this.trigger('connecting');
@@ -58,18 +96,15 @@ namespace("autom8").client = (function () {
       var newSocket = io.connect(host, {
         'reconnect': true,
         'reconnection delay': 2000,
-        'max reconnection attempts': MAX_RECONNECT_ATTEMPTS
       });
 
       var self = this;
 
       newSocket.on('connect', function(data) {
-        startPinging(self);
         onSocketConnected(self, newSocket, data);
       });
 
       newSocket.on('disconnect', function(data) {
-        stopPinging(self);
         onSocketDisconnected(self, data);
       });
 
@@ -86,10 +121,7 @@ namespace("autom8").client = (function () {
       });
 
       newSocket.on('reconnecting', function(data) {
-        ++self.reconnectAttempts;
-        if (self.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-          onSocketDisconnected(self, data, -100);
-        }
+        onSocketDisconnected(self, data);
       });
 
       newSocket.on('recvMessage', function(data) {
@@ -134,7 +166,7 @@ namespace("autom8").client = (function () {
           self.trigger("disconnected", -99);
         }
       });
-    }
+    },
   });
 
   return new Client();

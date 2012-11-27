@@ -178,6 +178,20 @@ autom8.server = (function() {
       res.end("");
     });
 
+    app.get('/signedin.action', function(req, res) {
+      var result = {signedIn: false};
+      if (req.session.authenticated) {
+        /* todo: better way? */
+        var expires = req.session.cookie._expires;
+        if (new Date(expires) - new Date() > 0) {
+          result.signedIn = true;
+        }
+      }
+      
+      res.writeHead(result.signedIn ? 200 : 401);
+      res.end(JSON.stringify(result));
+    });
+
     /*
      * General request handler; looks at the request, figures out
      * which file to return. Deals with caching and unathenticated
@@ -307,7 +321,7 @@ autom8.server = (function() {
 
           var expires = new Date(s.cookie.expires);
           var now = new Date();
-          if (expires - now < 0) {
+          if (expires - now <= 0) {
             /* cookie expired, reject... */
             console.log("WARNING: socket connection with expired session, rejecting.");
             return accept(null, true);

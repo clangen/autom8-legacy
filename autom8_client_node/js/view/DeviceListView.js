@@ -9,7 +9,7 @@ namespace("autom8.view").DeviceListView = (function() {
       case 4: return "Server sent an invalid message.";
       case 5: return "Read failed.";
       case 6: return "Write failed.";
-      case -100: return "Reconnect failed, please sign in again";
+      case -1: return "Session expired, please sign in again.";
       default: return "Connection timeout.";
     }
   }
@@ -86,8 +86,8 @@ namespace("autom8.view").DeviceListView = (function() {
             this.errorDialog.close();
           }
 
-          var event = (options.errorCode === -100) ? "signin:clicked" : "reconnect:clicked";
-          var button = (options.errorCode === -100) ? "sign in" : "reconnect";
+          var event = (options.errorCode === -1) ? "signin:clicked" : "reconnect:clicked";
+          var button = (options.errorCode === -1) ? "sign in" : "reconnect";
 
           var self = this;
           this.errorDialog = autom8.util.Dialog.show({

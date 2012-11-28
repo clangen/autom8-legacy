@@ -1,5 +1,5 @@
-// npm install commander express socket.io socket.io-client
-// node.exe autom8Node.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
+// npm install commander connect express socket.io socket.io-client
+// node.exe Server.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 var express = require('express');
 var tls = require('tls');
@@ -79,7 +79,7 @@ autom8.server = (function() {
       get: function (fn) {
         if (!autom8.config.debug) {
           return cache[fn];
-        } 
+        }
       },
 
       put: function (fn, data) {
@@ -89,6 +89,22 @@ autom8.server = (function() {
       }
     };
   }());
+
+  /* modified from http://stackoverflow.com/questions/3393854/
+  get-and-set-a-single-cookie-with-node-js-http-server */
+  function parseCookie(str) {
+    var cookies = { }; /* result */
+    str = str || "";
+
+    var rawCookies = str.split(';');
+    for (var i = 0; i < rawCookies.length; i++) {
+      var parts = rawCookies[i].split('=');
+      if (parts.length === 2) {
+        cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim()) || "";
+      }      
+    }
+    return cookies;
+  }
 
   function renderTemplates(doc) {
     var result = "";
@@ -119,25 +135,28 @@ autom8.server = (function() {
   }
 
   function start() {
-    /*
-     * The actual HTTP server instance lives here.
-     */
+    /* the one and only application */
     var app = express();
 
-    var serverOptions = {
-      key: fs.readFileSync(autom8.config.server.pem),
-      cert: fs.readFileSync(autom8.config.server.pem)
-    };
+    /* sigh, what should this be? */
+    var secret = "autom84Lyfe";
 
-    var httpServer = require('https').createServer(serverOptions, app);
+    /* maps browser sessions to socket connections. doing this allows us
+    to correlate browser sessions with web sockets */
+    var sessionStore = new express.session.MemoryStore();
+    
+    /* magic middleware */
+    app.use(express.cookieParser(secret));
 
-    app.use(express.cookieParser("autom84Lyfe"));
     app.use(express.bodyParser());
-    app.use(express.session());
+    
+    app.use(express.session({
+      store: sessionStore,
+      secret: secret,
+      key: 'connect.sid'
+    }));
 
-    /*
-     * Handler for the signin POST action.
-     */
+    /* sign in handler */
     app.post('/signin.action', function(req, res) {
       if (req.body.password === autom8.config.client.password) {
         req.session.authenticated = true;
@@ -151,14 +170,26 @@ autom8.server = (function() {
       res.end("");
     });
 
-    /*
-     * Handler for the signout POST action.
-     */
+    /* sign out handler */
     app.post('/signout.action', function(req, res) {
       req.session.authenticated = false;
       req.session.cookie.maxAge = 0;
       res.writeHead(200);
       res.end("");
+    });
+
+    app.get('/signedin.action', function(req, res) {
+      var result = {signedIn: false};
+      if (req.session.authenticated) {
+        /* todo: better way? */
+        var expires = req.session.cookie._expires;
+        if (new Date(expires) - new Date() > 0) {
+          result.signedIn = true;
+        }
+      }
+      
+      res.writeHead(result.signedIn ? 200 : 401);
+      res.end(JSON.stringify(result));
     });
 
     /*
@@ -226,14 +257,16 @@ autom8.server = (function() {
       }
     });
 
-    /*
-     * start the http server now!
-     */
+    /* start the http server */
+    var serverOptions = {
+      key: fs.readFileSync(autom8.config.server.pem),
+      cert: fs.readFileSync(autom8.config.server.pem)
+    };
+
+    var httpServer = require('https').createServer(serverOptions, app);
     httpServer.listen(autom8.config.server.port);
 
-    /*
-     * these are the web socket connections
-     */
+    /* these are the web socket connections */
     autom8.sessions = (function() {
       var webSocketServer = io.listen(httpServer);
 
@@ -243,6 +276,57 @@ autom8.server = (function() {
       if (!program['debug']) {
         webSocketServer.set('log level', 1);
       }
+
+      /* make sure the web socket being established has a related
+      browser session. if not, don't allow the web socket connection
+      to be made. */
+      webSocketServer.set('authorization', function (data, accept) {
+        /* session id will be in the header cookies */
+        var cookieString = data.headers.cookie || "";
+        var cookies = parseCookie(cookieString);
+        var sessionId = cookies['connect.sid'];
+        
+        /* no session id at all is an instant rejection */
+        if (!sessionId) {
+          console.log("WARNING: socket connection with no session, rejecting.");
+          return accept("unauthorized", false);
+        }
+
+        /* raw session identifiers seem to always be in the following format:
+        s:[sessionId].[someData]. Not quite sure why -- code samples I see on
+        the net suggest this is not the case. At any rate, here we grab the
+        actual sessionId if it exists. */
+        var match = sessionId.match(/s\:(.*)\..*/);
+        if (match && match.length === 2) {
+          sessionId = match[1];
+        }
+
+        /* now make sure the session specified in the request actually exists */
+        sessionStore.get(sessionId, function(err, s) {
+          if (err || !s) {
+            console.log("WARNING: socket connection with invalid session, rejecting.");
+            return accept("unauthorized", false);
+          }
+
+          if (!s.cookie || !s.cookie.expires) {
+            /* invalid expiry date in session */
+            console.log("WARNING: socket connection with no expiry, rejecting.");
+            return accept("unauthorized", false);
+          }
+
+          var expires = new Date(s.cookie.expires);
+          var now = new Date();
+          if (expires - now <= 0) {
+            /* cookie expired, reject... */
+            console.log("WARNING: socket connection with expired session, rejecting.");
+            return accept(null, true);
+          }
+
+          /* if we get all the way here then our session is trusted */
+          console.log("INFO: socket connection with valid session, accepting.");
+          return accept(null, true);
+        });
+      });
 
       webSocketServer.sockets.on('connection', function (socket) {
         var addr = socket.handshake.address;
@@ -279,73 +363,90 @@ autom8.client = (function() {
   var socketStream = null;
   var lastBuffer = null;
   var connected = false;
-  var pingTimeout = null;
+  var connecting = false;
+
+  /* ping server every 20 seconds when connected */
+  (function sendPing() {
+    if (connected) {
+      autom8.client.send(autom8.requests.ping, { });
+    }
+
+    setTimeout(sendPing, 20000);
+  }());
+
+  function reconnect() {
+    if (connecting) {
+      console.log("reconnect() called but already connecting.");
+      return;
+    }
+
+    console.log("attempting to reconnect...");
+    disconnect();
+
+    setTimeout(function() {
+      if (!connected) {
+        autom8.client.connect();
+      }
+    }, 5000);
+  }
 
   function connect() {
     if (connected) {
-      disconnect();
+      console.log('connect() called, but already connected. bailing...');
+      return;
     }
 
-    var reconnect = function() {
-      console.log("attempting to reconnect...");
-
-      setTimeout(function() {
-        if ( ! connected) {
-          autom8.client.connect();
-        }
-      }, 5000);
-    };
-
-    var connectionSevered = function() {
-      autom8.client.disconnect();
-      reconnect();
-    };
-  
     var cfg = autom8.config.client;
 
     socketStream = tls.connect(cfg.port, cfg.host, function() {
-      console.log('connected to autom8 server');
-      connected = true;
-
-      socketStream.on('data', dispatchReceivedMessage);
-      socketStream.on('end', connectionSevered);
-
-      autom8.client.send(
-        autom8.requests.authenticate, {
-          password: cfg.password
-        }
-      );
-
-      function sendPing() {
-        if (connected) {
-          autom8.client.send(autom8.requests.ping, { });
-        }
-
-        setTimeout(sendPing, 20000);
+      if (socketStream !== this) {
+        /* some other reconnect attempt won */
+        disconnect(this);
       }
+      else {
+        /* successful connection, authenticate */
+        console.log('connected to autom8 server');
+        connecting = false;
+        connected = true;
 
-      if (!pingTimeout) {
-        sendPing();
-        pingTimeout = true;
+        autom8.client.send(
+          autom8.requests.authenticate, {
+            password: cfg.password
+          }
+        );
       }
     });
 
     socketStream.on('error', reconnect);
+    socketStream.on('end', reconnect);
+    socketStream.on('data', dispatchReceivedMessage);
   }
 
-  function disconnect() {
-    if (socketStream) {
+  function disconnect(stream) {
+    console.log('disconnecting...');
+
+    stream = stream || socketStream;
+
+    if (stream) {
+      stream.removeAllListeners('error');
+      stream.removeAllListeners('end');
+      stream.removeAllListeners('data');
+
       try {
-        socketStream.destroy();
+        stream.destroy();
       }
       catch (e) {
         console.log('socket.destroy() threw');
       }
     }
 
-    connected = false;
-    socketStream = null;
-    console.log('disconnected');
+    lastBuffer = null;
+    connected = connecting = false;
+    if (stream === socketStream) {
+      socketStream = null;
+    }
+
+    console.log('disconnected.');
   }
 
   function send(uri, body) {
@@ -431,9 +532,9 @@ autom8.client = (function() {
           };
         }
         catch (parseError) {
-          console.log("ERROR: message parsed failed, disconnecting...");
+          console.log("ERROR: message parsed failed, reconnecting...");
           lastBuffer = null;
-          disconnect();
+          reconnect();
         }
 
         if (autom8.config.debug) {

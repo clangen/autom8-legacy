@@ -9,6 +9,7 @@ namespace("autom8.view").DeviceListView = (function() {
       case 4: return "Server sent an invalid message.";
       case 5: return "Read failed.";
       case 6: return "Write failed.";
+      case -1: return "Session expired, please sign in again.";
       default: return "Connection timeout.";
     }
   }
@@ -55,10 +56,6 @@ namespace("autom8.view").DeviceListView = (function() {
     },
 
     setState: function(state, options) {
-      if (state === this.currentState) {
-        return;
-      }
-
       options = options || { };
       this.currentState = state;
 
@@ -85,25 +82,30 @@ namespace("autom8.view").DeviceListView = (function() {
           this.listView.clearChildren();
           this.spinnerView.stop();
 
-          if (!this.errorDialog) {
-            var self = this;
-            this.errorDialog = autom8.util.Dialog.show({
-              title: "Disconnected",
-              message: getDisconnectMessage(options.errorCode),
-              icon: autom8.util.Dialog.Icon.Information,
-              buttons: [{
-                  caption: "reconnect",
-                  callback: function() {
-                    self.trigger('signin:clicked');
-                  },
-                  positive: true,
-                  negative: true
-              }],
-              onClosed: function() {
-                self.errorDialog = null;
-              }
-            });
+          if (this.errorDialog) {
+            this.errorDialog.close();
           }
+
+          var event = (options.errorCode === -1) ? "signin:clicked" : "reconnect:clicked";
+          var button = (options.errorCode === -1) ? "sign in" : "reconnect";
+
+          var self = this;
+          this.errorDialog = autom8.util.Dialog.show({
+            title: "Disconnected",
+            message: getDisconnectMessage(options.errorCode),
+            icon: autom8.util.Dialog.Icon.Information,
+            buttons: [{
+                caption: button,
+                callback: function() {
+                    self.trigger(event);
+                },
+                positive: true,
+                negative: true
+            }],
+            onClosed: function() {
+              self.errorDialog = null;
+            }
+          });
           break;
       }
     }

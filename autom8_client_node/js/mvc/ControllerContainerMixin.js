@@ -17,7 +17,7 @@
         return controller;
       },
 
-      removeChild: function(view, options) {
+      removeChild: function(controller, options) {
         if (controller.parent !== this) {
           throw new Error("cannot remove a controller that's not a child");
         }
@@ -25,7 +25,10 @@
         this.children = _.without(controller);
         controller.parent = null;
 
-        if (options.pause !== false) {
+        if (options.destroy !== false) {
+          controller.destroy();
+        }
+        else if (options.pause !== false) {
           controller.pause();
         }
 

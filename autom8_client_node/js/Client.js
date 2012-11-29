@@ -1,5 +1,26 @@
 namespace("autom8").client = (function () {
-  function onSocketDisconnected(context, data, code) {
+  function setState(context, state, options) {
+    if (context.state === state) {
+      return;
+    }
+
+    console.log("new state: " + state);
+
+    context.state = state;
+    context.trigger(state, options);
+    context.trigger('state:changed', state, options);
+  }
+
+  function onSocketExpired(context, options) {
+    if (context.socket) {
+      context.socket.removeAllListeners();
+      context.socket.disconnect();
+    }
+
+    onSocketDisconnected(context, "expired", options);
+  }
+
+  function onSocketDisconnected(context, data, options) {
     checkSignedIn(context);
     stopPinging(context);
 
@@ -9,8 +30,11 @@ namespace("autom8").client = (function () {
 
     /* if we're expired don't raise a disconnect signal because
     it will just be confusing for the user */
-    if (!context.expired) {
-      context.trigger('disconnected', code || 0);
+    if (data === "handshake error" || data === "expired") {
+      setState(context, 'expired', options);
+    }
+    else {
+      setState(context, 'disconnected', options || {errorCode: 0});
     }
   }
 
@@ -21,8 +45,8 @@ namespace("autom8").client = (function () {
     context.expired = false;
     context.connected = true;
     context.connecting = false;
-    context.reconnectAttempts = 0;
-    context.trigger('connected');
+
+    setState(context, 'connected');
   }
 
   function checkSignedIn(context) {
@@ -42,8 +66,7 @@ namespace("autom8").client = (function () {
         context.checkingSignIn = false;
 
         if (xhr.status === 401) {
-          context.expired = true;
-          context.trigger('expired');
+          setState(context, 'expired');
         }
       }
     });
@@ -75,27 +98,31 @@ namespace("autom8").client = (function () {
   }
 
   _.extend(Client.prototype, Backbone.Events, {
-    connect: function() {
+    connect: function(options) {
       if (this.connected || this.connecting) {
         return;
       }
 
-      if (this.expired) {
-        this.trigger('expired');
+      if (this.state === "expired") {
         return;
       }
 
+      options = options || { };
       this.connected = false;
       this.connecting = true;
-      this.trigger('connecting');
-      this.reconnectAttempts = 0;
+      setState(this, 'connecting');
 
       var href = document.location.href;
       var host = href.substring(0, href.indexOf('/', 'https://'.length));
 
       var newSocket = io.connect(host, {
-        'reconnect': true,
+        'reconnect': false,
         'reconnection delay': 2000,
+        /* internal socket.io socket may already be created and
+        cached with old session cookie. when we set this flag we
+        force recreation of the internal socket so connection can
+        succeed */
+        'force new connection': true
       });
 
       var self = this;
@@ -105,23 +132,23 @@ namespace("autom8").client = (function () {
       });
 
       newSocket.on('disconnect', function(data) {
-        onSocketDisconnected(self, data);
+        onSocketDisconnected(self, data, options);
       });
 
       newSocket.on('error', function(data) {
-        onSocketDisconnected(self, data);
+        onSocketDisconnected(self, data, options);
       });
 
       newSocket.on('connect_failed', function(data) {
-        onSocketDisconnected(self, data);
+        onSocketDisconnected(self, data, options);
       });
 
       newSocket.on('reconnect_failed', function(data) {
-        onSocketDisconnected(self, data);
+        onSocketDisconnected(self, data, options);
       });
 
       newSocket.on('reconnecting', function(data) {
-        onSocketDisconnected(self, data);
+        onSocketDisconnected(self, data, options);
       });
 
       newSocket.on('recvMessage', function(data) {
@@ -144,12 +171,26 @@ namespace("autom8").client = (function () {
       }
     },
 
-    isConnected: function() {
-      return this.connected;
+    getState: function() {
+      return this.state;
+    },
+
+    signOut: function() {
+      setState(this, 'expiring');
+
+      var self = this;
+      $.ajax({
+        url: 'signout.action',
+        type: 'POST',
+        success: function(data) {
+          onSocketExpired(self, {silent: true});
+        },
+        error: function (xhr, status, error) {
+      }});
     },
 
     authenticate: function(password) {
-      this.trigger("authenticating");
+      setState(this, 'authenticating');
 
       var self = this;
       $.ajax({
@@ -160,10 +201,10 @@ namespace("autom8").client = (function () {
             Crypto.SHA1(password, { asBytes: true }))
         },
         success: function(data) {
-          self.trigger("authenticated");
+          setState(self, 'authenticated');
         },
         error: function (xhr, status, error) {
-          self.trigger("disconnected", -99);
+          setState(self, 'disconnected', {errorCode: -99});
         }
       });
     },

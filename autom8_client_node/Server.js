@@ -308,7 +308,14 @@ autom8.server = (function() {
             return accept("unauthorized", false);
           }
 
-          if (!s.cookie || !s.cookie.expires) {
+          console.log(s.cookie);
+
+          if (!s.cookie) {
+            console.log("WARNING: socket connection with no cookie, rejecting.");
+            return accept("unauthorized", false);            
+          }
+
+          if (!s.cookie.expires) {
             /* invalid expiry date in session */
             console.log("WARNING: socket connection with no expiry, rejecting.");
             return accept("unauthorized", false);

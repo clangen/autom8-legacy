@@ -25,9 +25,11 @@ namespace("autom8.view").SpinnerView = (function() {
       options.spinnerOptions = _.extend(
         { }, spinnerOptions, options.spinnerOptions);
 
-      if (options.template) {
-        this.$el = View.elementFromTemplateId(
-          options.template, options.templateParams);
+      this.$el.append(View.elementFromTemplateId(
+        options.template, options.templateParams));
+
+      if (options.hide) {
+        this.hide();
       }
 
       this.$spinnerEl = this.$(options.spinnerSelector) || this.$el;
@@ -35,6 +37,10 @@ namespace("autom8.view").SpinnerView = (function() {
 
       if (options.containerClass) {
         this.$el.addClass(options.containerClass);
+      }
+
+      if (options.start) {
+        this.start();
       }
     },
 

@@ -4,43 +4,24 @@ namespace("autom8.controller").HeaderController = (function() {
     onCreate: function(options) {
       this.view = new autom8.view.HeaderView({el: $('#header')});
       this.view.on('signout:clicked', this.onSignOutClicked, this);
+    },
 
-      autom8.client.on('connecting', _.bind(this.onConnecting, this));
-      autom8.client.on('authenticating', _.bind(this.onAuthenticating, this));
-      autom8.client.on('authenticated', _.bind(this.onAuthenticated, this));
-      autom8.client.on('connected', _.bind(this.onConnected, this));
-      autom8.client.on('disconnected', _.bind(this.onDisconnected, this));
+    onResume: function() {
+      autom8.client.on('state:changed', this.onStateChanged, this);
+      this.view.setState(autom8.client.getState());
+    },
+
+    onPause: function() {
+      autom8.client.off('state:changed', this.onStateChanged, this);
+      this.view.setState(autom8.client.getState());
     },
 
     onSignOutClicked: function() {
-      $.ajax({
-        url: 'signout.action',
-        type: 'POST',
-        success: function(data) {
-          window.location = "/";
-        },
-        error: function (xhr, status, error) {
-      }});
+      autom8.client.signOut();
     },
 
-    onAuthenticating: function() {
-      this.view.setState("authenticating");
-    },
-
-    onAuthenticated: function() {
-      this.view.setState("authenticated");
-    },
-
-    onConnecting: function() {
-      this.view.setState("connecting");
-    },
-
-    onConnected: function() {
-      this.view.setState("connected");
-    },
-
-    onDisconnected: function(reason) {
-      this.view.setState("disconnected", reason);
+    onStateChanged: function(state, options) {
+      this.view.setState(state, options);
     }
   });
 }());

@@ -1,19 +1,6 @@
 namespace("autom8.view").DeviceListView = (function() {
   var View = autom8.mvc.View;
 
-  function getDisconnectMessage(reason) {
-    switch(reason) {
-      case 1: return "Could not connect to server.";
-      case 2: return "SSL handshake failed.";
-      case 3: return "Invalid username or password.";
-      case 4: return "Server sent an invalid message.";
-      case 5: return "Read failed.";
-      case 6: return "Write failed.";
-      case -1: return "Session expired, please sign in again.";
-      default: return "Connection timeout.";
-    }
-  }
-
   return View.extend({
     events: {
       "touch .device-row": function(e) {
@@ -63,49 +50,16 @@ namespace("autom8.view").DeviceListView = (function() {
         case "loaded":
           var loading = (!this.deviceList || !this.deviceList.length);
           loading ? this.spinnerView.start() : this.spinnerView.stop();
-
-          if (this.errorDialog) {
-            this.errorDialog.close();
-          }
           break;
 
         case "loading":
           this.listView.clearChildren();
           this.spinnerView.start();
-
-          if (this.errorDialog) {
-            this.errorDialog.close();
-          }
           break;
 
         case "disconnected":
           this.listView.clearChildren();
           this.spinnerView.stop();
-
-          if (this.errorDialog) {
-            this.errorDialog.close();
-          }
-
-          var event = (options.errorCode === -1) ? "signin:clicked" : "reconnect:clicked";
-          var button = (options.errorCode === -1) ? "sign in" : "reconnect";
-
-          var self = this;
-          this.errorDialog = autom8.util.Dialog.show({
-            title: "Disconnected",
-            message: getDisconnectMessage(options.errorCode),
-            icon: autom8.util.Dialog.Icon.Information,
-            buttons: [{
-                caption: button,
-                callback: function() {
-                    self.trigger(event);
-                },
-                positive: true,
-                negative: true
-            }],
-            onClosed: function() {
-              self.errorDialog = null;
-            }
-          });
           break;
       }
     }

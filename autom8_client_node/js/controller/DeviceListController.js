@@ -30,35 +30,29 @@ namespace("autom8.controller").DeviceListController = (function() {
   var Controller = autom8.mvc.Controller.extend({
     onCreate: function(options) {
       this.view = new autom8.view.DeviceListView();
+    },
 
+    onResume: function() {
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
-      this.view.on('reconnect:clicked', this.reconnect, this);
-      this.view.on('signin:clicked', this.signIn, this);
-
-      autom8.client.on('connected', this.onConnected, this);
-      autom8.client.on('disconnected', this.onDisconnected, this);
       autom8.client.on('requestReceived', this.onRequestReceived, this);
       autom8.client.on('responseReceived', this.onResponseReceived, this);
-      autom8.client.on('expired', this.onDisconnected, this);
-
-      var connected = autom8.client.isConnected();
-
-      if (!connected) {
-        this.reconnect();
-      }
-      else {
-        this.onConnected();
-      }
+      this.refresh();
     },
 
-    reconnect: function() {
-      this.view.setState("loading");
-      autom8.client.connect();
+    onPause: function() {
+      this.view.off('devicerow:clicked', this.onDeviceRowClicked, this);
+      autom8.client.off('requestReceived', this.onRequestReceived, this);
+      autom8.client.off('responseReceived', this.onResponseReceived, this);
     },
 
-    signIn: function() {
-      window.location = "/";
-    },
+    // reconnect: function() {
+    //   this.view.setState("loading");
+    //   autom8.client.connect();
+    // },
+
+    // signIn: function() {
+    //   window.location = "/";
+    // },
 
     onDeviceRowClicked: function(device) {
       switch (device.get('type')) {
@@ -73,18 +67,9 @@ namespace("autom8.controller").DeviceListController = (function() {
       }
     },
 
-    onConnected: function() {
+    refresh: function() {
       this.view.setState("loading");
       autom8.util.Device.getDeviceList();
-    },
-
-    onDisconnected: function(reason) {
-      /* a bit hacky? -1 means expired session */
-      reason = autom8.client.expired ? -1 : reason;
-
-      this.view.setState("disconnected", {
-        errorCode: reason
-      });
     },
 
     onRequestReceived: function(uri, body) {

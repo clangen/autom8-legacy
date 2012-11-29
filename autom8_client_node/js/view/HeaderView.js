@@ -4,7 +4,7 @@ namespace("autom8.view").HeaderView = (function() {
   var HeaderView = View.extend({
     events: {
       "touch #header-button": function() {
-        if (this.$el.hasClass('unrecognized')) {
+        if (this.state === 'expired' || this.state === 'disconnected') {
           HeaderView.staticEvents.trigger('signin:clicked');
         }
         else {
@@ -21,16 +21,24 @@ namespace("autom8.view").HeaderView = (function() {
 
     setState: function(state) {
       /* remove old sub-states */
-      this.$el.removeClass('unrecognized');
+      if (this.state === state) {
+        return;
+      }
 
-      this.$('#hostname').html(/*window.location.hostname*/'home.autom8.cx');
+      if (this.state) {
+        this.$el.removeClass(this.state);
+      }
+
+      this.state = state;
+      this.$el.addClass(this.state);
+      this.$('#hostname').html(window.location.hostname);
       this.$('#header-button').html('sign out').show();
 
       switch (state) {
         case "authenticated":
         case "authenticating":
         case "connecting":
-          this.$('.header-host-separator').html('refreshing');
+          this.$('.header-host-separator').html('connecting to');
           this.$('#header-button').hide();
           break;
 
@@ -39,13 +47,7 @@ namespace("autom8.view").HeaderView = (function() {
           break;
 
         case "disconnected":
-          this.$el.addClass('unrecognized');
-          this.$('#header-button').html('sign in');
-          this.$('.header-host-separator').html('connecting to');
-          break;
-
-        case "unrecognized":
-          this.$el.addClass('unrecognized');
+        case "expired":
           this.$('.header-host-separator').html('welcome to');
           this.$('#header-button').html('sign in');
           break;

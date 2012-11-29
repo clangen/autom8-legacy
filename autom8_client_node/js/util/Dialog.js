@@ -23,7 +23,7 @@ namespace("autom8.util").Dialog = (function() {
         $('body').append($dialog);
         addEventHandlers();
         ++visibleCount;
-        $('#main-content').addClass('dialog-overlay-blur');
+        $('#top-level-container').addClass('dialog-overlay-blur');
       }
 
       function keydownHandler(event) {
@@ -45,7 +45,7 @@ namespace("autom8.util").Dialog = (function() {
         --visibleCount;
 
         if (visibleCount === 0) {
-          $('#main-content').removeClass('dialog-overlay-blur');
+          $('#top-level-container').removeClass('dialog-overlay-blur');
         }
 
         if (params.onClosed) {

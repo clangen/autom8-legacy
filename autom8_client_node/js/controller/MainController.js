@@ -4,41 +4,61 @@ namespace("autom8.controller").MainController = (function() {
       autom8.mvc.mixins.ControllerContainer
     ],
 
-    resetMainController: function(ControllerType) {
-      ControllerType = ControllerType || autom8.controller.DeviceListController;
+    resetMainController: function() {
+      var controller;
 
-      if (this.mainController) {
-        this.mainController.destroy();
+      switch(autom8.client.state) {
+        case 'expired':
+        case 'disconnected':
+          controller = this.signInController;
+          break;
+
+        case 'connected':
+          controller = this.deviceListController;
+          break;
       }
 
-      this.mainController = this.addChild(new ControllerType());
-      this.mainController.resume();
+      if (!controller) {
+        this.spinnerView.start();
+        autom8.client.connect({silent: true});
+        return;
+      }
 
-      this.view.clearChildren();
-      this.view.addChild(this.mainController.view);
+      if (controller === this.mainController) {
+        return;
+      }
+
+      this.spinnerView.stop();
+
+      if (this.mainController) {
+        this.view.removeChild(this.mainController.view, {destroy: false});
+        this.removeChild(this.mainController, {destroy: false});
+      }
+
+      this.mainController = this.addChild(controller);
+      this.view.addChild(controller.view);
     },
 
     onCreate: function(options) {
-      autom8.client.on('connected', this.onConnected, this);
-      autom8.client.on('disconnected', this.onDisconnected, this);
+      autom8.client.on('connected', this.resetMainController, this);
+      autom8.client.on('disconnected', this.resetMainController, this);
+      autom8.client.on('expired', this.resetMainController, this);
 
       this.view = new autom8.mvc.View({el: $("#main-content")});
+      this.spinnerView = new autom8.view.SpinnerView({el: $('#spinner-view'), start: true});
+      this.headerController = this.addChild(new autom8.controller.HeaderController());
+      this.addChild(new autom8.controller.ConnectionMessagingController());
 
-      this.headerController = new autom8.controller.HeaderController();
+      this.signInController = new autom8.controller.SignInController();
+      this.deviceListController = new autom8.controller.DeviceListController();
+      
       this.resetMainController();
     },
 
     onDestroy: function() {
-      autom8.client.off('connected', this.onConnected, this);
-      autom8.client.off('disconnected', this.onDisconnected, this);
-    },
-
-    onConnected: function() {
-      this.resetMainController();
-    },
-
-    onDisconnected: function(reason) {
-      alert("what " + reason);
+      autom8.client.off('connected', this.resetMainController, this);
+      autom8.client.off('disconnected', this.resetMainController, this);
+      autom8.client.off('expired', this.resetMainController, this);
     }
   });
 }());

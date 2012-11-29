@@ -1,6 +1,15 @@
 namespace("autom8.view").SignInView = (function() {
   var View = autom8.mvc.View;
 
+  var clientStateToViewState = {
+    'authenticating': 'loading',
+    'authenticated': 'loading',
+    'connecting': 'loading',
+    'connected': 'loaded',
+    'disconnected': 'error',
+    'expired': 'unrecognized'
+  }
+
   return View.extend({
     events: {
       "keydown": function(e) {
@@ -17,6 +26,14 @@ namespace("autom8.view").SignInView = (function() {
     },
 
     setState: function(state) {
+      state = clientStateToViewState[state] || 'unrecognized';
+
+      if (state === this.state) {
+        return;
+      }
+
+      this.state = state;
+
       switch (state) {
         case "loading":
         case "loaded":
@@ -24,25 +41,8 @@ namespace("autom8.view").SignInView = (function() {
           this.spinnerRow.start();
           break;
 
-        case "error":
-          this.passwordRow.show();
-          this.spinnerRow.stop();
-
-          autom8.util.Dialog.show({
-            title: "Failed to sign in",
-            message: "Please check your password and try again.",
-            icon: autom8.util.Dialog.Icon.Information,
-            buttons: [{
-                caption: "ok",
-                callback: function() {
-                  $("#password").focus();
-                },
-                positive: true,
-                negative: true
-            }]
-          });
-          break;
-
+        case 'error':
+        case 'unrecognized':
         default:
           this.spinnerRow.stop();
           this.passwordRow.show();

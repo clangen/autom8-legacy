@@ -32,14 +32,13 @@ namespace("autom8.view").HeaderView = (function() {
       this.state = state;
       this.$el.addClass(this.state);
       this.$('#hostname').html(window.location.hostname);
-      this.$('#header-button').html('sign out').show();
+      this.$('#header-button').html('sign out');
 
       switch (state) {
         case "authenticated":
         case "authenticating":
         case "connecting":
           this.$('.header-host-separator').html('connecting to');
-          this.$('#header-button').hide();
           break;
 
         case "connected":

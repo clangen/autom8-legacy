@@ -57,6 +57,8 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
       var button = invalidPassword ? "ok" : "reconnect";
 
       var self = this;
+      this.trigger('dialog:opened');
+
       this.errorDialog = autom8.util.Dialog.show({
         title: title,
         message: getDisconnectMessage(options.errorCode),
@@ -73,6 +75,7 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
         }],
         onClosed: function() {
           self.errorDialog = null;
+          self.trigger('dialog:closed');
         }
       });
     }

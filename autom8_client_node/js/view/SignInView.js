@@ -5,9 +5,9 @@ namespace("autom8.view").SignInView = (function() {
     'authenticating': 'loading',
     'authenticated': 'loading',
     'connecting': 'loading',
-    'connected': 'loaded',
-    'disconnected': 'error',
-    'expired': 'unrecognized'
+    'connected': 'loading',
+    'disconnected': 'idle',
+    'expired': 'idle'
   }
 
   return View.extend({
@@ -22,37 +22,58 @@ namespace("autom8.view").SignInView = (function() {
     onCreate: function(options) {
       this.passwordRow = this.addChild(new View({el: View.elementFromTemplateId('autom8-View-PasswordRow')}));
       this.spinnerRow = this.addChild(new autom8.view.SpinnerView());
-      this.setState("initialized");
+    },
+
+    onResume: function() {
+      this.setState(autom8.client.state);
     },
 
     setState: function(state) {
-      state = clientStateToViewState[state] || 'unrecognized';
+      state = clientStateToViewState[state] || 'idle';
+
+      /* if we're paused just forget our state and don't do anything.
+      when we are resumed we'll redraw */
+      if (this.paused) {
+        this.state = undefined;
+        return;
+      }
 
       if (state === this.state) {
         return;
       }
 
-      this.state = state;
-
       switch (state) {
-        case "loading":
-        case "loaded":
+        case 'loading':
           this.passwordRow.hide();
           this.spinnerRow.start();
           break;
 
-        case 'error':
-        case 'unrecognized':
+        case 'idle':
         default:
           this.spinnerRow.stop();
           this.passwordRow.show();
-          
-          /* focus is more reliable if we defer after show */
-          _.defer(function() {
-            this.$("#password").focus();
-          }, this);
+          this.focusPasswordInput(true);
           break;
       }
+    },
+
+    focusPasswordInput: function(focus) {
+      /* hack to prevent focus problems when dialog is made visible and
+      SignInView becomes reactivated */
+      if ($("#dialogs").children().length) {
+        focus = false;
+      }
+
+      var self = this;
+      _.defer(function() {
+        var pw = self.$('#password');
+        if (focus || focus === undefined) {
+          pw.focus();
+        }
+        else {
+          pw.blur();
+        }
+      });
     }
   });
 }());

@@ -213,8 +213,11 @@ body {
   position: fixed;
   left: 0;
   top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
   outline: none;
+}
+
+.dialog-background {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .dialog-container {

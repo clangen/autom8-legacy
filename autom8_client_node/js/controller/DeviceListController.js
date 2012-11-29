@@ -45,15 +45,6 @@ namespace("autom8.controller").DeviceListController = (function() {
       autom8.client.off('responseReceived', this.onResponseReceived, this);
     },
 
-    // reconnect: function() {
-    //   this.view.setState("loading");
-    //   autom8.client.connect();
-    // },
-
-    // signIn: function() {
-    //   window.location = "/";
-    // },
-
     onDeviceRowClicked: function(device) {
       switch (device.get('type')) {
         case autom8.DeviceType.Lamp:

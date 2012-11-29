@@ -46,8 +46,12 @@ namespace("autom8.controller").MainController = (function() {
 
       this.view = new autom8.mvc.View({el: $("#main-content")});
       this.spinnerView = new autom8.view.SpinnerView({el: $('#spinner-view'), start: true});
+
       this.headerController = this.addChild(new autom8.controller.HeaderController());
-      this.addChild(new autom8.controller.ConnectionMessagingController());
+
+      this.messagingController = this.addChild(new autom8.controller.ConnectionMessagingController());
+      this.messagingController.on('dialog:opened', this.onDialogOpened, this);
+      this.messagingController.on('dialog:closed', this.onDialogClosed, this);
 
       this.signInController = new autom8.controller.SignInController();
       this.deviceListController = new autom8.controller.DeviceListController();
@@ -59,6 +63,20 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.off('connected', this.resetMainController, this);
       autom8.client.off('disconnected', this.resetMainController, this);
       autom8.client.off('expired', this.resetMainController, this);
+      this.messagingController.off('dialog:opened', this.onDialogOpened, this);
+      this.messagingController.off('dialog:closed', this.onDialogClosed, this);
+    },
+
+    onDialogOpened: function() {
+      if (this.mainController === this.signInController) {
+        this.signInController.view.focusPasswordInput(false);
+      }
+    },
+
+    onDialogClosed: function() {
+      if (this.mainController === this.signInController) {
+        this.signInController.view.focusPasswordInput(true);        
+      }
     }
   });
 }());

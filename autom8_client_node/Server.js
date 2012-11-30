@@ -1,4 +1,4 @@
-// npm install commander connect express socket.io socket.io-client
+// npm install commander connect express socket.io socket.io-client less
 // node.exe Server.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 var express = require('express');
@@ -8,6 +8,7 @@ var io = require('socket.io');
 var url = require('url');
 var crypto = require('crypto');
 var program = require('commander');
+var less = require('less');
 
 /*
  * autom8 namespace
@@ -101,7 +102,7 @@ autom8.server = (function() {
       var parts = rawCookies[i].split('=');
       if (parts.length === 2) {
         cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim()) || "";
-      }      
+      }
     }
     return cookies;
   }
@@ -245,14 +246,31 @@ autom8.server = (function() {
             return res.end('error loading: ' + fn);
           }
 
-          if (fn.match(/.*\.html$/)) {
-            data = data.toString();
-            data = renderTemplates(data);
-            data = renderScripts(data);
-          }
+          if (fn.match(/.*\.css$/)) {
+            var parser = new less.Parser();
 
-          fileCache.put(fn, data);
-          writeResponse(data);
+            parser.parse(data.toString(), function (err, tree) {
+                if (!err) {
+                  console.log("LESS: successfully processed " + fn);
+                  data = tree.toCSS();
+                  fileCache.put(fn, data);
+                  writeResponse(data);
+                }
+                else {
+                  console.log("LESS: CSS parse failed because " + require('util').inspect(err));
+                }
+            });
+          }
+          else {
+            if (fn.match(/.*\.html$/)) {
+              data = data.toString();
+              data = renderTemplates(data);
+              data = renderScripts(data);
+            }
+
+            fileCache.put(fn, data);
+            writeResponse(data);
+          }
         });
       }
     });
@@ -312,7 +330,7 @@ autom8.server = (function() {
 
           if (!s.cookie) {
             console.log("WARNING: socket connection with no cookie, rejecting.");
-            return accept("unauthorized", false);            
+            return accept("unauthorized", false);
           }
 
           if (!s.cookie.expires) {

@@ -4,8 +4,6 @@ namespace("autom8").client = (function () {
       return;
     }
 
-    console.log("new state: " + state);
-
     context.state = state;
     context.trigger(state, options);
     context.trigger('state:changed', state, options);

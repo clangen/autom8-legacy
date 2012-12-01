@@ -83,6 +83,10 @@ autom8.server = (function() {
 
       put: function (fn, data) {
         cache[fn] = data;
+      },
+
+      clear: function() {
+        cache = { };
       }
     };
   }());
@@ -274,7 +278,11 @@ autom8.server = (function() {
       minification process */
       var debug = false;
       if (fn === "debug.html") {
-        debug = autom8.config.debug && true;
+        if (autom8.config.debug) {
+          fileCache.clear();
+          debug = true;
+        }
+
         fn = "index.html";
       }
       else if (/.*debug.html$/.test(req.headers.referer)) {

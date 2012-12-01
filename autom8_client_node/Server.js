@@ -1,4 +1,4 @@
-// npm install commander connect express socket.io socket.io-client less
+// npm install commander connect express socket.io socket.io-client less uglify
 // node.exe Server.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 var express = require('express');
@@ -78,15 +78,11 @@ autom8.server = (function() {
 
     return {
       get: function (fn) {
-        if (!autom8.config.debug) {
-          return cache[fn];
-        }
+        return cache[fn];
       },
 
       put: function (fn, data) {
-        if (!autom8.config.debug) {
-          cache[fn] = data;
-        }
+        cache[fn] = data;
       }
     };
   }());
@@ -121,16 +117,83 @@ autom8.server = (function() {
     return doc.replace("{{templates}}", result);
   }
 
-  function renderScripts(doc) {
+  function renderScripts(doc, types) {
+    types = types || ['scripts', 'styles'];
+    
+    if (typeof types === 'string') {
+      types = [types];
+    }
+
+    var typesRegex = new RegExp(".*\\.(" + types.join("|") + ")$");
+
     var path = __dirname + '/templates/';
     var files = fs.readdirSync(path) || [];
     var contents;
+    
     for (var i = 0; i < files.length; i++) {
-      if (files[i].match(/.*\.(scripts|styles)$/)) {
+      if (files[i].match(typesRegex)) {
         contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
         doc = doc.replace("{{" + files[i] + "}}", contents);
       }
     }
+
+    return doc;
+  }
+
+  function renderNonMinifiedScripts(doc) {
+    /* our main document has a {{minified_scripts}} placeholder that we
+    remove here when we render in non-minified mode */
+    doc = doc.replace("{{minified_scripts}}", "");
+    return renderScripts(doc);
+  }
+
+  function renderMinifiedScripts(doc) {
+    /* separate the rendered scripts into an array of lines. we'll use
+    this to build a list of all the .js files that we will minify */
+    var lines = renderScripts(doc).split(/\r\n|\n/);
+
+    /* these are special scripts that we can't safely/easily minify. they
+    will be excluded from the minification process and added to the
+    document above the minified scripts */
+    var blacklist = {
+      '/socket.io/socket.io.js': true
+    };
+
+    var scriptFilenames = []; /* all files in this array will be minified */
+    var scriptRegex = /.*src="(.*\.js)"/;
+    var match;
+
+    /* run through each line, seeing if it's a <script> file. if it is,
+    add it to the scriptFilenames[] array. */
+    for (var i = 0; i < lines.length; i++) {
+      match = lines[i].match(scriptRegex);
+      if (match && match.length === 2) {
+        if (!blacklist[match[1]]) {
+          scriptFilenames.push(match[1]);
+        }
+      }
+    }
+
+    var minified = "";
+
+    /* render all the blacklisted <script> tags */
+    for (var k in blacklist) {
+      if (blacklist.hasOwnProperty(k)) {
+        minified += '<script src="' + k + '" type="text/javascript"></script>\n';
+      }
+    }
+
+    /* render the minified javascript to the document */
+    minified +=
+      '<script type="text/javascript">' +
+      require('uglify-js').minify(scriptFilenames).code +
+      '</script>';
+
+    doc = renderScripts(doc, ["styles"]);
+    doc = doc.replace("{{minified_scripts}}", minified);
+
+    /* remove any {{*.script}} identifiers, they have all been minified */
+    doc = doc.replace(/\{\{.*\.scripts\}\}/g, "");
 
     return doc;
   }
@@ -206,6 +269,12 @@ autom8.server = (function() {
         fn = fn.substr(1);
       }
 
+      var debug = false;
+      if (fn === "debug.html") {
+        debug = autom8.config.debug && true;
+        fn = "index.html";
+      }
+
       /* empty root (or those trying to game relative paths)
       receive index.html */
       if (fn === "" || fn.indexOf("..") > -1) {
@@ -228,7 +297,11 @@ autom8.server = (function() {
       }
 
       /* check to see if the file is cached. if it is, return it now */
-      var cachedFile = fileCache.get(fn);
+      var cachedFile;
+      if (!debug) {
+        cachedFile = fileCache.get(fn);
+      }
+
       if (cachedFile) {
         console.log("cache hit: " + fn);
         writeResponse(cachedFile);
@@ -253,7 +326,11 @@ autom8.server = (function() {
                 if (!err) {
                   console.log("LESS: successfully processed " + fn);
                   data = tree.toCSS();
-                  fileCache.put(fn, data);
+
+                  if (!autom8.config.debug) {
+                    fileCache.put(fn, data);
+                  }
+
                   writeResponse(data);
                 }
                 else {
@@ -265,10 +342,13 @@ autom8.server = (function() {
             if (fn.match(/.*\.html$/)) {
               data = data.toString();
               data = renderTemplates(data);
-              data = renderScripts(data);
+              data = debug ? renderNonMinifiedScripts(data) : renderMinifiedScripts(data);
             }
 
-            fileCache.put(fn, data);
+            if (!debug) {
+              fileCache.put(fn, data);
+            }
+
             writeResponse(data);
           }
         });

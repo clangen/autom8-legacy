@@ -1,8 +1,8 @@
  (function() {
   var touchSupported = !!document.createTouch;
-  var startEvent = touchSupported ? "touchstart{{suffix}}" : "mousedown{{suffix}} mouseenter{{suffix}}";
+  var startEvent = touchSupported ? "touchstart{{suffix}}" : "mousedown{{suffix}} mouseover{{suffix}}";
   var moveEvent = touchSupported ? "touchmove{{suffix}}" : "mousemove{{suffix}}";
-  var endEvent = touchSupported ? "touchend{{suffix}} touchcancel{{suffix}}" : "mouseup{{suffix}} mouseleave{{suffix}}";  
+  var endEvent = touchSupported ? "touchend{{suffix}} touchcancel{{suffix}}" : "mouseup{{suffix}} mouseout{{suffix}}";
 
   var delegateEventSplitter = /^(\S+)\s*(.*)$/;
   var touchEventNamespace = ".delegateTouchEvent";
@@ -23,11 +23,11 @@
       /* mouse-specific, used to reset states after detecting an
       unsent mouseleave while touched. we'll be called with a mousedown
       at some point in the future to begin again. */
-      if (e.type === "mouseenter") {
+      if (e.type === "mouseover") {
         if (started && e.which === 0) {
             /* cursor no longer down, but was; we just detected an
-            out-of-order mouseenter event. reset our state */
-            started = null; 
+            out-of-order mouseover event. reset our state */
+            started = null;
         }
         if (started === e.currentTarget) {
           /* dragged outside bounds, then back. re-add touch class */
@@ -55,22 +55,22 @@
       if (started) {
         if (touchSupported) {
           endX = e.originalEvent.touches[0].clientX;
-          endY = e.originalEvent.touches[0].clientY;        
+          endY = e.originalEvent.touches[0].clientY;
         }
         else {
           endX = e.clientX;
-          endY = e.clientY;      
+          endY = e.clientY;
         }
       }
     });
 
     /* end */
     $el.delegate(selector, suffix(endEvent, cid), function(e) {
-      var target = $(e.currentTarget);
       if (started) {
+        var target = $(e.currentTarget);
         target.removeClass("touched");
 
-        if (e.type !== "mouseleave") {
+        if (e.type !== "mouseout") {
           started = null;
           dx = Math.abs(startX - endX);
           dy = Math.abs(startY - endY);
@@ -116,5 +116,5 @@
         this.$el.unbind(touchEventNamespace + this.cid);
       }
     }
-  }
+  };
 }());

@@ -52,7 +52,7 @@
         }
 
         if (options.detach !== false) {
-          view.$el.detach();
+          view.$el.remove();
         }
 
         return view;

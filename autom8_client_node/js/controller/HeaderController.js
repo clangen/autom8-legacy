@@ -8,12 +8,12 @@ namespace("autom8.controller").HeaderController = (function() {
 
     onResume: function() {
       autom8.client.on('state:changed', this.onStateChanged, this);
-      this.view.setState(autom8.client.getState());
+      this.view.setState(autom8.client.state || 'expired');
     },
 
     onPause: function() {
       autom8.client.off('state:changed', this.onStateChanged, this);
-      this.view.setState(autom8.client.getState());
+      this.view.setState(autom8.client.state || 'expired');
     },
 
     onSignOutClicked: function() {

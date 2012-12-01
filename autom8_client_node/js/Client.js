@@ -205,7 +205,7 @@ namespace("autom8").client = (function () {
           setState(self, 'disconnected', {errorCode: -99});
         }
       });
-    },
+    }
   });
 
   return new Client();

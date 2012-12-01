@@ -269,10 +269,16 @@ autom8.server = (function() {
         fn = fn.substr(1);
       }
 
+      /* if debug.html is being requested, or the referrer is debug.html,
+      then set the debug flag to bypass both the fileCache and the
+      minification process */
       var debug = false;
       if (fn === "debug.html") {
         debug = autom8.config.debug && true;
         fn = "index.html";
+      }
+      else if (/.*debug.html$/.test(req.headers.referer)) {
+        debug = autom8.config.debug && true;
       }
 
       /* empty root (or those trying to game relative paths)

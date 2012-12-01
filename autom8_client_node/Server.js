@@ -341,7 +341,7 @@ autom8.server = (function() {
                   console.log("LESS: successfully processed " + fn);
                   data = tree.toCSS();
 
-                  if (!autom8.config.debug) {
+                  if (!debug) {
                     fileCache.put(fn, data);
                   }
 

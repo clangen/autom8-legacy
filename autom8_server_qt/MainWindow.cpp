@@ -131,7 +131,8 @@ bool MainWindow::eventFilter(QObject* object, QEvent* event) {
 		else if (event->type() == QEvent::FocusOut) {
 			if (mPasswordChanged) {
 				std::string pw = ui.PasswordLineEdit->text().toStdString();
-				autom8::utility::prefs().set(PASSWORD, utility::sha1(pw.c_str(), pw.size()));
+				std::string hash = utility::sha256(pw.c_str(), pw.size());
+				autom8::utility::prefs().set(PASSWORD, hash);
 			}
 
 			ui.PasswordLineEdit->setText("1234567890");

@@ -11,7 +11,7 @@ namespace autom8 {
         preferences& prefs();
         std::string u16to8(const std::wstring& u16);
         std::wstring u8to16(const std::string& u8);
-		std::string sha1(const char* data, unsigned int len);
+		std::string sha256(const char* data, unsigned int len);
     }
 }
 

@@ -195,8 +195,7 @@ namespace("autom8").client = (function () {
         url: 'signin.action',
         type: 'POST',
         data: {
-          password: Crypto.util.bytesToHex(
-            Crypto.SHA1(password, { asBytes: true }))
+          password: CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex)
         },
         success: function(data) {
           setState(self, 'authenticated');

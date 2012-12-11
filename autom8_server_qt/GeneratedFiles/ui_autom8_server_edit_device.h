@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'autom8_server_edit_device.ui'
 **
-** Created: Sun Mar 11 15:07:16 2012
+** Created: Mon Dec 10 17:23:40 2012
 **      by: Qt User Interface Compiler version 4.7.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

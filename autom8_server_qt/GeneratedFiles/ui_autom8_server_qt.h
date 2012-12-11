@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'autom8_server_qt.ui'
 **
-** Created: Sun Mar 11 15:07:16 2012
+** Created: Mon Dec 10 17:23:40 2012
 **      by: Qt User Interface Compiler version 4.7.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -284,7 +284,7 @@ public:
         ServerStatusLabel->setText(QApplication::translate("autom8_server_qtClass", "Stop the server to change your settings", 0, QApplication::UnicodeUTF8));
         label_9->setText(QApplication::translate("autom8_server_qtClass", "Server", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("autom8_server_qtClass", "Version:", 0, QApplication::UnicodeUTF8));
-        VersionLabel->setText(QApplication::translate("autom8_server_qtClass", "0.3.0", 0, QApplication::UnicodeUTF8));
+        VersionLabel->setText(QApplication::translate("autom8_server_qtClass", "0.3.1", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("autom8_server_qtClass", "Controller:", 0, QApplication::UnicodeUTF8));
         ControllerLabel->setText(QApplication::translate("autom8_server_qtClass", "xxx", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("autom8_server_qtClass", "SSL Fingerprint:", 0, QApplication::UnicodeUTF8));

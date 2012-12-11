@@ -44,7 +44,7 @@ autom8.responses = {
 autom8.main = function() {
   autom8.config = {
     debug: program['debug'],
-    sessionTimeout: 1800000, /* half hour, millis */
+    sessionTimeout: 3600000 * 24, /* 24 hours session time, millis */
     server: {
       port: program['listen'],
       pem: program['creds']
@@ -683,10 +683,10 @@ autom8.client = (function() {
  */
 autom8.util = {
   /*
-   * Returns an SHA1 hash of the specified data.
+   * Returns an SHA256 hash of the specified data.
    */
-  sha1: function(data) {
-    var checksum = crypto.createHash('sha1');
+  sha256: function(data) {
+    var checksum = crypto.createHash('sha256');
     checksum.update(data);
     return checksum.digest('hex');
   },
@@ -735,8 +735,8 @@ program
  */
 if (!program['clientpw']) {
   var host = program['clienthost'];
-  program.password('Password for ' + host + ': ', '*', function(pass){
-    program['clientpw'] = autom8.util.sha1(pass);
+  program.password('Password for ' + host + ': ', '*', function(pass) {
+    program['clientpw'] = autom8.util.sha256(pass);
     autom8.main();
   });
 }

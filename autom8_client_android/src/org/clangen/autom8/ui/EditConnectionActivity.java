@@ -194,7 +194,7 @@ public class EditConnectionActivity extends Activity {
         byte[] hash;
 
         try {
-            MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+            MessageDigest sha1 = MessageDigest.getInstance("SHA256");
             hash = sha1.digest(password.getBytes("UTF-8"));
         }
         catch (Exception ex) {

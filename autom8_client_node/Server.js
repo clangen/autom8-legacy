@@ -461,7 +461,6 @@ autom8.server = (function() {
        */
       return {
         broadcast: function(message) {
-          console.log(require('util').inspect(message, true, null, true));
           webSocketServer.sockets.emit('recvMessage', message);
         }
       };

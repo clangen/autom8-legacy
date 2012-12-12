@@ -20,7 +20,13 @@
       },
 
       elementFromTemplateId: function(templateId, params) {
-        return $(this.htmlFromTemplateId(templateId, params));        
+        return $(this.htmlFromTemplateId(templateId, params));
+      },
+
+      fromTemplateId: function(templateId, params) {
+        return new autom8.mvc.View({
+          el: this.elementFromTemplateId(templateId, params)
+        });
       }
     }
   };

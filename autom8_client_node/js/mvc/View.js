@@ -3,9 +3,9 @@
 
   var View = Backbone.View.extend({
     mixins: [
-      autom8.mvc.mixins.ViewInflater, 
+      autom8.mvc.mixins.ViewInflater,
       autom8.mvc.mixins.ViewContainer,
-      autom8.mvc.mixins.Touchable,
+      autom8.mvc.mixins.Touchable
     ],
 
     initialize: function(options) {

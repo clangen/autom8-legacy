@@ -1,4 +1,6 @@
 namespace("autom8.controller").DeviceListController = (function() {
+  var View = autom8.mvc.View;
+
   function onLampOrApplianceRowClicked(device) {
     var address = device.get('address');
 
@@ -29,20 +31,37 @@ namespace("autom8.controller").DeviceListController = (function() {
 
   var Controller = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.view.GroupedDeviceListView(); // new autom8.view.DeviceListView();
+      this.view = new autom8.mvc.View({
+        el: View.elementFromTemplateId('autom8-View-DevicesView'),
+        events: {
+          "touch .switch-devices-view": function(e) {
+            this.trigger('switchview:clicked');
+          }
+        }
+      });
+
+      this.views = {
+        flat: new autom8.view.DeviceListView(),
+        grouped: new autom8.view.GroupedDeviceListView()
+      };
+
+      var defaultView = localStorage['autom8.lastDevicesView'] || 'grouped';
+      this.setDeviceListView(this.views[defaultView], {bindEvents: false});
     },
 
     onResume: function() {
-      this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
-      this.view.on('grouprow:clicked', this.onGroupRowClicked, this);
+      this.listView.on('devicerow:clicked', this.onDeviceRowClicked, this);
+      this.listView.on('grouprow:clicked', this.onGroupRowClicked, this);
+      this.view.on('switchview:clicked', this.onSwitchViewClicked, this);
       autom8.client.on('requestReceived', this.onRequestReceived, this);
       autom8.client.on('responseReceived', this.onResponseReceived, this);
       this.refresh();
     },
 
     onPause: function() {
-      this.view.off('devicerow:clicked', this.onDeviceRowClicked, this);
-      this.view.off('grouprow:clicked', this.onGroupRowClicked, this);
+      this.listView.off('devicerow:clicked', this.onDeviceRowClicked, this);
+      this.listView.off('grouprow:clicked', this.onGroupRowClicked, this);
+      this.view.off('switchview:clicked', this.onSwitchViewClicked, this);
       autom8.client.off('requestReceived', this.onRequestReceived, this);
       autom8.client.off('responseReceived', this.onResponseReceived, this);
     },
@@ -106,8 +125,56 @@ namespace("autom8.controller").DeviceListController = (function() {
       }
     },
 
+    setDeviceListView: function(newView, options) {
+      if (this.listView === newView) {
+        return;
+      }
+
+      if (this.listView) {
+        this.view.removeChild(this.listView);
+        this.listView.off(null, null, this);
+      }
+
+      var grouped = newView === this.views.grouped;
+
+      /* FIXME: should not have view logic here */
+      var caption = "switch to grouped view <b>&gt;</b>";
+      if (grouped) {
+        caption = "switch to flat view <b>&gt;</b>";
+      }
+
+      this.view.$('.switch-devices-view').html(caption);
+      /* FIXME: end */
+
+      try {
+        localStorage['autom8.lastDevicesView'] = grouped ? 'grouped' : 'flat';
+      }
+      catch (e) {
+        console.log('local storage write failed');
+      }
+
+      this.listView = newView;
+      this.view.addChild(this.listView);
+      this.refresh();
+
+      options = options || { };
+      if (options.bindEvents !== false) {
+        this.listView.on('devicerow:clicked', this.onDeviceRowClicked, this);
+        this.listView.on('grouprow:clicked', this.onGroupRowClicked, this);
+      }
+    },
+
+    onSwitchViewClicked: function() {
+      if (this.listView === this.views.flat) {
+        this.setDeviceListView(this.views.grouped);
+      }
+      else {
+        this.setDeviceListView(this.views.flat);
+      }
+    },
+
     refresh: function() {
-      this.view.setState("loading");
+      this.listView.setState("loading");
       autom8.util.Device.getDeviceList();
     },
 
@@ -147,8 +214,8 @@ namespace("autom8.controller").DeviceListController = (function() {
       };
 
       this.deviceList = new autom8.model.DeviceList(devices, options);
-      this.view.setDeviceList(this.deviceList);
-      this.view.setState("loaded");
+      this.listView.setDeviceList(this.deviceList);
+      this.listView.setState("loaded");
     },
 
     onDeviceUpdatedResponse: function(body) {
@@ -159,7 +226,7 @@ namespace("autom8.controller").DeviceListController = (function() {
           device.set({'attrs': body.attributes});
           device.set({'status': body.status});
           this.deviceList.sort();
-          this.view.render();
+          this.listView.render();
           return true;
         }
 

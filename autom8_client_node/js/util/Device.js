@@ -45,8 +45,7 @@ namespace("autom8.util").Device = {
         },
         {
           caption: "turn all off",
-          callback: offCallback,
-          negative: true
+          callback: offCallback
         }
       ]
     };

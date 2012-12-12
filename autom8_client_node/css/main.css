@@ -175,16 +175,30 @@ body {
   .box();
   .box-pack(center);
   .box-align(center);
+  .box-orient(vertical);
   font-weight: bold;
   font-size: 110%;
+  text-shadow: 1px 1px 4px #333;
   width: 48px;
   height: 48px;
   cursor: pointer;
 }
 
+.button-subtext {
+  font-size: 60%;
+  font-weight: normal;
+  text-shadow: 1px 1px 1px #000;
+  color: #afafaf;
+}
+
 .button.on {
   background-color: #666666;
-  color: #eeeeee;
+  color: #eee;
+}
+
+.button.all {
+  background-color: #777;
+  color: #eee;  
 }
 
 .button.off {

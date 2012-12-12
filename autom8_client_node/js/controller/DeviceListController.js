@@ -29,11 +29,12 @@ namespace("autom8.controller").DeviceListController = (function() {
 
   var Controller = autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.view.DeviceListView();
+      this.view = new autom8.view.GroupedDeviceListView(); // new autom8.view.DeviceListView();
     },
 
     onResume: function() {
       this.view.on('devicerow:clicked', this.onDeviceRowClicked, this);
+      this.view.on('grouprow:clicked', this.onGroupRowClicked, this);
       autom8.client.on('requestReceived', this.onRequestReceived, this);
       autom8.client.on('responseReceived', this.onResponseReceived, this);
       this.refresh();
@@ -41,6 +42,7 @@ namespace("autom8.controller").DeviceListController = (function() {
 
     onPause: function() {
       this.view.off('devicerow:clicked', this.onDeviceRowClicked, this);
+      this.view.off('grouprow:clicked', this.onGroupRowClicked, this);
       autom8.client.off('requestReceived', this.onRequestReceived, this);
       autom8.client.off('responseReceived', this.onResponseReceived, this);
     },
@@ -55,6 +57,48 @@ namespace("autom8.controller").DeviceListController = (function() {
         case autom8.DeviceType.SecuritySensor:
           onSecuritySensorRowClicked(device);
           break;
+      }
+    },
+
+    onGroupRowClicked: function(group) {
+      /* accumulate state */
+      var onCount = 0;
+      _.each(group.devices, function(device) {
+        if (device.get('status') == autom8.DeviceStatus.On) {
+          onCount++;
+        }
+      });
+      var allOn = (onCount === group.devices.length);
+      var someOn = !!allOn && !!onCount;
+
+      var setAll = function(status) {
+        _.each(group.devices, function(device) {
+          var isSensor = device.get('type') == autom8.DeviceType.SecuritySensor;
+          if (isSensor) {
+            return;
+          }
+
+          var addr = device.get('address');
+          autom8.util.Device.setDeviceStatus(addr, status);
+        });
+      };
+
+      /* act on state */
+      if (onCount === 0) {
+        setAll(autom8.DeviceStatus.On);
+      }
+      else if (allOn) {
+        setAll(autom8.DeviceStatus.Off);
+      }
+      else {
+        autom8.util.Device.confirmOnOrOffForPartialGroup(
+          group,
+          function() { /* all on */
+            setAll(autom8.DeviceStatus.On);
+          },
+          function() { /* all off */
+            setAll(autom8.DeviceStatus.Off);
+          });
       }
     },
 
@@ -111,7 +155,7 @@ namespace("autom8.controller").DeviceListController = (function() {
           device.set({'attrs': body.attributes});
           device.set({'status': body.status});
           this.deviceList.sort();
-          this.view.setDeviceList(this.deviceList);
+          this.view.render();
           return true;
         }
 

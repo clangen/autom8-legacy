@@ -32,6 +32,28 @@ namespace("autom8.util").Device = {
       JSON.stringify(body));
   },
 
+  confirmOnOrOffForPartialGroup: function(group, onCallback, offCallback) {
+    var dialog = {
+      title: "On or off?",
+      message: "This group has some devices on, and some off. What would you like to do?",
+      icon: autom8.util.Dialog.Icon.Question,
+      buttons: [
+        {
+          caption: "turn all on",
+          callback: onCallback,
+          positive: true
+        },
+        {
+          caption: "turn all off",
+          callback: offCallback,
+          negative: true
+        }
+      ]
+    };
+
+    autom8.util.Dialog.show(dialog);
+  },
+
   confirmResetSecuritySensor: function(deviceAddress) {
     var dialog = {
       title: "Confirm reset",

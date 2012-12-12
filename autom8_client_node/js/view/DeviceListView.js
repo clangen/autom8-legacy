@@ -7,7 +7,7 @@ namespace("autom8.view").DeviceListView = (function() {
         var $el = $(e.currentTarget);
         var index = parseInt($el.attr("data-index"), 10);
         this.trigger('devicerow:clicked', this.deviceList.at(index));
-      },
+      }
     },
 
     onCreate: function(options) {
@@ -17,6 +17,7 @@ namespace("autom8.view").DeviceListView = (function() {
       this.spinnerView = this.addChild(new autom8.view.SpinnerView());
 
       this.deviceList = null;
+      this.groupedDeviceList = {};
       this.currentState = null;
 
       this.setState("loading"); /* init default view */
@@ -49,7 +50,7 @@ namespace("autom8.view").DeviceListView = (function() {
       switch(state) {
         case "loaded":
           var loading = (!this.deviceList || !this.deviceList.length);
-          loading ? this.spinnerView.start() : this.spinnerView.stop();
+          this.spinnerView[loading ? 'start' : 'stop']();
           break;
 
         case "loading":

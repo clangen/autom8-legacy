@@ -73,6 +73,10 @@ namespace("autom8.controller").DeviceListController = (function() {
 
       var setAll = function(status) {
         _.each(group.devices, function(device) {
+          if (device.get('status') == status) {
+            return;
+          }
+
           var isSensor = device.get('type') == autom8.DeviceType.SecuritySensor;
           if (isSensor) {
             return;

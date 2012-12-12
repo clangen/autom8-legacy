@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>316</width>
-    <height>137</height>
+    <height>163</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -71,6 +71,16 @@
      <item row="2" column="1">
       <widget class="QLineEdit" name="AddressLineEdit"/>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="groupsLabel">
+       <property name="text">
+        <string>Groups:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="GroupsLineEdit"/>
+     </item>
     </layout>
    </item>
    <item>
@@ -129,6 +139,7 @@
   <tabstop>NameLineEdit</tabstop>
   <tabstop>TypeComboBox</tabstop>
   <tabstop>AddressLineEdit</tabstop>
+  <tabstop>GroupsLineEdit</tabstop>
   <tabstop>OkButton</tabstop>
   <tabstop>CancelButton</tabstop>
  </tabstops>

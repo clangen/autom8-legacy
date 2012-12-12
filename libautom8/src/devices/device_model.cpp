@@ -1,22 +1,31 @@
 #include "device_model.hpp"
 #include <utility.hpp>
 #include <debug.hpp>
+#include <db.hpp>
+
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace autom8;
 
+/* table names are prefixed by factory type */
+#define DEVICE_TABLE_SUFFIX "_device"
+#define GROUPS_TABLE_SUFFIX "_groups"
+
 #define ID_COLUMN "id"
 #define ADDRESS_COLUMN "address"
 #define TYPE_COLUMN "type"
 #define LABEL_COLUMN "label"
+#define GROUP_NAME_COLUMN "name"
+#define DEVICE_ID_COLUMN "device_id"
 
 static const std::string TAG = "device_model";
 
 device_model::device_model(device_factory_ptr factory)
 : factory_(factory)
 , connection_(NULL) {
-    table_name_ = factory_->name() + "_device";
+    device_table_name_ = factory_->name() + DEVICE_TABLE_SUFFIX;
+	groups_table_name_ = factory_->name() + GROUPS_TABLE_SUFFIX;
 
     // connect to the db.
     std::string filename = utility::settings_directory() + "devices.db";
@@ -25,7 +34,7 @@ device_model::device_model(device_factory_ptr factory)
         throw std::exception();
     }
 
-    create_table();
+    create_tables();
 }
 
 device_model::~device_model() {
@@ -35,51 +44,60 @@ device_model::~device_model() {
     }
 }
 
-void device_model::create_table() {
-    std::string create_table = (boost::format(
-        " CREATE TABLE IF NOT EXISTS %1% ("
-        " %2% INTEGER PRIMARY KEY AUTOINCREMENT, "
-        " %3% INTEGER, "
-        " %4% STRING UNIQUE, "
-        " %5% STRING); ")
-        % table_name_
-        % ID_COLUMN
-        % TYPE_COLUMN
-        % ADDRESS_COLUMN
-        % LABEL_COLUMN).str();
+void device_model::create_tables() {
+	/* devices table */
+	{
+		std::string create_table = (boost::format(
+			" CREATE TABLE IF NOT EXISTS %1% ("
+			" %2% INTEGER PRIMARY KEY AUTOINCREMENT, "
+			" %3% INTEGER, "
+			" %4% STRING UNIQUE, "
+			" %5% STRING); ")
+			% device_table_name_
+			% ID_COLUMN
+			% TYPE_COLUMN
+			% ADDRESS_COLUMN
+			% LABEL_COLUMN).str();
 
-    sqlite3_stmt* stmt = NULL;
+		autom8::db::statement stmt(connection_, create_table);
+		if (!stmt.execute()) {
+			debug::log(debug::error, TAG, "unable to create devices table");
+			throw std::exception();
+		}
+	}
 
-    int result = sqlite3_prepare_v2(
-        connection_,
-        create_table.c_str(),
-        (int) create_table.size(),
-        &stmt,
-        NULL);
+	/* groups table */
+	{
+		std::string create_table = (boost::format(
+			" CREATE TABLE IF NOT EXISTS %1% ("
+			" %2% INTEGER PRIMARY KEY AUTOINCREMENT, "
+			" %3% STRING, "
+			" %4% INTEGER); ")
+			% groups_table_name_
+			% ID_COLUMN
+			% GROUP_NAME_COLUMN
+			% DEVICE_ID_COLUMN).str();
 
-    if (result == SQLITE_OK) {
-        result = sqlite3_step(stmt);
-    }
-
-    sqlite3_finalize(stmt);
-
-    if (result != SQLITE_DONE) {
-        debug::log(debug::error, TAG, "unable to create devices table");
-        throw std::exception();
-    }
+		autom8::db::statement stmt(connection_, create_table);
+		if (!stmt.execute()) {
+			debug::log(debug::error, TAG, "unable to create devices table");
+			throw std::exception();
+		}
+	}
 }
 
 device_ptr device_model::add(
     device_type type,
     const std::string& address,
-    const std::string& label)
+    const std::string& label,
+	const std::vector<std::string>& groups)
 {
     device_ptr device;
 
     std::string insert_row = (boost::format(
         " INSERT INTO %1% (%2%, %3%, %4%, %5%)"
         " VALUES(NULL, ?, ?, ?);")
-        % table_name_
+        % device_table_name_
         % ID_COLUMN
         % TYPE_COLUMN
         % ADDRESS_COLUMN
@@ -88,30 +106,17 @@ device_ptr device_model::add(
     {
         boost::mutex::scoped_lock lock(connection_mutex_);
 
-        sqlite3_stmt* stmt = NULL;
+		autom8::db::statement stmt(connection_, insert_row);
+		stmt.bind_int(1, type);
+        stmt.bind_string(2, address);
+        stmt.bind_string(3, label);
 
-        int result = sqlite3_prepare(
-            connection_,
-            insert_row.c_str(),
-            (int) insert_row.size(),
-            &stmt,
-            NULL);
+		if (stmt.execute()) {
+			database_id row_id = sqlite3_last_insert_rowid(connection_);
+			set_groups(row_id, groups);
 
-        if (result == SQLITE_OK) {
-            sqlite3_bind_int(stmt, 1, type);
-            sqlite3_bind_text(stmt, 2, address.c_str(), -1, SQLITE_STATIC);
-            sqlite3_bind_text(stmt, 3, label.c_str(), -1, SQLITE_STATIC);
-
-            result = sqlite3_step(stmt);
-        }
-
-        if (result == SQLITE_DONE) {
-            device = factory_->create(
-                sqlite3_last_insert_rowid(connection_),
-                type,
-                address,
-                label);
-        }
+			device = factory_->create(row_id, type, address, label, groups);		
+		}
     }
 
     if (device) {
@@ -131,29 +136,17 @@ bool device_model::remove(database_id id) {
     std::string delete_device = (boost::format(
         " DELETE FROM %1%"
         " WHERE %2%=?;")
-        % table_name_
+        % device_table_name_
         % ID_COLUMN).str();
 
     {
         boost::mutex::scoped_lock lock(connection_mutex_);
 
-        sqlite3_stmt* stmt = NULL;
+		autom8::db::statement stmt(connection_, delete_device);
+		stmt.bind_int64(1, id);
 
-        int result = sqlite3_prepare(
-            connection_,
-            delete_device.c_str(),
-            (int) delete_device.size(),
-            &stmt,
-            NULL);
-
-        if (result == SQLITE_OK) {
-            sqlite3_bind_int64(stmt, 1, id);
-            result = sqlite3_step(stmt);
-        }
-
-        if (result == SQLITE_DONE) {
-            result = true;
-        }
+		result = stmt.execute();
+		remove_groups(id);
     }
 
     if (result) {
@@ -164,58 +157,57 @@ bool device_model::remove(database_id id) {
 }
 
 bool device_model::update(device_ptr device) {
+	std::vector<std::string> groups;
+	device->groups(groups);
+
     return this->update(
         device->id(),
         device->type(),
         device->address(),
-        device->label());
+        device->label(),
+		groups);
 }
 
 bool device_model::update(
     database_id id,
     device_type type,
     const std::string& address,
-    const std::string& label)
+    const std::string& label,
+	const std::vector<std::string>& groups)
 {
     std::string query = (boost::format(
         " UPDATE %1%"
         " SET %2%=?, %3%=?, %4%=?"
         " WHERE %5%=?;")
-        % table_name_
+        % device_table_name_
         % TYPE_COLUMN
         % ADDRESS_COLUMN
         % LABEL_COLUMN
         % ID_COLUMN).str();
 
-    sqlite3_stmt* stmt = NULL;
+	bool result;
 
-    int result = sqlite3_prepare(
-        connection_,
-        query.c_str(),
-        (int) query.size(),
-        &stmt,
-        NULL);
+	{
+		boost::mutex::scoped_lock lock(connection_mutex_);
 
-    if (result == SQLITE_OK) {
-        sqlite3_bind_int(stmt, 1, type);
-        sqlite3_bind_text(stmt, 2, address.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 3, label.c_str(), -1, SQLITE_STATIC);
-        sqlite3_bind_int64(stmt, 4, id);
+		autom8::db::statement stmt(connection_, query);
+        stmt.bind_int(1, type);
+		stmt.bind_string(2, address);
+        stmt.bind_string(3, label);
+		stmt.bind_int64(4, id);
 
-        result = sqlite3_step(stmt);
-    }
+		result = stmt.execute();
+		set_groups(id, groups);
+	}
 
-    sqlite3_finalize(stmt);
-
-    if (result == SQLITE_DONE) {
+    if (result) {
         on_device_updated(id);
-        return true;
     }
 
-    return false;
+    return result;
 }
 
-device_ptr device_model::find_by_address(const std::string& address) {
+device_ptr device_model::find_by_address(const std::string& address_to_find) {
     device_ptr device;
 
     std::string query = (boost::format(
@@ -226,33 +218,35 @@ device_ptr device_model::find_by_address(const std::string& address) {
         % TYPE_COLUMN
         % ADDRESS_COLUMN
         % LABEL_COLUMN
-        % table_name_).str();
+        % device_table_name_).str();
 
-    sqlite3_stmt* stmt = NULL;
+	boost::mutex::scoped_lock lock(connection_mutex_);
 
-    int result = sqlite3_prepare(
-        connection_,
-        query.c_str(),
-        (int) query.size(),
-        &stmt,
-        NULL);
+	database_id id;
+	device_type type;
+	std::string address, label;
+	std::vector<std::string> groups;
 
-    if (result == SQLITE_OK) {
-        sqlite3_bind_text(stmt, 1, address.c_str(), -1, SQLITE_STATIC);
+	/* device itself */
+	{
+		autom8::db::statement stmt(connection_, query);
+		stmt.bind_string(1, address_to_find);
 
-        if(sqlite3_step(stmt) == SQLITE_ROW) {
-            database_id id = (database_id) sqlite3_column_int64(stmt, 0);
-            device_type type = (device_type) sqlite3_column_int(stmt, 1);
-            std::string address((const char*) sqlite3_column_text(stmt, 2));
-            std::string label((const char*) sqlite3_column_text(stmt, 3));
+		if (stmt.next()) {
+			id = (database_id) stmt.get_int64(0);
+			type = (device_type) stmt.get_int(1);
+			address = stmt.get_string(2);
+			label = stmt.get_string(3);
+		}
+	}
 
-            device = factory_->create(id, type, address, label);
-        }
-    }
+	/* groups */
+	if (id) {
+		get_groups(id, groups);
+		device = factory_->create(id, type, address, label, groups);
+	}
 
-    sqlite3_finalize(stmt);
-
-    return device;
+	return device;
 }
 
 int device_model::all_devices(device_list& list) {
@@ -264,33 +258,82 @@ int device_model::all_devices(device_list& list) {
         % TYPE_COLUMN
         % ADDRESS_COLUMN
         % LABEL_COLUMN
-        % table_name_).str();
+        % device_table_name_).str();
 
-    sqlite3_stmt* stmt = NULL;
+	autom8::db::statement stmt(connection_, query);
 
-    int count = 0;
-    int result = sqlite3_prepare(
-        connection_,
-        query.c_str(),
-        (int) query.size(),
-        &stmt,
-        NULL);
+	int count = 0;
+	while (stmt.next()) {
+		database_id id = (database_id) stmt.get_int64(0);
+        device_type type = (device_type) stmt.get_int(1);
+        std::string address = stmt.get_string(2);
+        std::string label = stmt.get_string(3);
+		
+		std::vector<std::string> groups;
+		get_groups(id, groups);
 
-    if (result == SQLITE_OK) {
-        while ((result = sqlite3_step(stmt)) == SQLITE_ROW) {
-            database_id id = (database_id) sqlite3_column_int64(stmt, 0);
-            device_type type = (device_type) sqlite3_column_int(stmt, 1);
-            std::string address((const char*) sqlite3_column_text(stmt, 2));
-            std::string label((const char*) sqlite3_column_text(stmt, 3));
+        list.push_back(factory_->create(id, type, address, label, groups));
+        ++count;
+	}
 
-            list.push_back(factory_->create(id, type, address, label));
-            ++count;
-        }
-    }
+	return count;
+}
 
-    sqlite3_finalize(stmt);
+bool device_model::remove_groups(database_id id) {
+	std::string query = (boost::format(
+		" DELETE FROM %1%"
+		" WHERE %2%=?;")
+		% groups_table_name_
+		% DEVICE_ID_COLUMN).str();
 
-    return count;
+	autom8::db::statement stmt(connection_, query);
+	stmt.bind_int64(1, id);
+	return stmt.execute();
+}
+
+bool device_model::set_groups(database_id id, const std::vector<std::string>& groups) {
+	autom8::db::transaction transaction(connection_);
+
+	bool ok = remove_groups(id);
+
+	/* add */
+	if (ok) {
+		for (size_t i = 0; i < groups.size(); i++) {
+			std::string query = (boost::format(
+				" INSERT INTO %1% (%2%, %3%, %4%)"
+				" VALUES(NULL, ?, ?);")
+				% groups_table_name_
+				% ID_COLUMN
+				% GROUP_NAME_COLUMN
+				% DEVICE_ID_COLUMN).str();
+
+			autom8::db::statement stmt(connection_, query);
+			stmt.bind_string(1, groups[i]);
+			stmt.bind_int64(2, id);
+			ok |= stmt.execute();
+		}
+	}
+
+	transaction.set_successful(ok);
+
+	return ok;
+}
+
+void device_model::get_groups(database_id id, std::vector<std::string>& groups) {
+    std::string query = (boost::format(
+        " SELECT %1%"
+        " FROM %2%"
+		" WHERE %3%=?;")
+        % GROUP_NAME_COLUMN
+        % groups_table_name_
+		% DEVICE_ID_COLUMN).str();
+
+	autom8::db::statement stmt(connection_, query);
+	stmt.bind_int64(1, id);
+
+	while (stmt.next()) {
+		groups.push_back(stmt.get_string(0));
+	}
 }
 
 void device_model::on_device_added(device_ptr new_device)

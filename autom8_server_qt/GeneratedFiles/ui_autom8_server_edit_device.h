@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'autom8_server_edit_device.ui'
 **
-** Created: Mon Dec 10 17:23:40 2012
+** Created: Tue Dec 11 18:08:06 2012
 **      by: Qt User Interface Compiler version 4.7.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -38,6 +38,8 @@ public:
     QLabel *label_3;
     QLineEdit *NameLineEdit;
     QLineEdit *AddressLineEdit;
+    QLabel *groupsLabel;
+    QLineEdit *GroupsLineEdit;
     QSpacerItem *verticalSpacer;
     QHBoxLayout *hboxLayout;
     QSpacerItem *spacerItem;
@@ -48,7 +50,7 @@ public:
     {
         if (autom8_server_edit_device->objectName().isEmpty())
             autom8_server_edit_device->setObjectName(QString::fromUtf8("autom8_server_edit_device"));
-        autom8_server_edit_device->resize(316, 137);
+        autom8_server_edit_device->resize(316, 163);
         verticalLayout = new QVBoxLayout(autom8_server_edit_device);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         formLayout = new QFormLayout();
@@ -86,6 +88,16 @@ public:
 
         formLayout->setWidget(2, QFormLayout::FieldRole, AddressLineEdit);
 
+        groupsLabel = new QLabel(autom8_server_edit_device);
+        groupsLabel->setObjectName(QString::fromUtf8("groupsLabel"));
+
+        formLayout->setWidget(3, QFormLayout::LabelRole, groupsLabel);
+
+        GroupsLineEdit = new QLineEdit(autom8_server_edit_device);
+        GroupsLineEdit->setObjectName(QString::fromUtf8("GroupsLineEdit"));
+
+        formLayout->setWidget(3, QFormLayout::FieldRole, GroupsLineEdit);
+
 
         verticalLayout->addLayout(formLayout);
 
@@ -118,7 +130,8 @@ public:
 
         QWidget::setTabOrder(NameLineEdit, TypeComboBox);
         QWidget::setTabOrder(TypeComboBox, AddressLineEdit);
-        QWidget::setTabOrder(AddressLineEdit, OkButton);
+        QWidget::setTabOrder(AddressLineEdit, GroupsLineEdit);
+        QWidget::setTabOrder(GroupsLineEdit, OkButton);
         QWidget::setTabOrder(OkButton, CancelButton);
 
         retranslateUi(autom8_server_edit_device);
@@ -139,6 +152,7 @@ public:
          << QApplication::translate("autom8_server_edit_device", "Security Sensor", 0, QApplication::UnicodeUTF8)
         );
         label_3->setText(QApplication::translate("autom8_server_edit_device", "Address:", 0, QApplication::UnicodeUTF8));
+        groupsLabel->setText(QApplication::translate("autom8_server_edit_device", "Groups:", 0, QApplication::UnicodeUTF8));
         OkButton->setText(QApplication::translate("autom8_server_edit_device", "OK", 0, QApplication::UnicodeUTF8));
         CancelButton->setText(QApplication::translate("autom8_server_edit_device", "Cancel", 0, QApplication::UnicodeUTF8));
     } // retranslateUi

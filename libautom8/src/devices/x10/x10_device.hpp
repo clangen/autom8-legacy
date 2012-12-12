@@ -14,7 +14,8 @@ namespace autom8 {
             x10_device_system* owner,
             database_id id,
             const std::string& address,
-            const std::string& label);
+            const std::string& label,
+			const std::vector<std::string>& groups = std::vector<std::string>());
 
         virtual ~x10_device();
 
@@ -23,6 +24,7 @@ namespace autom8 {
         virtual std::string address();
         virtual std::string label();
         virtual database_id id();
+		virtual void groups(std::vector<std::string>& target);
         virtual void turn_on();
         virtual void turn_off();
 
@@ -30,7 +32,14 @@ namespace autom8 {
             const std::string& new_address,
             const std::string& new_label);
 
+		virtual void update(
+            const std::string& new_address,
+            const std::string& new_label,
+			const std::vector<std::string>& groups);
+
         virtual device_type type() = 0;
+
+		void set_groups(const std::vector<std::string>& groups);
 
     protected:
         x10_device_system* owner() { return owner_; }
@@ -38,6 +47,7 @@ namespace autom8 {
 
     private:
         std::string label_, address_;
+		std::vector<std::string> groups_;
         x10_device_system* owner_;
         device_status status_;
         database_id id_;

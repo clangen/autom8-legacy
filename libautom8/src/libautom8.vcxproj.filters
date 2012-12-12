@@ -83,6 +83,9 @@
     <ClCompile Include="utility.cpp">
       <Filter>libautom8\util</Filter>
     </ClCompile>
+    <ClCompile Include="db.cpp">
+      <Filter>libautom8\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="devices\device_model.hpp">
@@ -195,6 +198,9 @@
     </ClInclude>
     <ClInclude Include="common_messages.hpp">
       <Filter>libautom8\protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="db.hpp">
+      <Filter>libautom8\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

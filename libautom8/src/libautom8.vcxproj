@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClCompile Include="client.cpp" />
     <ClCompile Include="common_messages.cpp" />
+    <ClCompile Include="db.cpp" />
     <ClCompile Include="request.cpp" />
     <ClCompile Include="response.cpp" />
     <ClCompile Include="devices\device_base.cpp" />
@@ -112,6 +113,7 @@
   <ItemGroup>
     <ClInclude Include="client.hpp" />
     <ClInclude Include="common_messages.hpp" />
+    <ClInclude Include="db.hpp" />
     <ClInclude Include="devices\x10\x10_device_controller.hpp" />
     <ClInclude Include="message_formatter.hpp" />
     <ClInclude Include="message_matcher.hpp" />

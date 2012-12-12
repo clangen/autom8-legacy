@@ -17,7 +17,8 @@ namespace autom8 {
                 database_id id,
                 device_type type,
                 const std::string& address,
-                const std::string& label) { return device_ptr(); }
+                const std::string& label,
+				const std::vector<std::string>& groups) { return device_ptr(); }
 
             virtual std::string name() const { return "null"; }
         };

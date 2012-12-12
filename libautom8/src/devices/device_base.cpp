@@ -13,6 +13,10 @@ json_value_ref device_base::to_json() {
 	(*result)["type"] = Json::Value(this->type());
 	(*result)["label"] = Json::Value(this->label());
 	(*result)["status"] = Json::Value(this->status());
+	
+	std::vector<std::string> groups;
+	this->groups(groups);
+	(*result)["groups"] = autom8::string_vector_to_json_array(groups);
 
 	(*result)["attributes"] = Json::Value(Json::objectValue);
 	this->get_extended_json_attributes((*result)["attributes"]);

@@ -20,7 +20,8 @@ namespace autom8 {
         virtual device_ptr add(
             device_type type,
             const std::string& address,
-            const std::string& label);
+            const std::string& label,
+			const std::vector<std::string>& groups);
 
         virtual bool remove(device_ptr device);
         virtual bool remove(database_id id);
@@ -30,13 +31,14 @@ namespace autom8 {
             database_id id,
             device_type type,
             const std::string& address,
-            const std::string& label);
+            const std::string& label,
+			const std::vector<std::string>& groups);
 
         virtual int all_devices(device_list& target);
         virtual device_ptr find_by_address(const std::string& address);
 
     protected:
-        void create_table();
+        void create_tables();
         sqlite3* connection() { return connection_; }
         device_factory_ptr factory() { return factory_; }
 
@@ -44,9 +46,13 @@ namespace autom8 {
         virtual void on_device_removed(database_id old_device_id);
         virtual void on_device_updated(database_id id);
 
+		bool remove_groups(database_id id);
+		void get_groups(database_id id, std::vector<std::string>& groups);
+		bool set_groups(database_id id, const std::vector<std::string>& groups);
+
     private:
         device_factory_ptr factory_;
-        std::string table_name_;
+        std::string device_table_name_, groups_table_name_;
         sqlite3* connection_;
         boost::mutex connection_mutex_;
     };

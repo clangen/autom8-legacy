@@ -115,7 +115,7 @@ device_ptr device_model::add(
 			database_id row_id = sqlite3_last_insert_rowid(connection_);
 			set_groups(row_id, groups);
 
-			device = factory_->create(row_id, type, address, label, groups);		
+			device = factory_->create(row_id, type, address, label, groups);
 		}
     }
 
@@ -222,27 +222,19 @@ device_ptr device_model::find_by_address(const std::string& address_to_find) {
 
 	boost::mutex::scoped_lock lock(connection_mutex_);
 
-	database_id id;
-	device_type type;
-	std::string address, label;
-	std::vector<std::string> groups;
-
 	/* device itself */
-	{
-		autom8::db::statement stmt(connection_, query);
-		stmt.bind_string(1, address_to_find);
+	autom8::db::statement stmt(connection_, query);
+	stmt.bind_string(1, address_to_find);
 
-		if (stmt.next()) {
-			id = (database_id) stmt.get_int64(0);
-			type = (device_type) stmt.get_int(1);
-			address = stmt.get_string(2);
-			label = stmt.get_string(3);
-		}
-	}
+	if (stmt.next()) {
+		database_id id = (database_id) stmt.get_int64(0);
+		device_type type = (device_type) stmt.get_int(1);
+		std::string address = stmt.get_string(2);
+		std::string label = stmt.get_string(3);
 
-	/* groups */
-	if (id) {
+		std::vector<std::string> groups;
 		get_groups(id, groups);
+
 		device = factory_->create(id, type, address, label, groups);
 	}
 

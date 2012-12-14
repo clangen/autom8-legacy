@@ -23,7 +23,7 @@ namespace("autom8.view").SwitcherView = (function() {
       }
 
       try {
-        localStorage['autom8.lastDevicesView'] = grouped ? 'grouped' : 'flat';
+        localStorage['autom8.lastDevicesView'] = state;
       }
       catch (e) {
         console.log('local storage write failed');

@@ -14,7 +14,7 @@ namespace("autom8.util").Dialog = (function() {
       var dialogId = "dialog-" + (nextId++);
       var $dialog = autom8.mvc.View.elementFromTemplate(dialogTemplate, params);
       var $buttonContainer = $dialog.find('.dialog-buttons');
-      var negativeCallback, positiveCallback;
+      var negativeCallback, positiveCallback, cancelCallback;
 
       $dialog.attr("id", dialogId);
       $dialog.attr("tabindex", nextId + 1);
@@ -34,9 +34,12 @@ namespace("autom8.util").Dialog = (function() {
           closeDialog();
           positiveCallback();
         }
-        else if (event.keyCode === 27 && negativeCallback) {
+        else if ((event.keyCode === 27) && (params.cancelable !== false)) {
           closeDialog();
-          negativeCallback();
+
+          if (params.onCanceled) {
+            params.onCanceled();
+          }
         }
       }
 
@@ -57,25 +60,30 @@ namespace("autom8.util").Dialog = (function() {
 
       function addEventHandlers() {
         autom8.mvc.View.addTouchable('#' + dialogId, '.dialog-button', buttonHandler);
-        autom8.mvc.View.addTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', negativeHandler);
+        autom8.mvc.View.addTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', cancelHandler);
         $('#' + dialogId).bind("keydown", keydownHandler);
       }
 
       function removeEventHandlers() {
         autom8.mvc.View.removeTouchable('#' + dialogId, '.dialog-button', buttonHandler);
-        autom8.mvc.View.removeTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', negativeHandler);
+        autom8.mvc.View.removeTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', cancelHandler);
         $('#' + dialogId).unbind("keydown", keydownHandler);
       }
 
-      function negativeHandler(event) {
+      function cancelHandler(event) {
+        if (params.cancelable === false) {
+          return;
+        }
+
         if (event.target !== event.currentTarget) {
           return;
         }
 
-        if (negativeCallback) {
-          closeDialog();
-          negativeCallback();
+        if (params.onCanceled) {
+          params.onCanceled();
         }
+
+        closeDialog();
       }
 
       function buttonHandler(event) {
@@ -88,6 +96,8 @@ namespace("autom8.util").Dialog = (function() {
           callback();
         }
       }
+
+      cancelCallback = params.cancelCallback;
 
       _.each(params.buttons, function(button, index) {
         var $button = autom8.mvc.View.elementFromTemplate(dialogButtonTemplate, {

@@ -100,6 +100,30 @@ body {
   background-color: #898989;
 }
 
+.expander {
+  .box();
+  .box-pack(center);
+  .box-align(center);
+  .box-orient(vertical);
+  padding: 0px 8px;
+}
+
+.expander-button {
+  text-align: center;
+  font-weight: bold;
+  font-size: 110%;
+  text-shadow: 1px 1px 4px #333;
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 10px;
+}
+
+.expander-button.touched {
+  background-color: #666;
+}
+
 .header-text {
   font-size: 125%;
   color: #cccccc;
@@ -198,7 +222,11 @@ body {
 }
 
 .device-group-devices {
-  margin-left: 0px;
+  margin-left: 8px;
+}
+
+.collapsed .device-group-devices {
+  display: none;
 }
 
 .device-row.small {

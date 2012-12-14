@@ -14,7 +14,8 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       buttonClass: allOn ? "all" : (someOn ? "on" : "off"),
       buttonText: allOn || someOn ? "on" : "off",
       text: group.name,
-      subtext: stats.totalCount + " devices"
+      subtext: stats.totalCount + " devices",
+      expander: options.collapsed ? "+" : "-"
     };
 
     if (allOn) {
@@ -57,6 +58,10 @@ namespace("autom8.view").DeviceRowFactory = (function() {
 
     $container.append($group);
     $container.append($allDevices);
+
+    if (options.collapsed) {
+      $container.addClass('collapsed');
+    }
 
     return $container;
   }

@@ -29,6 +29,34 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
   return _super_.extend({
     events: {
+      "touch .device-row .expander-button": function(e) {
+        var $root = $(e.currentTarget).parents('.device-group-container');
+        var $group = $root.find('.device-row.group');
+        var $expander = $root.find('.expander-button');
+
+        var groupIndex = $group.attr("data-group");
+        if (groupIndex) {
+          var group = this.groupedDeviceList[Number(groupIndex)];
+
+          if (this.expandedGroups[group.name]) {
+            delete this.expandedGroups[group.name];
+            $root.addClass('collapsed');
+            $expander.html('+');
+          }
+          else {
+            this.expandedGroups[group.name] = 1;
+            $root.removeClass('collapsed');
+            $expander.html('-');
+          }
+
+          try {
+            localStorage['autom8.expandedGroups'] = JSON.stringify(this.expandedGroups);
+          }
+          catch (ex) {
+            console.log('failed to write group view info to localStorage');
+          }
+        }
+      },
       "touch .device-row": function(e) {
         var $el = $(e.currentTarget);
 
@@ -52,6 +80,14 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
     onCreate: function(options) {
       _super_.prototype.onCreate.call(this, options);
       this.groupedDeviceList = [];
+
+      /* keyed by name */
+      try {
+        this.expandedGroups = JSON.parse(localStorage['autom8.expandedGroups']);
+      }
+      catch (ex) {
+      }
+      this.expandedGroups = this.expandedGroups || { };
     },
 
     onRender: function() {
@@ -64,7 +100,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       var self = this;
       _.each(this.groupedDeviceList, function(group, index) {
         var options = {
-          asTree: false,
+          asTree: true,
+          collapsed: !self.expandedGroups[group.name],
           attrs: {
             group: index
           }

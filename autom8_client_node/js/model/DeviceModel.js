@@ -17,5 +17,5 @@ namespace("autom8.model").Device = Backbone.Model.extend({
 });
 
 namespace("autom8.model").DeviceList = Backbone.Collection.extend({
-  model: autom8.model.Device,
+  model: autom8.model.Device
 });

@@ -48,6 +48,9 @@
 
         target.addClass("touched");
       }
+
+      /* prevents parent touchables from capturing this event */
+      e.stopImmediatePropagation();
     });
 
     /* move */

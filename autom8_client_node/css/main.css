@@ -120,7 +120,7 @@ body {
   width: 10px;
 }
 
-.expander-button.touched {
+.touched .expander-button {
   background-color: #666;
 }
 

@@ -29,7 +29,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
   return _super_.extend({
     events: {
-      "touch .device-row .expander-button": function(e) {
+      "touch .device-row .expander": function(e) {
         var $root = $(e.currentTarget).parents('.device-group-container');
         var $group = $root.find('.device-row.group');
         var $expander = $root.find('.expander-button');

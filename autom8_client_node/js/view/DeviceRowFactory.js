@@ -2,14 +2,15 @@ namespace("autom8.view").DeviceRowFactory = (function() {
   var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
   var groupRowTemplate = $("#autom8-View-GroupRow").html();
 
-  function createFromGroup(group) {
-    var stats = autom8.util.Device.getDeviceListStats(group.devices);
+  function createFromGroup(group, options) {
+    options = options || { };
 
+    var stats = autom8.util.Device.getDeviceListStats(group.devices);
     var allOn = stats.allOn || stats.allArmed;
     var someOn = stats.someOn || stats.someArmed;
 
     var args = {
-      rowClass: "",
+      rowClass: allOn ? "device-row on" : "device-row off",
       buttonClass: allOn ? "all" : (someOn ? "on" : "off"),
       buttonText: allOn || someOn ? "on" : "off",
       text: group.name,
@@ -27,7 +28,37 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       args.buttonSubtext = "(all off)";
     }
 
-    return autom8.mvc.View.elementFromTemplate(groupRowTemplate, args);
+    var $group = autom8.mvc.View.elementFromTemplate(groupRowTemplate, args);
+
+    _.each(options.attrs, function(value, key) {
+      $group.attr('data-' + key, value);
+    });
+
+    if (options.asTree !== true) {
+      return $group;
+    }
+
+    var $container = $('<div class="device-group-container"></div>');
+    var $allDevices = $('<div class="device-group-devices"></div>');
+
+    _.each(group.devices, function(device, index) {
+      var deviceOptions = {
+        elementOnly: true,
+        attrs: {
+          index: index,
+          group: options.attrs.group || 0
+        }
+      };
+
+      var $device = autom8.view.DeviceRowFactory.create(device, deviceOptions);
+      $device.addClass('small');
+      $allDevices.append($device);
+    });
+
+    $container.append($group);
+    $container.append($allDevices);
+
+    return $container;
   }
 
   function createFromLampOrAppliance(device, type) {
@@ -97,12 +128,13 @@ namespace("autom8.view").DeviceRowFactory = (function() {
 
   /* public api */
   return {
-    create: function(device) {
+    create: function(device, options) {
+      options = options || { };
       var result = $("<div/>");
 
       if (device && device.name && device.devices && device.devices.length) {
         /* we found a group! */
-        return new autom8.mvc.View({el: createFromGroup(device)});
+        return new autom8.mvc.View({el: createFromGroup(device, options)});
       }
 
       switch (device.get('type')) {
@@ -120,6 +152,14 @@ namespace("autom8.view").DeviceRowFactory = (function() {
 
       default:
         console.log('unknown device type! ' + device.get('type'));
+      }
+
+      _.each(options.attrs, function(value, key) {
+        result.attr('data-' + key, value);
+      });
+
+      if (options.elementOnly) {
+        return result;
       }
 
       return new autom8.mvc.View({el: result});

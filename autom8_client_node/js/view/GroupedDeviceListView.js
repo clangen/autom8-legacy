@@ -31,10 +31,21 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
     events: {
       "touch .device-row": function(e) {
         var $el = $(e.currentTarget);
-        var index = parseInt($el.attr("data-index"), 10);
 
-        var group = this.groupedDeviceList[index];
-        this.trigger('grouprow:clicked', group);
+        var groupIndex = $el.attr("data-group");
+        var itemIndex = $el.attr("data-index");
+
+        if (groupIndex && itemIndex) {
+          groupIndex = parseInt(groupIndex, 10);
+          itemIndex = parseInt(itemIndex, 10);
+          var device = this.groupedDeviceList[groupIndex].devices[itemIndex];
+          this.trigger('devicerow:clicked', device);
+        }
+        else if (groupIndex) {
+          groupIndex = parseInt(groupIndex, 10);
+          var group = this.groupedDeviceList[groupIndex];
+          this.trigger('grouprow:clicked', group);
+        }
       }
     },
 
@@ -52,8 +63,14 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
       var self = this;
       _.each(this.groupedDeviceList, function(group, index) {
-        var groupRow = autom8.view.DeviceRowFactory.create(group);
-        groupRow.$el.attr("data-index", index);
+        var options = {
+          asTree: false,
+          attrs: {
+            group: index
+          }
+        };
+
+        var groupRow = autom8.view.DeviceRowFactory.create(group, options);
         self.listView.addChild(groupRow);
       });
     },

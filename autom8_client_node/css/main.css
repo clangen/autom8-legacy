@@ -197,6 +197,22 @@ body {
   cursor: pointer;
 }
 
+.device-group-devices {
+  margin-left: 0px;
+}
+
+.device-row.small {
+  font-size: 80%;
+}
+
+.small .device-row-info {
+  padding-left: 16px;
+}
+
+.small .button {
+  height: 30px;
+}
+
 .button-subtext {
   font-size: 60%;
   font-weight: normal;

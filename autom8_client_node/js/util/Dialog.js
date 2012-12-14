@@ -7,6 +7,7 @@ namespace("autom8.util").Dialog = (function() {
   return {
     show: function(params) {
       params = params || { };
+
       if (!params.buttons || !params.buttons.length) {
         return;
       }
@@ -30,10 +31,12 @@ namespace("autom8.util").Dialog = (function() {
       function keydownHandler(event) {
         event.stopPropagation();
 
+        /* return/enter */
         if (event.keyCode === 13 && positiveCallback) {
           closeDialog();
           positiveCallback();
         }
+        /* esc */
         else if ((event.keyCode === 27) && (params.cancelable !== false)) {
           closeDialog();
 

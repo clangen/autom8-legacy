@@ -6,7 +6,7 @@
 <script src="js/view/HeaderView.js" type="text/javascript"></script>
 <script src="js/view/SwitcherView.js" type="text/javascript"></script>
 <script src="js/controller/HeaderController.js" type="text/javascript"></script>
-<script src="js/controller/ConnectionMessagingController.js" type="text/javascript"></script>
+<script src="js/controller/ConnectivityController.js" type="text/javascript"></script>
 <script src="js/controller/DeviceListController.js" type="text/javascript"></script>
 <script src="js/controller/SignInController.js" type="text/javascript"></script> 
 <script src="js/view/DeviceListView.js" type="text/javascript"></script>

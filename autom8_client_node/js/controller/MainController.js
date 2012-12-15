@@ -75,7 +75,7 @@ namespace("autom8.controller").MainController = (function() {
 
     onDialogClosed: function() {
       if (this.mainController === this.signInController) {
-        this.signInController.view.focusPasswordInput(true);        
+        this.signInController.view.focusPasswordInput(true);
       }
     }
   });

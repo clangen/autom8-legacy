@@ -13,7 +13,20 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
     }
   }
 
+  function stopTryingToReconnect(context) {
+    context.backoff = 1000;
+    if (context.timeout) {
+      clearTimeout(context.timeout);
+      context.timeout = null;
+    }
+  }
+
   return autom8.mvc.Controller.extend({
+    onCreate: function(options) {
+      this.backoff = 1000;
+      this.timeout = null;
+    },
+
     onResume: function(options) {
       autom8.client.on('state:changed', this.onStateChanged, this);
     },
@@ -27,10 +40,23 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
 
       switch (state) {
         case 'disconnected':
-          this.showDisconnectedDialog(options);
+          if (!options.silent) {
+            this.showDisconnectedDialog(options);
+          }
+
+          if (!this.timeout) {
+            var self = this;
+            this.timeout = setTimeout(function() {
+              autom8.client.connect({silent: true});
+              self.backoff *= 2;
+              self.timeout = null;
+            }, this.backoff);
+          }
           break;
 
         case 'expired':
+          stopTryingToReconnect(this);
+
           if (!options.silent) {
             this.showDisconnectedDialog({errorCode: -99});
           }
@@ -38,6 +64,8 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
 
         case 'connected':
         case 'authenticated':
+          stopTryingToReconnect(this);
+
           if (this.errorDialog) {
             this.errorDialog.close();
             this.errorDialog = null;

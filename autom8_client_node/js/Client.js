@@ -115,7 +115,6 @@ namespace("autom8").client = (function () {
 
       var newSocket = io.connect(host, {
         'reconnect': false,
-        'reconnection delay': 2000,
         /* internal socket.io socket may already be created and
         cached with old session cookie. when we set this flag we
         force recreation of the internal socket so connection can
@@ -126,6 +125,12 @@ namespace("autom8").client = (function () {
       var self = this;
 
       newSocket.on('connect', function(data) {
+        /* we set this to false because if we get disconnected after
+        we've connected, we *do* want to display an error dialog; we
+        don't want to display an error dialog if the connection attempt
+        itself fails. */
+        options.silent = false;
+
         onSocketConnected(self, newSocket, data);
       });
 

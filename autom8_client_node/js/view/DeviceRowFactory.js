@@ -10,7 +10,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
     var someOn = stats.someOn || stats.someArmed;
 
     var args = {
-      rowClass: allOn ? "device-row on" : "device-row off",
+      rowClass: allOn ? "device-row on" : (someOn ? "device-row some" : "device-row off"),
       buttonClass: allOn ? "all" : (someOn ? "on" : "off"),
       buttonText: allOn || someOn ? "on" : "off",
       text: group.name,
@@ -60,7 +60,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
     $container.append($allDevices);
 
     if (options.collapsed) {
-      $container.addClass('collapsed');
+      $allDevices.hide();
     }
 
     return $container;

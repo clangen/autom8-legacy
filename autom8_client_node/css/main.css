@@ -96,6 +96,10 @@ body {
   background-color: #555555;
 }
 
+.device-row.some {
+  background-color: #3d3d3d;
+}
+
 .device-row.on.touched {
   background-color: #898989;
 }
@@ -222,11 +226,7 @@ body {
 }
 
 .device-group-devices {
-  margin-left: 8px;
-}
-
-.collapsed .device-group-devices {
-  display: none;
+  margin-left: 10px;
 }
 
 .device-group-devices .button {
@@ -242,7 +242,8 @@ body {
 }
 
 .small .button {
-  height: 30px;
+  height: 38px;
+  width: 38px;
 }
 
 .button-subtext {

@@ -1,4 +1,6 @@
 namespace("autom8.view").GroupedDeviceListView = (function() {
+  var EXPAND_COLLAPSE_DURATION_MILLIS = 200;
+
   var View = autom8.mvc.View;
 
   function createGroupedDeviceList(deviceList) {
@@ -33,6 +35,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         var $root = $(e.currentTarget).parents('.device-group-container');
         var $group = $root.find('.device-row.group');
         var $expander = $root.find('.expander-button');
+        var $items = $root.find('.device-group-devices');
 
         var groupIndex = $group.attr("data-group");
         if (groupIndex) {
@@ -40,13 +43,13 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
           if (this.expandedGroups[group.name]) {
             delete this.expandedGroups[group.name];
-            $root.addClass('collapsed');
             $expander.html('+');
+            $items.slideUp(EXPAND_COLLAPSE_DURATION_MILLIS);
           }
           else {
             this.expandedGroups[group.name] = 1;
-            $root.removeClass('collapsed');
             $expander.html('-');
+            $items.slideDown(EXPAND_COLLAPSE_DURATION_MILLIS);
           }
 
           try {

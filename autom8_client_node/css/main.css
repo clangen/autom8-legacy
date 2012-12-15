@@ -229,6 +229,10 @@ body {
   display: none;
 }
 
+.device-group-devices .button {
+  width: 40px;
+}
+
 .device-row.small {
   font-size: 80%;
 }

@@ -42,7 +42,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         if (groupIndex) {
           var group = this.groupedDeviceList[Number(groupIndex)];
 
-          var animate = autom8.Config.display.animateCollapse;
+          var animate = autom8.Config.display.animations.collapse;
           var duration = Math.min(
             MAX_TOTAL_EXPAND_DURATION,
             group.devices.length * EXPAND_DURATION_PER_ITEM);

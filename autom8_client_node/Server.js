@@ -1,4 +1,4 @@
-// npm install commander connect express socket.io socket.io-client less uglify
+// npm install commander connect express socket.io socket.io-client less uglify clean-css
 // node.exe Server.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 var express = require('express');
@@ -9,6 +9,7 @@ var url = require('url');
 var crypto = require('crypto');
 var program = require('commander');
 var less = require('less');
+var zlib = require('zlib');
 
 /*
  * autom8 namespace
@@ -77,12 +78,14 @@ autom8.server = (function() {
     var cache = { };
 
     return {
-      get: function (fn) {
-        return cache[fn];
+      get: function (fn, encoding) {
+        cache[encoding] = cache[encoding] || { };
+        return cache[encoding][fn];
       },
 
-      put: function (fn, data) {
-        cache[fn] = data;
+      put: function (fn, encoding, data) {
+        cache[encoding] = cache[encoding] || { };
+        cache[encoding][fn] = data;
       },
 
       clear: function() {
@@ -144,11 +147,63 @@ autom8.server = (function() {
     return doc;
   }
 
+  function renderNonMinifiedStyles(doc) {
+    doc = doc.replace("{{minified_styles}}", "");
+    return renderScripts(doc, 'styles');
+  }
+
   function renderNonMinifiedScripts(doc) {
     /* our main document has a {{minified_scripts}} placeholder that we
     remove here when we render in non-minified mode */
     doc = doc.replace("{{minified_scripts}}", "");
-    return renderScripts(doc);
+    return renderScripts(doc, 'scripts');
+  }
+
+  function renderMinifiedStyles(doc) {
+    /* separate the rendered scripts into an array of lines. we'll use
+    this to build a list of all the .css files that we will minify */
+    var lines = renderScripts(doc).split(/\r\n|\n/);
+
+    /* runs LESS, then minifies result */
+    var processCss = function(fn) {
+      var data = fs.readFileSync(fn);
+      var parser = new less.Parser();
+      var result = "";
+
+      parser.parse(data.toString(), function (err, tree) {
+          if (!err) {
+            result = tree.toCSS();
+          }
+          else {
+            err = require('util').inspect(err);
+            console.log("LESS: CSS parse failed because " + err);
+          }
+      });
+
+      if (result) {
+        result = require('clean-css').process(result);
+      }
+
+      return result;
+    };
+
+    /* run through each line, seeing if it's a css file. if it is,
+    process it */
+    var regex = /.*href="(.*\.css)"/;
+    var match;
+    var minified = "";
+
+    for (var i = 0; i < lines.length; i++) {
+      match = lines[i].match(regex);
+      if (match && match.length === 2) {
+        minified += processCss(match[1]);
+      }
+    }
+
+    doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
+    doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
+
+    return doc;
   }
 
   function renderMinifiedScripts(doc) {
@@ -193,7 +248,7 @@ autom8.server = (function() {
       require('uglify-js').minify(scriptFilenames).code +
       '</script>';
 
-    doc = renderScripts(doc, ["styles"]);
+    // doc = renderScripts(doc, ["styles"]);
     doc = doc.replace("{{minified_scripts}}", minified);
 
     /* remove any {{*.script}} identifiers, they have all been minified */
@@ -262,8 +317,8 @@ autom8.server = (function() {
 
     /*
      * General request handler; looks at the request, figures out
-     * which file to return. Deals with caching and unathenticated
-     * clients.
+     * which file to return. Deals with caching, compression, and
+     * unathenticated clients.
      */
     app.get(/.*/, function(req, res) {
       var fn = url.parse(req.url).pathname;
@@ -300,25 +355,79 @@ autom8.server = (function() {
 
       fn = __dirname + '/' + fn;
 
-      /* method to write the response once we have the file data
-      for this particular request */
-      function writeResponse(data) {
-        res.writeHead(200, {
-          'Content-Type': mimeType
-        });
+      /* given the request, figure out what type of encoding to use when
+      writing the result */
+      var acceptEncoding = req.headers['accept-encoding'] || "";
 
-        res.end(data);
+      var responseEncoding = null;
+      var writeEncode = 'binary';
+      if (acceptEncoding.match(/\bdeflate\b/)) {
+        responseEncoding = "deflate";
+        compress = zlib.deflate;
       }
+      else if (acceptEncoding.match(/\bgzip\b/)) {
+        responseEncoding = "gzip";
+        compress = zlib.gzip;
+      }
+      else {
+        writeEncode = 'utf8';
+      }
+
+      /* writes the response for this request with the specified encoding */
+      var writeResponse = function(fn, data, options) {
+        options = options || { };
+
+        /* default compression is a no-op */
+        var compress = function(data, callback) {
+          callback(null, data);
+        };
+
+        /* if we're writing from a cache hit, don't re-compress */
+        if (!options.fromCache) {
+          if (responseEncoding === "deflate") {
+            compress = zlib.deflate;
+          }
+          else if (responseEncoding === "gzip") {
+            compress = zlib.gzip;
+          }
+        }
+
+        /* run the compression algorithm */
+        compress(data, function(err, compressed) {
+          /* it's important the compressed data is properly encoded. for deflate
+          and gzip we need to writeEncode with 'binary', but 'utf8' for non-
+          compressed responses */
+          data = compressed.toString(writeEncode);
+
+          if (!debug) {
+            fileCache.put(fn, responseEncoding, data);
+          }
+
+          /* figure out response headers */
+          var responseHeaders = {
+            'content-type': mimeType
+          };
+
+          if (responseEncoding) {
+            responseHeaders['content-encoding'] = responseEncoding;
+          }
+
+          /* write it back to the requester */
+          res.writeHead(200, responseHeaders);
+          res.write(data, writeEncode);
+          res.end();
+        });
+      };
 
       /* check to see if the file is cached. if it is, return it now */
       var cachedFile;
       if (!debug) {
-        cachedFile = fileCache.get(fn);
+        cachedFile = fileCache.get(fn, responseEncoding);
       }
 
       if (cachedFile) {
         console.log("cache hit: " + fn);
-        writeResponse(cachedFile);
+        writeResponse(fn, cachedFile, {fromCache: true});
       }
       else {
         console.log("cache miss: " + fn);
@@ -340,12 +449,7 @@ autom8.server = (function() {
                 if (!err) {
                   console.log("LESS: successfully processed " + fn);
                   data = tree.toCSS();
-
-                  if (!debug) {
-                    fileCache.put(fn, data);
-                  }
-
-                  writeResponse(data);
+                  writeResponse(fn, data);
                 }
                 else {
                   console.log("LESS: CSS parse failed because " + require('util').inspect(err));
@@ -356,14 +460,11 @@ autom8.server = (function() {
             if (fn.match(/.*\.html$/)) {
               data = data.toString();
               data = renderTemplates(data);
+              data = debug ? renderNonMinifiedStyles(data): renderMinifiedStyles(data);
               data = debug ? renderNonMinifiedScripts(data) : renderMinifiedScripts(data);
             }
 
-            if (!debug) {
-              fileCache.put(fn, data);
-            }
-
-            writeResponse(data);
+            writeResponse(fn, data);
           }
         });
       }

@@ -1,5 +1,6 @@
 namespace("autom8.view").GroupedDeviceListView = (function() {
-  var EXPAND_COLLAPSE_DURATION_MILLIS = 200;
+  var EXPAND_DURATION_PER_ITEM = 50;
+  var MAX_TOTAL_EXPAND_DURATION = 200;
 
   var View = autom8.mvc.View;
 
@@ -41,15 +42,19 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         if (groupIndex) {
           var group = this.groupedDeviceList[Number(groupIndex)];
 
+          var duration = Math.min(
+            MAX_TOTAL_EXPAND_DURATION,
+            group.devices.length * EXPAND_DURATION_PER_ITEM);
+
           if (this.expandedGroups[group.name]) {
             delete this.expandedGroups[group.name];
             $expander.html('+');
-            $items.slideUp(EXPAND_COLLAPSE_DURATION_MILLIS, 'easeOutQuad');
+            $items.slideUp(duration, 'easeOutQuad');
           }
           else {
             this.expandedGroups[group.name] = 1;
             $expander.html('-');
-            $items.slideDown(EXPAND_COLLAPSE_DURATION_MILLIS, 'easeInQuad');
+            $items.slideDown(duration, 'easeInQuad');
           }
 
           try {

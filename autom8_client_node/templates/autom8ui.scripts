@@ -1,3 +1,4 @@
+<script src="js/util/Config.js" type="text/javascript"></script>
 <script src="js/Constants.js" type="text/javascript"></script>
 
 <script src="js/util/Device.js" type="text/javascript"></script>

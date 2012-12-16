@@ -44,12 +44,12 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
           if (this.expandedGroups[group.name]) {
             delete this.expandedGroups[group.name];
             $expander.html('+');
-            $items.slideUp(EXPAND_COLLAPSE_DURATION_MILLIS);
+            $items.slideUp(EXPAND_COLLAPSE_DURATION_MILLIS, 'easeOutQuad');
           }
           else {
             this.expandedGroups[group.name] = 1;
             $expander.html('-');
-            $items.slideDown(EXPAND_COLLAPSE_DURATION_MILLIS);
+            $items.slideDown(EXPAND_COLLAPSE_DURATION_MILLIS, 'easeInQuad');
           }
 
           try {

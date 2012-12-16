@@ -358,16 +358,14 @@ autom8.server = (function() {
       /* given the request, figure out what type of encoding to use when
       writing the result */
       var acceptEncoding = req.headers['accept-encoding'] || "";
+      var responseEncoding = null; /* encoding we report in response headers */
+      var writeEncode = 'binary'; /* encoding of compressed output */
 
-      var responseEncoding = null;
-      var writeEncode = 'binary';
       if (acceptEncoding.match(/\bdeflate\b/)) {
         responseEncoding = "deflate";
-        compress = zlib.deflate;
       }
       else if (acceptEncoding.match(/\bgzip\b/)) {
         responseEncoding = "gzip";
-        compress = zlib.gzip;
       }
       else {
         writeEncode = 'utf8';

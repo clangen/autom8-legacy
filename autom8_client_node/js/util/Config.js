@@ -2,7 +2,9 @@ namespace("autom8").Config = (function() {
   var config = {
     display: {
       animations: {
-        collapse: false
+        collapse: false,
+        collapseEasing: 'easeOutCubic',
+        expandEasing: 'easeInCubic'
       },
       classes: {
         body: ''
@@ -15,8 +17,14 @@ namespace("autom8").Config = (function() {
   var isChrome = /Chrome/.test(ua);
 
   if (isIOS) {
+    config.display.animations.collapse = true;
+
     var isIOS6 = /i(Phone|Pod) OS (5|6)/.test(ua) || /Apple-i(Phone|Pod)(5|6)/.test(ua);
-    config.display.animations.collapse = isIOS6;
+    if (!isIOS6) {
+      config.display.animations.collapseEasing = 'linear';
+      config.display.animations.expandEasing = 'linear';
+    }
+
     config.display.classes.body = 'iphone';
   }
   else if (isChrome) {

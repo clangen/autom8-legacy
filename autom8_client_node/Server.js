@@ -165,12 +165,11 @@ autom8.server = (function() {
     var lines = renderScripts(doc).split(/\r\n|\n/);
 
     /* runs LESS, then minifies result */
-    var processCss = function(fn) {
-      var data = fs.readFileSync(fn);
+    var processCss = function(css) {
       var parser = new less.Parser();
       var result = "";
 
-      parser.parse(data.toString(), function (err, tree) {
+      parser.parse(css, function (err, tree) {
           if (!err) {
             result = tree.toCSS();
           }
@@ -191,15 +190,16 @@ autom8.server = (function() {
     process it */
     var regex = /.*href="(.*\.css)"/;
     var match;
-    var minified = "";
+    var allCss = "";
 
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(regex);
       if (match && match.length === 2) {
-        minified += processCss(match[1]);
+        allCss += fs.readFileSync(match[1]).toString();
       }
     }
 
+    var minified = processCss(allCss);
     doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
     doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
 

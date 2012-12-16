@@ -1,0 +1,10 @@
+.hardware-accel() { 
+  -webkit-backface-visibility: hidden;
+  -webkit-perspective: 1000;
+}
+
+.iphone {
+	.device-row {
+		.hardware-accel();
+	}
+}

@@ -1,8 +1,17 @@
 namespace("autom8.view").GroupedDeviceListView = (function() {
-  var EXPAND_DURATION_PER_ITEM = 50;
+  var EXPAND_DURATION_PER_ITEM = 10;
   var MAX_TOTAL_EXPAND_DURATION = 200;
 
   var View = autom8.mvc.View;
+
+  function collapse($div) {
+    $div.css("height", 0);
+  }
+
+  function expand($div) {
+    $div.css("height", "");
+    $div.css("height", $div.height());
+  }
 
   function createGroupedDeviceList(deviceList) {
       /* build map of groups */
@@ -44,6 +53,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
           var animations = autom8.Config.display.animations;
           var animate = animations.collapse;
+          var animation;
 
           var duration = Math.min(
             MAX_TOTAL_EXPAND_DURATION,
@@ -54,7 +64,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             $expander.html('+');
 
             if (animate) {
-              $items.slideUp(duration, animations.collapseEasing);
+              // animation = $items.slideUp(duration, animations.collapseEasing, callback);
+              collapse($items);
             }
             else {
               $items.hide();
@@ -65,7 +76,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             $expander.html('-');
 
             if (animate) {
-              $items.slideDown(duration, animations.expandEasing);
+              // animation = $items.slideDown(duration, animations.expandEasing, callback);
+              expand($items);
             }
             else {
               $items.show();

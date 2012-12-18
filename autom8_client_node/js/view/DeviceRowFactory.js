@@ -59,9 +59,9 @@ namespace("autom8.view").DeviceRowFactory = (function() {
     $container.append($group);
     $container.append($allDevices);
 
-    if (options.collapsed) {
-      $allDevices.hide();
-    }
+    _.defer(function() {
+      $allDevices.css("height", options.collapsed ? 0 : $allDevices.height());
+    });
 
     return $container;
   }

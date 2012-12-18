@@ -1,19 +1,21 @@
 namespace("autom8.view").GroupedDeviceListView = (function() {
-  var EXPAND_DURATION_PER_ITEM = 10;
-  var MAX_TOTAL_EXPAND_DURATION = 200;
+  var EXPAND_DURATION_PER_ITEM = 0.075;
+  var MAX_TOTAL_EXPAND_DURATION = 0.25;
 
   var View = autom8.mvc.View;
 
   var toggle = (function() {
     var pending = { };
 
-    return function($div, name, direction) {
+    return function($div, name, direction, duration) {
       if (pending[name]) {
         return;
       }
 
       pending[name] = 1;
-      $div.addClass('collapsible');
+      var oldStyle = $div.css('-webkit-transition');
+      var easing = (direction === "collapse") ? "ease-out" : "ease-in";
+      $div.css('-webkit-transition', 'height ' + duration + 's ' + easing);
 
       if (direction === "collapse") {
         $div.css("height", 0);
@@ -34,7 +36,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
           $div.show();
         }
 
-        $div.removeClass('collapsible');
+        $div.css('-webkit-transition', oldStyle || "");
         $div.unbind('webkitTransitionEnd', finished);
       };
 
@@ -92,7 +94,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             $expander.html('+');
 
             if (animate) {
-              toggle($items, group.name, "collapse");
+              toggle($items, group.name, "collapse", duration);
             }
             else {
               $items.hide();
@@ -103,7 +105,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             $expander.html('-');
 
             if (animate) {
-              toggle($items, group.name, "expand");
+              toggle($items, group.name, "expand", duration);
             }
             else {
               $items.show();

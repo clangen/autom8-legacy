@@ -53,7 +53,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
           var animations = autom8.Config.display.animations;
           var animate = animations.collapse;
-          var animation;
 
           var duration = Math.min(
             MAX_TOTAL_EXPAND_DURATION,
@@ -64,7 +63,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             $expander.html('+');
 
             if (animate) {
-              // animation = $items.slideUp(duration, animations.collapseEasing, callback);
               collapse($items);
             }
             else {
@@ -76,7 +74,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             $expander.html('-');
 
             if (animate) {
-              // animation = $items.slideDown(duration, animations.expandEasing, callback);
               expand($items);
             }
             else {

@@ -60,7 +60,14 @@ namespace("autom8.controller").DeviceListController = (function() {
 
       this.listView = newView;
       this.view.addChild(this.listView);
-      this.refresh();
+
+      if (this.deviceList) {
+        this.listView.setDeviceList(this.deviceList);
+        this.listView.setState("loaded");
+      }
+      else {
+        this.refresh();
+      }
 
       options = options || { };
       if (options.bindEvents !== false) {

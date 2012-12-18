@@ -39,8 +39,10 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       return $group;
     }
 
+    var hiddenHACK = options.collapsed ? ' style="display: none"' : '';
+
     var $container = $('<div class="device-group-container"></div>');
-    var $allDevices = $('<div class="device-group-devices"></div>');
+    var $allDevices = $('<div class="device-group-devices"' + hiddenHACK + '></div>');
 
     _.each(group.devices, function(device, index) {
       var deviceOptions = {

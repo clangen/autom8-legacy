@@ -1,6 +1,6 @@
 namespace("autom8.view").SwitcherView = (function() {
   var stateToHtmlMap = {
-    flat: "switch to grouped view <b>&gt;</b>",
+    flat: "switch to area view <b>&gt;</b>",
     grouped: "switch to flat view <b>&gt;</b>"
   };
 

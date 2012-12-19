@@ -67,8 +67,11 @@ body {
   .box();
   .box-orient(horizontal);
   border-bottom: 1px solid #2a2a2a;
-  padding-right: 10px;
   cursor: pointer;
+}
+
+.device-row.small {
+  padding-right: 69px;
 }
 
 .device-row-info {
@@ -108,12 +111,12 @@ body {
 }
 
 .row-spinner-container {
-  width: 56px;
+  width: 36px;
   height: 56px;
 }
 
 .small .row-spinner-container {
-  width: 46px;
+  width: 28px;
   height: 46px;
 }
 
@@ -123,6 +126,11 @@ body {
   .box-align(center);
   .box-orient(vertical);
   padding-left: 10px;
+  padding-right: 10px;
+}
+
+.expander.invisible {
+  visibility: hidden;
 }
 
 .expander-button {

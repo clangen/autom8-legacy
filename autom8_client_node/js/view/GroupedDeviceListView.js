@@ -9,10 +9,42 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
     return function($div, name, direction, duration) {
       if (pending[name]) {
-        return;
+        pending[name].cancel();
+        pending[name] = null;
       }
 
-      pending[name] = 1;
+      var canceled = false;
+      var finished = false;
+
+      var onTransitionEnd = function() {
+        if (finished) {
+          return; /* animation was canceled before this was raised */
+        }
+
+        finished = true;
+
+        /* if the animation was canceled it didn't reach it's desired
+        state, so don't flip the visibility bit */
+        if (!canceled) {
+          if (direction === "collapse") {
+            $div.hide();
+          }
+          else {
+            $div.show();
+          }
+        }
+
+        $div.css('-webkit-transition', oldStyle || "");
+        $div.unbind('webkitTransitionEnd', finished);
+      };
+
+      pending[name] = {
+        cancel: function() {
+          canceled = true;
+          onTransitionEnd();
+        }
+      };
+
       var oldStyle = $div.css('-webkit-transition');
       var easing = (direction === "collapse") ? "ease-out" : "ease-in";
       $div.css('-webkit-transition', 'height ' + duration + 's ' + easing);
@@ -26,21 +58,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         $div.css("height", $div.height());
       }
 
-      var finished = function(e) {
-        delete pending[name];
-
-        if (direction === "collapse") {
-          $div.hide();
-        }
-        else {
-          $div.show();
-        }
-
-        $div.css('-webkit-transition', oldStyle || "");
-        $div.unbind('webkitTransitionEnd', finished);
-      };
-
-      $div.bind('webkitTransitionEnd', finished);
+      $div.bind('webkitTransitionEnd', onTransitionEnd);
     };
   }());
 
@@ -90,6 +108,9 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             group.devices.length * EXPAND_DURATION_PER_ITEM);
 
           if (this.expandedGroups[group.name]) {
+            /* TODO: defer by passing into toggle() */
+            this.listView.views[groupIndex].listView.pause();
+
             delete this.expandedGroups[group.name];
             $expander.html('+');
 
@@ -101,6 +122,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             }
           }
           else {
+            this.listView.views[groupIndex].listView.resume();
+
             this.expandedGroups[group.name] = 1;
             $expander.html('-');
 

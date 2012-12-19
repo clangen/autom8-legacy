@@ -58,6 +58,13 @@ namespace("autom8.view").DeviceRowFactory = (function() {
 
     var groupRow = new autom8.mvc.View({el: $container});
 
+    var resume = !options.collapsed;
+    
+    var listView = groupRow.listView = groupRow.addChild(new autom8.mvc.View(), {
+      appendToElement: $allDevices,
+      resume: resume
+    });
+
     _.each(group.devices, function(device, index) {
       var deviceOptions = {
         attrs: {
@@ -68,7 +75,8 @@ namespace("autom8.view").DeviceRowFactory = (function() {
 
       var deviceRow = factory.create(device, deviceOptions);
       deviceRow.$el.addClass('small');
-      groupRow.addChild(deviceRow, {appendToElement: $allDevices});
+      
+      listView.addChild(deviceRow);
     });
 
     $container.append($group);
@@ -80,10 +88,10 @@ namespace("autom8.view").DeviceRowFactory = (function() {
     });
 
     if (group.devices.length === 1) {
-      $container.find('.expander').hide();
+      $container.find('.expander').addClass('invisible');
     }
 
-    groupRow.spinner = createSpinner({radius: 6});
+    groupRow.spinner = createSpinner({radius: 8});
     groupRow.addChild(groupRow.spinner, {appendAfterElement: '.device-row-info'});
 
     return groupRow;
@@ -188,7 +196,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
 
       var rowView = new autom8.mvc.View({el: result});
       rowView.spinner = createSpinner({radius: 6});
-      rowView.addChild(rowView.spinner, {appendAfterElement: '.device-row-info'});
+      rowView.addChild(rowView.spinner, {appendAfterElement: '.device-row-info', resume: false});
 
       return rowView;
     }

@@ -31,7 +31,7 @@ namespace("autom8.view").HeaderView = (function() {
 
       this.state = state;
       this.$el.addClass(this.state);
-      this.$('#hostname').html(window.location.hostname);
+      this.$('#hostname').html(/*window.location.hostname*/"ricochet.autom8.io");
       this.$('#header-button').html('sign out');
 
       switch (state) {

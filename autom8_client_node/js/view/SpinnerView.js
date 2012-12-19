@@ -29,10 +29,6 @@
           options.template, options.templateParams || { }));
       }
 
-      if (options.hide) {
-        this.hide();
-      }
-
       this.$spinnerEl = this.$el;
       if (options.spinnerSelector) {
         this.$spinnerEl = this.$(options.spinnerSelector) || this.$el;
@@ -44,17 +40,39 @@
         this.$el.addClass(options.containerClass);
       }
 
+      this.state = "disabled";
+
       if (options.start) {
         this.start();
       }
     },
 
-    start: function(options) {
-      options = options || { };
-      
-      if (options.show !== false) {
-        this.show();
+    onResume: function() {
+      if (this.state === "suspended") {
+        this.start();
       }
+    },
+
+    onPause: function() {
+      if (this.state === "running") {
+        this.state = "suspended";
+        this.stop();
+      }
+    },
+
+    spin: function(start) {
+      if (start === true || start === undefined) {
+        this.start();
+      }
+      else if (start === false) {
+        this.stop();
+      }
+    },
+
+    start: function() {
+      this.stop();
+      this.state = "running";
+      this.show();
 
       var self = this;
       _.defer(function() {
@@ -62,14 +80,10 @@
       });
     },
 
-    stop: function(options) {
-      options = options || { };
-
+    stop: function() {
+      this.state = "stopped";
       this.spinner.stop();
-
-      if (options.hide !== false) {
-        this.hide();
-      }
+      this.hide();
     }
   });
 }());

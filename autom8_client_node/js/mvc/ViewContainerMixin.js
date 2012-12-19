@@ -15,17 +15,29 @@
           view.resume(options.resumeOptions);
         }
 
-        if ((options.append !== false) && this.$el && view.$el) {
-          this.$el.append(view.$el);
-        }
-        else if (options.appendToElement && view.$el) {
+        if (options.appendToElement && view.$el) {
+          if (_.isString(options.appendToElement)) {
+            options.appendToElement = this.$(options.appendToElement).eq(0);
+          }
+
           options.appendToElement.append(view.$el);
         }
         else if (options.appendBeforeElement && view.$el) {
+          if (_.isString(options.appendBeforeElement)) {
+            options.appendBeforeElement = this.$(options.appendBeforeElement).eq(0);
+          }
+
           options.appendBeforeElement.before(view.$el);
         }
         else if (options.appendAfterElement && view.$el) {
+          if (_.isString(options.appendAfterElement)) {
+            options.appendAfterElement = this.$(options.appendAfterElement).eq(0);
+          }
+
           options.appendAfterElement.after(view.$el);
+        }
+        else if ((options.append !== false) && this.$el && view.$el) {
+          this.$el.append(view.$el);
         }
 
         this.views.push(view);

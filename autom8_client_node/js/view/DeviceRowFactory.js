@@ -2,6 +2,19 @@ namespace("autom8.view").DeviceRowFactory = (function() {
   var deviceRowTemplate = $("#autom8-View-DeviceRow").html();
   var groupRowTemplate = $("#autom8-View-GroupRow").html();
 
+  function createSpinner(options) {
+    options = options || { };
+
+    return new autom8.view.SpinnerView({
+      el: $('<div class="row-spinner-container"></div>'),
+      spinnerSelector: null,
+      spinnerOptions: {
+        radius: options.radius || 6,
+        className: 'row-spinner'
+      }
+    });
+  }
+
   function createFromGroup(group, options) {
     options = options || { };
 
@@ -40,22 +53,22 @@ namespace("autom8.view").DeviceRowFactory = (function() {
     }
 
     var hiddenHACK = options.collapsed ? ' style="display: none"' : '';
-
     var $container = $('<div class="device-group-container"></div>');
     var $allDevices = $('<div class="device-group-devices"' + hiddenHACK + '></div>');
 
+    var groupRow = new autom8.mvc.View({el: $container});
+
     _.each(group.devices, function(device, index) {
       var deviceOptions = {
-        elementOnly: true,
         attrs: {
           index: index,
           group: options.attrs.group || 0
         }
       };
 
-      var $device = autom8.view.DeviceRowFactory.create(device, deviceOptions);
-      $device.addClass('small');
-      $allDevices.append($device);
+      var deviceRow = factory.create(device, deviceOptions);
+      deviceRow.$el.addClass('small');
+      groupRow.addChild(deviceRow, {appendToElement: $allDevices});
     });
 
     $container.append($group);
@@ -70,7 +83,10 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       $container.find('.expander').hide();
     }
 
-    return $container;
+    groupRow.spinner = createSpinner({radius: 6});
+    groupRow.addChild(groupRow.spinner, {appendAfterElement: '.device-row-info'});
+
+    return groupRow;
   }
 
   function createFromLampOrAppliance(device, type) {
@@ -139,14 +155,14 @@ namespace("autom8.view").DeviceRowFactory = (function() {
   }
 
   /* public api */
-  return {
+  var factory = {
     create: function(device, options) {
       options = options || { };
       var result = $("<div/>");
 
       if (device && device.name && device.devices && device.devices.length) {
         /* we found a group! */
-        return new autom8.mvc.View({el: createFromGroup(device, options)});
+        return createFromGroup(device, options);
       }
 
       switch (device.get('type')) {
@@ -170,18 +186,13 @@ namespace("autom8.view").DeviceRowFactory = (function() {
         result.attr('data-' + key, value);
       });
 
-      if (options.elementOnly) {
-        return result;
-      }
+      var rowView = new autom8.mvc.View({el: result});
+      rowView.spinner = createSpinner({radius: 6});
+      rowView.addChild(rowView.spinner, {appendAfterElement: '.device-row-info'});
 
-      return new autom8.mvc.View({el: result});
-    },
-
-    createGroup: function(group) {
-      if (!group || !group.name || !group.devices || !group.devices.length) {
-        console.log('invalid device row');
-        return null;
-      }
+      return rowView;
     }
   };
+
+  return factory;
 }());

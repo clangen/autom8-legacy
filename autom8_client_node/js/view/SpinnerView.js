@@ -1,4 +1,4 @@
-namespace("autom8.view").SpinnerView = (function() {
+(function() {
   var View = autom8.mvc.View;
 
   var spinnerOptions = {
@@ -14,25 +14,30 @@ namespace("autom8.view").SpinnerView = (function() {
     shadow: true
   };
 
-  return View.extend({
+  namespace("autom8.view").SpinnerView = View.extend({
     onCreate: function(options) {
       /* make a copy because we're going to mutate it */
       options = _.extend({ }, options) || { };
 
-      options.template = options.template || '#autom8-View-LoadingRow';
-      options.templateParams = options.templateParams || { };
-      options.spinnerSelector = options.spinnerSelector || '.loading-spinner';
+      options.spinnerSelector = options.spinnerSelector;
+
       options.spinnerOptions = _.extend(
         { }, spinnerOptions, options.spinnerOptions);
 
-      this.$el.append(View.elementFromTemplateId(
-        options.template, options.templateParams));
+      if (options.template) {
+        this.$el.append(View.elementFromTemplateId(
+          options.template, options.templateParams || { }));
+      }
 
       if (options.hide) {
         this.hide();
       }
 
-      this.$spinnerEl = this.$(options.spinnerSelector) || this.$el;
+      this.$spinnerEl = this.$el;
+      if (options.spinnerSelector) {
+        this.$spinnerEl = this.$(options.spinnerSelector) || this.$el;
+      }
+
       this.spinner = new Spinner(options.spinnerOptions);
 
       if (options.containerClass) {

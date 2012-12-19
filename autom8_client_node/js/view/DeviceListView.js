@@ -14,7 +14,10 @@ namespace("autom8.view").DeviceListView = (function() {
       this.listView = this.addChild(
         new autom8.mvc.View({el: $('<div class="device-list"></div>')}));
 
-      this.spinnerView = this.addChild(new autom8.view.SpinnerView());
+      this.spinnerView = this.addChild(new autom8.view.SpinnerView({
+        template: '#autom8-View-LoadingRow',
+        spinnerSelector: '.loading-spinner'
+      }));
 
       this.deviceList = null;
       this.groupedDeviceList = {};

@@ -67,6 +67,7 @@ body {
   .box();
   .box-orient(horizontal);
   border-bottom: 1px solid #2a2a2a;
+  padding-right: 10px;
   cursor: pointer;
 }
 
@@ -106,12 +107,22 @@ body {
   background-color: #898989;
 }
 
+.row-spinner-container {
+  width: 56px;
+  height: 56px;
+}
+
+.small .row-spinner-container {
+  width: 46px;
+  height: 46px;
+}
+
 .expander {
   .box();
   .box-pack(center);
   .box-align(center);
   .box-orient(vertical);
-  padding: 0px 10px;
+  padding-left: 10px;
 }
 
 .expander-button {
@@ -228,7 +239,8 @@ body {
 }
 
 .device-group-devices {
-  margin: 0px 0px 10px 10px
+  margin: 0px 0px 0px 10px;
+  overflow: hidden;
 }
 
 .device-group-devices .button {
@@ -379,8 +391,4 @@ body {
 
 .dialog-button.touched {
   background-color: #898989;
-}
-
-.device-group-devices {
-  overflow: hidden;  
 }

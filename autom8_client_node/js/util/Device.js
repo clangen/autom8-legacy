@@ -61,7 +61,7 @@ namespace("autom8.util").Device = {
     var stats = this.getDeviceListStats(group.devices);
 
     var setAll = function(status) {
-      _.each(group.devices, function(device) {
+      group.devices.each(function(device) {
         if (device.get('status') == status) {
           return;
         }
@@ -225,7 +225,7 @@ namespace("autom8.util").Device = {
         someOn: false
       };
 
-      _.each(devices, function(device) {
+      devices.each(function(device) {
         switch (device.get('type')) {
         case autom8.DeviceType.SecuritySensor:
           stats.sensorCount++;

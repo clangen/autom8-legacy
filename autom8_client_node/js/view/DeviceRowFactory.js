@@ -65,7 +65,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       resume: resume
     });
 
-    _.each(group.devices, function(device, index) {
+    group.devices.each(function(device, index) {
       var deviceOptions = {
         attrs: {
           index: index,

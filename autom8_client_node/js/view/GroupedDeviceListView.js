@@ -75,7 +75,9 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       /* flatten to array so we can sort */
       var groupedDeviceList = [];
       _.each(groupMap, function(value, key) {
-        groupedDeviceList.push({name: key, devices: value});
+        groupedDeviceList.push({
+          name: key,
+          devices: new autom8.model.DeviceList(value)});
       });
 
       /* sort */
@@ -152,7 +154,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         if (groupIndex && itemIndex) {
           groupIndex = parseInt(groupIndex, 10);
           itemIndex = parseInt(itemIndex, 10);
-          var device = this.groupedDeviceList[groupIndex].devices[itemIndex];
+          var device = this.groupedDeviceList[groupIndex].devices.at(itemIndex);
           this.trigger('devicerow:clicked', device);
         }
         else if (groupIndex) {

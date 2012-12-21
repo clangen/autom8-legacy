@@ -91,13 +91,17 @@ namespace("autom8.controller").DeviceListController = (function() {
         this.views.flat.$el.addClass('active');
 
         /* start the animation */
+        this.animating = true;
         autom8.Animation.animate($container, "switch-view", {
           hwAccel: true,
-          duration: 0.35,
+          duration: 0.5,
+          easing: 'ease-in-out',
           initialClass: grouped ? '' : 'left',
           toggleClass: 'left',
           onCompleted: _.bind(function(canceled) {
             if (!canceled) {
+              this.animating = false;
+
               /* animation completed successfully, deactivate all of the
               non-visible views */
               _.each(this.views.all, function(view) {
@@ -132,11 +136,13 @@ namespace("autom8.controller").DeviceListController = (function() {
     },
 
     onSwitchViewClicked: function() {
-      if (this.listView === this.views.flat) {
-        this.setDeviceListView(this.views.grouped);
-      }
-      else {
-        this.setDeviceListView(this.views.flat);
+      if (!this.animating) {
+        if (this.listView === this.views.flat) {
+          this.setDeviceListView(this.views.grouped);
+        }
+        else {
+          this.setDeviceListView(this.views.flat);
+        }
       }
     },
 

@@ -45,7 +45,13 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.on('expired', this.resetMainController, this);
 
       this.view = new autom8.mvc.View({el: $("#main-content")});
-      this.spinnerView = new autom8.view.SpinnerView({el: $('#spinner-view'), start: true});
+      
+      this.spinnerView = new autom8.view.SpinnerView({
+        el: $('#spinner-view'),
+        template: '#autom8-View-LoadingRow',
+        spinnerSelector: '.loading-spinner',
+        start: true
+      });
 
       this.headerController = this.addChild(new autom8.controller.HeaderController());
 

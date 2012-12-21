@@ -12,13 +12,31 @@ namespace("autom8.controller").DeviceListController = (function() {
         }
       });
 
+      /* view user uses to initialize view switch */
       this.switcherView = this.view.addChild(new autom8.view.SwitcherView());
 
+      /* views the user can switch between */
       this.views = {
-        flat: new autom8.view.DeviceListView(),
-        grouped: new autom8.view.GroupedDeviceListView()
+        flat: new autom8.view.DeviceListView({className: 'panel'}),
+        grouped: new autom8.view.GroupedDeviceListView({className: 'panel'})
       };
 
+      this.views.all = _.values(this.views);
+
+      /* container is used to host the transition animation between
+      grouped and area modes */
+      this.listViewContainer = this.view.addChild(new autom8.mvc.View({
+        className: 'device-list-view-container'
+      }));
+
+      /* add the children to the view container, but don't actually add
+      them to the DOM; setDeviceListView will take care of adding them
+      to the DOM and animating them into place */
+      this.listViewContainer.addChild(this.views.flat);
+      this.listViewContainer.addChild(this.views.grouped);
+
+      /* set the initial view, but don't bind the events. the events
+      will be bound when the controller is resumed */
       this.setDeviceListView(this.views[this.switcherView.getState()], {bindEvents: false});
     },
 
@@ -51,18 +69,55 @@ namespace("autom8.controller").DeviceListController = (function() {
       }
 
       if (this.listView) {
-        this.view.removeChild(this.listView);
         this.listView.off(null, null, this);
       }
 
+      var $container = this.listViewContainer.$el;
       var grouped = (newView === this.views.grouped);
+
       this.switcherView.setState(grouped ? "grouped" : "flat");
 
+      /* if there was no previous view we don't need to animate, just
+      add it and return */
+      if (!this.listView) {
+        newView.$el.addClass('active');
+      }
+      /* otherwise, one of the views is visible, so we need to animate
+      it out of the scene, and animate the new view in */
+      else {
+        /* to complete the animation successfully we need to have
+        both views visible before the animation begins */
+        this.views.grouped.$el.addClass('active');
+        this.views.flat.$el.addClass('active');
+
+        /* start the animation */
+        autom8.Animation.animate($container, "switch-view", {
+          hwAccel: true,
+          duration: 0.35,
+          initialClass: grouped ? '' : 'left',
+          toggleClass: 'left',
+          onCompleted: _.bind(function(canceled) {
+            if (!canceled) {
+              /* animation completed successfully, deactivate all of the
+              non-visible views */
+              _.each(this.views.all, function(view) {
+                if (view !== newView) {
+                  view.$el.removeClass('active');
+                }
+              });
+
+              /* reset the viewport, as now there should only be the active
+              view visible */
+              $container.removeClass('left');
+            }
+          }, this)
+        });
+      }
+
       this.listView = newView;
-      this.view.addChild(this.listView);
 
       if (this.deviceList) {
-        this.listView.setDeviceList(this.deviceList);
+        _.invoke(this.views.all, 'setDeviceList', this.deviceList);
         this.listView.setState("loaded");
       }
       else {
@@ -86,7 +141,7 @@ namespace("autom8.controller").DeviceListController = (function() {
     },
 
     refresh: function() {
-      this.listView.setState("loading");
+      _.invoke(this.views.all, 'setState', 'loading');
       autom8.util.Device.getDeviceList();
     },
 

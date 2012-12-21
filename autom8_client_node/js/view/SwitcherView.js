@@ -1,7 +1,7 @@
 namespace("autom8.view").SwitcherView = (function() {
   var stateToHtmlMap = {
     flat: "switch to area view <b>&gt;</b>",
-    grouped: "switch to flat view <b>&gt;</b>"
+    grouped: "<b>&lt;</b> switch to flat view"
   };
 
   var View = autom8.mvc.View;
@@ -21,6 +21,12 @@ namespace("autom8.view").SwitcherView = (function() {
       if (this.state === state) {
         return;
       }
+
+      if (this.state) {
+        this.$el.removeClass(this.state);
+      }
+
+      this.$el.addClass(state);
 
       try {
         localStorage['autom8.lastDevicesView'] = state;

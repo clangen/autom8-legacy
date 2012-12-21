@@ -4,6 +4,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
   var View = autom8.mvc.View;
 
+  /* TODO: use autom8.Animation.animate() */
   var toggle = (function() {
     var pending = { };
 

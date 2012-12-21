@@ -40,6 +40,10 @@
           this.$el.append(view.$el);
         }
 
+        if (options.addClass) {
+          view.$el.addClass(options.addClass);
+        }
+
         this.views.push(view);
         view.parent = this;
 

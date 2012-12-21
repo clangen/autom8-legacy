@@ -227,10 +227,15 @@ body {
   text-shadow: 1px 1px 4px #333;
   border-bottom: 1px solid #1f1f1f;
   background-color: #444;
+  -webkit-transition: all .4s ease;
 }
 
 .switch-devices-view.touched {
   background-color: #3a3a3a;
+}
+
+.switch-devices-view.grouped {
+  text-align: left;
 }
 
 .button {
@@ -399,4 +404,30 @@ body {
 
 .dialog-button.touched {
   background-color: #898989;
+}
+
+.device-list-view-container {
+  .box();
+  .box-orient(horizontal);
+  position: relative;
+  margin-left: 0;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.device-list-view-container.left {
+  margin-left: -100%;
+}
+
+.panel.active {
+  display: block;
+}
+
+.panel {
+  top: 0;
+  margin-left: 0;
+  overflow: auto;
+  min-width: 100%;
+  min-height: 100%;
+  display: none;
 }

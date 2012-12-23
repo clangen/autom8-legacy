@@ -16,6 +16,7 @@
     },
 
     create: function(options) {
+      this.options = options;
       this.applyStateChange('create', options);
       this.destroyed = false;
       this.paused = true;

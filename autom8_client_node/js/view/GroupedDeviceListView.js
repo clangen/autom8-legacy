@@ -17,14 +17,15 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       /* flatten to array so we can sort */
       var groupedDeviceList = [];
       _.each(groupMap, function(value, key) {
-        groupedDeviceList.push({
+        groupedDeviceList.push(new autom8.model.DeviceGroup({
           name: key,
-          devices: new autom8.model.DeviceList(value)});
+          deviceList: new autom8.model.DeviceList(value)
+        }));
       });
 
       /* sort */
       groupedDeviceList.sort(function(a, b) {
-        return a.name > b.name;
+        return a.name() > b.name();
       });
 
       return groupedDeviceList;
@@ -43,24 +44,26 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         var groupIndex = $group.attr("data-group");
         if (groupIndex) {
           var group = this.groupedDeviceList[Number(groupIndex)];
+          var groupDevices = group.deviceList();
+          var groupName = group.name();
 
           /* floating point value that represents seconds */
           var duration = Math.min(
             MAX_TOTAL_EXPAND_DURATION,
-            group.devices.length * EXPAND_DURATION_PER_ITEM);
+            groupDevices.length * EXPAND_DURATION_PER_ITEM);
 
           /* if true we collapse, otherwise we expand */
-          var collapse = this.expandedGroups[group.name];
+          var collapse = this.expandedGroups[group.name()];
 
           /* remember group collapsed state and set the expander badge */
           if (collapse) {
             this.listView.views[groupIndex].listView.pause();
-            delete this.expandedGroups[group.name];
+            delete this.expandedGroups[group.name()];
             $expander.html('+');
           }
           else {
             this.listView.views[groupIndex].listView.resume();
-            this.expandedGroups[group.name] = 1;
+            this.expandedGroups[group.name()] = 1;
             $expander.html('-');
           }
 
@@ -112,7 +115,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         if (groupIndex && itemIndex) {
           groupIndex = parseInt(groupIndex, 10);
           itemIndex = parseInt(itemIndex, 10);
-          var device = this.groupedDeviceList[groupIndex].devices.at(itemIndex);
+          var device = this.groupedDeviceList[groupIndex].deviceList().at(itemIndex);
           this.trigger('devicerow:clicked', device);
         }
         else if (groupIndex) {
@@ -137,7 +140,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
     },
 
     onRender: function() {
-      this.listView.clearChildren();
+      this.listView.clearChildren({destroy: true});
 
       if (this.groupedDeviceList.length < 1) {
         return;
@@ -147,7 +150,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       _.each(this.groupedDeviceList, function(group, index) {
         var options = {
           asTree: true,
-          collapsed: !self.expandedGroups[group.name],
+          collapsed: !self.expandedGroups[group.name()],
           attrs: {
             group: index
           }

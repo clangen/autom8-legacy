@@ -197,9 +197,16 @@ namespace("autom8.controller").DeviceListController = (function() {
       var address = body.address;
 
       this.deviceList.find(_.bind(function(device) {
+        /* TODO: update in place unless we have a security alert, in which
+        case we need to resort and update all */
+
         if (device.get('address') === address) {
-          device.set({'attrs': body.attributes});
-          device.set({'status': body.status});
+          device.set({
+            'attrs': body.attributes,
+            'status': body.status,
+            'updating': false
+          });
+
           this.deviceList.sort();
           this.listView.render();
           return true;

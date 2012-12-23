@@ -1,10 +1,10 @@
 namespace("autom8.util").Device = {
-  setDeviceStatus: function(deviceAddress, newStatus) {
+  setDeviceStatus: function(device, newStatus) {
     var body = {
       command: {
         name: "set_status",
         type: autom8.CommandType.PowerLine,
-        address: deviceAddress,
+        address: device.get('address'),
         parameters: {
           status: newStatus
         }
@@ -14,33 +14,32 @@ namespace("autom8.util").Device = {
     autom8.client.send(
       "autom8://request/send_device_command",
       JSON.stringify(body));
+
+    device.set({'updating': true});
   },
 
   toggleLampOrApplianceStatus: function(device) {
-    var address = device.get('address');
-
     if (device.get('status') === autom8.DeviceStatus.On) {
-      autom8.util.Device.setDeviceStatus(address, autom8.DeviceStatus.Off);
+      autom8.util.Device.setDeviceStatus(device, autom8.DeviceStatus.Off);
     }
     else {
-      autom8.util.Device.setDeviceStatus(address, autom8.DeviceStatus.On);
+      autom8.util.Device.setDeviceStatus(device, autom8.DeviceStatus.On);
     }
   },
 
   toggleSecuritySensorStatus: function(device) {
-    var address = device.get('address');
-    var tripped = device.tripped();
-    var armed = device.armed();
-    var on = device.on();
+    var tripped = device.isTripped();
+    var armed = device.isArmed();
+    var on = device.isOn();
 
     if (on && tripped) {
-      autom8.util.Device.confirmResetSecuritySensor(address);
+      autom8.util.Device.confirmResetSecuritySensor(device);
     }
     else if (armed) {
-      autom8.util.Device.confirmDisarmSecuritySensor(address);
+      autom8.util.Device.confirmDisarmSecuritySensor(device);
     }
     else {
-      autom8.util.Device.setSecuritySensorArmed(address, true);
+      autom8.util.Device.setSecuritySensorArmed(device, true);
     }
   },
 
@@ -54,14 +53,18 @@ namespace("autom8.util").Device = {
       case autom8.DeviceType.SecuritySensor:
         this.toggleSecuritySensorStatus(device);
         break;
+
+      default:
+        return;
     }
   },
 
   toggleDeviceGroupStatus: function(group) {
-    var stats = this.getDeviceListStats(group.devices);
+    var devices = group.deviceList();
+    var stats = this.getDeviceListStats(devices);
 
     var setAll = function(status) {
-      group.devices.each(function(device) {
+      devices.each(function(device) {
         if (device.get('status') == status) {
           return;
         }
@@ -71,8 +74,7 @@ namespace("autom8.util").Device = {
           return;
         }
 
-        var addr = device.get('address');
-        autom8.util.Device.setDeviceStatus(addr, status);
+        autom8.util.Device.setDeviceStatus(device, status);
       });
     };
 
@@ -95,12 +97,12 @@ namespace("autom8.util").Device = {
     }
   },
 
-  resetSecuritySensor: function(deviceAddress) {
+  resetSecuritySensor: function(device) {
     var body = {
       command: {
         name: "reset_sensor_status",
         type: autom8.CommandType.PowerLine,
-        address: deviceAddress,
+        address: device.get('address'),
         parameters: {
         }
       }
@@ -109,6 +111,8 @@ namespace("autom8.util").Device = {
     autom8.client.send(
       "autom8://request/send_device_command",
       JSON.stringify(body));
+
+    device.set({'updating': true});
   },
 
   confirmOnOrOffForPartialGroup: function(group, onCallback, offCallback) {
@@ -132,7 +136,7 @@ namespace("autom8.util").Device = {
     autom8.util.Dialog.show(dialog);
   },
 
-  confirmResetSecuritySensor: function(deviceAddress) {
+  confirmResetSecuritySensor: function(device) {
     var dialog = {
       title: "Confirm reset",
       message: "Are you sure you want to reset this security alert?",
@@ -141,7 +145,8 @@ namespace("autom8.util").Device = {
         {
           caption: "yes",
           callback: function() {
-            autom8.util.Device.resetSecuritySensor(deviceAddress);
+            var address = device.get('address');
+            autom8.util.Device.resetSecuritySensor(address);
           },
           positive: true
         },
@@ -156,7 +161,7 @@ namespace("autom8.util").Device = {
     autom8.util.Dialog.show(dialog);
   },
 
-  confirmDisarmSecuritySensor: function(deviceAddress) {
+  confirmDisarmSecuritySensor: function(device) {
     var dialog = {
       title: "Confirm disarm",
       message: "Are you sure you want to disarm this security sensor?",
@@ -165,7 +170,7 @@ namespace("autom8.util").Device = {
         {
           caption: "yes",
           callback: function() {
-            autom8.util.Device.setSecuritySensorArmed(deviceAddress, false);
+            autom8.util.Device.setSecuritySensorArmed(device, false);
           },
           positive: true
         },
@@ -180,12 +185,12 @@ namespace("autom8.util").Device = {
     autom8.util.Dialog.show(dialog);
   },
 
-  setSecuritySensorArmed: function(deviceAddress, armed) {
+  setSecuritySensorArmed: function(device, armed) {
     var body = {
       command: {
         name: "arm_sensor",
         type: autom8.CommandType.PowerLine,
-        address: deviceAddress,
+        address: device.get('address'),
         parameters: {
           set_armed: !!armed
         }
@@ -195,6 +200,8 @@ namespace("autom8.util").Device = {
     autom8.client.send(
       "autom8://request/send_device_command",
       JSON.stringify(body));
+
+    device.set({'updating': true});
   },
 
   getDeviceList: function() {
@@ -230,11 +237,11 @@ namespace("autom8.util").Device = {
         case autom8.DeviceType.SecuritySensor:
           stats.sensorCount++;
           
-          if (device.tripped()) {
+          if (device.isTripped()) {
             stats.trippedCount++;
           }
 
-          if (device.armed()) {
+          if (device.isArmed()) {
             stats.armedCount++;
           }
           break;

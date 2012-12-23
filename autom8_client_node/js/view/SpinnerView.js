@@ -70,6 +70,15 @@
     },
 
     start: function() {
+      if (this.paused) {
+        this.state = "suspended";
+        return;
+      }
+
+      if (this.state === "running") {
+        return;
+      }
+
       this.stop();
       this.state = "running";
       this.show();

@@ -48,14 +48,14 @@ namespace("autom8.view").SignInView = (function() {
 
       switch (state) {
         case 'loading':
-          this.passwordRow.hide();
+          this.passwordRow.$el.addClass('gone');
           this.spinnerRow.start();
           break;
 
         case 'idle':
         default:
           this.spinnerRow.stop();
-          this.passwordRow.show();
+          this.passwordRow.$el.removeClass('gone');
           this.focusPasswordInput(true);
           break;
       }

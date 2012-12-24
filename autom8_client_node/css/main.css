@@ -317,6 +317,10 @@ body {
   padding: 10px;
 }
 
+.password-row.gone {
+  display: none;
+}
+
 .sign-in-button.touched,
 .header-button.touched {
   background-color: #898989;

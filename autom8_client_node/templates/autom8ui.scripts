@@ -17,6 +17,7 @@
 <script src="js/view/DeviceRow.js" type="text/javascript"></script>
 <script src="js/view/ApplianceRow.js" type="text/javascript"></script>
 <script src="js/view/SecuritySensorRow.js" type="text/javascript"></script>
+<script src="js/view/GroupRowListView.js" type="text/javascript"></script>
 <script src="js/view/GroupRow.js" type="text/javascript"></script>
 <script src="js/view/DeviceRowFactory.js" type="text/javascript"></script>
 <script src="js/view/SignInView.js" type="text/javascript"></script>  

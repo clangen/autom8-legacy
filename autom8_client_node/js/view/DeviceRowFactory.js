@@ -5,11 +5,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       var result = $("<div/>");
 
       var rowView = null;
-      var spinnerRadius = 6;
-
       if (device && device.name && device.deviceList) {
-        /* we found a group! */
-        spinnerRadius = 8;
         rowView = new autom8.view.GroupRow(options);
       }
       else {

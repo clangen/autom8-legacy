@@ -46,6 +46,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
           var group = this.groupedDeviceList[Number(groupIndex)];
           var groupDevices = group.deviceList();
           var groupName = group.name();
+          var groupListView = this.listView.views[groupIndex].listView;
 
           /* floating point value that represents seconds */
           var duration = Math.min(
@@ -53,16 +54,14 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
             groupDevices.length * EXPAND_DURATION_PER_ITEM);
 
           /* if true we collapse, otherwise we expand */
-          var collapse = this.expandedGroups[group.name()];
+          var collapse = !!this.expandedGroups[group.name()];
 
           /* remember group collapsed state and set the expander badge */
           if (collapse) {
-            this.listView.views[groupIndex].listView.pause();
             delete this.expandedGroups[group.name()];
             $expander.html('+');
           }
           else {
-            this.listView.views[groupIndex].listView.resume();
             this.expandedGroups[group.name()] = 1;
             $expander.html('-');
           }
@@ -87,6 +86,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
               onCompleted: _.bind(function(canceled) {
                 if (!canceled) {
                   $items[collapse ? 'hide' : 'show']();
+                  groupListView[collapse ? 'pause' : 'resume']();
+                  groupListView.setCollapsed(collapse);
                 }
               }, this)
             });
@@ -94,6 +95,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
           /* no animation, just toggle visibility */
           else {
             $items[collapse ? 'hide' : 'show']();
+            groupListView[collapse ? 'pause' : 'resume']();
+            groupListView.setCollapsed(collapse);
           }
 
           /* remember which groups are expanded so we can restore this

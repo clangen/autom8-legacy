@@ -35,7 +35,9 @@
         }
 
         if (options.onCompleted) {
-          options.onCompleted(canceled);
+          _.defer(function() {
+            options.onCompleted(canceled);
+          });
         }
       };
 

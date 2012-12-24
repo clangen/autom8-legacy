@@ -48,7 +48,12 @@ namespace("autom8.view").GroupRow = (function() {
     },
 
     renderUpdatedGroup: function(options) {
-      var $group = renderGroup(this.device, this.options);
+      /* TODO: hacky? the collapsed var is only set in the options when
+      this view is initialized, but when we update we need to pull the
+      current state from the subview... seems this could be better */
+      options.collapsed = this.listView.collapsed;
+
+      var $group = renderGroup(this.device, options);
       $group.insertBefore(this.$group);
       this.$group.remove();
       this.$group = $group;
@@ -73,10 +78,11 @@ namespace("autom8.view").GroupRow = (function() {
 
       var resume = !options.collapsed;
       
-      var listView = this.listView = this.addChild(new autom8.mvc.View(), {
-        appendToElement: $allDevices,
-        resume: resume
+      var listView = this.listView = new autom8.view.GroupRowListView({
+        collapsed: !!options.collapsed
       });
+
+      this.addChild(listView, {appendToElement: $allDevices, resume: resume});
 
       var devices = group.deviceList();
       devices.each(function(device, index) {

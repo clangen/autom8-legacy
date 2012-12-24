@@ -11,7 +11,7 @@
           throw new Error("cannot add a destroyed view");
         }
 
-        if (options.resume !== false && view.paused) {
+        if (options.resume !== false && !this.paused && view.paused) {
           view.resume(options.resumeOptions);
         }
 

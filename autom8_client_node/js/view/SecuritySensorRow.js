@@ -15,10 +15,10 @@ namespace("autom8.view").SecuritySensorRow = (function() {
       var tripped = device.isTripped();
       var armed = device.isArmed();
       var on = device.isOn();
+      var rowClass = 'device-row off';
 
       var args = {
         action: "",
-        rowClass: "device-row off",
         buttonText: "",
         buttonClass: "",
         text: device.get('label'),
@@ -28,19 +28,22 @@ namespace("autom8.view").SecuritySensorRow = (function() {
       if (on && tripped) {
         args.buttonClass = "button alert";
         args.buttonText = "alert";
-        args.rowClass = "device-row alert";
+        rowClass = "device-row alert";
       }
       else if (armed) {
         args.buttonClass = "button on";
-        args.rowClass = "device-row on";
         args.buttonText = "armed";
+        rowClass = "device-row on";
       }
       else {
         args.buttonClass = "button off";
         args.buttonText = "off";
       }
 
-      this.setElement(autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args));
+      this.$el.empty();
+      this.$el.attr('class', rowClass);
+      this.$el.append(autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args));
+      this.appendSpinner();
     }
   });
 }());

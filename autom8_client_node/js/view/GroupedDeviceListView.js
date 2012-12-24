@@ -149,7 +149,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       var self = this;
       _.each(this.groupedDeviceList, function(group, index) {
         var options = {
-          asTree: true,
           collapsed: !self.expandedGroups[group.name()],
           attrs: {
             group: index
@@ -162,6 +161,10 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
     },
 
     setDeviceList: function(deviceList) {
+      if (deviceList === this.deviceList) {
+        return;
+      }
+
       this.deviceList = deviceList;
       this.groupedDeviceList = createGroupedDeviceList(deviceList);
       this.render();

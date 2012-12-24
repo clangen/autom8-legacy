@@ -75,10 +75,6 @@
         return;
       }
 
-      if (this.state === "running") {
-        return;
-      }
-
       this.stop();
       this.state = "running";
       this.show();

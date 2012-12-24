@@ -11,9 +11,9 @@ namespace("autom8.view").ApplianceRow = (function() {
 
     onRender: function() {
       var address = this.device.get('address');
+      var rowClass = 'device-row off';
 
       var args = {
-        rowClass: "",
         buttonClass: "",
         buttonText: "",
         text: this.device.get('label'),
@@ -30,15 +30,17 @@ namespace("autom8.view").ApplianceRow = (function() {
       if (this.device.get('status') == autom8.DeviceStatus.On) {
         args.buttonClass = "button on";
         args.buttonText = "on";
-        args.rowClass = "device-row on";
+        rowClass = "device-row on";
       }
       else {
         args.buttonClass = "button off";
         args.buttonText = "off";
-        args.rowClass = "device-row off";
       }
 
-      this.setElement(autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args));
+      this.$el.empty();
+      this.$el.attr('class', rowClass);
+      this.$el.append(autom8.mvc.View.elementFromTemplate(deviceRowTemplate, args));
+      this.appendSpinner();
     }
   });
 }());

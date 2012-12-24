@@ -50,8 +50,18 @@
         return view;
       },
 
+      destroyChild: function(view, options) {
+        options = options || { };
+        options.destroy = true;
+        this.removeChild(view, options);
+      },
+
       removeChild: function(view, options) {
         options = options || { };
+
+        if (!view) {
+          return;
+        }
 
         if (view.parent !== this) {
           throw new Error("view is not a subview of this view");

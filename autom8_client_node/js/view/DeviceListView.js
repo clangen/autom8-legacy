@@ -42,6 +42,10 @@ namespace("autom8.view").DeviceListView = (function() {
     },
 
     setDeviceList: function(deviceList) {
+      if (this.deviceList === deviceList) {
+        return;
+      }
+
       this.deviceList = deviceList;
       this.render();
     },

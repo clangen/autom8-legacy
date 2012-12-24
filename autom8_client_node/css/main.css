@@ -70,7 +70,7 @@ body {
   cursor: pointer;
 }
 
-.device-row.small {
+.device-row-devices .device-row {
   padding-right: 69px;
 }
 
@@ -113,11 +113,6 @@ body {
 .row-spinner-container {
   width: 36px;
   height: 56px;
-}
-
-.small .row-spinner-container {
-  width: 28px;
-  height: 46px;
 }
 
 .expander {
@@ -250,28 +245,6 @@ body {
   cursor: pointer;
 }
 
-.device-group-devices {
-  margin: 0px 0px 0px 10px;
-  overflow: hidden;
-}
-
-.device-group-devices .button {
-  width: 48px;
-}
-
-.device-row.small {
-  font-size: 80%;
-}
-
-.small .device-row-info {
-  padding-left: 18px;
-}
-
-.small .button {
-  height: 46px;
-  width: 46px;
-}
-
 .button-subtext {
   font-size: 60%;
   font-weight: normal;
@@ -297,6 +270,34 @@ body {
 .button.alert {
   background-color: #cc0000;
   color: #ffffff;
+}
+
+.device-group-devices {
+  margin: 0px 0px 0px 10px;
+  overflow: hidden;
+}
+
+.device-group-devices .button {
+  width: 48px;
+}
+
+.device-group-devices .device-row {
+  font-size: 80%;
+}
+
+.device-group-devices .device-row-info {
+  padding-left: 18px;
+}
+
+.device-group-devices .button {
+  height: 46px;
+  width: 46px;
+}
+
+.device-group-devices .row-spinner-container {
+  width: 28px;
+  height: 46px;
+  padding-right: 10px;
 }
 
 .password {

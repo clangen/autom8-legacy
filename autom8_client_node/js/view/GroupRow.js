@@ -3,10 +3,9 @@ namespace("autom8.view").GroupRow = (function() {
 
   var _super_ = autom8.view.DeviceRow;
 
-  function renderGroup(device, options) {
+  function renderGroup(group, options) {
       options = options || { };
 
-      var group = device;
       var stats = autom8.util.Device.getDeviceListStats(group.deviceList());
       var allOn = stats.allOn || stats.allArmed;
       var someOn = stats.someOn || stats.someArmed;
@@ -34,22 +33,42 @@ namespace("autom8.view").GroupRow = (function() {
       return autom8.mvc.View.elementFromTemplate(groupRowTemplate, args);
   }
 
+  function addDataAttributes($div, map) {
+    _.each(map, function(value, key) {
+      $div.attr('data-' + key, value);
+    });
+  }
+
   return _super_.extend({
+    className: 'device-group-container',
+
     setDevice: function(device) {
       _super_.prototype.setDevice.call(this, device);
       this.render();
     },
 
-    onRender: function() {
-      var options = this.options || { };
+    renderUpdatedGroup: function(options) {
       var $group = renderGroup(this.device, this.options);
+      $group.insertBefore(this.$group);
+      this.$group.remove();
+      this.$group = $group;
+      this.appendSpinner({radius: 8});
+      addDataAttributes($group, options.attrs);
+    },
 
-      if (options.asTree !== true) {
-        return $group;
+    onRender: function(renderOptions) {
+      var options = this.options || { };
+      var group = this.device;
+
+      /* if this is due to a device change, just render the group row;
+      the sub-rows will re-render themselves automatically if necessary */
+      if (renderOptions && renderOptions.change) {
+        this.renderUpdatedGroup(options);
+        return;
       }
 
+      var $group = renderGroup(this.device, this.options);
       var hiddenHACK = options.collapsed ? ' style="display: none"' : '';
-      var $container = $('<div class="device-group-container"></div>');
       var $allDevices = $('<div class="device-group-devices"' + hiddenHACK + '></div>');
 
       var resume = !options.collapsed;
@@ -69,28 +88,26 @@ namespace("autom8.view").GroupRow = (function() {
         };
 
         var deviceRow = autom8.view.DeviceRowFactory.create(device, deviceOptions);
-        deviceRow.$el.addClass('small');
-        
         listView.addChild(deviceRow);
       });
 
-      $container.append($group);
-      $container.append($allDevices);
+      this.$el.empty();
+      this.$el.append($group);
+      this.$el.append($allDevices);
+      this.$group = $group;
+      this.$allDevices = $allDevices;
+
+      this.appendSpinner({radius: 8});
+      addDataAttributes($group, options.attrs);
+
+      if (devices.length === 1) {
+        this.$el.find('.expander').addClass('invisible');
+      }
 
       _.defer(function() {
         $allDevices.css("height", options.collapsed ? 0 : $allDevices.height());
         $allDevices[options.collapsed ? 'hide' : 'show']();
       });
-
-      if (devices.length === 1) {
-        $container.find('.expander').addClass('invisible');
-      }
-
-      _.each(options.attrs, function(value, key) {
-        $group.attr('data-' + key, value);
-      });
-
-      this.setElement($container);
     }
   });
 }());

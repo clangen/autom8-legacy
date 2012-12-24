@@ -166,7 +166,7 @@ namespace("autom8.controller").DeviceListController = (function() {
 
         case "autom8://response/device_status_updated":
         case "autom8://response/sensor_status_changed":
-          this.onDeviceUpdatedResponse(body);
+          this.onDeviceUpdatedResponse(uri, body);
           break;
       }
     },
@@ -193,22 +193,42 @@ namespace("autom8.controller").DeviceListController = (function() {
       this.listView.setState("loaded");
     },
 
-    onDeviceUpdatedResponse: function(body) {
+    onDeviceUpdatedResponse: function(uri, body) {
       var address = body.address;
+      var sensorEvent = (uri === "autom8://response/sensor_status_changed");
 
       this.deviceList.find(_.bind(function(device) {
-        /* TODO: update in place unless we have a security alert, in which
-        case we need to resort and update all */
-
         if (device.get('address') === address) {
+          var resort = false;
+
+          /* we need to resort if we had a sensor that changed tripped status */
+          if (sensorEvent) {
+            var isTripped = !!body.attributes.tripped;
+            var wasTripped = !!device.isTripped();
+            if (isTripped !== wasTripped) {
+              resort = true;
+            }
+          }
+
+          /* if we're going to resort, set the silent bit. otherwise, if silent
+          is not set, the individual rows that represent this device will redraw
+          automatically */
           device.set({
             'attrs': body.attributes,
             'status': body.status,
             'updating': false
+          }, {
+            silent: resort
           });
 
-          this.deviceList.sort();
-          this.listView.render();
+          /* a full re-sort/render pass is very heavy weight, so we only
+          do it if we know the sort order may have updated; right now that
+          only happens when a sensor is tripped */
+          if (resort) {
+            this.deviceList.sort();
+            this.listView.render();
+          }
+
           return true;
         }
 

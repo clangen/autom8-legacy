@@ -34,13 +34,6 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       }
 
       rowView.setDevice(device);
-      rowView.spinner = autom8.view.DeviceRow.createSpinner({radius: spinnerRadius});
-      rowView.addChild(rowView.spinner, {appendAfterElement: '.device-row-info'});
-
-      if (device.get('updating')) {
-        rowView.spinner.start();
-      }
-
       return rowView;
     }
   };

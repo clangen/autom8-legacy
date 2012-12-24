@@ -55,8 +55,12 @@
 
     onPause: function() {
       if (this.state === "running") {
-        this.state = "suspended";
         this.stop();
+
+        /* it's important to set the suspended state after we
+        stopped, that way the next time we're resumed we start
+        spinning again */
+        this.state = "suspended";
       }
     },
 

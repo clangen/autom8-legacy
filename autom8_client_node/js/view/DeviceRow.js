@@ -50,10 +50,16 @@ namespace("autom8.view").DeviceRow = (function() {
 
     appendSpinner: function(options) {
       if (this.spinner) {
-        this.destroyChild(this.spinner);
+        /* re-use existing spinner if it already exists */
+        this.removeChild(this.spinner, {
+          destroy: false,
+          pause: false
+        });
+      }
+      else {
+        this.spinner = autom8.view.DeviceRow.createSpinner(options);
       }
 
-      this.spinner = autom8.view.DeviceRow.createSpinner(options);
       this.addChild(this.spinner, { appendAfterElement: '.device-row-info' });
     }
   });

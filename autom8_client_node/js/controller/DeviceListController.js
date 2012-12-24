@@ -75,10 +75,12 @@ namespace("autom8.controller").DeviceListController = (function() {
         _.each(this.views.all, function(view) {
           if (view !== newView) {
             view.hide();
+            view.pause();
           }
         });
 
         newView.show();
+        newView.resume();
         return;
       }
 
@@ -115,12 +117,14 @@ namespace("autom8.controller").DeviceListController = (function() {
               _.each(this.views.all, function(view) {
                 if (view !== newView) {
                   view.$el.removeClass('active');
+                  view.pause();
                 }
               });
 
               /* reset the viewport, as now there should only be the active
               view visible */
               $container.removeClass('left');
+              newView.resume();
             }
           }, this)
         });

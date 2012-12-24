@@ -1,7 +1,7 @@
 (function() {
   var exports = { };
 
-  exports.animate =  (function() {
+  exports.css =  (function() {
     var pending = { };
 
     return function($div, name, options) {
@@ -28,8 +28,9 @@
           var $hwAccelEl = options.$hwAccelEl || $div;
 
           $hwAccelEl.css({
-            '-webkit-backface-visibility': oldBackfaceVisibility,
-            '-webkit-perspective': oldPerspective
+            '-webkit-transform': oldTransform
+            // '-webkit-backface-visibility': oldBackfaceVisibility,
+            // '-webkit-perspective': oldPerspective
           });
         }
 
@@ -57,16 +58,23 @@
       /* invoked when animation finishes */
       $div.bind('webkitTransitionEnd', onTransitionEnd);
 
-      var oldBackfaceVisibility, oldPerspective;
+      // var oldBackfaceVisibility, oldPerspective;
+      var oldTransform;
       if (options.hwAccel) {
-        oldBackfaceVisibility = $div.css('-webkit-backface-visibility') || '';
-        oldPerspective = $div.css('-webkit-perspective') || '';
+        // oldBackfaceVisibility = $div.css('-webkit-backface-visibility') || '';
+        // oldPerspective = $div.css('-webkit-perspective') || '';
+        oldTransform = $div.css('-webkit-transform');
 
         var $hwAccelEl = options.$hwAccelEl || $div;
         $hwAccelEl.css({
-          '-webkit-backface-visibility': 'hidden',
-          '-webkit-perspective': 1000
+          '-webkit-transform': 'translate3d(0, 0, 0)'
+          // '-webkit-backface-visibility': 'hidden',
+          // '-webkit-perspective': 1000
         });
+      }
+
+      if (options.onBeforePrepared) {
+        options.onBeforeStarted();
       }
 
       var oldStyle = $div.css('-webkit-transition');
@@ -75,20 +83,23 @@
       var duration = options.duration ? options.duration : 0.5;
       $div.css('-webkit-transition', property + ' ' + String(duration) + 's ' + easing);
 
-      if (options.onBeforeStarted) {
-        options.onBeforeStarted();
+      if (options.onPrepared) {
+        options.onPrepared();
       }
 
       if (options.toggleClass) {
         $div.toggleClass(options.toggleClass);
+      }
 
-        if (options.onStarted) {
-          options.onStarted();
-        }
+      if (options.onStarted) {
+        options.onStarted();
       }
 
       /* just in case the animation never actually starts */
-      failsafeTimeout = setTimeout(onTransitionEnd, duration * 1000 * 2);
+      if (options.failsafe !== false) {
+        var durationMillis = duration * 1000;
+        failsafeTimeout = setTimeout(onTransitionEnd, durationMillis * 2);
+      }
     };
   }());
 

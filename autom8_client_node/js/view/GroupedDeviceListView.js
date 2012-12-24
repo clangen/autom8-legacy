@@ -4,65 +4,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
   var View = autom8.mvc.View;
 
-  /* TODO: use autom8.Animation.animate() */
-  var toggle = (function() {
-    var pending = { };
-
-    return function($div, name, direction, duration) {
-      if (pending[name]) {
-        pending[name].cancel();
-        pending[name] = null;
-      }
-
-      var canceled = false;
-      var finished = false;
-
-      var onTransitionEnd = function() {
-        if (finished) {
-          return; /* animation was canceled before this was raised */
-        }
-
-        finished = true;
-
-        /* if the animation was canceled it didn't reach it's desired
-        state, so don't flip the visibility bit */
-        if (!canceled) {
-          if (direction === "collapse") {
-            $div.hide();
-          }
-          else {
-            $div.show();
-          }
-        }
-
-        $div.css('-webkit-transition', oldStyle || "");
-        $div.unbind('webkitTransitionEnd', finished);
-      };
-
-      pending[name] = {
-        cancel: function() {
-          canceled = true;
-          onTransitionEnd();
-        }
-      };
-
-      var oldStyle = $div.css('-webkit-transition');
-      var easing = (direction === "collapse") ? "ease-out" : "ease-in";
-      $div.css('-webkit-transition', 'height ' + duration + 's ' + easing);
-
-      if (direction === "collapse") {
-        $div.css("height", 0);
-      }
-      else {
-        $div.show();
-        $div.css("height", "");
-        $div.css("height", $div.height());
-      }
-
-      $div.bind('webkitTransitionEnd', onTransitionEnd);
-    };
-  }());
-
   function createGroupedDeviceList(deviceList) {
       /* build map of groups */
       var groupMap = { };
@@ -103,41 +44,57 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         if (groupIndex) {
           var group = this.groupedDeviceList[Number(groupIndex)];
 
-          var animations = autom8.Config.display.animations;
-          var animate = animations.collapse;
-
+          /* floating point value that represents seconds */
           var duration = Math.min(
             MAX_TOTAL_EXPAND_DURATION,
             group.devices.length * EXPAND_DURATION_PER_ITEM);
 
-          if (this.expandedGroups[group.name]) {
-            /* TODO: defer by passing into toggle() */
-            this.listView.views[groupIndex].listView.pause();
+          /* if true we collapse, otherwise we expand */
+          var collapse = this.expandedGroups[group.name];
 
+          /* remember group collapsed state and set the expander badge */
+          if (collapse) {
+            this.listView.views[groupIndex].listView.pause();
             delete this.expandedGroups[group.name];
             $expander.html('+');
-
-            if (animate) {
-              toggle($items, group.name, "collapse", duration);
-            }
-            else {
-              $items.hide();
-            }
           }
           else {
             this.listView.views[groupIndex].listView.resume();
-
             this.expandedGroups[group.name] = 1;
             $expander.html('-');
-
-            if (animate) {
-              toggle($items, group.name, "expand", duration);
-            }
-            else {
-              $items.show();
-            }
           }
 
+          /* if animations are enabled, start it now */
+          if (autom8.Config.display.animations.collapse) {
+            autom8.Animation.css($items, "toggle-group-" + group.name, {
+              hwAccel: false,
+              duration: duration,
+              property: 'height',
+              easing: collapse ? 'ease-out' : 'ease-in',
+              onPrepared: function() {
+                if (collapse) {
+                  $items.css("height", 0);
+                }
+                else {
+                  $items.show();
+                  $items.css("height", "");
+                  $items.css("height", $items.height());
+                }
+              },
+              onCompleted: _.bind(function(canceled) {
+                if (!canceled) {
+                  $items[collapse ? 'hide' : 'show']();
+                }
+              }, this)
+            });
+          }
+          /* no animation, just toggle visibility */
+          else {
+            $items[collapse ? 'hide' : 'show']();
+          }
+
+          /* remember which groups are expanded so we can restore this
+          state whenever we are reloaded */
           try {
             localStorage['autom8.expandedGroups'] = JSON.stringify(this.expandedGroups);
           }

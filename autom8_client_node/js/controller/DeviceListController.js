@@ -63,43 +63,36 @@ namespace("autom8.controller").DeviceListController = (function() {
       autom8.util.Device.toggleDeviceGroupStatus(group);
     },
 
-    setDeviceListView: function(newView, options) {
-      if (this.listView === newView) {
-        return;
-      }
-
-      if (this.listView) {
-        this.listView.off(null, null, this);
-      }
-
+    startTransition: function(listView, newView) {
       var $container = this.listViewContainer.$el;
       var grouped = (newView === this.views.grouped);
 
-      this.switcherView.setState(grouped ? "grouped" : "flat");
-
       /* if there was no previous view we don't need to animate, just
-      add it and return */
+      show/enable it and return */
       if (!this.listView) {
         newView.$el.addClass('active');
+        this.switcherView.setState(grouped ? "grouped" : "flat");
       }
       /* otherwise, one of the views is visible, so we need to animate
       it out of the scene, and animate the new view in */
       else {
         /* to complete the animation successfully we need to have
-        both views visible before the animation begins */
+        both views visible immediately before the animation begins */
         this.views.grouped.$el.addClass('active');
         this.views.flat.$el.addClass('active');
 
         /* start the animation */
         this.animating = true;
-        autom8.Animation.animate($container, "switch-view", {
-          hwAccel: true,
-          duration: 0.5,
-          easing: 'ease-in-out',
+
+        autom8.Animation.css($container, "devices-switch-view", {
+          hwAccel: false,
+          duration: 0.3,
+          easing: 'ease-out',
           initialClass: grouped ? '' : 'left',
           toggleClass: 'left',
           onCompleted: _.bind(function(canceled) {
             if (!canceled) {
+              this.switcherView.setState(grouped ? "grouped" : "flat");
               this.animating = false;
 
               /* animation completed successfully, deactivate all of the
@@ -117,6 +110,18 @@ namespace("autom8.controller").DeviceListController = (function() {
           }, this)
         });
       }
+    },
+
+    setDeviceListView: function(newView, options) {
+      if (this.listView === newView) {
+        return;
+      }
+
+      if (this.listView) {
+        this.listView.off(null, null, this);
+      }
+
+      this.startTransition(this.listView, newView);
 
       this.listView = newView;
 

@@ -227,7 +227,6 @@ body {
   text-shadow: 1px 1px 4px #333;
   border-bottom: 1px solid #1f1f1f;
   background-color: #444;
-  -webkit-transition: all .4s ease;
 }
 
 .switch-devices-view.touched {

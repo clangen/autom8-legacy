@@ -25,20 +25,22 @@
     },
 
     resume: function(options) {
+      this.paused = false;
+
       this.applyStateChange('resume', options, function() {
         this.delegateEvents();
       });
 
-      this.paused = false;
       return this;
     },
 
     pause: function(options) {
+      this.paused = true;
+
       this.applyStateChange('pause', options, function() {
         this.undelegateEvents();
       });
 
-      this.paused = true;
       return this;
     },
 

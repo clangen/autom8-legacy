@@ -1,15 +1,9 @@
 (function() {
   var __super__ = Backbone.View.prototype;
 
-  var debug = {
-    enabled: false,
-    alive: 0,
-    created: 0,
-    destroyed: 0
-  };
-
   var View = Backbone.View.extend({
     mixins: [
+      // autom8.mvc.mixins.ViewDebug,
       autom8.mvc.mixins.ViewInflater,
       autom8.mvc.mixins.ViewContainer,
       autom8.mvc.mixins.Touchable
@@ -23,12 +17,6 @@
     },
 
     create: function(options) {
-      if (debug.enabled) {
-        debug.created++;
-        debug.alive++;
-        console.log(JSON.stringify(debug));
-      }
-
       this.options = options;
       this.applyStateChange('create', options);
       this.destroyed = false;
@@ -79,12 +67,6 @@
 
       if (this.$el) {
         this.$el.empty();
-      }
-
-      if (debug.enabled) {
-        debug.destroyed++;
-        debug.alive--;
-        console.log(JSON.stringify(debug));
       }
 
       return this;

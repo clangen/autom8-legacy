@@ -59,6 +59,10 @@ namespace("autom8.view").GroupRow = (function() {
       this.$group = $group;
       this.appendSpinner({radius: 8});
       addDataAttributes($group, options.attrs);
+
+      if (this.device.deviceList().length === 1) {
+        this.$el.find('.expander').addClass('invisible');
+      }
     },
 
     onRender: function(renderOptions) {

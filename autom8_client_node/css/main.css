@@ -128,6 +128,10 @@ body {
   visibility: hidden;
 }
 
+.expander.gone {
+  display: none;
+}
+
 .expander-button {
   text-align: center;
   font-weight: bold;

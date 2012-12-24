@@ -67,6 +67,21 @@ namespace("autom8.controller").DeviceListController = (function() {
       var $container = this.listViewContainer.$el;
       var grouped = (newView === this.views.grouped);
 
+      /* some platforms can't support animation smoothly (e.g. android).
+      for these platforms just toggle visibility and be done with it */
+      if (!autom8.Config.display.animations.viewSwitch) {
+        this.switcherView.setState(grouped ? "grouped" : "flat");
+
+        _.each(this.views.all, function(view) {
+          if (view !== newView) {
+            view.hide();
+          }
+        });
+
+        newView.show();
+        return;
+      }
+
       /* if there was no previous view we don't need to animate, just
       show/enable it and return */
       if (!this.listView) {
@@ -87,7 +102,7 @@ namespace("autom8.controller").DeviceListController = (function() {
         autom8.Animation.css($container, "devices-switch-view", {
           hwAccel: false,
           duration: 0.3,
-          easing: 'ease-out',
+          easing: autom8.Config.display.animations.viewSwitchEasing,
           initialClass: grouped ? '' : 'left',
           toggleClass: 'left',
           onCompleted: _.bind(function(canceled) {

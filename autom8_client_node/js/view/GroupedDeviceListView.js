@@ -143,7 +143,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
     },
 
     onRender: function() {
-      this.listView.clearChildren({destroy: true});
+      this.listView.clearChildren();
 
       if (this.groupedDeviceList.length < 1) {
         return;

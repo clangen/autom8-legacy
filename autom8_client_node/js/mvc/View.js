@@ -1,6 +1,13 @@
 (function() {
   var __super__ = Backbone.View.prototype;
 
+  var debug = {
+    enabled: false,
+    alive: 0,
+    created: 0,
+    destroyed: 0
+  };
+
   var View = Backbone.View.extend({
     mixins: [
       autom8.mvc.mixins.ViewInflater,
@@ -16,6 +23,12 @@
     },
 
     create: function(options) {
+      if (debug.enabled) {
+        debug.created++;
+        debug.alive++;
+        console.log(JSON.stringify(debug));
+      }
+
       this.options = options;
       this.applyStateChange('create', options);
       this.destroyed = false;
@@ -25,6 +38,10 @@
     },
 
     resume: function(options) {
+      if (!this.paused) {
+        return this;
+      }
+
       this.paused = false;
 
       this.applyStateChange('resume', options, function() {
@@ -35,6 +52,10 @@
     },
 
     pause: function(options) {
+      if (this.paused) {
+        return this;
+      }
+
       this.paused = true;
 
       this.applyStateChange('pause', options, function() {
@@ -45,6 +66,10 @@
     },
 
     destroy: function(options) {
+      if (this.destroyed) {
+        return this;
+      }
+
       if (!this.paused) {
         this.pause(options);
       }
@@ -54,6 +79,12 @@
 
       if (this.$el) {
         this.$el.empty();
+      }
+
+      if (debug.enabled) {
+        debug.destroyed++;
+        debug.alive--;
+        console.log(JSON.stringify(debug));
       }
 
       return this;

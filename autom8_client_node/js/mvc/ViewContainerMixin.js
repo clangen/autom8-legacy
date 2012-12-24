@@ -88,6 +88,10 @@
         options = options || { };
         var self = this;
 
+        if (options.destroy === undefined) {
+          options.destroy = true;
+        }
+
         _.each(this.views, function(view) {
           self.removeChild(view, options);
         });

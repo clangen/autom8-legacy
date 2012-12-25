@@ -52,6 +52,9 @@
         if (debug.enabled) {
           debug.destroyed++;
           debug.alive--;
+          /* View.destroy() assures views are paused before
+          they are destroyed, so the pause count will be
+          incremented */
           debug.paused--;
           debug.log();
         }

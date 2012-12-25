@@ -1,4 +1,4 @@
-namespace("autom8.controller").DeviceListController = (function() {
+namespace("autom8.controller").DeviceHomeController = (function() {
   var View = autom8.mvc.View;
 
   var Controller = autom8.mvc.Controller.extend({

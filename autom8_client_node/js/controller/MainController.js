@@ -14,7 +14,7 @@ namespace("autom8.controller").MainController = (function() {
           break;
 
         case 'connected':
-          controller = this.deviceListController;
+          controller = this.deviceHomeController;
           break;
       }
 
@@ -60,7 +60,7 @@ namespace("autom8.controller").MainController = (function() {
       this.messagingController.on('dialog:closed', this.onDialogClosed, this);
 
       this.signInController = new autom8.controller.SignInController();
-      this.deviceListController = new autom8.controller.DeviceListController();
+      this.deviceHomeController = new autom8.controller.DeviceHomeController();
       
       this.resetMainController();
     },

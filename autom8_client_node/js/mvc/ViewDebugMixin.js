@@ -8,14 +8,15 @@
     resumed: 0,
     log: function() {
       var message =
-        'created: ' + this.created +
-        ', destroyed: ' + this.destroyed +
-        ', paused: ' + this.paused + ' ' +
+        'c: ' + this.created +
+        '\t\td: ' + this.destroyed +
+        '\t\tp: ' + this.paused + ' ' +
         ' (' + Math.round(this.paused / this.alive * 100) + '%)' +
-        ', resumed: ' + this.resumed + ' ' +
+        '\t\tr: ' + this.resumed + ' ' +
         ' (' + Math.round(this.resumed / this.alive * 100) + '%)' +
-        ', paused+resumed: ' + (this.paused + this.resumed) +
-        ', alive: ' + this.alive;
+        '\t\tp + r: ' + (this.paused + this.resumed) +
+        '\t\ta: ' + this.alive +
+        '\t\to: ' + ((this.created - this.destroyed) - this.alive);
 
       console.log(message);
     }

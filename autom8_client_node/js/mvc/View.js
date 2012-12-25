@@ -3,7 +3,7 @@
 
   var View = Backbone.View.extend({
     mixins: [
-      autom8.mvc.mixins.ViewDebug,
+      // autom8.mvc.mixins.ViewDebug,
       autom8.mvc.mixins.ViewInflater,
       autom8.mvc.mixins.ViewContainer,
       autom8.mvc.mixins.Touchable

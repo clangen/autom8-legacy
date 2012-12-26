@@ -46,6 +46,7 @@ autom8.main = function() {
   autom8.config = {
     debug: program['debug'],
     sessionTimeout: 3600000 * 24, /* 24 hours session time, millis */
+    appCacheVersion: new Date().toString(),
     server: {
       port: program['listen'],
       pem: program['creds']
@@ -257,6 +258,24 @@ autom8.server = (function() {
     return doc;
   }
 
+  function renderAppcacheManifest(res) {
+    manifest = "CACHE MANIFEST\n";
+    manifest += "# VERSION: " + autom8.config.appCacheVersion + "\n\n";
+
+    manifest += "CACHE:\n";
+    manifest += "/index.html\n";
+    manifest += "/socket.io/socket.io.js\n\n";
+
+    manifest += "NETWORK:\n";
+    manifest += "*\n\n";
+
+    res.writeHead(200, {
+      'content-type': 'text/cache-manifest'
+    });
+
+    res.end(manifest);
+  }
+
   function start() {
     /* the one and only application */
     var app = express();
@@ -315,6 +334,11 @@ autom8.server = (function() {
       res.end(JSON.stringify(result));
     });
 
+    app.get(/autom8.appcache/, function(req, res) {
+      console.log('rendering appcache (' + autom8.config.appCacheVersion + ')...');
+      renderAppcacheManifest(res);
+    });
+
     /*
      * General request handler; looks at the request, figures out
      * which file to return. Deals with caching, compression, and
@@ -342,6 +366,12 @@ autom8.server = (function() {
       }
       else if (/.*debug.html$/.test(req.headers.referer)) {
         debug = autom8.config.debug && true;
+      }
+
+      /* if we're hitting the debug endpoint then invalidate the
+      appcache manifest */
+      if (debug) {
+        autom8.config.appCacheVersion = new Date().toString();
       }
 
       /* empty root (or those trying to game relative paths)
@@ -457,6 +487,7 @@ autom8.server = (function() {
           else {
             if (fn.match(/.*\.html$/)) {
               data = data.toString();
+              data = data.replace("{{manifest}}", debug ? '' : 'autom8.appcache');
               data = renderTemplates(data);
               data = debug ? renderNonMinifiedStyles(data): renderMinifiedStyles(data);
               data = debug ? renderNonMinifiedScripts(data) : renderMinifiedScripts(data);
@@ -801,7 +832,8 @@ autom8.util = {
       ".html": "text/html",
       ".css": "text/css",
       ".js": "application/javascript",
-      ".ico": "image/x-icon"
+      ".ico": "image/x-icon",
+      ".appcache": "text/cache-manifest"
     };
 
     return function(fn) {

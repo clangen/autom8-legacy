@@ -3,7 +3,7 @@
     if (defer) {
       _.defer(function() {
         func.apply(context, args);
-      })
+      });
     }
     else {
       func.apply(context, args);
@@ -51,7 +51,7 @@
         if (_.isFunction(f.func)) {
           applyOrDefer(self, f.func, args, f.defer);
         }
-      });      
+      });
     }
   });
 
@@ -83,7 +83,7 @@
     }
 
     return extended;
-  }
+  };
 
   Lifecycle.extend = Backbone.View.extend = extend;
   namespace("autom8.mvc").Lifecycle = Lifecycle;

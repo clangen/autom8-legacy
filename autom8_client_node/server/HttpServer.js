@@ -199,10 +199,10 @@
     manifest = "CACHE MANIFEST\n";
     manifest += "# VERSION: " + config.appCache.version + "\n\n";
 
-    manifest += "CACHE:\n";
-    manifest += "/socket.io/socket.io.js\n\n";
+    manifest += "CACHE:\n\n";
 
     manifest += "NETWORK:\n";
+    manifest += "/socket.io/socket.io.js\n";
     manifest += "/socket.io/*\n";
     manifest += "/*.action/*\n";
     manifest += "*\n\n";

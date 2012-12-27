@@ -103,7 +103,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
 
         autom8.Animation.css($container, "devices-switch-view", {
           hwAccel: false,
-          duration: 0.3,
+          duration: autom8.Config.display.animations.viewSwitchDuration,
           easing: autom8.Config.display.animations.viewSwitchEasing,
           initialClass: grouped ? '' : 'left',
           toggleClass: 'left',

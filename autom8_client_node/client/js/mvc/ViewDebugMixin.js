@@ -1,6 +1,7 @@
 (function() {
   var debug = {
     enabled: true,
+    debounce: 1000,
     alive: 0,
     created: 0,
     destroyed: 0,
@@ -21,6 +22,8 @@
       console.log(message);
     }
   };
+
+  debug.log = debug.debounce ? _.debounce(debug.log, debug.debounce) : debug.log;
 
   namespace("autom8.mvc.mixins").ViewDebug = {
     'lifecycle': {

@@ -111,6 +111,10 @@
           var match = key.match(delegateEventSplitter);
           if (match && match.length === 3 && match[1] === "touch") {
             add(self, self.$el, match[2], self.cid, value);
+
+            /* don't let the view we're mixed into process this event,
+            we just setup special bindings for it */
+            // delete events[key];
           }
         });
       },

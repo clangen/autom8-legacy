@@ -6,7 +6,8 @@ namespace("autom8").Config = (function() {
         collapseEasing: 'ease-out',
         expandEasing: 'ease-in',
         viewSwitch: false,
-        viewSwitchEasing: 'ease-in'
+        viewSwitchDuration: 0.35,
+        viewSwitchEasing: 'ease-in-out'
       },
       classes: {
         body: ''

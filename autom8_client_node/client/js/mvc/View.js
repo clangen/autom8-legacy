@@ -77,13 +77,25 @@
       the specified hash */
       events = _.extend({ }, this.events, this.instanceEvents, events);
 
+      /* state change first so mixins can pull events from the hash
+      before the raw Backbone View delegates the events */
+      this.applyStateChange('delegateEvents', events);
+
+      /* start hack: super always calls undelegateEvents - however, the
+      mixins just finished their delegation. this flag prevents calling the
+      mixins' undelegateEvents during super delegation */
+      this.__delegating = true;
       __super__.delegateEvents.call(this, events);
-      this.applyStateChange('delegateEvents', events || this.events);
+      this.__delegating = false;
     },
 
     undelegateEvents: function() {
       __super__.undelegateEvents.call(this);
-      this.applyStateChange('undelegateEvents');
+
+      /* end hack, see above... */
+      if (!this.__delegating) {
+        this.applyStateChange('undelegateEvents');
+      }
     },
 
     hide: function(options) {

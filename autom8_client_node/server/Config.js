@@ -6,7 +6,7 @@
     config.sessionTimeout = 3600000 * 24; /* 24 hours session time, millis */
     
     config.appCache = {
-      enabled: false,
+      enabled: false, /* opt in via ?appcache=1 only */
       version: new Date().toString()
     };
     

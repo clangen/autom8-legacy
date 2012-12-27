@@ -200,11 +200,10 @@
     manifest += "# VERSION: " + config.appCache.version + "\n\n";
 
     manifest += "CACHE:\n\n";
+    manifest += "/socket.io/socket.io.js\n";
+    manifest += "/icon.png\n\n";
 
     manifest += "NETWORK:\n";
-    manifest += "/socket.io/socket.io.js\n";
-    manifest += "/socket.io/*\n";
-    manifest += "/*.action/*\n";
     manifest += "*\n\n";
 
     res.writeHead(200, {
@@ -318,6 +317,12 @@
         fn = "index.html";
       }
 
+      var appcache = (config.appCache.enabled && !debug);
+      if (!debug && !appcache && fn === "index.html") {
+        var params = util.parseQuery(url.parse(req.url).query);
+        appcache = (params.appcache === "1");
+      }
+
       /* determine the MIME type we'll write in the response */
       var mimeType = util.getMimeType(fn);
 
@@ -425,7 +430,7 @@
           else {
             if (fn.match(/.*\.html$/)) {
               data = data.toString();
-              data = data.replace("{{manifest}}", !config.appCache.enabled || debug ? '' : 'autom8.appcache');
+              data = data.replace("{{manifest}}", appcache ? 'autom8.appcache' : '');
               data = renderTemplates(data);
               data = debug ? renderNonMinifiedStyles(data): renderMinifiedStyles(data);
               data = debug ? renderNonMinifiedScripts(data) : renderMinifiedScripts(data);

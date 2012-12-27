@@ -4,8 +4,9 @@ namespace("autom8").AppCache = (function() {
   function checkSwap() {
     if (appCache.status === appCache.UPDATEREADY) {
       console.log("new version of application, reloading...");
+      appCache.swapCache();
       window.location.reload();
-    }    
+    }
   }
 
   checkSwap();

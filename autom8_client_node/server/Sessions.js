@@ -50,8 +50,6 @@
           return accept("unauthorized", false);
         }
 
-        console.log(s.cookie);
-
         if (!s.cookie) {
           console.log("WARNING: socket connection with no cookie, rejecting.");
           return accept("unauthorized", false);

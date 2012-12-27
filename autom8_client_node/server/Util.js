@@ -24,6 +24,24 @@
     return cookies;
   };
 
+  exports.parseQuery = function(query) {
+    var result = { };
+
+    if (!query) {
+      return result;
+    }
+
+    var args = query.split("&");
+    for (var i = 0; i < args.length; i++) {
+      var parts = args[i].split("=");
+      if (parts.length === 2) {
+        result[parts[0]] = parts[1];
+      }
+    }
+
+    return result;
+  };
+
   exports.getMimeType = (function() {
     var fallback = "text/plain";
 

@@ -114,7 +114,7 @@
 
             /* don't let the view we're mixed into process this event,
             we just setup special bindings for it */
-            // delete events[key];
+            delete events[key];
           }
         });
       },

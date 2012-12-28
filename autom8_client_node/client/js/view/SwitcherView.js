@@ -11,6 +11,8 @@ namespace("autom8.view").SwitcherView = (function() {
 
     onCreate: function(options) {
       options = options || { };
+      this.$label = $('<div class="switch-label"></div>');
+      this.$el.append(this.$label);
     },
     
     getState: function() {
@@ -36,7 +38,7 @@ namespace("autom8.view").SwitcherView = (function() {
       }
 
       this.state = state;
-      this.$el.html(stateToHtmlMap[state]);
+      this.$label.html(stateToHtmlMap[state]);
     }
   });
 }());

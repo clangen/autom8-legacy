@@ -48,6 +48,7 @@
     var types = {
       ".htm": "text/html",
       ".html": "text/html",
+      ".less": "text/css",
       ".css": "text/css",
       ".js": "application/javascript",
       ".ico": "image/x-icon",

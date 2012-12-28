@@ -102,20 +102,36 @@
     this to build a list of all the .css files that we will minify */
     var lines = renderScripts(doc).split(/\r\n|\n/);
 
-    /* runs LESS, then minifies result */
-    var processCss = function(css) {
+    /* compiles css with less, if applicable, then minifies */
+    var processCss = function(cssFiles) {
+      console.log(cssFiles);
+
       var parser = new less.Parser();
       var result = "";
 
-      parser.parse(css, function (err, tree) {
-          if (!err) {
-            result = tree.toCSS();
-          }
-          else {
-            err = require('util').inspect(err);
-            console.log("LESS: CSS parse failed because " + err);
-          }
-      });
+      var onParseFinished = function(err, tree) {
+        if (!err) {
+          result += tree.toCSS();
+        }
+        else {
+          err = require('util').inspect(err);
+          console.log("LESS: CSS parse failed because " + err);
+        }
+      };
+
+      for (var i = 0; i < cssFiles.length; i++) {
+        var file = cssFiles[i];
+        if (file.type === "css") {
+          result += file.data;
+        }
+        else if (file.type === "less") {
+          /* is done synchronously */
+          parser.parse(file.data, onParseFinished);
+        }
+        result += "\n";
+      }
+
+      console.log(result);
 
       if (result) {
         result = require('clean-css').process(result);
@@ -126,18 +142,21 @@
 
     /* run through each line, seeing if it's a css file. if it is,
     process it */
-    var regex = /.*href="(.*\.css)"/;
+    var regex = /.*href="(.*\.css|.*\.less)"/;
     var match;
-    var allCss = "";
+    var cssFiles = [];
 
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(regex);
       if (match && match.length === 2) {
-        allCss += fs.readFileSync(root + '/' + match[1]).toString();
+        cssFiles.push({
+          data: fs.readFileSync(root + '/' + match[1]).toString(),
+          type: match[1].split('.')[1]
+        });
       }
     }
 
-    var minified = processCss(allCss);
+    var minified = processCss(cssFiles);
     doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
     doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
 
@@ -413,7 +432,7 @@
             return res.end('error loading: ' + fn);
           }
 
-          if (fn.match(/.*\.css$/)) {
+          if (fn.match(/.*\.less$/)) {
             var parser = new less.Parser();
 
             parser.parse(data.toString(), function (err, tree) {

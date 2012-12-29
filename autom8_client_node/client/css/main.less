@@ -124,14 +124,6 @@ body {
   padding-right: 10px;
 }
 
-.expander.invisible {
-  visibility: hidden;
-}
-
-.expander.gone {
-  display: none;
-}
-
 .expander-button {
   text-align: center;
   font-weight: bold;
@@ -142,6 +134,14 @@ body {
   border-radius: 12px;
   padding: 12px 16px;
   width: 12px;
+}
+
+.no-expander .expander {
+  display: none;
+}
+
+.no-expander .row-spinner-container {
+  padding-right: 28px;
 }
 
 .touched .expander-button {
@@ -306,7 +306,7 @@ body {
 .device-group-devices .row-spinner-container {
   width: 28px;
   height: 46px;
-  padding-right: 10px;
+  padding-right: 36px;
 }
 
 .password {

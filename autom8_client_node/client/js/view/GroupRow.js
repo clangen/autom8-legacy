@@ -61,7 +61,7 @@ namespace("autom8.view").GroupRow = (function() {
       addDataAttributes($group, options.attrs);
 
       if (this.device.deviceList().length === 1) {
-        this.$el.find('.expander').addClass('invisible');
+        this.$group.addClass('no-expander');
       }
     },
 
@@ -111,7 +111,7 @@ namespace("autom8.view").GroupRow = (function() {
       addDataAttributes($group, options.attrs);
 
       if (devices.length === 1) {
-        this.$el.find('.expander').addClass('invisible');
+        $group.addClass('no-expander');
       }
 
       _.defer(function() {

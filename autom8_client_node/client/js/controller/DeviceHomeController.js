@@ -84,11 +84,12 @@ namespace("autom8.controller").DeviceHomeController = (function() {
         return;
       }
 
+      this.switcherView.setState(grouped ? "grouped" : "flat");
+
       /* if there was no previous view we don't need to animate, just
       show/enable it and return */
       if (!this.listView) {
         newView.$el.addClass('active');
-        this.switcherView.setState(grouped ? "grouped" : "flat");
       }
       /* otherwise, one of the views is visible, so we need to animate
       it out of the scene, and animate the new view in */
@@ -109,7 +110,6 @@ namespace("autom8.controller").DeviceHomeController = (function() {
           toggleClass: 'left',
           onCompleted: _.bind(function(canceled) {
             if (!canceled) {
-              this.switcherView.setState(grouped ? "grouped" : "flat");
               this.animating = false;
 
               /* animation completed successfully, deactivate all of the

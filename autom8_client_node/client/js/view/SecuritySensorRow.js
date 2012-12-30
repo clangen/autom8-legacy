@@ -31,7 +31,7 @@ namespace("autom8.view").SecuritySensorRow = (function() {
         rowClass = "device-row alert";
       }
       else if (armed) {
-        args.buttonClass = "button on";
+        args.buttonClass = "button armed";
         args.buttonText = "armed";
         rowClass = "device-row on";
       }

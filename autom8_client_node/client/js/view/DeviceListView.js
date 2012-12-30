@@ -58,6 +58,13 @@ namespace("autom8.view").DeviceListView = (function() {
       });
     },
 
+    resort: function() {
+      if (this.deviceList) {
+        this.deviceList.sort();
+        this.render();
+      }
+    },
+
     setDeviceList: function(deviceList) {
       if (this.deviceList === deviceList) {
         return;

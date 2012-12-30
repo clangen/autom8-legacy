@@ -288,8 +288,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
           do it if we know the sort order may have updated; right now that
           only happens when a sensor is tripped */
           if (resort) {
-            this.deviceList.sort();
-            _.invoke(this.views.all, 'render');
+            _.invoke(this.views.all, 'resort');
           }
 
           return true;

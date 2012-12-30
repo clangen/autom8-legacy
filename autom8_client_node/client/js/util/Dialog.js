@@ -14,11 +14,24 @@ namespace("autom8.util").Dialog = (function() {
 
       var dialogId = "dialog-" + (nextId++);
       var $dialog = autom8.mvc.View.elementFromTemplate(dialogTemplate, params);
+      var $customViewContainer = $dialog.find('.dialog-custom-view').eq(0);
       var $buttonContainer = $dialog.find('.dialog-buttons');
       var negativeCallback, positiveCallback, cancelCallback;
 
       $dialog.attr("id", dialogId);
       $dialog.attr("tabindex", nextId + 1);
+
+      if (params.view && params.view.$el) {
+        if (params.view.parent) {
+          throw {error: 'dialog view already has a parent'};
+        }
+
+        params.view.parent = this;
+        $customViewContainer.append(params.view.$el);
+      }
+      else {
+        $customViewContainer.hide();
+      }
 
       function showDialog() {
         $('#dialogs').append($dialog);
@@ -26,6 +39,10 @@ namespace("autom8.util").Dialog = (function() {
         ++visibleCount;
         $('#top-level-container').addClass('dialog-overlay-blur');
         $('#dialogs').addClass('dialog-overlay dialog-background');
+
+        if (params.view) {
+          params.view.resume();
+        }
       }
 
       function keydownHandler(event) {
@@ -47,6 +64,11 @@ namespace("autom8.util").Dialog = (function() {
       }
 
       function closeDialog() {
+        if (params.view) {
+          params.view.parent = null;
+          params.view.destroy();
+        }
+
         removeEventHandlers();
         $dialog.remove();
         --visibleCount;

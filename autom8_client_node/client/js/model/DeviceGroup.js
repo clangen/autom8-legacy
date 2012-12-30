@@ -29,10 +29,6 @@ namespace("autom8.model").DeviceGroup = (function() {
       return this.get('updating') || false;
     },
 
-    stats: function() {
-      return this.get('stats');
-    },
-
     onDeviceUpdating: function(device, updating) {
       var addr = device.address();
 

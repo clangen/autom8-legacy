@@ -210,6 +210,10 @@ namespace("autom8.util").Device = {
   },
 
   setLampBrightness: function(device, brightness) {
+    if (device.get('status') !== autom8.DeviceStatus.On) {
+      this.setDeviceStatus(device, autom8.DeviceStatus.On);
+    }
+
     var body = {
       command: {
         name: "set_brightness",

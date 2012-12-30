@@ -43,6 +43,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
     onResume: function() {
       this.listView.on('devicerow:clicked', this.onDeviceRowClicked, this);
       this.listView.on('grouprow:clicked', this.onGroupRowClicked, this);
+      this.listView.on('extras:clicked', this.onDeviceExtrasClicked, this);
       this.view.on('switchview:clicked', this.onSwitchViewClicked, this);
       autom8.client.on('responseReceived', this.onResponseReceived, this);
       this.refresh();
@@ -51,6 +52,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
     onPause: function() {
       this.listView.off('devicerow:clicked', this.onDeviceRowClicked, this);
       this.listView.off('grouprow:clicked', this.onGroupRowClicked, this);
+      this.listView.off('extras:clicked', this.onDeviceExtrasClicked, this);
       this.view.off('switchview:clicked', this.onSwitchViewClicked, this);
       autom8.client.off('responseReceived', this.onResponseReceived, this);
     },
@@ -156,6 +158,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
       if (options.bindEvents !== false) {
         this.listView.on('devicerow:clicked', this.onDeviceRowClicked, this);
         this.listView.on('grouprow:clicked', this.onGroupRowClicked, this);
+        this.listView.on('extras:clicked', this.onDeviceExtrasClicked, this);
       }
     },
 
@@ -168,6 +171,44 @@ namespace("autom8.controller").DeviceHomeController = (function() {
           this.setDeviceListView(this.views.flat);
         }
       }
+    },
+
+    onDeviceExtrasClicked: function(device) {
+      var brightnessView = new autom8.mvc.View({
+        el: autom8.mvc.View.elementFromTemplateId('autom8-View-LampBrightness'),
+        events: {
+          'touch .brightness-button': function(e) {
+            var brightness = ($(e.currentTarget).attr('data-value'));
+            if (brightness) {
+              autom8.util.Device.setLampBrightness(device, brightness);
+            }
+            dialog.close();
+          }
+        }
+      });
+
+      var onDisconnected = function() {
+        dialog.close();
+      };
+
+      autom8.client.on('disconnected', onDisconnected);
+
+      var dialog = autom8.util.Dialog.show({
+        title: "Adjust brightness",
+        message: "Set desired brightness:",
+        icon: autom8.util.Dialog.Icon.Information,
+        view: brightnessView,
+        buttons: [
+          {
+            caption: "close",
+            callback: null,
+            negative: true
+          }
+        ],
+        onClosed: function() {
+          autom8.client.off('disconnected', onDisconnected);
+        }
+      });
     },
 
     refresh: function() {

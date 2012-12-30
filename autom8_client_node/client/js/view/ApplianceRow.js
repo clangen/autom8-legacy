@@ -13,6 +13,10 @@ namespace("autom8.view").ApplianceRow = (function() {
       var address = this.device.get('address');
       var rowClass = 'device-row off';
 
+      var type = this.device.get('type');
+      var isLamp = (type == autom8.DeviceType.Lamp);
+      var isOn = (this.device.get('status') == autom8.DeviceStatus.On);
+
       var args = {
         buttonClass: "",
         buttonText: "",
@@ -20,14 +24,14 @@ namespace("autom8.view").ApplianceRow = (function() {
         subtext: ""
       };
 
-      if (this.device.get('type') == autom8.DeviceType.Lamp) {
+      if (isLamp) {
         args.subtext = "lamp " + address;
       }
       else {
         args.subtext = "appliance " + address;
       }
 
-      if (this.device.get('status') == autom8.DeviceStatus.On) {
+      if (isOn) {
         args.buttonClass = "button on";
         args.buttonText = "on";
         rowClass = "device-row on";
@@ -35,6 +39,10 @@ namespace("autom8.view").ApplianceRow = (function() {
       else {
         args.buttonClass = "button off";
         args.buttonText = "off";
+      }
+
+      if (isLamp) {
+        rowClass += " has-extras";
       }
 
       this.$el.empty();

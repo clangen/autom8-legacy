@@ -38,8 +38,14 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       "touch .device-row .expander": function(e) {
         this.onExpandOrCollapse($(e.currentTarget));
       },
+
       "touch .device-row": function(e) {
         this.onDeviceRowTouched($(e.currentTarget));
+      },
+
+      "touch .device-row .extras": function(e) {
+          var device = this.deviceFromElement($(e.currentTarget));
+          this.trigger('extras:clicked', device);
       }
     },
 
@@ -182,6 +188,23 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       this.deviceList = deviceList;
       this.groupedDeviceList = createGroupedDeviceList(deviceList);
       this.render();
+    },
+
+    deviceFromElement: function($el) {
+      $el = $el.parents('.device-row');
+
+      if ($el) {
+        var groupIndex = $el.attr("data-group");
+        var itemIndex = $el.attr("data-index");
+
+        if (groupIndex && itemIndex) {
+          groupIndex = Number(groupIndex);
+          itemIndex = Number(itemIndex);
+          return this.groupedDeviceList[groupIndex].deviceList().at(itemIndex);
+        }
+      }
+
+      return null;
     }
   });
 }());

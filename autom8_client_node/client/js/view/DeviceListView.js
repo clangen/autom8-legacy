@@ -5,8 +5,13 @@ namespace("autom8.view").DeviceListView = (function() {
     events: {
       "touch .device-row": function(e) {
         var $el = $(e.currentTarget);
-        var index = parseInt($el.attr("data-index"), 10);
+        var index = Number($el.attr("data-index"));
         this.trigger('devicerow:clicked', this.deviceList.at(index));
+      },
+
+      "touch .device-row .extras": function(e) {
+          var device = this.deviceFromElement($(e.currentTarget));
+          this.trigger('extras:clicked', device);
       }
     },
 
@@ -70,6 +75,17 @@ namespace("autom8.view").DeviceListView = (function() {
           this.spinnerView.stop();
           break;
       }
+    },
+
+    deviceFromElement: function($el) {
+      var $root = $el.parents('.device-row');
+      if ($root) {
+        var index = $root.attr('data-index');
+        if (index) {
+          return this.deviceList.at(Number(index));
+        }
+      }
+      return null;
     }
   });
 }());

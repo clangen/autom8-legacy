@@ -204,6 +204,25 @@ namespace("autom8.util").Device = {
     device.set({'updating': true});
   },
 
+  setLampBrightness: function(device, brightness) {
+    var body = {
+      command: {
+        name: "set_brightness",
+        type: autom8.CommandType.PowerLine,
+        address: device.get('address'),
+        parameters: {
+          brightness: Math.max(0, Math.min(brightness, 100))
+        }
+      }
+    };
+
+    autom8.client.send(
+      "autom8://request/send_device_command",
+      JSON.stringify(body));
+
+    device.set({'updating': true});
+  },
+
   getDeviceList: function() {
     autom8.client.send(
       "autom8://request/get_device_list",

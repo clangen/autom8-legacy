@@ -115,6 +115,7 @@ body {
   height: 56px;
 }
 
+.extras,
 .expander {
   .box();
   .box-pack(center);
@@ -124,6 +125,7 @@ body {
   padding-right: 10px;
 }
 
+.extras-button,
 .expander-button {
   text-align: center;
   font-weight: bold;
@@ -136,6 +138,14 @@ body {
   width: 12px;
 }
 
+.extras {
+  display: none; /* hidden by default */
+}
+
+.has-extras .extras {
+  .box();
+}
+
 .no-expander .expander {
   display: none;
 }
@@ -144,8 +154,19 @@ body {
   padding-right: 28px;
 }
 
+.has-extras .row-spinner-container {
+  padding-right: 0;  
+}
+
+.touched .extras-button,
 .touched .expander-button {
   background-color: #666;
+}
+
+.device-group-devices .extras-button {
+  font-size: 90%;
+  padding: 10px 12px;
+  border-radius: 10px;
 }
 
 .header-text {
@@ -309,6 +330,10 @@ body {
   padding-right: 36px;
 }
 
+.device-group-devices .has-extras .row-spinner-container {
+  padding-right: 0;
+}
+
 .password {
   .box-flex(1);
   margin-left: 10px;
@@ -447,4 +472,43 @@ body {
   min-width: 100%;
   min-height: 100%;
   display: none;
+}
+
+.brightness-row {
+  .box();
+  .box-orient(horizontal);
+}
+
+.brightness-button {
+  .box-flex(@val: 1);
+  padding-top: 6px;
+  padding-bottom: 6px;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+}
+
+.brightness-button.touched {
+  box-shadow: inset 0px 0px 8px 2px #444
+}
+
+.brightness-button.twenty {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.brightness-button.forty {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.brightness-button.sixty {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.brightness-button.eighty {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.brightness-button.hundred {
+  background-color: rgba(255, 255, 255, 1.0);
 }

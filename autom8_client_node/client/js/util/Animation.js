@@ -84,7 +84,7 @@
         });
       }
 
-      if (options.onBeforePrepared) {
+      if (options.onBeforeStarted) {
         options.onBeforeStarted();
       }
 

@@ -32,8 +32,8 @@ namespace("autom8.controller").DeviceHomeController = (function() {
       /* add the children to the view container, but don't actually add
       them to the DOM; setDeviceListView will take care of adding them
       to the DOM and animating them into place */
-      this.listViewContainer.addChild(this.views.flat);
-      this.listViewContainer.addChild(this.views.grouped);
+      this.listViewContainer.addChild(this.views.flat, {resume: false});
+      this.listViewContainer.addChild(this.views.grouped, {resume: false});
 
       /* set the initial view, but don't bind the events. the events
       will be bound when the controller is resumed */
@@ -92,6 +92,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
       show/enable it and return */
       if (!this.listView) {
         newView.$el.addClass('active');
+        newView.resume();
       }
       /* otherwise, one of the views is visible, so we need to animate
       it out of the scene, and animate the new view in */
@@ -110,7 +111,10 @@ namespace("autom8.controller").DeviceHomeController = (function() {
           easing: autom8.Config.display.animations.viewSwitchEasing,
           initialClass: grouped ? '' : 'left',
           toggleClass: 'left',
-          onCompleted: _.bind(function(canceled) {
+          onBeforeStarted: function() {
+            newView.resume();
+          },
+          onAfterCompleted: _.bind(function(canceled) {
             if (!canceled) {
               this.animating = false;
 
@@ -126,7 +130,6 @@ namespace("autom8.controller").DeviceHomeController = (function() {
               /* reset the viewport, as now there should only be the active
               view visible */
               $container.removeClass('left');
-              newView.resume();
             }
           }, this)
         });
@@ -148,7 +151,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
 
       if (this.deviceList) {
         _.invoke(this.views.all, 'setDeviceList', this.deviceList);
-        this.listView.setState("loaded");
+        _.invoke(this.views.all, 'setState', 'loaded');
       }
       else {
         this.refresh();
@@ -195,7 +198,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
 
       var dialog = autom8.util.Dialog.show({
         title: "Adjust brightness",
-        message: "Set desired brightness:",
+        message: "\n",
         icon: autom8.util.Dialog.Icon.Information,
         view: brightnessView,
         buttons: [
@@ -249,8 +252,8 @@ namespace("autom8.controller").DeviceHomeController = (function() {
       };
 
       this.deviceList = new autom8.model.DeviceList(devices, options);
-      this.listView.setDeviceList(this.deviceList);
-      this.listView.setState("loaded");
+      _.invoke(this.views.all, 'setDeviceList', this.deviceList);
+      _.invoke(this.views.all, 'setState', "loaded");
     },
 
     onDeviceUpdatedResponse: function(uri, body) {
@@ -286,7 +289,7 @@ namespace("autom8.controller").DeviceHomeController = (function() {
           only happens when a sensor is tripped */
           if (resort) {
             this.deviceList.sort();
-            this.listView.render();
+            _.invoke(this.views.all, 'render');
           }
 
           return true;

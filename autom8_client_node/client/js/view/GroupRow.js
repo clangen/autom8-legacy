@@ -16,10 +16,17 @@ namespace("autom8.view").GroupRow = (function() {
         buttonText: allOn || someOn ? "on" : "off",
         text: group.name(),
         subtext: stats.totalCount + " devices",
+        subtextClass: "",
         expander: options.collapsed ? "+" : "-"
       };
 
-      if (allOn) {
+      if (stats.someTripped || stats.allTripped) {
+        args.buttonClass = "alert";
+        args.buttonText = "alert";
+        args.rowClass = "device-row alert";
+        args.subtextClass = "gone";
+      }
+      else if (allOn) {
         args.buttonSubtext = "(all on)";
       }
       else if (someOn) {

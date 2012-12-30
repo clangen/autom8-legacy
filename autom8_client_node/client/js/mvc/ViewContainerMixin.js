@@ -106,15 +106,22 @@
       },
 
       onResume: function(options) {
-        _.invoke(this.views, 'resume', options);
+        if (options && options.recurse !== false) {
+          _.invoke(this.views, 'resume', options);
+        }
       },
 
       onPause: function(options) {
-        _.invoke(this.views, 'pause', options);
+        if (options && options.recurse !== false) {
+          _.invoke(this.views, 'pause', options);
+        }
       },
 
       onDestroy: function(options) {
-        _.invoke(this.views, 'destroy', options);
+        if (options && options.recurse !== false) {
+          _.invoke(this.views, 'destroy', options);
+        }
+
         this.views = [];
       }
     }

@@ -31,7 +31,19 @@ namespace("autom8.view").DeviceListView = (function() {
       this.setState("loading"); /* init default view */
     },
 
+    onResume: function() {
+      if (this.dirty) {
+        this.dirty = false;
+        this.render();
+      }
+    },
+
     onRender: function() {
+      if (this.paused) {
+        this.dirty = true;
+        return;
+      }
+
       this.listView.clearChildren();
 
       if ((!this.deviceList) || (_.size(this.deviceList) < 1)) {

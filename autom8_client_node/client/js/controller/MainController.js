@@ -32,11 +32,12 @@ namespace("autom8.controller").MainController = (function() {
 
       if (this.mainController) {
         this.view.removeChild(this.mainController.view, {destroy: false});
-        this.removeChild(this.mainController, {destroy: false});
+        this.mainController.pause();
       }
 
-      this.mainController = this.addChild(controller);
+      this.mainController = controller;
       this.view.addChild(controller.view);
+      controller.resume();
     },
 
     onCreate: function(options) {

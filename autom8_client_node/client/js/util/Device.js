@@ -63,6 +63,12 @@ namespace("autom8.util").Device = {
     var devices = group.deviceList();
     var stats = this.getDeviceListStats(devices);
 
+    /* TOOD: we don't currently support toggling groups of
+    sensors */
+    if (stats.sensorCount === stats.totalCount) {
+      return;
+    }
+
     var setAll = function(status) {
       devices.each(function(device) {
         if (device.get('status') == status) {
@@ -145,8 +151,7 @@ namespace("autom8.util").Device = {
         {
           caption: "yes",
           callback: function() {
-            var address = device.get('address');
-            autom8.util.Device.resetSecuritySensor(address);
+            autom8.util.Device.resetSecuritySensor(device);
           },
           positive: true
         },

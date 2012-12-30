@@ -159,7 +159,19 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       }
     },
 
+    onResume: function() {
+      if (this.dirty) {
+        this.dirty = false;
+        this.render();
+      }
+    },
+
     onRender: function() {
+      if (this.paused) {
+        this.dirty = true;
+        return;
+      }
+
       this.listView.clearChildren();
 
       if (this.groupedDeviceList.length < 1) {

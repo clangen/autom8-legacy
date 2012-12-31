@@ -482,6 +482,7 @@ body {
 .brightness-row {
   .box();
   .box-orient(horizontal);
+  background-color: #000;
 }
 
 .brightness-button {
@@ -491,31 +492,37 @@ body {
   text-align: center;
   font-weight: bold;
   color: white;
+  min-height: 26px;
+  border-bottom: 6px solid black;
   text-shadow: 1px 1px 2px black;
 }
 
+.brightness-button.selected {
+  border-bottom: 6px solid red;
+}
+
 .brightness-button.touched {
-  box-shadow: inset 0px 0px 8px 2px #444
+  border-bottom: 6px solid #fff;
 }
 
 .brightness-button.twenty {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .brightness-button.forty {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .brightness-button.sixty {
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .brightness-button.eighty {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .brightness-button.hundred {
-  background-color: rgba(255, 255, 255, 1.0);
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .gone {

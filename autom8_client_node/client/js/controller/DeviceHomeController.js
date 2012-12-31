@@ -46,41 +46,9 @@ namespace("autom8.controller").DeviceHomeController = (function() {
     },
 
     onDeviceExtrasClicked: function(device) {
-      var brightnessView = new autom8.mvc.View({
-        el: autom8.mvc.View.elementFromTemplateId('autom8-View-LampBrightness'),
-        events: {
-          'touch .brightness-button': function(e) {
-            var brightness = ($(e.currentTarget).attr('data-value'));
-            if (brightness) {
-              autom8.util.Device.setLampBrightness(device, brightness);
-            }
-            dialog.close();
-          }
-        }
-      });
-
-      var onDisconnected = function() {
-        dialog.close();
-      };
-
-      autom8.client.on('disconnected', onDisconnected);
-
-      var dialog = autom8.util.Dialog.show({
-        title: "Adjust brightness",
-        message: "\n",
-        icon: autom8.util.Dialog.Icon.Information,
-        view: brightnessView,
-        buttons: [
-          {
-            caption: "close",
-            callback: null,
-            negative: true
-          }
-        ],
-        onClosed: function() {
-          autom8.client.off('disconnected', onDisconnected);
-        }
-      });
+      if (device.get('type') === autom8.DeviceType.Lamp) {
+        autom8.view.BrightnessView.showDialogForLamp(device);
+      }
     },
 
     refreshDeviceList: function() {

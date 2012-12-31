@@ -49,11 +49,6 @@ namespace("autom8.view").GroupRow = (function() {
   return _super_.extend({
     className: 'device-group-container',
 
-    setDevice: function(device) {
-      _super_.prototype.setDevice.call(this, device);
-      this.render();
-    },
-
     renderUpdatedGroup: function(options) {
       /* TODO: hacky? the collapsed var is only set in the options when
       this view is initialized, but when we update we need to pull the

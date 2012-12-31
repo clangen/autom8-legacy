@@ -31,12 +31,16 @@ namespace("autom8.controller").MainController = (function() {
       this.spinnerView.stop();
 
       if (this.mainController) {
-        this.view.removeChild(this.mainController.view, {destroy: false});
+        this.view.removeChild(this.mainController.view, {
+          destroy: false,
+          pause: false
+        });
+
         this.mainController.pause();
       }
 
       this.mainController = controller;
-      this.view.addChild(controller.view);
+      this.view.addChild(controller.view, {resume: false});
       controller.resume();
     },
 

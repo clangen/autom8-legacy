@@ -41,6 +41,8 @@ namespace("autom8.controller").DeviceHomeController = (function() {
     },
 
     onResume: function() {
+      this.listView.resume(); /* TODO: why is this necessary? */
+
       this.listView.on('devicerow:clicked', this.onDeviceRowClicked, this);
       this.listView.on('grouprow:clicked', this.onGroupRowClicked, this);
       this.listView.on('extras:clicked', this.onDeviceExtrasClicked, this);
@@ -50,6 +52,8 @@ namespace("autom8.controller").DeviceHomeController = (function() {
     },
 
     onPause: function() {
+      this.listView.pause(); /* TODO: why is this necessary? */
+      
       this.listView.off('devicerow:clicked', this.onDeviceRowClicked, this);
       this.listView.off('grouprow:clicked', this.onGroupRowClicked, this);
       this.listView.off('extras:clicked', this.onDeviceExtrasClicked, this);
@@ -146,7 +150,6 @@ namespace("autom8.controller").DeviceHomeController = (function() {
       }
 
       this.startTransition(this.listView, newView);
-
       this.listView = newView;
 
       if (this.deviceList) {

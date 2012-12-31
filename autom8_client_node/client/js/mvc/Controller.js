@@ -5,9 +5,9 @@
 
   _.extend(Controller.prototype, Backbone.Events, {
     create: function(options) {
-      this.applyStateChange('create', options);
       this.paused = true;
       this.destroyed = false;
+      this.applyStateChange('create', options);
       return this;
     },
 
@@ -17,12 +17,13 @@
       }
 
       this.applyStateChange('resume', options, function() {
+        this.paused = false;
+
         if (this.view) {
           this.view.resume();
         }
       });
 
-      this.paused = false;
       return this;
     },
 
@@ -32,12 +33,13 @@
       }
 
       this.applyStateChange('pause', options, function() {
+        this.paused = true;
+
         if (this.view) {
           this.view.pause();
         }
       });
 
-      this.paused = true;
       return this;
     },
 

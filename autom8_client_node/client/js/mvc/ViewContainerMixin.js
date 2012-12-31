@@ -106,19 +106,22 @@
       },
 
       onResume: function(options) {
-        if (options && options.recurse !== false) {
+        options = options || { };
+        if (options.recurse !== false) {
           _.invoke(this.views, 'resume', options);
         }
       },
 
       onPause: function(options) {
-        if (options && options.recurse !== false) {
+        options = options || { };
+        if (options.recurse !== false) {
           _.invoke(this.views, 'pause', options);
         }
       },
 
       onDestroy: function(options) {
-        if (options && options.recurse !== false) {
+        options = options || { };
+        if (options.recurse !== false) {
           _.invoke(this.views, 'destroy', options);
         }
 

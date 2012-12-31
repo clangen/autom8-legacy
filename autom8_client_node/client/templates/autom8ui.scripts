@@ -11,6 +11,7 @@
 <script src="js/model/DeviceList.js" type="text/javascript"></script>
 <script src="js/model/DeviceGroup.js" type="text/javascript"></script>
 
+<script src="js/view/AboutView.js" type="text/javascript"></script>
 <script src="js/view/SpinnerView.js" type="text/javascript"></script>
 <script src="js/view/HeaderView.js" type="text/javascript"></script>
 <script src="js/view/SwitcherView.js" type="text/javascript"></script>

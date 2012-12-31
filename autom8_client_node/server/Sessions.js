@@ -66,7 +66,7 @@
         if (expires - now <= 0) {
           /* cookie expired, reject... */
           console.log("WARNING: socket connection with expired session, rejecting.");
-          return accept(null, true);
+          return accept("unauthorized", false);
         }
 
         /* if we get all the way here then our session is trusted */

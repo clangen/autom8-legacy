@@ -8,7 +8,7 @@
 <script id="autom8-View-HeaderView" type="text/x-handlebars-template">
   <div class="header">
     <div class="header-left">
-      <div class="header-logo">autom8</div>
+      <span class="header-logo">autom8</span>
       <div class="header-status">
         <div class="header-host-separator"></div>
         <div class="header-host-text" id="hostname">{{hostName}}</div>
@@ -24,4 +24,11 @@
     <div>password:</div>
     <input name="password" id="password" class="password" type="password"></input>
   </div>
+</script>
+
+<script id="autom8-View-AboutView" type="text/x-handlebars-template">
+  <div><b>host</b>: {{host}}</div>
+  <div><b>status</b>: {{status}}</div>
+  <div><b>version</b>: {{version}}</div>
+  <div style="margin-top: 10px; font-size: 80%;">copyright <b>casey langen</b>, 2008-2013</div>
 </script>

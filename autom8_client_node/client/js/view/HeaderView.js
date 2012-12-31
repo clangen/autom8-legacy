@@ -10,6 +10,21 @@ namespace("autom8.view").HeaderView = (function() {
         else {
           this.trigger("signout:clicked");
         }
+      },
+
+      "touch .header-logo": function() {
+        autom8.util.Dialog.show({
+          title: 'autom8',
+          view: new autom8.view.AboutView(),
+          cancelable: true,
+          buttons: [
+            {
+              caption: 'ok',
+              positive: true,
+              negative: true
+            }
+          ]
+        });
       }
     },
 

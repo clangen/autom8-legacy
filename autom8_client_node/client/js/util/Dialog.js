@@ -106,7 +106,7 @@ namespace("autom8.util").Dialog = (function() {
             easing: anims.dialogEasing,
             property: 'left',
             onPrepared: function() {
-              $dialog.removeClass('left').addClass('right');
+              $dialog.addClass('left');
             },
             onAfterCompleted: _.bind(function(canceled) {
               onCloseCompleted();

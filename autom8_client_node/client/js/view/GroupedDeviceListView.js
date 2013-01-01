@@ -1,7 +1,4 @@
 namespace("autom8.view").GroupedDeviceListView = (function() {
-  var EXPAND_DURATION_PER_ITEM = 0.075;
-  var MAX_TOTAL_EXPAND_DURATION = 0.25;
-
   var View = autom8.mvc.View;
 
   function createGroupedDeviceList(deviceList) {
@@ -42,7 +39,7 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
   return _super_.extend({
     events: {
       "touch .device-row .expander": function(e) {
-        this.onExpandOrCollapse($(e.currentTarget));
+        this.onToggleCollapsed($(e.currentTarget));
       },
 
       "touch .device-row": function(e) {
@@ -58,14 +55,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
     onCreate: function(options) {
       _super_.prototype.onCreate.call(this, options);
       this.groupedDeviceList = [];
-
-      /* keyed by name */
-      try {
-        this.expandedGroups = JSON.parse(localStorage['autom8.expandedGroups']);
-      }
-      catch (ex) {
-      }
-      this.expandedGroups = this.expandedGroups || { };
     },
 
     onDeviceRowTouched: function($el) {
@@ -85,83 +74,13 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       }
     },
 
-    onExpandOrCollapse: function($target) {
+    onToggleCollapsed: function($target) {
       var $root = $target.parents('.device-group-container');
       var $group = $root.find('.device-row.group');
-      var $expander = $root.find('.expander-button');
-      var $items = $root.find('.device-group-devices');
 
       var groupIndex = $group.attr("data-group");
       if (groupIndex) {
-        var group = this.groupedDeviceList[Number(groupIndex)];
-        var groupDevices = group.deviceList();
-        var groupName = group.name();
-        var groupListView = this.listView.views[groupIndex].listView;
-
-        /* floating point value that represents seconds */
-        var duration = Math.min(
-          MAX_TOTAL_EXPAND_DURATION,
-          groupDevices.length * EXPAND_DURATION_PER_ITEM);
-
-        /* if true we collapse, otherwise we expand */
-        var collapse = !!this.expandedGroups[group.name()];
-
-        /* remember group collapsed state and set the expander badge */
-        if (collapse) {
-          delete this.expandedGroups[group.name()];
-          $expander.html('+');
-        }
-        else {
-          this.expandedGroups[group.name()] = 1;
-          $expander.html('-');
-        }
-
-        /* if animations are enabled, start it now */
-        if (autom8.Config.display.animations.collapse) {
-          var easing = collapse ?
-            autom8.Config.display.animations.collapseEasing :
-            autom8.Config.display.animations.expandEasing;
-
-          autom8.Animation.css($items, "toggle-group-" + group.name, {
-            hwAccel: false,
-            duration: duration,
-            property: 'height',
-            easing: easing,
-            onPrepared: function() {
-              if (collapse) {
-                $items.css("height", 0);
-              }
-              else {
-                $items.show();
-                $items.css("height", "");
-                $items.css("height", $items.height());
-              }
-            },
-            onCompleted: _.bind(function(canceled) {
-              if (!canceled) {
-                $items[collapse ? 'hide' : 'show']();
-                groupListView[collapse ? 'pause' : 'resume']();
-                groupListView.setCollapsed(collapse);
-              }
-            }, this)
-          });
-        }
-        /* no animation, just toggle visibility */
-        else {
-          $items[collapse ? 'hide' : 'show']();
-          $items.css("height", "auto");
-          groupListView[collapse ? 'pause' : 'resume']();
-          groupListView.setCollapsed(collapse);
-        }
-
-        /* remember which groups are expanded so we can restore this
-        state whenever we are reloaded */
-        try {
-          localStorage['autom8.expandedGroups'] = JSON.stringify(this.expandedGroups);
-        }
-        catch (ex) {
-          console.log('failed to write group view info to localStorage');
-        }
+        this.listView.views[Number(groupIndex)].toggleCollapsed();
       }
     },
 
@@ -187,7 +106,6 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       var self = this;
       _.each(this.groupedDeviceList, function(group, index) {
         var options = {
-          collapsed: !self.expandedGroups[group.name()],
           attrs: {
             group: index
           }

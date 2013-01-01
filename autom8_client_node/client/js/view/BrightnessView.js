@@ -18,7 +18,7 @@
       this.$el.append(View.elementFromTemplateId('autom8-View-LampBrightness'));
 
       if (this.device.get('status') !== autom8.DeviceStatus.Off) {
-        var brightness = Number(device.get('attrs').brightness);
+        var brightness = Number(this.device.get('attrs').brightness);
         this.selectClosestButton(brightness);
       }
     },

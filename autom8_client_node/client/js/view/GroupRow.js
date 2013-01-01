@@ -49,24 +49,6 @@ namespace("autom8.view").GroupRow = (function() {
   return _super_.extend({
     className: 'device-group-container',
 
-    renderUpdatedGroup: function(options) {
-      /* TODO: hacky? the collapsed var is only set in the options when
-      this view is initialized, but when we update we need to pull the
-      current state from the subview... seems this could be better */
-      options.collapsed = this.listView.collapsed;
-
-      var $group = renderGroup(this.device, options);
-      $group.insertBefore(this.$group);
-      this.$group.remove();
-      this.$group = $group;
-      this.appendSpinner({radius: 8});
-      addDataAttributes($group, options.attrs);
-
-      if (this.device.deviceList().length === 1) {
-        this.$group.addClass('no-expander');
-      }
-    },
-
     onRender: function(renderOptions) {
       var options = this.options || { };
       var group = this.device;
@@ -79,14 +61,14 @@ namespace("autom8.view").GroupRow = (function() {
       }
 
       var $group = renderGroup(this.device, this.options);
-      var hiddenHACK = options.collapsed ? ' style="display: none"' : '';
-      var $allDevices = $('<div class="device-group-devices"' + hiddenHACK + '></div>');
+      var $allDevices = $('<div></div>');
 
-      var resume = !options.collapsed;
-      
       var listView = this.listView = new autom8.view.GroupRowListView({
-        collapsed: !!options.collapsed
+        group: this.device
       });
+
+      var collapsed = listView.collapsed;
+      var resume = !collapsed;
 
       this.addChild(listView, {appendToElement: $allDevices, resume: resume});
 
@@ -110,16 +92,41 @@ namespace("autom8.view").GroupRow = (function() {
       this.$allDevices = $allDevices;
 
       this.appendSpinner({radius: 8});
+      this.redrawExpander();
+
       addDataAttributes($group, options.attrs);
+    },
 
-      if (devices.length === 1) {
-        $group.addClass('no-expander');
+    redrawExpander: function() {
+      if (this.device.deviceList().length === 1) {
+        this.$group.addClass('no-expander');
       }
+      else {
+        var $expander = this.$group.find('.expander-button');
+        $expander.html(this.listView.collapsed ? '+' : '-');
+      }
+    },
 
-      _.defer(function() {
-        $allDevices.css("height", options.collapsed ? 0 : $allDevices.height());
-        $allDevices[options.collapsed ? 'hide' : 'show']();
-      });
+    toggleCollapsed: function() {
+      this.listView.toggleCollapsed();
+      this.redrawExpander();
+    },
+
+    renderUpdatedGroup: function(options) {
+      /* TODO: hacky? the collapsed var is only set in the options when
+      this view is initialized, but when we update we need to pull the
+      current state from the subview... seems this could be better */
+      options.collapsed = this.listView.collapsed;
+
+      var $group = renderGroup(this.device, options);
+      $group.insertBefore(this.$group);
+      this.$group.remove();
+      this.$group = $group;
+
+      this.appendSpinner({radius: 8});
+      this.redrawExpander();
+
+      addDataAttributes($group, options.attrs);
     }
   });
 }());

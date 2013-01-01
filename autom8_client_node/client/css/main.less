@@ -397,9 +397,18 @@ body {
   width: 100%;
   height: 100%;
   position: fixed;
-  left: 0;
+  left: -100%;
   top: 0;
   outline: none;
+  -webkit-transition: left 0.15s ease-in;
+}
+
+.dialog-overlay.dialog-background {
+  left: 0;
+}
+
+.dialog-overlay.in {
+  left: 0;
 }
 
 .dialog-background {

@@ -43,6 +43,10 @@ namespace("autom8.util").Dialog = (function() {
         if (params.view) {
           params.view.resume();
         }
+
+        _.defer(function() {
+          $dialog.addClass('in');
+        });
       }
 
       function keydownHandler(event) {
@@ -50,20 +54,21 @@ namespace("autom8.util").Dialog = (function() {
 
         /* return/enter */
         if (event.keyCode === 13 && positiveCallback) {
-          closeDialog();
-          positiveCallback();
+          closeDialog(function() {
+            positiveCallback();
+          });
         }
         /* esc */
         else if ((event.keyCode === 27) && (params.cancelable !== false)) {
-          closeDialog();
-
-          if (params.onCanceled) {
-            params.onCanceled();
-          }
+          closeDialog(function() {
+            if (params.onCanceled) {
+              params.onCanceled();
+            }
+          });
         }
       }
 
-      function closeDialog() {
+      function onCloseCompleted() {
         if (params.view) {
           params.view.parent = null;
           params.view.destroy();
@@ -81,6 +86,20 @@ namespace("autom8.util").Dialog = (function() {
         if (params.onClosed) {
           params.onClosed();
         }
+      }
+
+      function closeDialog(callback) {
+        autom8.Animation.css($dialog, dialogId + '-animation', {
+          onBeforeStarted: function() {
+            $dialog.removeClass('in');
+          },
+          onAfterCompleted: _.bind(function(canceled) {
+            onCloseCompleted();
+            if (callback) {
+              callback();
+            }
+          }, this)
+        });
       }
 
       function addEventHandlers() {
@@ -104,22 +123,22 @@ namespace("autom8.util").Dialog = (function() {
           return;
         }
 
-        if (params.onCanceled) {
-          params.onCanceled();
-        }
-
-        closeDialog();
+        closeDialog(function() {
+          if (params.onCanceled) {
+            params.onCanceled();
+          }
+        });
       }
 
       function buttonHandler(event) {
-        closeDialog();
+        closeDialog(function() {
+          var id = parseInt($(event.target).attr('data-id'), 10);
+          var callback = params.buttons[id].callback;
 
-        var id = parseInt($(event.target).attr('data-id'), 10);
-        var callback = params.buttons[id].callback;
-
-        if (callback) {
-          callback();
-        }
+          if (callback) {
+            callback();
+          }
+        });
       }
 
       cancelCallback = params.cancelCallback;
@@ -146,8 +165,8 @@ namespace("autom8.util").Dialog = (function() {
       $dialog.focus();
 
       return {
-        close: function() {
-          closeDialog();
+        close: function(callback) {
+          closeDialog(callback);
         }
       };
     }

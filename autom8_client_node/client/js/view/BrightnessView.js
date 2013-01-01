@@ -48,7 +48,7 @@
       view: new autom8.view.BrightnessView({device: device}),
       buttons: [
         {
-          caption: "close",
+          caption: "ok",
           callback: null,
           negative: true
         }

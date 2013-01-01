@@ -7,6 +7,7 @@ namespace("autom8.util").Dialog = (function() {
   return {
     show: function(params) {
       params = params || { };
+      var anims = autom8.Config.display.animations;
 
       if (!params.buttons || !params.buttons.length) {
         return;
@@ -44,9 +45,19 @@ namespace("autom8.util").Dialog = (function() {
           params.view.resume();
         }
 
-        _.defer(function() {
-          $dialog.addClass('in');
-        });
+        if (anims.dialog) {
+          autom8.Animation.css($dialog, dialogId + '-animation', {
+            duration: anims.dialogDuration,
+            easing: anims.dialogEasing,
+            property: 'left',
+            onPrepared: function() {
+              $dialog.removeClass('left');
+            }
+          });
+        }
+        else {
+          $dialog.removeClass('left');
+        }
       }
 
       function keydownHandler(event) {
@@ -89,17 +100,29 @@ namespace("autom8.util").Dialog = (function() {
       }
 
       function closeDialog(callback) {
-        autom8.Animation.css($dialog, dialogId + '-animation', {
-          onBeforeStarted: function() {
-            $dialog.removeClass('in');
-          },
-          onAfterCompleted: _.bind(function(canceled) {
-            onCloseCompleted();
-            if (callback) {
-              callback();
-            }
-          }, this)
-        });
+        if (anims.dialog) {
+          autom8.Animation.css($dialog, dialogId + '-animation', {
+            duration: anims.dialogDuration,
+            easing: anims.dialogEasing,
+            property: 'left',
+            onPrepared: function() {
+              $dialog.removeClass('left').addClass('right');
+            },
+            onAfterCompleted: _.bind(function(canceled) {
+              onCloseCompleted();
+              if (callback) {
+                callback();
+              }
+            }, this)
+          });
+        }
+        else {
+          $dialog.removeClass('left').addClass('right');
+          onCloseCompleted();
+          if (callback) {
+            callback();
+          }
+        }
       }
 
       function addEventHandlers() {

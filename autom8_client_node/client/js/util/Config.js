@@ -10,7 +10,10 @@ namespace("autom8").Config = (function() {
         viewSwitchEasing: 'ease-in-out',
         viewSwitcher: false,
         viewSwitcherDuration: 0.30,
-        viewSwitcherEasing: 'ease-out'
+        viewSwitcherEasing: 'ease-out',
+        dialog: false,
+        dialogDuration: 0.20,
+        dialogEasing: 'ease-out'
       },
       classes: {
         body: ''
@@ -26,6 +29,7 @@ namespace("autom8").Config = (function() {
     config.display.animations.collapse = true;
     config.display.animations.viewSwitch = true;
     config.display.animations.viewSwitcher = true;
+    config.display.animations.dialog = true;
 
     var isIOS6 = /i(Phone|Pod) OS (5|6)/.test(ua) || /Apple-i(Phone|Pod)(5|6)/.test(ua);
     if (!isIOS6) {
@@ -33,6 +37,7 @@ namespace("autom8").Config = (function() {
       config.display.animations.expandEasing = 'linear';
       config.display.animations.viewSwitchEasing = 'linear';
       config.display.animations.viewSwitcherEasing = 'linear';
+      config.display.animations.dialogEasing = 'linear';
     }
 
     config.display.classes.body = 'iphone';
@@ -41,6 +46,8 @@ namespace("autom8").Config = (function() {
     config.display.animations.collapse = true;
     config.display.animations.viewSwitch = true;
     config.display.animations.viewSwitcher = true;
+    config.display.animations.dialog = true;
+
     config.display.classes.body = 'chrome';
   }
 

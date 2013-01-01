@@ -9,7 +9,7 @@
       var params = {
         host: window.location.host,
         status: autom8.client.connected ? "connected" : "disconnected",
-        version: "0.3.1"
+        version: autom8.version
       };
 
       this.$el.append(View.elementFromTemplateId('autom8-View-AboutView', params));

@@ -7,7 +7,7 @@
     
     config.appCache = {
       enabled: false, /* opt in via ?appcache=1 only */
-      version: new Date().toString()
+      version: new Date()
     };
     
     config.server = {

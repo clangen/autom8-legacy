@@ -21,6 +21,8 @@
     {{minified_scripts}}
 
     <script>
+      namespace("autom8").version = "0.3.1 ({{version}})";
+
       $(document).ready(function() {
         controller = new autom8.controller.MainController();
         controller.resume();

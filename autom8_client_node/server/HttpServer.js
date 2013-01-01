@@ -216,7 +216,7 @@
 
   function renderAppcacheManifest(res) {
     manifest = "CACHE MANIFEST\n";
-    manifest += "# VERSION: " + config.appCache.version + "\n\n";
+    manifest += "# VERSION: " + config.appCache.version.getTime() + "\n\n";
 
     manifest += "CACHE:\n\n";
     manifest += "/socket.io/socket.io.js\n";
@@ -291,7 +291,7 @@
     });
 
     app.get(/autom8.appcache/, function(req, res) {
-      console.log('rendering appcache (' + config.appCache.version + ')...');
+      console.log('rendering appcache (' + config.appCache.version.getTime() + ')...');
       renderAppcacheManifest(res);
     });
 
@@ -327,7 +327,7 @@
       /* if we're hitting the debug endpoint then invalidate the
       appcache manifest */
       if (debug) {
-        config.appCache.version = new Date().toString();
+        config.appCache.version = new Date();
       }
 
       /* empty root (or those trying to game relative paths)
@@ -450,6 +450,7 @@
             if (fn.match(/.*\.html$/)) {
               data = data.toString();
               data = data.replace("{{manifest}}", appcache ? 'autom8.appcache' : '');
+              data = data.replace("{{version}}", config.appCache.version.getTime());
               data = renderTemplates(data);
               data = debug ? renderNonMinifiedStyles(data): renderMinifiedStyles(data);
               data = debug ? renderNonMinifiedScripts(data) : renderMinifiedScripts(data);

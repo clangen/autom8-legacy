@@ -8,7 +8,24 @@ namespace("autom8.view").HeaderView = (function() {
           HeaderView.staticEvents.trigger('signin:clicked');
         }
         else {
-          this.trigger("signout:clicked");
+          autom8.util.Dialog.show({
+            title: 'autom8',
+            message: 'Are you sure you want to sign out?',
+            cancelable: true,
+            buttons: [
+              {
+                caption: 'yes',
+                positive: true,
+                callback: _.bind(function() {
+                  this.trigger("signout:clicked");
+                }, this)
+              },
+              {
+                caption: 'no',
+                negative: true
+              }
+            ]
+          });
         }
       },
 

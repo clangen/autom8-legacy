@@ -9,8 +9,8 @@
       var params = {
         host: window.location.host,
         status: autom8.client.connected ? "connected" : "disconnected",
-        version: autom8.version,
-        type: autom8.Config.display.classes.body || "generic"
+        theme: autom8.Config.display.classes.body || "generic",
+        version: autom8.version
       };
 
       this.$el.append(View.elementFromTemplateId('autom8-View-AboutView', params));

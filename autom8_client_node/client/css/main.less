@@ -113,6 +113,7 @@ body {
 .row-spinner-container {
   width: 36px;
   height: 56px;
+  padding-right: 28px;
 }
 
 .extras,
@@ -123,6 +124,7 @@ body {
   .box-orient(vertical);
   padding-left: 10px;
   padding-right: 10px;
+  display: none; /* hidden by default */
 }
 
 .extras-button,
@@ -138,22 +140,12 @@ body {
   width: 12px;
 }
 
-.extras {
-  display: none; /* hidden by default */
-}
-
+.has-expander .expander,
 .has-extras .extras {
   .box();
 }
 
-.no-expander .expander {
-  display: none;
-}
-
-.no-expander .row-spinner-container {
-  padding-right: 28px;
-}
-
+.has-expander .row-spinner-container,
 .has-extras .row-spinner-container {
   padding-right: 0;  
 }

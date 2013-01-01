@@ -2,7 +2,9 @@ namespace("autom8.view").DeviceRow = (function() {
   var View = autom8.mvc.View;
 
   var deviceRow = View.extend({
-    onCreate: function() {
+    onCreate: function(options) {
+      options = options || { };
+      this.spinnerOptions = options.spinnerOptions;
     },
 
     onDestroy: function(options) {
@@ -57,6 +59,7 @@ namespace("autom8.view").DeviceRow = (function() {
         });
       }
       else {
+        options = _.extend({ }, this.spinnerOptions, options);
         this.spinner = autom8.view.DeviceRow.createSpinner(options);
       }
 
@@ -65,13 +68,11 @@ namespace("autom8.view").DeviceRow = (function() {
   });
 
   deviceRow.createSpinner = function(options) {
-    options = options || { };
-
     return new autom8.view.SpinnerView({
       el: $('<div class="row-spinner-container"></div>'),
       spinnerSelector: null,
       spinnerOptions: {
-        radius: options.radius || 6,
+        radius: options.radius || 8,
         className: 'row-spinner'
       }
     });

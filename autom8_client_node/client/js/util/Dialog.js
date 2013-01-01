@@ -9,7 +9,7 @@ namespace("autom8.util").Dialog = (function() {
       params = params || { };
       var anims = autom8.Config.display.animations;
 
-      if (!params.buttons || !params.buttons.length) {
+      if ((!params.buttons || !params.buttons.length) && !cancelable) {
         return;
       }
 
@@ -19,22 +19,53 @@ namespace("autom8.util").Dialog = (function() {
       var $buttonContainer = $dialog.find('.dialog-buttons');
       var negativeCallback, positiveCallback, cancelCallback;
 
-      $dialog.attr("id", dialogId);
-      $dialog.attr("tabindex", nextId + 1);
+      function prepareDialog() {
+        /* give this dialog a unique id and tab index so it can capture
+        key events */
+        $dialog.attr("id", dialogId);
+        $dialog.attr("tabindex", nextId + 1);
 
-      if (params.view && params.view.$el) {
-        if (params.view.parent) {
-          throw {error: 'dialog view already has a parent'};
+        /* if a custom view is specified, validate it's in the proper
+        state before trying to use it */
+        if (params.view && params.view.$el) {
+          if (params.view.parent) {
+            throw {error: 'dialog view already has a parent'};
+          }
+
+          params.view.parent = this;
+          $customViewContainer.append(params.view.$el);
+        }
+        else {
+          $customViewContainer.hide();
         }
 
-        params.view.parent = this;
-        $customViewContainer.append(params.view.$el);
-      }
-      else {
-        $customViewContainer.hide();
+        /* wire up the cancel, positive, and negative callbacks while
+        adding the button widgets to the dialog */
+        cancelCallback = params.cancelCallback;
+
+        _.each(params.buttons, function(button, index) {
+          var $button = autom8.mvc.View.elementFromTemplate(dialogButtonTemplate, {
+            caption: button.caption,
+            id: index
+          });
+
+          if (button.negative) {
+            negativeCallback = button.callback || function() { };
+          }
+
+          if (button.positive) {
+            positiveCallback = button.callback || function() { };
+          }
+
+          $buttonContainer.append($button);
+        });
       }
 
       function showDialog() {
+        /* provisions the dialog itself, but doesn't actually show it */
+        prepareDialog();
+
+        /* get the dialog prepared before we animate it into place */
         $('#dialogs').append($dialog);
         addEventHandlers();
         ++visibleCount;
@@ -45,6 +76,7 @@ namespace("autom8.util").Dialog = (function() {
           params.view.resume();
         }
 
+        /* animate it! */
         if (anims.dialog) {
           autom8.Animation.css($dialog, dialogId + '-animation', {
             duration: anims.dialogDuration,
@@ -52,12 +84,73 @@ namespace("autom8.util").Dialog = (function() {
             property: 'left',
             onPrepared: function() {
               $dialog.removeClass('left');
+            },
+            onAfterCompleted: function() {
+              $dialog.focus();
             }
           });
         }
         else {
           $dialog.removeClass('left');
+          $dialog.focus();
         }
+      }
+
+      function closeDialog(callback) {
+        /* we animate closing the dialog first, then this method will
+        be invoked to do the actual cleanup */
+        var onCloseCompleted = function() {
+          if (params.view) {
+            params.view.parent = null;
+            params.view.destroy();
+          }
+
+          removeEventHandlers();
+          $dialog.remove();
+          --visibleCount;
+
+          if (visibleCount === 0) {
+            $('#top-level-container').removeClass('dialog-overlay-blur');
+            $('#dialogs').removeClass('dialog-overlay dialog-background');
+          }
+
+          if (params.onClosed) {
+            params.onClosed();
+          }
+
+          if (callback) {
+            callback();
+          }
+        };
+
+        /* animate it! */
+        if (anims.dialog) {
+          autom8.Animation.css($dialog, dialogId + '-animation', {
+            duration: anims.dialogDuration,
+            easing: anims.dialogEasing,
+            property: 'left',
+            onPrepared: function() {
+              $dialog.addClass('left');
+            },
+            onAfterCompleted: onCloseCompleted
+          });
+        }
+        else {
+          $dialog.addClass('left');
+          onCloseCompleted();
+        }
+      }
+
+      function addEventHandlers() {
+        autom8.mvc.View.addTouchable('#' + dialogId, '.dialog-button', buttonHandler);
+        autom8.mvc.View.addTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', cancelHandler);
+        $('#' + dialogId).bind("keydown", keydownHandler);
+      }
+
+      function removeEventHandlers() {
+        autom8.mvc.View.removeTouchable('#' + dialogId, '.dialog-button', buttonHandler);
+        autom8.mvc.View.removeTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', cancelHandler);
+        $('#' + dialogId).unbind("keydown", keydownHandler);
       }
 
       function keydownHandler(event) {
@@ -77,64 +170,6 @@ namespace("autom8.util").Dialog = (function() {
             }
           });
         }
-      }
-
-      function onCloseCompleted() {
-        if (params.view) {
-          params.view.parent = null;
-          params.view.destroy();
-        }
-
-        removeEventHandlers();
-        $dialog.remove();
-        --visibleCount;
-
-        if (visibleCount === 0) {
-          $('#top-level-container').removeClass('dialog-overlay-blur');
-          $('#dialogs').removeClass('dialog-overlay dialog-background');
-        }
-
-        if (params.onClosed) {
-          params.onClosed();
-        }
-      }
-
-      function closeDialog(callback) {
-        if (anims.dialog) {
-          autom8.Animation.css($dialog, dialogId + '-animation', {
-            duration: anims.dialogDuration,
-            easing: anims.dialogEasing,
-            property: 'left',
-            onPrepared: function() {
-              $dialog.addClass('left');
-            },
-            onAfterCompleted: _.bind(function(canceled) {
-              onCloseCompleted();
-              if (callback) {
-                callback();
-              }
-            }, this)
-          });
-        }
-        else {
-          $dialog.removeClass('left').addClass('right');
-          onCloseCompleted();
-          if (callback) {
-            callback();
-          }
-        }
-      }
-
-      function addEventHandlers() {
-        autom8.mvc.View.addTouchable('#' + dialogId, '.dialog-button', buttonHandler);
-        autom8.mvc.View.addTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', cancelHandler);
-        $('#' + dialogId).bind("keydown", keydownHandler);
-      }
-
-      function removeEventHandlers() {
-        autom8.mvc.View.removeTouchable('#' + dialogId, '.dialog-button', buttonHandler);
-        autom8.mvc.View.removeTouchable('#dialogs', '#' + dialogId + '.dialog-overlay', cancelHandler);
-        $('#' + dialogId).unbind("keydown", keydownHandler);
       }
 
       function cancelHandler(event) {
@@ -164,28 +199,7 @@ namespace("autom8.util").Dialog = (function() {
         });
       }
 
-      cancelCallback = params.cancelCallback;
-
-      _.each(params.buttons, function(button, index) {
-        var $button = autom8.mvc.View.elementFromTemplate(dialogButtonTemplate, {
-          caption: button.caption,
-          id: index
-        });
-
-        if (button.negative) {
-          negativeCallback = button.callback || function() { };
-        }
-
-        if (button.positive) {
-          positiveCallback = button.callback || function() { };
-        }
-
-        $buttonContainer.append($button);
-      });
-
       showDialog();
-
-      $dialog.focus();
 
       return {
         close: function(callback) {

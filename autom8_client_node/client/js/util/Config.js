@@ -12,8 +12,8 @@ namespace("autom8").Config = (function() {
         viewSwitcherDuration: 0.30,
         viewSwitcherEasing: 'ease-out',
         dialog: false,
-        dialogDuration: 0.20,
-        dialogEasing: 'ease-out'
+        dialogDuration: 0.25,
+        dialogEasing: 'ease-in-out'
       },
       classes: {
         body: ''

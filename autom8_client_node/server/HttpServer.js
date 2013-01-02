@@ -104,8 +104,6 @@
 
     /* compiles css with less, if applicable, then minifies */
     var processCss = function(cssFiles) {
-      console.log(cssFiles);
-
       var parser = new less.Parser();
       var result = "";
 
@@ -130,8 +128,6 @@
         }
         result += "\n";
       }
-
-      console.log(result);
 
       if (result) {
         result = require('clean-css').process(result);

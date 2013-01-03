@@ -2,7 +2,6 @@ namespace("autom8.util").Dialog = (function() {
   var dialogTemplate = $("#autom8-Dialog").html();
   var dialogButtonTemplate = $("#autom8-Dialog-Button").html();
   var nextId = 0;
-  var visibleCount = 0;
 
   return {
     show: function(params) {
@@ -68,7 +67,6 @@ namespace("autom8.util").Dialog = (function() {
         /* get the dialog prepared before we animate it into place */
         $('#dialogs').append($dialog);
         addEventHandlers();
-        ++visibleCount;
         $('#top-level-container').addClass('dialog-overlay-blur');
         $('#dialogs').addClass('dialog-overlay dialog-background');
 
@@ -79,8 +77,6 @@ namespace("autom8.util").Dialog = (function() {
         /* animate it! */
         if (anims.dialog) {
           autom8.Animation.css($dialog, dialogId + '-animation', {
-            hwAccel: true,
-            $hwAccelEl: $('#dialogs'),
             duration: anims.dialogDuration,
             easing: anims.dialogEasing,
             property: 'left',
@@ -102,18 +98,18 @@ namespace("autom8.util").Dialog = (function() {
         /* we animate closing the dialog first, then this method will
         be invoked to do the actual cleanup */
         var onCloseCompleted = function() {
-          if (params.view) {
-            params.view.parent = null;
-            params.view.destroy();
+          $dialog.remove();
+
+          if ($("#dialogs").children().length === 0) {
+            $('#top-level-container').removeClass('dialog-overlay-blur');
+            $('#dialogs').removeClass('dialog-overlay dialog-background');
           }
 
           removeEventHandlers();
-          $dialog.remove();
-          --visibleCount;
 
-          if (visibleCount === 0) {
-            $('#top-level-container').removeClass('dialog-overlay-blur');
-            $('#dialogs').removeClass('dialog-overlay dialog-background');
+          if (params.view) {
+            params.view.parent = null;
+            params.view.destroy();
           }
 
           if (params.onClosed) {
@@ -128,15 +124,13 @@ namespace("autom8.util").Dialog = (function() {
         /* animate it! */
         if (anims.dialog) {
           autom8.Animation.css($dialog, dialogId + '-animation', {
-            hwAccel: true,
-            $hwAccelEl: $('#dialogs'),
             duration: anims.dialogDuration,
             easing: anims.dialogEasing,
             property: 'left',
             onPrepared: function() {
               $dialog.addClass('left');
             },
-            onAfterCompleted: onCloseCompleted
+            onCompleted: onCloseCompleted
           });
         }
         else {

@@ -121,6 +121,12 @@ namespace("autom8.controller").DeviceHomeController = (function() {
           only happens when a sensor is tripped */
           if (resort) {
             this.view.resort();
+
+            /* jump the user to the top of the document -- that's where security
+            alerts will show up. */
+            _.defer(function() {
+              $('body').scrollTop(0);
+            });
           }
 
           return true;

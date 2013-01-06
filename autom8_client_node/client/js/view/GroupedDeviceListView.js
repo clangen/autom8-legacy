@@ -1,10 +1,13 @@
 namespace("autom8.view").GroupedDeviceListView = (function() {
   var View = autom8.mvc.View;
 
+  function groupComparator(a, b) {
+    return a.sortKey() > b.sortKey() ? 1 : -1;
+  }
+
   function createGroupedDeviceList(deviceList) {
       /* build map of groups */
       var groupMap = { };
-      var groupToSortKey = { };
       deviceList.each(function(device) {
         _.each(device.get('groups'), function(group) {
           groupMap[group] = groupMap[group] || [];
@@ -12,24 +15,24 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
         });
       });
 
+      /* sorting function for group of subitems */
+      var listOptions = {
+        comparator: deviceList.comparator
+      };
+
       /* flatten to array so we can sort */
       var groupedDeviceList = [];
       _.each(groupMap, function(value, key) {
         var groupModel = new autom8.model.DeviceGroup({
           name: key,
-          deviceList: new autom8.model.DeviceList(value)
+          deviceList: new autom8.model.DeviceList(value, listOptions)
         });
 
         groupedDeviceList.push(groupModel);
-
-        var stats = autom8.util.Device.getDeviceListStats(groupModel.deviceList());
-        groupToSortKey[key] = String(stats.trippedCount ? "0" : "1") + '-' + key;
       });
 
       /* sort */
-      groupedDeviceList.sort(function(a, b) {
-        return groupToSortKey[a.name()] > groupToSortKey[b.name()];
-      });
+      groupedDeviceList.sort(groupComparator);
 
       return groupedDeviceList;
   }
@@ -128,7 +131,11 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
 
     resort: function() {
       if (this.deviceList) {
-        this.groupedDeviceList = createGroupedDeviceList(this.deviceList);
+        _.each(this.groupedDeviceList, function(group) {
+          group.deviceList().sort();
+        });
+
+        this.groupedDeviceList.sort(groupComparator);
         this.render();
       }
     },

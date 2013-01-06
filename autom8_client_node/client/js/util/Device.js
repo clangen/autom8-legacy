@@ -61,7 +61,7 @@ namespace("autom8.util").Device = {
 
   toggleDeviceGroupStatus: function(group) {
     var devices = group.deviceList();
-    var stats = this.getDeviceListStats(devices);
+    var stats = group.get('stats');
 
     /* TOOD: we don't currently support toggling groups of
     sensors */
@@ -248,53 +248,53 @@ namespace("autom8.util").Device = {
   },
 
   getDeviceListStats: function(devices) {
-      var stats = {
-        totalCount: devices.length,
-        onCount: 0,
-        armedCount: 0,
-        trippedCount: 0,
-        sensorCount: 0,
-        lampCount: 0,
-        applianceCount: 0,
-        allOn: false,
-        someOn: false
-      };
+    var stats = {
+      totalCount: devices.length,
+      onCount: 0,
+      armedCount: 0,
+      trippedCount: 0,
+      sensorCount: 0,
+      lampCount: 0,
+      applianceCount: 0,
+      allOn: false,
+      someOn: false
+    };
 
-      devices.each(function(device) {
-        switch (device.get('type')) {
-        case autom8.DeviceType.SecuritySensor:
-          stats.sensorCount++;
-          
-          if (device.isTripped()) {
-            stats.trippedCount++;
-          }
-
-          if (device.isArmed()) {
-            stats.armedCount++;
-          }
-          break;
+    devices.each(function(device) {
+      switch (device.get('type')) {
+      case autom8.DeviceType.SecuritySensor:
+        stats.sensorCount++;
         
-        case autom8.DeviceType.Lamp:
-          stats.lampCount++;
-          break;
-
-        case autom8.DeviceType.Appliance:
-          stats.applianceCount++;
-          break;
+        if (device.isTripped()) {
+          stats.trippedCount++;
         }
 
-        if (device.get('status') == autom8.DeviceStatus.On) {
-          stats.onCount++;
+        if (device.isArmed()) {
+          stats.armedCount++;
         }
-      });
+        break;
       
-      stats.allOn = (stats.onCount === devices.length);
-      stats.someOn = !stats.allOn && !!stats.onCount;
-      stats.allArmed = (stats.sensorCount && stats.sensorCount === stats.armedCount);
-      stats.someArmed = (!stats.allArmed && stats.armedCount && stats.sensorCount !== stats.armedCount);
-      stats.allTripped = (stats.sensorCount && stats.sensorCount === stats.trippedCount);
-      stats.someTripped = (stats.sensorCount && stats.trippedCount && stats.sensorCount !== stats.trippedCount);
+      case autom8.DeviceType.Lamp:
+        stats.lampCount++;
+        break;
 
-      return stats;
+      case autom8.DeviceType.Appliance:
+        stats.applianceCount++;
+        break;
+      }
+
+      if (device.get('status') == autom8.DeviceStatus.On) {
+        stats.onCount++;
+      }
+    });
+    
+    stats.allOn = (stats.onCount === devices.length);
+    stats.someOn = !stats.allOn && !!stats.onCount;
+    stats.allArmed = (stats.sensorCount && stats.sensorCount === stats.armedCount);
+    stats.someArmed = (!stats.allArmed && stats.armedCount && stats.sensorCount !== stats.armedCount);
+    stats.allTripped = (stats.sensorCount && stats.sensorCount === stats.trippedCount);
+    stats.someTripped = (stats.sensorCount && stats.trippedCount && stats.sensorCount !== stats.trippedCount);
+
+    return stats;
   }
 };

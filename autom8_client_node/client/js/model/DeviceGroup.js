@@ -13,11 +13,17 @@ namespace("autom8.model").DeviceGroup = (function() {
       this.updatingDevices = { };
       this.updatingCount = 0;
       this.isGroup = true;
+      this.refreshStats();
 
       this.deviceList().on('change:updating', _.bind(this.onDeviceUpdating, this));
+      this.deviceList().on('change', _.bind(this.refreshStats, this));
     },
 
-    name: function(newName) {
+    sortKey: function() {
+      return this.get('sortKey');
+    },
+
+    name: function() {
       return this.get('name');
     },
 
@@ -27,6 +33,16 @@ namespace("autom8.model").DeviceGroup = (function() {
 
     updating: function() {
       return this.get('updating') || false;
+    },
+
+    stats: function() {
+      return this.get('stats');
+    },
+
+    refreshStats: function() {
+      var newStats = autom8.util.Device.getDeviceListStats(this.deviceList());
+      this.set('stats', newStats);
+      this.set('sortKey', String(newStats.trippedCount ? "0" : "1") + '-' + this.name());
     },
 
     onDeviceUpdating: function(device, updating) {

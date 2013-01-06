@@ -109,15 +109,11 @@ namespace("autom8.controller").DeviceHomeController = (function() {
             }
           }
 
-          /* if we're going to resort, set the silent bit. otherwise, if silent
-          is not set, the individual rows that represent this device will redraw
-          automatically */
+          /* update the device; leaf views will redraw automatically */
           device.set({
             'attrs': body.attributes,
             'status': body.status,
             'updating': false
-          }, {
-            silent: resort
           });
 
           /* a full re-sort/render pass is very heavy weight, so we only

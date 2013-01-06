@@ -13,7 +13,7 @@
 
       var onTransitionEnd = function() {
         if (finished) {
-          return; /* animation was canceled before this was raised */
+          return; /* already completed. the failsafe probably fired... */
         }
 
         clearTimeout(failsafeTimeout);
@@ -74,6 +74,10 @@
         $div.bind('webkitTransitionEnd', onTransitionEnd);
       }
 
+      if (options.onBeforeStarted) {
+        options.onBeforeStarted();
+      }
+
       var oldTransform;
       if (options.hwAccel) {
         oldTransform = $div.css('-webkit-transform');
@@ -82,10 +86,6 @@
         $hwAccelEl.css({
           '-webkit-transform': 'translate3d(0, 0, 0)'
         });
-      }
-
-      if (options.onBeforeStarted) {
-        options.onBeforeStarted();
       }
 
       var easing = options.easing || "ease";

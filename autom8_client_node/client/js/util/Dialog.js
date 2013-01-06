@@ -79,6 +79,8 @@ namespace("autom8.util").Dialog = (function() {
         /* animate it! */
         if (anims.dialog) {
           autom8.Animation.css($dialog, dialogId + '-animation', {
+            hwAccel: true,
+            $hwAccelEl: $('#dialogs'),
             duration: anims.dialogDuration,
             easing: anims.dialogEasing,
             property: 'left',
@@ -126,6 +128,8 @@ namespace("autom8.util").Dialog = (function() {
         /* animate it! */
         if (anims.dialog) {
           autom8.Animation.css($dialog, dialogId + '-animation', {
+            hwAccel: true,
+            $hwAccelEl: $('#dialogs'),
             duration: anims.dialogDuration,
             easing: anims.dialogEasing,
             property: 'left',

@@ -9,6 +9,7 @@
       var params = {
         host: window.location.host,
         status: autom8.client.connected ? "connected" : "disconnected",
+        theme: autom8.Config.display.classes.body || "generic",
         version: autom8.version
       };
 

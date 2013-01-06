@@ -65,6 +65,9 @@
           endY = e.clientY;
         }
       }
+
+      /* prevents parent touchables from capturing this event */
+      e.stopImmediatePropagation();
     });
 
     /* end */
@@ -83,6 +86,9 @@
           }
         }
       }
+
+      /* prevents parent touchables from capturing this event */
+      e.stopImmediatePropagation();
     });
   }
 

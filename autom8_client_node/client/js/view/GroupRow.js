@@ -78,6 +78,10 @@ namespace("autom8.view").GroupRow = (function() {
           attrs: {
             index: index,
             group: options.attrs.group || 0
+          },
+
+          spinnerOptions: {
+            radius: 6
           }
         };
 
@@ -98,12 +102,13 @@ namespace("autom8.view").GroupRow = (function() {
     },
 
     redrawExpander: function() {
-      if (this.device.deviceList().length === 1) {
-        this.$group.addClass('no-expander');
-      }
-      else {
+      if (this.device.deviceList().length > 1) {
+        this.$group.addClass('has-expander');
         var $expander = this.$group.find('.expander-button');
         $expander.html(this.listView.collapsed ? '+' : '-');
+      }
+      else {
+        this.$group.removeClass('has-expander');
       }
     },
 

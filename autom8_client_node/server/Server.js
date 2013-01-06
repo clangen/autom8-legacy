@@ -1,5 +1,5 @@
 // npm install commander connect express socket.io socket.io-client less uglify clean-css
-// node.exe Server.js --listen 7902 --creds autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
+// node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 (function() {
   var program = require('commander');

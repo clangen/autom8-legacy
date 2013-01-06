@@ -66,10 +66,12 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
         case 'authenticated':
           stopTryingToReconnect(this);
 
-          if (this.errorDialog) {
-            this.errorDialog.close();
-            this.errorDialog = null;
-          }
+          _.defer(_.bind(function() {
+            if (this.errorDialog) {
+              this.errorDialog.close();
+              this.errorDialog = null;
+            }
+          }, this));
           break;
       }
     },

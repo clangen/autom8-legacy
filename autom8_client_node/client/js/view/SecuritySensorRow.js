@@ -4,11 +4,6 @@ namespace("autom8.view").SecuritySensorRow = (function() {
   var _super_ = autom8.view.DeviceRow;
 
   return _super_.extend({
-    setDevice: function(device) {
-      _super_.prototype.setDevice.call(this, device);
-      this.render();
-    },
-
     onRender: function() {
       var device = this.device;
       var address = device.address();

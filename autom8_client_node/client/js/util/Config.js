@@ -12,8 +12,8 @@ namespace("autom8").Config = (function() {
         viewSwitcherDuration: 0.30,
         viewSwitcherEasing: 'ease-out',
         dialog: false,
-        dialogDuration: 0.20,
-        dialogEasing: 'ease-out'
+        dialogDuration: 0.25,
+        dialogEasing: 'ease-in-out'
       },
       classes: {
         body: ''
@@ -24,14 +24,24 @@ namespace("autom8").Config = (function() {
   var ua = navigator.userAgent || "";
   var isIOS = /i(Phone|Pod) OS/.test(ua) || /Apple-i(Phone|Pod)/.test(ua);
   var isChrome = /Chrome/.test(ua);
+  var isIOSChrome = isIOS && /CriOS/.test(ua);
 
-  if (isIOS) {
+  if (isChrome || isIOSChrome) {
+    config.display.animations.collapse = true;
+    config.display.animations.viewSwitch = true;
+    config.display.animations.viewSwitcher = true;
+    config.display.animations.dialog = true;
+
+    config.display.classes.body = (isIOSChrome ? 'iphone-chrome' : 'chrome');
+  }
+  else if (isIOS) {
     config.display.animations.collapse = true;
     config.display.animations.viewSwitch = true;
     config.display.animations.viewSwitcher = true;
     config.display.animations.dialog = true;
 
     var isIOS6 = /i(Phone|Pod) OS (5|6)/.test(ua) || /Apple-i(Phone|Pod)(5|6)/.test(ua);
+
     if (!isIOS6) {
       config.display.animations.collapseEasing = 'linear';
       config.display.animations.expandEasing = 'linear';
@@ -41,14 +51,6 @@ namespace("autom8").Config = (function() {
     }
 
     config.display.classes.body = 'iphone';
-  }
-  else if (isChrome) {
-    config.display.animations.collapse = true;
-    config.display.animations.viewSwitch = true;
-    config.display.animations.viewSwitcher = true;
-    config.display.animations.dialog = true;
-
-    config.display.classes.body = 'chrome';
   }
 
   $(document).ready(function() {

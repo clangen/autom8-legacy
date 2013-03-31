@@ -1,4 +1,7 @@
 autom8_client_node/node_modules
+autom8_client_android/bin
+autom8_client_android/gen
+autom8_client_android/.settings
 3rdparty/3rdparty.vcxproj.user
 3rdparty/lib/3rdparty.lib
 3rdparty/lib/3rdpartyd.lib

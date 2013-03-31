@@ -6,7 +6,7 @@
  */
 (function() {
   var tls = require('tls');
-  
+
   var constants = require('./Constants.js');
   var config = require('./Config.js').get();
   var sessions = require('./Sessions.js');
@@ -25,7 +25,7 @@
     setTimeout(sendPing, 20000);
   }());
 
-  function reconnect() {
+  function reconnect(err) {
     if (connecting) {
       console.log("reconnect() called but already connecting.");
       return;
@@ -49,7 +49,13 @@
 
     var cfg = config.client;
 
-    socketStream = tls.connect(cfg.port, cfg.host, function() {
+    var connectOptions = {
+      host: cfg.host,
+      port: cfg.port,
+      rejectUnauthorized: !config.allowSelfSignedCerts
+    };
+
+    socketStream = tls.connect(connectOptions, function() {
       if (socketStream !== this) {
         /* some other reconnect attempt won */
         disconnect(this);

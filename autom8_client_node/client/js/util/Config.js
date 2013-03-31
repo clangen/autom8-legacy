@@ -25,8 +25,9 @@ namespace("autom8").Config = (function() {
   var isIOS = /i(Phone|Pod) OS/.test(ua) || /Apple-i(Phone|Pod)/.test(ua);
   var isChrome = /Chrome/.test(ua);
   var isIOSChrome = isIOS && /CriOS/.test(ua);
+  var isDesktopSafari = /OS X.*AppleWebKit/.test(ua);
 
-  if (isChrome || isIOSChrome) {
+  if (isChrome || isIOSChrome || isDesktopSafari) {
     config.display.animations.collapse = true;
     config.display.animations.viewSwitch = true;
     config.display.animations.viewSwitcher = true;

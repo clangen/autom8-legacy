@@ -21,7 +21,7 @@
 
         delete pending[name];
         finished = true;
-        
+
         if (options.keyframes) {
           $div.css('-webkit-animation', oldAnimation || "");
           $div.unbind('webkitAnimationEnd', onTransitionEnd);

@@ -18,12 +18,14 @@ namespace("autom8.view").SwitcherView = (function() {
     }
   }
 
+  function updateLabelOffsetWithoutTransform(context, pos) {
+    context.$label.css('-webkit-transform', 'none');
+    context.$el.css('text-align', pos);
+  }
+
   function updateLabelOffset(context, pos) {
     var xOffset = String(getLabelOffset(context, pos)) + 'px';
-
-    context.$label.css({
-      '-webkit-transform': 'translate3d(' + xOffset + ', 0, 0)'
-    });
+    context.$label.css('-webkit-transform', 'translate3d(' + xOffset + ', 0, 0)');
   }
 
   function getCurrentPosition(context) {
@@ -50,30 +52,24 @@ namespace("autom8.view").SwitcherView = (function() {
     },
 
     onResized: function(event) {
-      updateLabelOffset(this, getCurrentPosition(this));
+      updateLabelOffsetWithoutTransform(this, getCurrentPosition(this));
     },
 
     renderLabel: function(animate) {
       this.$label.html(stateToHtmlMap[this.state]);
 
-      /* set initial state. if our new state is grouped, that means
-      the animation is going from left to right, so start on the
-      left */
+      var inDom = (this.$el.closest(document.documentElement).length > 0);
       var to = getCurrentPosition(this); /* note: new state already set! */
       var from = (to === "left") ? "right" : "left";
 
-      var inDom = (this.$el.closest(document.documentElement).length > 0);
-
       if (!inDom) {
-        if (to === "right") {
-          this.$el.css({'text-align': 'right'});
-        }
+        updateLabelOffsetWithoutTransform(this, to);
       }
       else {
-        this.$el.css({'text-align': 'left'});
+        this.$el.css('text-align', 'left');
 
         if (animate === false || !autom8.Config.display.animations.viewSwitcher) {
-          updateLabelOffset(this, getCurrentPosition(this));
+          updateLabelOffsetWithoutTransform(this, getCurrentPosition(this));
         }
         else {
           updateLabelOffset(this, from); /* set initial position */
@@ -87,7 +83,9 @@ namespace("autom8.view").SwitcherView = (function() {
             }, this),
 
             onAfterCompleted: _.bind(function() {
-              updateLabelOffset(this, to);
+              /* it's in it's final position, align text and remove
+              the transformation */
+              updateLabelOffsetWithoutTransform(this, to);
             }, this)
           });
         }

@@ -8,7 +8,3 @@ function namespace(ns, context) {
   }
   return result;
 }
-
-namespace("autom8");
-namespace("autom8.mvc");
-namespace("autom8.mvc.mixins");

@@ -83,7 +83,7 @@ namespace("autom8.view").SwitcherView = (function() {
             }, this),
 
             onAfterCompleted: _.bind(function() {
-              /* it's in it's final position, align text and remove
+              /* it's in its final position, align text and remove
               the transformation */
               updateLabelOffsetWithoutTransform(this, to);
             }, this)

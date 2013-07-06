@@ -15,6 +15,7 @@
   var less = require('less');
   var zlib = require('zlib');
   var path = require('path');
+  var closurecompiler = require('closurecompiler');
 
   var util = require('./Util.js');
   var sessions = require('./Sessions.js');
@@ -203,7 +204,7 @@
     processCss(cssFiles);
   }
 
-  function renderMinifiedScripts(doc) {
+  function renderMinifiedScripts(doc, callback) {
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .js files that we will minify */
     var lines = renderScripts(doc).split(/\r\n|\n/);
@@ -239,19 +240,31 @@
       }
     }
 
-    /* render the minified javascript to the document */
-    minified +=
-      '<script type="text/javascript">' +
-      require('uglify-js').minify(scriptFilenames).code +
-      '</script>';
+    var minificationCompleteHandler = function(error, result) {
+      if (error) {
+        console.log('closure compiler output:');
+        console.log(error);
+      }
 
-    // doc = renderScripts(doc, ["styles"]);
-    doc = doc.replace("{{minified_scripts}}", minified);
+      if (result) {
+        minified += '<script type="text/javascript">';
+        minified += result;
+        minified += '</script>';
+      }
 
-    /* remove any {{*.script}} identifiers, they have all been minified */
-    doc = doc.replace(/\{\{.*\.scripts\}\}/g, "");
+      /* toss the minified code into the document, and then
+      remove any {{*.script}} identifiers, they have all been
+      minified */
+      doc = doc.replace("{{minified_scripts}}", minified);
+      doc = doc.replace(/\{\{.*\.scripts\}\}/g, "");
 
-    return doc;
+      if (callback) {
+        callback(doc);
+      }
+    }
+
+    closurecompiler.compile(
+      scriptFilenames, { }, minificationCompleteHandler);
   }
 
   function renderAppcacheManifest(res) {
@@ -488,9 +501,10 @@
             writeResponse(fn, data);
           }
           else {
-            data = renderMinifiedStyles(data, function(intermediate) {
-              data = renderMinifiedScripts(intermediate);
-              writeResponse(fn, data);
+            data = renderMinifiedStyles(data, function(withStyles) {
+              data = renderMinifiedScripts(withStyles, function(withScripts) {
+                writeResponse(fn, withScripts);
+              });
             });
           }
         }

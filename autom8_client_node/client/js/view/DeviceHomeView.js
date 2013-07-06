@@ -22,7 +22,7 @@ namespace("autom8.view").DeviceHomeView = (function() {
       /* views the user can switch between */
       this.lists = {
         flat: new autom8.view.DeviceListView({className: 'panel'}),
-        grouped: new autom8.view.GroupedDeviceListView({className: 'panel'})
+        grouped: new autom8.view.GroupedDeviceListView({className: 'panel right'})
       };
 
       this.lists.all = _.values(this.lists);
@@ -116,20 +116,32 @@ namespace("autom8.view").DeviceHomeView = (function() {
           easing: autom8.Config.display.animations.viewSwitchEasing,
           initialClass: grouped ? '' : 'left',
           toggleClass: 'left',
-          onBeforeStarted: function() {
+          onBeforeStarted: _.bind(function() {
+            /* make sure the views that need to be visible during the
+            animation are */
+            _.each(this.lists.all, function(view) {
+              view.$el.addClass('animating');
+            });
+
             newView.resume();
-          },
+          }, this),
           onAfterCompleted: _.bind(function(canceled) {
             if (!canceled) {
               this.animating = false;
 
+              newView.$el.removeClass('animating');
+              oldView.$el.removeClass('animating');
+
               /* animation completed successfully, deactivate all of the
-              non-visible views */
+              non-visible views and removing the animating flag so views
+              that are no longer visible are not rendered in the DOM */
               _.each(this.lists.all, function(view) {
                 if (view !== newView) {
                   view.$el.removeClass('active');
                   view.pause();
                 }
+
+                view.$el.removeClass('animating');
               });
 
               /* reset the viewport, as now there should only be the active

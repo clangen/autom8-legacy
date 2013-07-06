@@ -1,0 +1,39 @@
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.loading-row-container {
+    display: block;
+    text-align: center;
+}
+
+/* loading-row is used both by itself in MainController, and as a
+row in the ListView */
+.loading-row {
+    display: inline-block;
+    padding: 10px 0px;
+
+    .loading-text {
+        display: inline-block;
+
+        /* hacky; why doesn't middle work? */
+        vertical-align: top;
+        line-height: 2em;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        margin-right: 4px;
+    }
+}
+
+/* for all devices, hide the expander if we're spinning */
+.device-row {
+    .right.spinning {
+        .expander, .extras {
+            display: none;
+        }
+    }
+}

@@ -1,0 +1,33 @@
+@import "buttons.less";
+@import "mixins.less";
+
+.lamp {
+    .extras-button {
+        .button-style-2();
+    }
+
+    .touched .extras-button {
+        .button-style-2-touched();
+    }
+
+    &.has-extras .extras {
+        display: table;
+    }
+
+    .extras {
+        .row-expander-outer();
+    }
+}
+
+/* lamps inside of a group have a slightly tweaked
+expander button */
+.device-group-devices {
+    .lamp {
+        .extras-button {
+            font-size: 90%;
+            border-radius: 10px;
+            margin-top: 5px;
+            padding: 10px 12px;
+        }
+    }
+}

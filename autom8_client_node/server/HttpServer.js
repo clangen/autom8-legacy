@@ -14,6 +14,7 @@
   var url = require('url');
   var less = require('less');
   var zlib = require('zlib');
+  var path = require('path');
 
   var util = require('./Util.js');
   var sessions = require('./Sessions.js');
@@ -48,6 +49,16 @@
     };
   }());
 
+  function createLessParser(filename, paths) {
+      filename = filename || "";
+      paths = paths || [];
+      paths.push(path.dirname(filename));
+
+      return new less.Parser({
+        paths: paths
+      });
+  }
+
   function renderTemplates(doc) {
     var result = "";
     var path = root + '/templates/';
@@ -58,13 +69,13 @@
         result += "\n\n";
       }
     }
-    
+
     return doc.replace("{{templates}}", result);
   }
 
   function renderScripts(doc, types) {
     types = types || ['scripts', 'styles'];
-    
+
     if (typeof types === 'string') {
       types = [types];
     }
@@ -74,7 +85,7 @@
     var path = root + '/templates/';
     var files = fs.readdirSync(path) || [];
     var contents;
-    
+
     for (var i = 0; i < files.length; i++) {
       if (files[i].match(typesRegex)) {
         contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
@@ -97,43 +108,78 @@
     return renderScripts(doc, 'scripts');
   }
 
-  function renderMinifiedStyles(doc) {
+  function renderMinifiedStyles(doc, callback) {
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .css files that we will minify */
     var lines = renderScripts(doc).split(/\r\n|\n/);
 
+    /* key: filename, value: processed css string */
+    var outputCache = { };
+
     /* compiles css with less, if applicable, then minifies */
     var processCss = function(cssFiles) {
-      var parser = new less.Parser();
-      var result = "";
+      var parser;
+      var remaining = cssFiles.length;
 
-      var onParseFinished = function(err, tree) {
-        if (!err) {
-          result += tree.toCSS();
+      var finalize = function(minified) {
+        console.log("renderMinifiedStyles: finalizing...");
+        doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
+        doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
+
+        if (callback) {
+          callback(doc);
         }
-        else {
-          err = require('util').inspect(err);
-          console.log("LESS: CSS parse failed because " + err);
+      }
+
+      var minify = function() {
+        console.log("renderMinifiedStyles: concatenating compiled files...");
+        var combined = "";
+        for (var i = 0 ; i < cssFiles.length; i++) {
+          var data = outputCache[cssFiles[i].name] || "";
+          combined += data + "\n";
         }
-      };
+
+        console.log("renderMinifiedStyles: minifying concatenated result...");
+        var minified = require('clean-css').process(combined);
+
+        finalize(minified);
+      }
+
+      var createParseFinishHandler = function(filename) {
+        return function(err, tree) {
+          --remaining;
+
+          if (!err) {
+            outputCache[filename] = tree.toCSS();
+          }
+          else {
+            err = require('util').inspect(err);
+            console.log("LESS: CSS parse failed because " + err);
+          }
+
+          if (!remaining) {
+            minify();
+          }
+        }
+      }
 
       for (var i = 0; i < cssFiles.length; i++) {
         var file = cssFiles[i];
         if (file.type === "css") {
-          result += file.data;
+          outputCache[file.name] = file.data;
+          --remaining;
         }
         else if (file.type === "less") {
-          /* is done synchronously */
-          parser.parse(file.data, onParseFinished);
+          try {
+            console.log('processing: ' + file.name);
+            parser = createLessParser(file.name);
+            parser.parse(file.data, createParseFinishHandler(file.name));
+          }
+          catch(exception) {
+            console.log('exception during less.parse(): ' + exception);
+          }
         }
-        result += "\n";
       }
-
-      if (result) {
-        result = require('clean-css').process(result);
-      }
-
-      return result;
     };
 
     /* run through each line, seeing if it's a css file. if it is,
@@ -145,18 +191,16 @@
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(regex);
       if (match && match.length === 2) {
+        var name = root + '/' + match[1];
         cssFiles.push({
-          data: fs.readFileSync(root + '/' + match[1]).toString(),
-          type: match[1].split('.')[1]
+          data: fs.readFileSync(name).toString(),
+          type: match[1].split('.')[1],
+          name: name
         });
       }
     }
 
-    var minified = processCss(cssFiles);
-    doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
-    doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
-
-    return doc;
+    processCss(cssFiles);
   }
 
   function renderMinifiedScripts(doc) {
@@ -238,12 +282,12 @@
     /* maps browser sessions to socket connections. doing this allows us
     to correlate browser sessions with web sockets */
     var sessionStore = new express.session.MemoryStore();
-    
+
     /* magic middleware */
     app.use(express.cookieParser(secret));
 
     app.use(express.bodyParser());
-    
+
     app.use(express.session({
       store: sessionStore,
       secret: secret,
@@ -281,7 +325,7 @@
           result.signedIn = true;
         }
       }
-      
+
       res.writeHead(result.signedIn ? 200 : 401);
       res.end(JSON.stringify(result));
     });
@@ -411,50 +455,57 @@
         cachedFile = fileCache.get(fn, responseEncoding);
       }
 
+      var fileReadHandler = function(err, data) {
+        /* read failed */
+        if (err || !data) {
+          res.writeHead(500);
+          return res.end('error loading: ' + fn);
+        }
+
+        if (fn.match(/.*\.less$/)) {
+          var parser = createLessParser(fn);
+
+          parser.parse(data.toString(), function (err, tree) {
+              if (!err) {
+                console.log("LESS: successfully processed " + fn);
+                data = tree.toCSS();
+                writeResponse(fn, data);
+              }
+              else {
+                console.log("LESS: CSS parse failed because " + require('util').inspect(err));
+              }
+          });
+        }
+        else if (fn.match(/.*\.html$/)) {
+          data = data.toString();
+          data = data.replace("{{manifest}}", appcache ? 'autom8.appcache' : '');
+          data = data.replace("{{version}}", config.appCache.version.getTime());
+          data = renderTemplates(data);
+
+          if (debug) {
+            data = renderNonMinifiedStyles(data);
+            data = renderNonMinifiedScripts(data)
+            writeResponse(fn, data);
+          }
+          else {
+            data = renderMinifiedStyles(data, function(intermediate) {
+              data = renderMinifiedScripts(intermediate);
+              writeResponse(fn, data);
+            });
+          }
+        }
+        else {
+          writeResponse(fn, data);
+        }
+      };
+
       if (cachedFile) {
         console.log("cache hit: " + fn);
         writeResponse(fn, cachedFile, {fromCache: true});
       }
       else {
         console.log("cache miss: " + fn);
-
-        /* file not cached yet, read it from disk */
-        fs.readFile(
-        fn,
-        function (err, data) {
-          /* read failed */
-          if (err || !data) {
-            res.writeHead(500);
-            return res.end('error loading: ' + fn);
-          }
-
-          if (fn.match(/.*\.less$/)) {
-            var parser = new less.Parser();
-
-            parser.parse(data.toString(), function (err, tree) {
-                if (!err) {
-                  console.log("LESS: successfully processed " + fn);
-                  data = tree.toCSS();
-                  writeResponse(fn, data);
-                }
-                else {
-                  console.log("LESS: CSS parse failed because " + require('util').inspect(err));
-                }
-            });
-          }
-          else {
-            if (fn.match(/.*\.html$/)) {
-              data = data.toString();
-              data = data.replace("{{manifest}}", appcache ? 'autom8.appcache' : '');
-              data = data.replace("{{version}}", config.appCache.version.getTime());
-              data = renderTemplates(data);
-              data = debug ? renderNonMinifiedStyles(data): renderMinifiedStyles(data);
-              data = debug ? renderNonMinifiedScripts(data) : renderMinifiedScripts(data);
-            }
-
-            writeResponse(fn, data);
-          }
-        });
+        fs.readFile(fn, fileReadHandler);
       }
     });
 

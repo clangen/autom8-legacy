@@ -10,7 +10,7 @@ namespace("autom8.view").SecuritySensorRow = (function() {
       var tripped = device.isTripped();
       var armed = device.isArmed();
       var on = device.isOn();
-      var rowClass = 'device-row off';
+      var rowClass = 'device-row sensor off';
 
       var args = {
         action: "",
@@ -23,12 +23,12 @@ namespace("autom8.view").SecuritySensorRow = (function() {
       if (on && tripped) {
         args.buttonClass = "button alert";
         args.buttonText = "alert";
-        rowClass = "device-row alert";
+        rowClass = "device-row sensor alert";
       }
       else if (armed) {
         args.buttonClass = "button armed";
         args.buttonText = "armed";
-        rowClass = "device-row on";
+        rowClass = "device-row sensor on";
       }
       else {
         args.buttonClass = "button off";

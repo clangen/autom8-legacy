@@ -79,7 +79,7 @@ namespace("autom8.util").Dialog = (function() {
           autom8.Animation.css($dialog, dialogId + '-animation', {
             duration: anims.dialogDuration,
             easing: anims.dialogEasing,
-            onPrepared: function() {
+            onAfterStarted: function() {
               $dialog.removeClass('left');
             },
             onAfterCompleted: function() {
@@ -125,7 +125,7 @@ namespace("autom8.util").Dialog = (function() {
           autom8.Animation.css($dialog, dialogId + '-animation', {
             duration: anims.dialogDuration,
             easing: anims.dialogEasing,
-            onPrepared: function() {
+            onAfterStarted: function() {
               $dialog.addClass('left');
             },
             onCompleted: onCloseCompleted

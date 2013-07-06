@@ -26,6 +26,7 @@ namespace("autom8").Config = (function() {
   var isChrome = /Chrome/.test(ua);
   var isIOSChrome = isIOS && /CriOS/.test(ua);
   var isDesktopSafari = /OS X.*AppleWebKit/.test(ua);
+  var isFirefox = /Firefox/.test(ua);
 
   if (isChrome || isIOSChrome || isDesktopSafari) {
     config.display.animations.collapse = true;
@@ -52,6 +53,13 @@ namespace("autom8").Config = (function() {
     }
 
     config.display.classes.body = 'iphone';
+  }
+  if (isFirefox) {
+    config.display.animations.collapse = false;
+    config.display.animations.viewSwitch = false;
+    config.display.animations.viewSwitcher = false;
+    config.display.animations.dialog = true;
+    config.display.classes.body = 'firefox';
   }
 
   $(document).ready(function() {

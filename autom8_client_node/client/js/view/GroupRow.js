@@ -37,6 +37,8 @@ namespace("autom8.view").GroupRow = (function() {
         args.buttonSubtext = "(all off)";
       }
 
+      args.rowClass += " group";
+
       return autom8.mvc.View.elementFromTemplate(groupRowTemplate, args);
   }
 

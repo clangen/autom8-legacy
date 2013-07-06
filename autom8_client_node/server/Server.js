@@ -1,4 +1,4 @@
-// npm install commander connect express socket.io socket.io-client less uglify clean-css
+// npm install commander connect express socket.io socket.io-client less uglify-js clean-css
 // node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 (function() {

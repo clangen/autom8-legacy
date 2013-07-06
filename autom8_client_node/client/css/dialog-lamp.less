@@ -1,0 +1,61 @@
+@import "mixins.less";
+
+@rowBackgroundColor: #000;
+@defaultUnderlineColor: #000;
+@selectedUnderlineColor: #f00;
+@touchedUnderlineColor: #fff;
+
+@underlineHeight: 6px;
+
+@buttonHeight: 26px;
+@buttonWidth: 17%;
+@buttonHorizontalPadding: 6px;
+
+@buttonTwentyColor: rgba(255, 255, 255, 0.1);
+@buttonFortyColor: rgba(255, 255, 255, 0.3);
+@buttonSixtyColor: rgba(255, 255, 255, 0.5);
+@buttonEightyColor: rgba(255, 255, 255, 0.7);
+@buttonHundredColor: rgba(255, 255, 255, 0.9);
+
+.brightness-row {
+    background-color: @rowBackgroundColor;
+    text-align: center;
+}
+
+.brightness-button {
+    display: inline-block;
+    min-height: @buttonHeight;
+    width: @buttonWidth;
+    padding-top: @buttonHorizontalPadding;
+    padding-bottom: @buttonHorizontalPadding;
+    text-align: center;
+    border-bottom: @underlineHeight solid @defaultUnderlineColor;
+}
+
+.brightness-button.selected {
+    border-bottom: @underlineHeight solid @selectedUnderlineColor;
+}
+
+.brightness-button.touched {
+    border-bottom: @underlineHeight solid @touchedUnderlineColor;
+}
+
+.brightness-button.twenty {
+    background-color: @buttonTwentyColor;
+}
+
+.brightness-button.forty {
+    background-color: @buttonFortyColor;
+}
+
+.brightness-button.sixty {
+    background-color: @buttonSixtyColor;
+}
+
+.brightness-button.eighty {
+    background-color: @buttonEightyColor;
+}
+
+.brightness-button.hundred {
+    background-color: @buttonHundredColor;
+}

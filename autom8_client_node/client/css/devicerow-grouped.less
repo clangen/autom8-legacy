@@ -1,0 +1,70 @@
+@import "buttons.less";
+@import "mixins.less";
+
+@childRowHeight: 46px;
+@childButtonWidth: @childRowHeight;
+@childButtonHeight: @childRowHeight;
+@rightColumnWidth: 64px;
+@childRowExtrasOffset: 13px;
+
+/* container for all sub-devices */
+.device-group-devices {
+    margin: 0px 0px 0px 10px;
+    overflow: hidden;
+
+    /* child rows */
+    .device-row {
+        font-size: 80%;
+
+        /* child rows are rendered at a slightly different size, so
+        re-apply the three-column mixin with the smaller size */
+        .three-column(@childRowHeight, @childButtonWidth, @rightColumnWidth);
+
+        .extras {
+            padding-left: @childRowExtrasOffset;
+            padding-top: 0px;
+        }
+
+        .button {
+            height: @childButtonHeight;
+            width: @childButtonWidth;
+        }
+
+        .device-row-info-outer {
+            height: @childRowHeight;
+        }
+
+        .device-row-info {
+            padding-left: 18px;
+        }
+
+        .row-spinner-container {
+            width: 28px;
+            height: @childRowHeight;
+            padding-right: 36px;
+        }
+    }
+}
+
+/* parent device-row (i.e. the group itself) */
+.device-row {
+    &.group {
+        .expander {
+            .row-expander-outer();
+            display: none;
+        }
+
+        &.has-expander .expander {
+            display: table;
+        }
+
+        .expander-button {
+            .button-style-2();
+            .row-expander-inner();
+        }
+
+        .touched .expander-button {
+            .button-style-2-touched();
+        }
+    }
+}

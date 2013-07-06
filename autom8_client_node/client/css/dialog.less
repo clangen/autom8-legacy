@@ -1,0 +1,71 @@
+@import "mixins.less";
+@import "buttons.less";
+
+@overlayBackgroundColor: rgba(0, 0, 0, 0.5);
+@dialogBackgroundColor: rgba(0, 0, 0, 0.85);
+
+.dialog-overlay.left {
+    .transform(translate3d(-100%, 0, 0));
+}
+
+.dialog-overlay {
+    .transform(translate3d(0, 0, 0));
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    outline: none;
+}
+
+.dialog-overlay.dialog-background {
+    left: 0;
+}
+
+.dialog-background {
+    background-color: @overlayBackgroundColor;
+}
+
+.dialog-container {
+    background-color: @dialogBackgroundColor;
+    border-radius: 12px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+    padding: 12px;
+    margin-top: 48px;
+    max-width: 80%;
+    min-width: 80%;
+    .center-horizontal();
+    .box-shadow(6px, 6px, 30px, black);
+}
+
+.dialog-title {
+    font-weight: bold;
+    font-size: 120%;
+    margin-bottom: 10px;
+}
+
+.dialog-message {
+    margin-bottom: 14px;
+}
+
+.dialog-buttons {
+    text-align: right;
+}
+
+.dialog-custom-view {
+    margin-bottom: 14px;
+}
+
+.dialog-overlay-blur {
+    .filter(blur(2px));
+}
+
+.dialog-button {
+    display: inline-block;
+    .button-style-3();
+}
+
+.dialog-button.touched {
+    .button-style-3-touched();
+}

@@ -63,7 +63,7 @@ namespace("autom8.view").DeviceRow = (function() {
         this.spinner = autom8.view.DeviceRow.createSpinner(options);
       }
 
-      this.addChild(this.spinner, { appendAfterElement: '.device-row-info' });
+      this.addChild(this.spinner, { appendToElement: '.right' });
     }
   });
 

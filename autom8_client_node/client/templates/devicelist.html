@@ -3,27 +3,49 @@
 </script>
 
 <script id="autom8-View-DeviceRow" type="text/x-handlebars-template">
-  <div class="{{buttonClass}}">{{buttonText}}</div>
-  <div class="device-row-info">
-    <div class="label">{{text}}</div>
-    <div class="subtext {{subtextClass}}">{{subtext}}</div>
+  <div class="left">
+    <div class="{{buttonClass}}">
+      <div class="button-text">
+        {{buttonText}}
+      </div>
+    </div>
   </div>
-  <div class="extras">
-    <div class="extras-button">...</div>
+  <div class="middle">
+    <div class="device-row-info-outer">
+      <div class="device-row-info">
+        <div class="label">{{text}}</div>
+        <div class="subtext {{subtextClass}}">{{subtext}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="extras">
+      <div class="extras-button">...</div>
+    </div>
   </div>
 </script>
 
 <script id="autom8-View-GroupRow" type="text/x-handlebars-template">
   <div class="device-row group off {{rowClass}}">
-    <div class="button {{buttonClass}}">
-      <div>{{buttonText}}</div>
-      <div class="button-subtext {{subtextClass}}">{{buttonSubtext}}</div>
+    <div class="left">
+      <div class="button {{buttonClass}}">
+        <div class="button-text">
+          <div>{{buttonText}}</div>
+          <div class="button-subtext {{subtextClass}}">{{buttonSubtext}}</div>
+        </div>
+      </div>
     </div>
-    <div class="device-row-info">
-      <div class="label">{{text}}</div>
+    <div class="middle">
+      <div class="device-row-info-outer">
+        <div class="device-row-info">
+          <div class="label">{{text}}</div>
+        </div>
+      </div>
     </div>
-    <div class="expander">
-      <div class="expander-button">{{expander}}</div>
+    <div class="right">
+      <div class="expander">
+        <div class="expander-button">{{expander}}</div>
+      </div>
     </div>
   </div>
 </script>

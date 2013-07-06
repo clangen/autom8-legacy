@@ -3,10 +3,12 @@ namespace("autom8.view").DeviceRowFactory = (function() {
     create: function(device, options) {
       options = options || { };
       var result = $("<div/>");
+      var type;
 
       var rowView = null;
       if (device && device.name && device.deviceList) {
         rowView = new autom8.view.GroupRow(options);
+        type = 'group';
       }
       else {
         switch (device.get('type')) {
@@ -30,6 +32,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
       }
 
       rowView.setDevice(device);
+
       return rowView;
     }
   };

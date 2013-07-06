@@ -1,0 +1,81 @@
+@import "mixins.less";
+@import "buttons.less";
+
+@backgroundColor: #262626;
+@borderColor: #1f1f1f;
+@hostSeparatorTextColor: #999;
+@textColor: #ccc;
+@textShadowColor: #000;
+@logoTextTouchedColor: #444;
+
+@height: 52px;
+@headerInnerPadding: 10px;
+
+// #header {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//     right: 0;
+//     height: @height;
+// }
+
+.header {
+    background-color: @backgroundColor;
+    color: @textColor;
+    padding: @headerInnerPadding;
+    min-height: @height;
+    .box-sizing(border-box);
+    border-bottom: 1px solid @borderColor;
+}
+
+.header-button {
+    .button-style-1();
+}
+
+.header-button.touched {
+    .button-style-1-touched();
+}
+
+.header-left {
+    position: absolute;
+}
+
+.header-right {
+    position: absolute;
+    right: 8px;
+}
+
+.header-text {
+    font-size: 120%;
+    color: @textColor;
+    text-shadow: 2px 2px 2px @textShadowColor;
+}
+
+.header-host-separator {
+    display: inline-block;
+    font-size: 70%;
+    color: @hostSeparatorTextColor;
+    text-shadow: 1px 1px 1px @textShadowColor;
+}
+
+.header-host-text {
+    display: inline-block;
+    font-weight: bold;
+    padding: 0;
+    font-size: 70%;
+    text-shadow: 1px 1px 1px @textShadowColor;
+    font-size: 76%;
+}
+
+.header-logo {
+    font-size: 110%;
+    font-weight: bold;
+}
+
+.header-logo.touched {
+    background-color: @logoTextTouchedColor;
+}
+
+.header-status {
+    line-height: 0.75em;
+}

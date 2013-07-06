@@ -1,7 +1,9 @@
 <script id="autom8-View-LoadingRow" type="text/x-handlebars-template">
-  <div class="loading-row">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">please wait...</div>
+  <div class="loading-row-container">
+    <div class="loading-row">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">please wait...</div>
+    </div>
   </div>
 </script>
 
@@ -14,15 +16,15 @@
         <div class="header-host-text" id="hostname">{{hostName}}</div>
       </div>
     </div>
-    <div class="header-spacer"></div>
-    <div class="header-button" id="header-button"></div>
+    <div class="header-right">
+      <div class="header-button" id="header-button"></div>
+    </div>
   </div>
 </script>
 
 <script id="autom8-View-PasswordRow" type="text/x-handlebars-template">
   <div class="password-row">
-    <div>password:</div>
-    <input name="password" id="password" class="password" type="password"></input>
+    <input placeholder="password" name="password" id="password" class="password" type="password"></input>
   </div>
 </script>
 

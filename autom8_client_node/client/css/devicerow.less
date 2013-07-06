@@ -1,0 +1,144 @@
+@import "mixins.less";
+
+@rowOffBackgroundColor: #333;
+@rowOffTouchedBackgroundColor: #878787;
+@rowOnBackgroundColor: #555;
+@rowOnTouchedBackgroundColor: #898989;
+@rowSomeBackgroundColor: #3d3d3d;
+
+@rowTextColor: #eee;
+@rowSubtextColor: #ccc;
+
+@buttonTextShadowColor: #333;
+@buttonSubtextColor: #afafaf;
+@buttonSubtextShadowColor: #000;
+
+@buttonOnBackgroundColor: #666;
+@buttonOnTextColor: #eee;
+@buttonOnSubtextColor: #666;
+
+@buttonOffBackgroundColor: #3f3f3f;
+@buttonOffTextColor: #afafaf;
+
+@buttonAlertBackgroundColor: #cc0000;
+@buttonAlertTextColor: #fff;
+
+@buttonAllBackgroundColor: #777;
+@buttonAllTextColor: #eee;
+
+@defaultRowHeight: 56px;
+@leftColumnWidth: 56px;
+@leftColumnHeight: 56px;
+@rightColumnWidth: 64px;
+
+.device-row {
+    border-bottom: 1px solid #2a2a2a;
+    cursor: pointer;
+
+    .three-column(@defaultRowHeight, @leftColumnWidth, @rightColumnWidth);
+
+    .left {
+        text-align: center;
+    }
+
+    /* ROW (BACKGROUND) STYLES */
+    &.off {
+        background-color: @rowOffBackgroundColor;
+    }
+
+    &.off.touched {
+        background-color: @rowOffTouchedBackgroundColor;
+    }
+
+    &.on {
+        background-color: @rowOnBackgroundColor;
+    }
+
+    &.on.touched {
+        background-color: @rowOnTouchedBackgroundColor;
+    }
+
+  &.some {
+      background-color: @rowSomeBackgroundColor;
+  }
+
+    /* MIDDLE (TEXT, SUBTEXT) */
+    .label {
+        color: @rowTextColor;
+    }
+
+    .subtext {
+        text-align: left;
+        color: @rowSubtextColor;
+        font-size: 70%;
+    }
+
+    .device-row-info-outer {
+        display: table;
+        height: @defaultRowHeight;
+    }
+
+    .device-row-info {
+        padding-left: 10px;
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    /* LEFT SQUARE BUTTON */
+    .button {
+        font-weight: bold;
+        font-size: 110%;
+        text-shadow: 1px 1px 4px @buttonTextShadowColor;
+        width: @leftColumnWidth;
+        height: @leftColumnWidth;
+        cursor: pointer;
+        display: table;
+    }
+
+    .button-text {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .button-subtext {
+        font-size: 60%;
+        font-weight: normal;
+        text-shadow: 1px 1px 1px @buttonSubtextShadowColor;
+        color: @buttonSubtextColor;
+    }
+
+    .button.armed,
+    .button.on {
+        background-color: @buttonOnBackgroundColor;
+        color: @buttonOnTextColor;
+    }
+
+    .button.armed {
+        font-size: 90%;
+    }
+
+    .button.all {
+        background-color: @buttonAllBackgroundColor;
+        color: @buttonAllTextColor;
+    }
+
+    .button.off {
+        background-color: @buttonOffBackgroundColor;
+        color: @buttonOffTextColor;
+    }
+
+    .button.alert {
+        background-color: @buttonAlertBackgroundColor;
+        color: @buttonAlertTextColor;
+    }
+}
+
+/* this is an outer container for the spinner displayed
+each device row. it assures the spinner is properly
+sized and centered so it can be easily positioned within
+an arbitrary parent */
+.row-spinner-container {
+    width: 36px;
+    height: 56px;
+    padding-right: 28px;
+}

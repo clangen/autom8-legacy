@@ -37,7 +37,10 @@ namespace("autom8.view").ApplianceRow = (function() {
       }
 
       if (isLamp) {
-        rowClass += " has-extras";
+        rowClass += " has-extras lamp";
+      }
+      else {
+        rowClass += " appliance";
       }
 
       this.$el.empty();

@@ -86,12 +86,14 @@
       var self = this;
       _.defer(function() {
         self.spinner.spin(self.$spinnerEl.get(0));
+        self.$el.parent().addClass('spinning');
       });
     },
 
     stop: function() {
       this.state = "stopped";
       this.spinner.stop();
+      this.$el.parent().removeClass('spinning');
       this.hide();
     }
   });

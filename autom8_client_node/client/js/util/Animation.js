@@ -1,6 +1,31 @@
 (function() {
   var exports = { };
 
+  var vendorPrefixes = ['', '-webkit-', '-moz-'];
+
+  var events = {
+    'transitionend': 'webkitTransitionEnd transitionend otransitionend',
+    'animationend': 'webkitAnimationEnd animationend oanimationend',
+    'animationstart': 'webkitAnimationStart animationstart oanimationstart'
+  };
+
+  function setStyle($el, name, value) {
+    var styles = { };
+    for (var i = 0; i < vendorPrefixes.length; i++) {
+      styles[vendorPrefixes[i] + name] = value || '';
+    }
+    $el.css(styles);
+  }
+
+  function getStyle($el, name) {
+    var styles = { };
+    for (var i = 0; i < vendorPrefixes.length; i++) {
+      var key = vendorPrefixes[i] + name;
+      styles[key] = $el.css(key) || '';
+    }
+    return styles;
+  }
+
   exports.css =  (function() {
     var pending = { };
 
@@ -23,20 +48,17 @@
         finished = true;
 
         if (options.keyframes) {
-          $div.css('-webkit-animation', oldAnimation || "");
-          $div.unbind('webkitAnimationEnd', onTransitionEnd);
+          $div.css(oldAnimation);
+          $div.unbind(events['animationend'], onTransitionEnd);
         }
         else {
-          $div.css('-webkit-transition', oldTransition || "");
-          $div.unbind('webkitTransitionEnd', onTransitionEnd);
+          $div.css(oldTransition);
+          $div.unbind(events['transitionend'], onTransitionEnd);
         }
 
         if (options.hwAccel) {
           var $hwAccelEl = options.$hwAccelEl || $div;
-
-          $hwAccelEl.css({
-            '-webkit-transform': oldTransform
-          });
+          $div.css(oldTransform);
         }
 
         if (options.onCompleted) {
@@ -68,10 +90,10 @@
 
       /* invoked when animation finishes */
       if (options.keyframes) {
-        $div.bind('webkitAnimationEnd', onTransitionEnd);
+        $div.bind(events['animationend'], onTransitionEnd);
       }
       else {
-        $div.bind('webkitTransitionEnd', onTransitionEnd);
+        $div.bind(events['transitionend'], onTransitionEnd);
       }
 
       if (options.onBeforeStarted) {
@@ -80,27 +102,25 @@
 
       var oldTransform;
       if (options.hwAccel) {
-        oldTransform = $div.css('-webkit-transform');
+        oldTransform = getStyle($div, 'transform'); // $div.css('-webkit-transform');
 
         var $hwAccelEl = options.$hwAccelEl || $div;
-        $hwAccelEl.css({
-          '-webkit-transform': 'translate3d(0, 0, 0)'
-        });
+        setStyle($div, 'transform', 'translate3d(0, 0, 0)');
       }
 
       var easing = options.easing || "ease";
       var duration = options.duration ? options.duration : 0.5;
 
       /* these values will be restored when the animation has completed */
-      var oldTransition = $div.css('-webkit-transition');
-      var oldAnimation = $div.css('-webkit-animation');
+      var oldTransition = getStyle($div, 'transition');
+      var oldAnimation = getStyle($div, 'animation');
 
       if (options.keyframes) {
-        $div.css('-webkit-animation', options.keyframes + ' ' + String(duration) + 's ' + easing);
+        setStyle($div, 'animation', options.keyframes + ' ' + String(duration) + 's ' + easing);
       }
       else {
         var property = options.property || "all";
-        $div.css('-webkit-transition', property + ' ' + String(duration) + 's ' + easing);
+        setStyle($div, 'transition', property + ' ' + String(duration) + 's ' + easing);
       }
 
       if (options.onPrepared) {

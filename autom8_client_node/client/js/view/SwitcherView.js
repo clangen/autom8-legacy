@@ -1,4 +1,6 @@
 namespace("autom8.view").SwitcherView = (function() {
+  var Browser = namespace('autom8').Browser;
+
   var stateToHtmlMap = {
     flat: "switch to area view <b>&gt;</b>",
     grouped: "<b>&lt;</b> switch to flat view"
@@ -8,24 +10,20 @@ namespace("autom8.view").SwitcherView = (function() {
     var $container = context.$el;
     var $label = this.$('.switch-label');
 
-    if (!pos || pos === "left") {
-      return 0;
-    }
-    else {
-      var containerWidth = $container.width();
-      var labelWidth = $label.width();
-      return (containerWidth - labelWidth);
-    }
+    var containerWidth = $container.width();
+    var labelWidth = $label.width();
+    var offset = (containerWidth - labelWidth);
+    return (pos === "left") ? -offset : offset;
   }
 
   function updateLabelOffsetWithoutTransform(context, pos) {
-    context.$label.css('-webkit-transform', 'none');
+    Browser.setPrefixedStyle(context.$label, 'transform', 'none');
     context.$el.css('text-align', pos);
   }
 
   function updateLabelOffset(context, pos) {
     var xOffset = String(getLabelOffset(context, pos)) + 'px';
-    context.$label.css('-webkit-transform', 'translate3d(' + xOffset + ', 0, 0)');
+    Browser.setPrefixedStyle(context.$label, 'transform', 'translate3d(' + xOffset + ', 0, 0)');
   }
 
   function getCurrentPosition(context) {
@@ -58,38 +56,42 @@ namespace("autom8.view").SwitcherView = (function() {
     renderLabel: function(animate) {
       this.$label.html(stateToHtmlMap[this.state]);
 
-      var inDom = (this.$el.closest(document.documentElement).length > 0);
-      var to = getCurrentPosition(this); /* note: new state already set! */
-      var from = (to === "left") ? "right" : "left";
+      /* wait for the next pass through the event loop to start the animation;
+      we need to make sure the label updates first so the size can be properly
+      calculated. alternatively we could wait until the animation is done to
+      tweak the label value, but it looks a bit glitchy */
+      _.defer(_.bind(function() {
+        var inDom = (this.$el.closest(document.documentElement).length > 0);
+        var to = getCurrentPosition(this); /* note: new state already set! */
+        var from = (to === "left") ? "right" : "left";
 
-      if (!inDom) {
-        updateLabelOffsetWithoutTransform(this, to);
-      }
-      else {
-        this.$el.css('text-align', 'left');
-
-        if (animate === false || !autom8.Config.display.animations.viewSwitcher) {
-          updateLabelOffsetWithoutTransform(this, getCurrentPosition(this));
+        if (!inDom) {
+          updateLabelOffsetWithoutTransform(this, to);
         }
         else {
-          updateLabelOffset(this, from); /* set initial position */
+          if (animate === false || !autom8.Config.display.animations.viewSwitcher) {
+            updateLabelOffsetWithoutTransform(this, getCurrentPosition(this));
+          }
+          else {
+            updateLabelOffset(this, from); /* set initial position */
 
-          autom8.Animation.css(this.$label, "devices-switcher-view", {
-            duration: autom8.Config.display.animations.viewSwitcherDuration,
-            easing: autom8.Config.display.animations.viewSwitcherEasing,
+            autom8.Animation.css(this.$label, "devices-switcher-view", {
+              duration: autom8.Config.display.animations.viewSwitcherDuration,
+              easing: autom8.Config.display.animations.viewSwitcherEasing,
 
-            onPrepared: _.bind(function() {
-              updateLabelOffset(this, to);
-            }, this),
+              onPrepared: _.bind(function() {
+                updateLabelOffset(this, to);
+              }, this),
 
-            onAfterCompleted: _.bind(function() {
-              /* it's in its final position, align text and remove
-              the transformation */
-              updateLabelOffsetWithoutTransform(this, to);
-            }, this)
-          });
+              onAfterCompleted: _.bind(function() {
+                /* it's in its final position, align text and remove
+                the transformation */
+                updateLabelOffsetWithoutTransform(this, to);
+              }, this)
+            });
+          }
         }
-      }
+      }, this));
     },
 
     getState: function() {

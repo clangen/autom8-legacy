@@ -1,7 +1,5 @@
 (function() {
-  var exports = { };
-
-  var vendorPrefixes = ['', '-webkit-', '-moz-'];
+  var Browser = namespace('autom8').Browser;
 
   var events = {
     'transitionend': 'webkitTransitionEnd transitionend otransitionend',
@@ -9,24 +7,11 @@
     'animationstart': 'webkitAnimationStart animationstart oanimationstart'
   };
 
-  function setStyle($el, name, value) {
-    var styles = { };
-    for (var i = 0; i < vendorPrefixes.length; i++) {
-      styles[vendorPrefixes[i] + name] = value || '';
-    }
-    $el.css(styles);
-  }
+  var exports = { };
+  var getStyle = Browser.getPrefixedStyle;
+  var setStyle = Browser.setPrefixedStyle;
 
-  function getStyle($el, name) {
-    var styles = { };
-    for (var i = 0; i < vendorPrefixes.length; i++) {
-      var key = vendorPrefixes[i] + name;
-      styles[key] = $el.css(key) || '';
-    }
-    return styles;
-  }
-
-  exports.css =  (function() {
+  exports.css = (function() {
     var pending = { };
 
     return function($div, name, options) {

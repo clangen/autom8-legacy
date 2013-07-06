@@ -57,7 +57,7 @@ namespace("autom8").Config = (function() {
   if (isFirefox) {
     config.display.animations.collapse = false;
     config.display.animations.viewSwitch = false;
-    config.display.animations.viewSwitcher = false;
+    config.display.animations.viewSwitcher = true;
     config.display.animations.dialog = true;
     config.display.classes.body = 'firefox';
   }

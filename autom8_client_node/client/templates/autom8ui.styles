@@ -18,3 +18,4 @@
 
 <link rel="stylesheet" href="css/iphone.less"></link>
 <link rel="stylesheet" href="css/chrome-iphone.less"></link>
+<link rel="stylesheet" href="css/firefox.less"></link>

@@ -77,7 +77,7 @@
       /* if we already have lifecycles, append otherwise, assign */
       var current = extended.prototype.lifecycles;
 
-      /* _.uniq() is n^2 in this case, we should be able to do better */
+      /* _.uniq() is n^2, we can definitely do better */
       extended.prototype.lifecycles =
         current ? _.uniq(current.concat(lifecycles)) : lifecycles;
     }

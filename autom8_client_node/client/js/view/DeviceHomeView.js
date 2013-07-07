@@ -103,9 +103,14 @@ namespace("autom8.view").DeviceHomeView = (function() {
       it out of the scene, and animate the new view in */
       else {
         /* to complete the animation successfully we need to have
-        both views visible immediately before the animation begins */
-        this.lists.grouped.$el.addClass('active');
-        this.lists.flat.$el.addClass('active');
+        both views visible immediately before the animation begins.
+        also, make sure both views know they're animating */
+        _.each(this.lists.all, function(view) {
+          view.$el.addClass('animating');
+          view.$el.addClass('active');
+        });
+
+        $container.addClass(grouped ? '' : 'left');
 
         /* start the animation */
         this.animating = true;
@@ -114,23 +119,15 @@ namespace("autom8.view").DeviceHomeView = (function() {
           hwAccel: false,
           duration: autom8.Config.display.animations.viewSwitchDuration,
           easing: autom8.Config.display.animations.viewSwitchEasing,
-          initialClass: grouped ? '' : 'left',
-          toggleClass: 'left',
-          onBeforeStarted: _.bind(function() {
-            /* make sure the views that need to be visible during the
-            animation are */
-            _.each(this.lists.all, function(view) {
-              view.$el.addClass('animating');
-            });
 
+          onAfterStarted: function() {
+            $container.toggleClass('left');
             newView.resume();
-          }, this),
+          },
+
           onAfterCompleted: _.bind(function(canceled) {
             if (!canceled) {
               this.animating = false;
-
-              newView.$el.removeClass('animating');
-              oldView.$el.removeClass('animating');
 
               /* animation completed successfully, deactivate all of the
               non-visible views and removing the animating flag so views

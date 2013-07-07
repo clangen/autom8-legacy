@@ -1,6 +1,6 @@
 @import "mixins.less";
 
-@headerHeight: 52px;
+// @headerHeight: 52px;
 
 // #main-content {
 //     position: absolute;
@@ -10,14 +10,27 @@
 //     bottom: 0;
 // }
 
-.device-list {
-    background-color: #262626;
-}
-
 .device-list-view-container {
     position: relative;
     margin-left: 0;
     width: 100%;
+
+    .panel {
+        top: 0;
+        margin-left: 0;
+        min-width: 100%;
+        display: none;
+        position: absolute;
+    }
+
+    .panel.active,
+    .panel.animating {
+        display: inline-block;
+    }
+
+    .panel.animating.right {
+        margin-left: 100%;
+    }
 }
 
 .device-list-view-container.left {

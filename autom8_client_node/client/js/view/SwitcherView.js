@@ -73,8 +73,6 @@ namespace("autom8.view").SwitcherView = (function() {
             updateLabelOffsetWithoutTransform(this, getCurrentPosition(this));
           }
           else {
-            updateLabelOffset(this, from); /* set initial position */
-
             autom8.Animation.css(this.$label, "devices-switcher-view", {
               duration: autom8.Config.display.animations.viewSwitcherDuration,
               easing: autom8.Config.display.animations.viewSwitcherEasing,

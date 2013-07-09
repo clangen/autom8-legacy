@@ -11,7 +11,8 @@
     color: '#fff',
     speed: 1,
     trail: 74,
-    shadow: true
+    shadow: true,
+    zIndex: 0
   };
 
   namespace("autom8.view").SpinnerView = View.extend({

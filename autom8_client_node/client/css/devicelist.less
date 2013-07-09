@@ -10,29 +10,27 @@
 //     bottom: 0;
 // }
 
-.device-list-view-container {
-    position: relative;
-    margin-left: 0;
-    width: 100%;
+.device-home-container {
+    overflow: hidden;
 
-    .panel {
-        top: 0;
-        margin-left: 0;
-        min-width: 100%;
-        display: none;
-        position: absolute;
+    .device-home-viewport {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        width: 200%;
+        overflow: hidden;
+
+        .panel {
+            top: 0;
+            margin: 0;
+            padding: 0;
+            min-width: 50%;
+            max-width: 50%;
+            float: left;
+        }
+
+        &.left {
+            .transform(translate3d(-50%, 0, 0));
+        }
     }
-
-    .panel.active,
-    .panel.animating {
-        display: inline-block;
-    }
-
-    .panel.animating.right {
-        margin-left: 100%;
-    }
-}
-
-.device-list-view-container.left {
-    .transform(translate3d(-100%, 0, 0));
 }

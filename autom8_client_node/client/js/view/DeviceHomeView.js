@@ -29,15 +29,20 @@ namespace("autom8.view").DeviceHomeView = (function() {
 
       /* container is used to host the transition animation between
       grouped and area modes */
-      this.listViewContainer = this.addChild(new autom8.mvc.View({
-        className: 'device-list-view-container'
+      var $container = $('<div class="device-home-container"></div>');
+      var $viewport = $('<div class="device-home-viewport"></div>');
+      $container.append($viewport);
+
+      this.deviceViewContainer = this.addChild(new autom8.mvc.View({
+        el: $container
       }));
 
       /* add the children to the view container. both are here, but only
       one will ever be displayed at a time. start with both paused, we'll
       resume the appropriate one */
-      this.listViewContainer.addChild(this.lists.flat, {resume: false});
-      this.listViewContainer.addChild(this.lists.grouped, {resume: false});
+      var args = { appendToElement: $viewport };
+      this.deviceViewContainer.addChild(this.lists.flat, args);
+      this.deviceViewContainer.addChild(this.lists.grouped, args);
     },
 
     onAfterCreate: function(options) {
@@ -73,7 +78,7 @@ namespace("autom8.view").DeviceHomeView = (function() {
     },
 
     startTransition: function(oldView, newView) {
-      var $container = this.listViewContainer.$el;
+      var $viewport = this.deviceViewContainer.$('.device-home-viewport');
 
       var grouped = (newView === this.lists.grouped);
       this.switcher.setState(grouped ? "grouped" : "flat");
@@ -91,63 +96,33 @@ namespace("autom8.view").DeviceHomeView = (function() {
         newView.show();
         newView.resume();
         return;
-      }
+      } /* TODO THIS IS PROBABLY BROKEN NOW */
 
-      /* if there was no previous view we don't need to animate, just
-      show/enable it and return */
-      if (!oldView) {
-        newView.$el.addClass('active');
-        newView.resume();
-      }
-      /* otherwise, one of the views is visible, so we need to animate
-      it out of the scene, and animate the new view in */
-      else {
-        /* to complete the animation successfully we need to have
-        both views visible immediately before the animation begins.
-        also, make sure both views know they're animating */
-        _.each(this.lists.all, function(view) {
-          view.$el.addClass('animating');
-          view.$el.addClass('active');
-        });
+      /* start the animation */
+      this.animating = true;
 
-        $container.addClass(grouped ? '' : 'left');
+      var from = (grouped ? 'right' : 'left');
+      var to = (from === 'left' ? 'right' : 'left');
+      var self = this;
 
-        /* start the animation */
-        this.animating = true;
+      autom8.Animation.css($viewport, "devices-switch-view", {
+        duration: autom8.Config.display.animations.viewSwitchDuration,
+        easing: autom8.Config.display.animations.viewSwitchEasing,
 
-        autom8.Animation.css($container, "devices-switch-view", {
-          hwAccel: false,
-          duration: autom8.Config.display.animations.viewSwitchDuration,
-          easing: autom8.Config.display.animations.viewSwitchEasing,
+        onBeforeStarted: function() {
+            $viewport.toggleClass('left', from === "left");
+        },
 
-          onAfterStarted: function() {
-            $container.toggleClass('left');
-            newView.resume();
-          },
+        onAfterStarted: function() {
+          $viewport.toggleClass('left', from !== "left");
+        },
 
-          onAfterCompleted: _.bind(function(canceled) {
-            if (!canceled) {
-              this.animating = false;
-
-              /* animation completed successfully, deactivate all of the
-              non-visible views and removing the animating flag so views
-              that are no longer visible are not rendered in the DOM */
-              _.each(this.lists.all, function(view) {
-                if (view !== newView) {
-                  view.$el.removeClass('active');
-                  view.pause();
-                }
-
-                view.$el.removeClass('animating');
-              });
-
-              /* reset the viewport, as now there should only be the active
-              view visible */
-              $container.removeClass('left');
-            }
-          }, this)
-        });
-      }
+        onAfterCompleted: _.bind(function(canceled) {
+          if (!canceled) {
+            this.animating = false;
+          }
+        }, this)
+      });
     }
   });
 }());

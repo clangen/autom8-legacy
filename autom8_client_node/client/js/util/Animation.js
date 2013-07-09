@@ -21,7 +21,9 @@
       var canceled = false;
       var finished = false;
 
-      var onTransitionEnd = function() {
+      /* debounce assures buggy browsers don't call the transition end
+      event before the duration expires */
+      var onTransitionEnd = _.debounce(function() {
         if (finished) {
           return; /* already completed. the failsafe probably fired... */
         }
@@ -51,11 +53,13 @@
         }
 
         if (options.onAfterCompleted) {
+          /* work around browser bugs where timeout is called prematurely;
+          don't call callback until the minimum amount of time has expired */
           _.defer(function() {
             options.onAfterCompleted(canceled);
           });
         }
-      };
+      });
 
       if (pending[name] && options.interrupt !== false) {
         pending[name].cancel();
@@ -87,7 +91,7 @@
 
       var oldTransform;
       if (options.hwAccel) {
-        oldTransform = getStyle($div, 'transform'); // $div.css('-webkit-transform');
+        oldTransform = getStyle($div, 'transform');
 
         var $hwAccelEl = options.$hwAccelEl || $div;
         setStyle($div, 'transform', 'translate3d(0, 0, 0)');

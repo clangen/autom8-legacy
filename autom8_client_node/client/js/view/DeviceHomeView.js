@@ -116,6 +116,7 @@ namespace("autom8.view").DeviceHomeView = (function() {
         onBeforeStarted: function() {
             for (var i = 0; i < panels.length; i++) {
               panels[i].$el.removeClass('inactive');
+              panels[i].resume();
             }
 
             $viewport.toggleClass('left', from === "left");
@@ -132,6 +133,7 @@ namespace("autom8.view").DeviceHomeView = (function() {
             for (var i = 0; i < panels.length; i++) {
               if (panels[i] !== newView) {
                 panels[i].$el.addClass('inactive');
+                panels[i].pause();
               }
             }
 

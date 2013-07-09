@@ -11,6 +11,20 @@
   var getStyle = Browser.getPrefixedStyle;
   var setStyle = Browser.setPrefixedStyle;
 
+  function waitAtLeast(duration, fn) {
+    var start = new Date().getTime();
+    return function() {
+      var elapsed = new Date().getTime() - start;
+      var remain = duration - elapsed;
+      if (remain > 0) {
+        _.delay(fn, remain);
+      }
+      else {
+        fn();
+      }
+    };
+  }
+
   exports.css = (function() {
     var pending = { };
 
@@ -21,9 +35,10 @@
       var canceled = false;
       var finished = false;
 
-      /* debounce assures buggy browsers don't call the transition end
+      /* waitAtLeast assures buggy browsers don't call the transition end
       event before the duration expires */
-      var onTransitionEnd = _.debounce(function() {
+      var waitAtLeastMillis = (options.duration || 0) * 1000;
+      var onTransitionEnd = waitAtLeast(waitAtLeastMillis, function() {
         if (finished) {
           return; /* already completed. the failsafe probably fired... */
         }
@@ -41,11 +56,6 @@
         else {
           $div.css(oldTransition);
           $div.unbind(events['transitionend'], onTransitionEnd);
-        }
-
-        if (options.hwAccel) {
-          var $hwAccelEl = options.$hwAccelEl || $div;
-          $div.css(oldTransform);
         }
 
         if (options.onCompleted) {
@@ -89,14 +99,6 @@
         options.onBeforeStarted();
       }
 
-      var oldTransform;
-      if (options.hwAccel) {
-        oldTransform = getStyle($div, 'transform');
-
-        var $hwAccelEl = options.$hwAccelEl || $div;
-        setStyle($div, 'transform', 'translate3d(0, 0, 0)');
-      }
-
       var easing = options.easing || "ease";
       var duration = options.duration ? options.duration : 0.5;
 
@@ -104,39 +106,37 @@
       var oldTransition = getStyle($div, 'transition');
       var oldAnimation = getStyle($div, 'animation');
 
-      if (options.keyframes) {
-        setStyle($div, 'animation', options.keyframes + ' ' + String(duration) + 's ' + easing);
-      }
-      else {
-        var property = options.property || "all";
-        setStyle($div, 'transition', property + ' ' + String(duration) + 's ' + easing);
-      }
+      /* the defer here is necessary; once we setup the transition
+      properties we need to wait for our next run through the event
+      loop to apply properties that will be affected */
+      _.defer(function() {
+        if (options.keyframes) {
+          setStyle($div, 'animation', options.keyframes + ' ' + String(duration) + 's ' + easing);
+        }
+        else {
+          var property = options.property || "all";
+          setStyle($div, 'transition', property + ' ' + String(duration) + 's ' + easing);
+        }
 
-      if (options.onPrepared) {
-        options.onPrepared();
-      }
+        if (options.onStarted) {
+          options.onStarted();
+        }
 
-      if (options.toggleClass) {
-        $div.toggleClass(options.toggleClass);
-      }
+        /* webkitAnimationStart appears to be unreliable on iPhone, so we simulate
+        it by calling the callback next time through the event loop */
+        if (options.onAfterStarted) {
+          _.defer(function() {
+            options.onAfterStarted();
+          });
+        }
 
-      if (options.onStarted) {
-        options.onStarted();
-      }
+        /* just in case the animation never actually starts */
+        if (options.failsafe !== false) {
+          var durationMillis = duration * 1000;
+          failsafeTimeout = setTimeout(onTransitionEnd, durationMillis * 2);
+        }
+      });
 
-      /* webkitAnimationStart appears to be unreliable on iPhone, so we simulate
-      it by calling the callback next time through the event loop */
-      if (options.onAfterStarted) {
-        _.defer(function() {
-          options.onAfterStarted();
-        });
-      }
-
-      /* just in case the animation never actually starts */
-      if (options.failsafe !== false) {
-        var durationMillis = duration * 1000;
-        failsafeTimeout = setTimeout(onTransitionEnd, durationMillis * 2);
-      }
     };
   }());
 

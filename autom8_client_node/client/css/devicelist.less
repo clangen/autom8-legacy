@@ -18,7 +18,6 @@
         margin: 0;
         padding: 0;
         width: 200%;
-        overflow: hidden;
 
         .panel {
             top: 0;
@@ -27,6 +26,10 @@
             min-width: 50%;
             max-width: 50%;
             float: left;
+        }
+
+        .panel.inactive {
+            display: none;
         }
 
         &.left {

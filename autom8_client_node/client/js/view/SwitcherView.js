@@ -77,7 +77,7 @@ namespace("autom8.view").SwitcherView = (function() {
               duration: autom8.Config.display.animations.viewSwitcherDuration,
               easing: autom8.Config.display.animations.viewSwitcherEasing,
 
-              onPrepared: _.bind(function() {
+              onStarted: _.bind(function() {
                 updateLabelOffset(this, to);
               }, this),
 

@@ -100,7 +100,7 @@ namespace("autom8.view").GroupRowListView = (function() {
           duration: duration,
           property: 'height',
           easing: easing,
-          onPrepared: function() {
+          onStarted: function() {
             if (collapse) {
               $items.css("height", 0);
             }

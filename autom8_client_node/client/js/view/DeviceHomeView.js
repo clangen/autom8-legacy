@@ -22,7 +22,7 @@ namespace("autom8.view").DeviceHomeView = (function() {
       /* views the user can switch between */
       this.lists = {
         flat: new autom8.view.DeviceListView({className: 'panel'}),
-        grouped: new autom8.view.GroupedDeviceListView({className: 'panel right'})
+        grouped: new autom8.view.GroupedDeviceListView({className: 'panel'})
       };
 
       this.lists.all = _.values(this.lists);
@@ -77,30 +77,34 @@ namespace("autom8.view").DeviceHomeView = (function() {
       this.trigger('devicelistview:switched', oldView, newView);
     },
 
-    startTransition: function(oldView, newView) {
-      var $viewport = this.deviceViewContainer.$('.device-home-viewport');
+    switchPanelWithoutAnimating: function(oldView, newView) {
+      _.each(this.lists.all, function(view) {
+        if (view !== newView) {
+          view.hide();
+          view.pause();
+        }
+      });
 
+      newView.show();
+      newView.resume();
+    },
+
+    startTransition: function(oldView, newView) {
       var grouped = (newView === this.lists.grouped);
       this.switcher.setState(grouped ? "grouped" : "flat");
 
       /* some platforms can't support animation smoothly (e.g. android).
       for these platforms just toggle visibility and be done with it */
       if (!autom8.Config.display.animations.viewSwitch) {
-        _.each(this.lists.all, function(view) {
-          if (view !== newView) {
-            view.hide();
-            view.pause();
-          }
-        });
-
-        newView.show();
-        newView.resume();
+        this.switchPanelWithoutAnimating(oldView, newView);
         return;
-      } /* TODO THIS IS PROBABLY BROKEN NOW */
+      }
 
       /* start the animation */
       this.animating = true;
 
+      var $viewport = this.deviceViewContainer.$('.device-home-viewport');
+      var panels = this.lists.all;
       var from = (grouped ? 'right' : 'left');
       var to = (from === 'left' ? 'right' : 'left');
       var self = this;
@@ -110,6 +114,10 @@ namespace("autom8.view").DeviceHomeView = (function() {
         easing: autom8.Config.display.animations.viewSwitchEasing,
 
         onBeforeStarted: function() {
+            for (var i = 0; i < panels.length; i++) {
+              panels[i].$el.removeClass('inactive');
+            }
+
             $viewport.toggleClass('left', from === "left");
         },
 
@@ -117,11 +125,19 @@ namespace("autom8.view").DeviceHomeView = (function() {
           $viewport.toggleClass('left', from !== "left");
         },
 
-        onAfterCompleted: _.bind(function(canceled) {
+        onAfterCompleted: function(canceled) {
           if (!canceled) {
-            this.animating = false;
+            self.animating = false;
+
+            for (var i = 0; i < panels.length; i++) {
+              if (panels[i] !== newView) {
+                panels[i].$el.addClass('inactive');
+              }
+            }
+
+            $viewport.removeClass('left');
           }
-        }, this)
+        }
       });
     }
   });

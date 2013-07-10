@@ -1,4 +1,10 @@
 (function() {
+  function applyStateChange(context, name, view, options) {
+    options = _.extend({ }, options);
+    options.view = view;
+    context.applyStateChange(name, options);
+  }
+
   namespace("autom8.mvc.mixins").ViewContainer = {
     'prototype': {
       addChild: function(view, options) {
@@ -47,6 +53,8 @@
         this.views.push(view);
         view.parent = this;
 
+        applyStateChange(this, 'addChild', view, options);
+
         return view;
       },
 
@@ -80,6 +88,8 @@
         if (options.detach !== false) {
           view.$el.remove();
         }
+
+        applyStateChange(this, 'removeChild', view, options);
 
         return view;
       },

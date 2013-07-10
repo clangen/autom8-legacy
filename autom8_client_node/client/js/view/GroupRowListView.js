@@ -1,6 +1,7 @@
 namespace("autom8.view").GroupRowListView = (function() {
   var EXPAND_DURATION_PER_ITEM = 0.075;
   var MAX_TOTAL_EXPAND_DURATION = 0.25;
+  var CHILD_DEVICE_ROW_HEIGHT = 46;
 
   var View = autom8.mvc.View;
 
@@ -15,57 +16,28 @@ namespace("autom8.view").GroupRowListView = (function() {
     /* can't do anything, move on... */
   }
 
-  function storeCollapsedState(groupName, collapsed) {
-    if (collapsed) {
+  function setFinalCollapsedState(context, collapse) {
+    var groupName = context.group.name();
+
+    if (collapse) {
+      context.$el.hide();
+      context.pause();
+
       delete expandedGroups[groupName];
     }
     else {
+      context.$el.css("height", context.height || 0);
+      context.$el.show();
+      context.resume();
+
       expandedGroups[groupName] = 1;
     }
 
-    /* remember which groups are expanded so we can restore this
-    state whenever we are reloaded */
     try {
       localStorage['autom8.expandedGroups'] = JSON.stringify(expandedGroups);
     }
     catch (ex) {
       console.log('failed to write group view info to localStorage');
-    }
-  }
-
-  function setCollapsed(context, collapsed) {
-    context.collapsed = collapsed;
-
-    if (collapsed) {
-      context.pause();
-    }
-    else {
-      context.resume();
-    }
-  }
-
-  function getListHeight($el, collapse, callback) {
-    if (callback) {
-      if (collapse) {
-        callback(0);
-        return;
-      }
-
-      var restore = $el.css(
-        ['position', 'visibility', 'height', 'display']);
-
-      $el.css({
-        'position': 'absolute',
-        'visibility': 'hidden',
-        'height': 'auto',
-        'display': 'block'
-      });
-
-      _.defer(function() {
-        var height = $el.height();
-        $el.css(restore);
-        _.defer(callback, height);
-      });
     }
   }
 
@@ -82,6 +54,14 @@ namespace("autom8.view").GroupRowListView = (function() {
       this.toggleCollapsed({collapse: this.collapsed, animate: false});
     },
 
+    onAddChild: function(options) {
+      this.height = (this.$el.children().length * CHILD_DEVICE_ROW_HEIGHT);
+
+      if (!this.collapsed) {
+        this.$el.css('height', this.height);
+      }
+    },
+
     toggleCollapsed: function(options) {
       options = options || { };
 
@@ -94,12 +74,7 @@ namespace("autom8.view").GroupRowListView = (function() {
       var collapse = (options.collapse !== undefined) ?
         options.collapse : !this.collapsed;
 
-      /* remember group collapsed state and set the expander badge.
-      this structure will be serialized, then restored on application
-      startup */
-      storeCollapsedState(group.name(), collapse);
-
-      var animate = options.animate !== false;
+      var animate = (options.animate !== false) && this.height;
 
       /* if animations are enabled, start it now */
       if (animate && autom8.Config.display.animations.collapse) {
@@ -117,39 +92,29 @@ namespace("autom8.view").GroupRowListView = (function() {
           autom8.Animation.css($items, "toggle-group-" + group.name, {
             duration: duration,
             property: 'height',
-            easing: 'easing',
+            easing: easing,
 
             onBeforeStarted: function() {
               $items.show();
             },
 
             onAfterStarted: function() {
-              $items.css("height", height);
+              $items.css("height", height || 0);
             },
 
             onAfterCompleted: function(canceled) {
               if (!canceled) {
-                if (collapse) {
-                  $items.hide();
-                }
-
-                // self[collapse ? 'pause' : 'resume']();
-                // self.collapsed = collapse;
+                setFinalCollapsedState(self, collapse);
               }
             }
           });
         };
 
-        getListHeight($items, collapse, function(height) {
-          console.log((collapse ? "collapse" : "expand") + " height: " + height);
-          animateToHeight(height);
-        });
+        animateToHeight(collapse ? 0 : this.height);
       }
       /* no animation, just toggle visibility */
       else {
-        $items[collapse ? 'hide' : 'show']();
-        $items.css("height", "auto");
-        this[collapse ? 'pause' : 'resume']();
+        setFinalCollapsedState(this, collapse);
       }
 
       this.collapsed = collapse;

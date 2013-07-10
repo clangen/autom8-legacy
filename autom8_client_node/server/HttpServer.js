@@ -110,6 +110,8 @@
   }
 
   function renderMinifiedStyles(doc, callback) {
+    console.log("renderMinifiedStyles: starting");
+
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .css files that we will minify */
     var lines = renderScripts(doc).split(/\r\n|\n/);
@@ -123,24 +125,25 @@
       var remaining = cssFiles.length;
 
       var finalize = function(minified) {
-        console.log("renderMinifiedStyles: finalizing...");
+        console.log("renderMinifiedStyles: finalizing");
         doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
         doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
 
         if (callback) {
           callback(doc);
+          console.log("renderMinifiedStyles: finished");
         }
       }
 
       var minify = function() {
-        console.log("renderMinifiedStyles: concatenating compiled files...");
+        console.log("renderMinifiedStyles: concatenating compiled files");
         var combined = "";
         for (var i = 0 ; i < cssFiles.length; i++) {
           var data = outputCache[cssFiles[i].name] || "";
           combined += data + "\n";
         }
 
-        console.log("renderMinifiedStyles: minifying concatenated result...");
+        console.log("renderMinifiedStyles: minifying concatenated result");
         var minified = require('clean-css').process(combined);
 
         finalize(minified);
@@ -205,6 +208,8 @@
   }
 
   function renderMinifiedScripts(doc, callback) {
+    console.log("renderMinifiedScripts: started");
+
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .js files that we will minify */
     var lines = renderScripts(doc).split(/\r\n|\n/);
@@ -222,6 +227,7 @@
 
     /* run through each line, seeing if it's a <script> file. if it is,
     add it to the scriptFilenames[] array. */
+    console.log("renderMinifiedScripts: finding scripts");
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(scriptRegex);
       if (match && match.length === 2) {
@@ -234,6 +240,7 @@
     var minified = "";
 
     /* render all the blacklisted <script> tags */
+    console.log("renderMinifiedScripts: applying blacklist");
     for (var k in blacklist) {
       if (blacklist.hasOwnProperty(k)) {
         minified += '<script src="' + k + '" type="text/javascript"></script>\n';
@@ -241,6 +248,7 @@
     }
 
     var minificationCompleteHandler = function(error, result) {
+      console.log("renderMinifiedScripts: finalizing");
       if (error) {
         console.log('closure compiler output:');
         console.log(error);
@@ -260,9 +268,11 @@
 
       if (callback) {
         callback(doc);
+        console.log("renderMinifiedScripts: finished");
       }
     }
 
+    console.log("renderMinifiedScripts: starting closurecompiler");
     closurecompiler.compile(
       scriptFilenames, { }, minificationCompleteHandler);
   }

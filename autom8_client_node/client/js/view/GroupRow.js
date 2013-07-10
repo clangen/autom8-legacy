@@ -50,6 +50,7 @@ namespace("autom8.view").GroupRow = (function() {
 
   return _super_.extend({
     className: 'device-group-container',
+    tagName: 'li',
 
     onRender: function(renderOptions) {
       var options = this.options || { };
@@ -72,8 +73,6 @@ namespace("autom8.view").GroupRow = (function() {
       var collapsed = listView.collapsed;
       var resume = !collapsed;
 
-      this.addChild(listView, {appendToElement: $allDevices, resume: resume});
-
       var devices = group.deviceList();
       devices.each(function(device, index) {
         var deviceOptions = {
@@ -93,9 +92,9 @@ namespace("autom8.view").GroupRow = (function() {
 
       this.$el.empty();
       this.$el.append($group);
-      this.$el.append($allDevices);
       this.$group = $group;
-      this.$allDevices = $allDevices;
+
+      this.addChild(listView);
 
       this.appendSpinner({radius: 8});
       this.redrawExpander();

@@ -2,6 +2,8 @@ namespace("autom8.view").DeviceRow = (function() {
   var View = autom8.mvc.View;
 
   var deviceRow = View.extend({
+    tagName: 'li',
+
     onCreate: function(options) {
       options = options || { };
       this.spinnerOptions = options.spinnerOptions;

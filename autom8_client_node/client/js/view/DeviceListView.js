@@ -16,8 +16,10 @@ namespace("autom8.view").DeviceListView = (function() {
     },
 
     onCreate: function(options) {
-      this.listView = this.addChild(
-        new autom8.mvc.View({el: $('<div class="device-list"></div>')}));
+      this.listView = this.addChild(new autom8.mvc.View({
+        className: 'device-list',
+        tagName: 'ul',
+      }));
 
       this.spinnerView = this.addChild(new autom8.view.SpinnerView({
         template: '#autom8-View-LoadingRow',

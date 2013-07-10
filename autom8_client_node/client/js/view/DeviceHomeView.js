@@ -29,10 +29,8 @@ namespace("autom8.view").DeviceHomeView = (function() {
 
       /* container is used to host the transition animation between
       grouped and area modes */
-      var $viewport = this.$('.device-home-viewport');
-
       this.deviceViewContainer = this.addChild(new autom8.mvc.View({
-        el: $viewport
+        el: this.$('.device-home-viewport')
       }));
 
       /* add the children to the view container. both are here, but only

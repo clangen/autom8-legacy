@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="css/reset.css"></link>
+
 <link rel="stylesheet" href="css/main.less"></link>
 <link rel="stylesheet" href="css/header.less"></link>
 <link rel="stylesheet" href="css/signin.less"></link>

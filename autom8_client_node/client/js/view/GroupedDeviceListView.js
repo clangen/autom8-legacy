@@ -40,6 +40,8 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
   var _super_ = autom8.view.DeviceListView;
 
   return _super_.extend({
+    tagName: "ul",
+
     events: {
       "touch .device-row .expander": function(e) {
         this.onToggleCollapsed($(e.currentTarget));

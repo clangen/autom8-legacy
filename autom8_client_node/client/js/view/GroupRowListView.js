@@ -50,6 +50,7 @@ namespace("autom8.view").GroupRowListView = (function() {
   updating sub-items when they are not visible. */
   return View.extend({
     className: 'device-group-devices',
+    tagName: 'ul',
 
     onCreate: function(options) {
       this.group = options.group;

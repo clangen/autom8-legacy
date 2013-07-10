@@ -2,6 +2,7 @@ namespace("autom8.view").DeviceRowFactory = (function() {
   var factory = {
     create: function(device, options) {
       options = options || { };
+
       var result = $("<div/>");
       var type;
 

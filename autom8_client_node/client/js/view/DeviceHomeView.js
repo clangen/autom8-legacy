@@ -2,6 +2,8 @@ namespace("autom8.view").DeviceHomeView = (function() {
   var View = autom8.mvc.View;
 
   return View.extend({
+    className: 'device-home-activity',
+
     events: {
       "touch .switch-devices-view": function(e) {
         if (!this.animating) {

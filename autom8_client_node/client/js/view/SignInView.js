@@ -11,6 +11,8 @@ namespace("autom8.view").SignInView = (function() {
   };
 
   return View.extend({
+    className: 'sign-in-activity',
+
     events: {
       "keydown": function(e) {
         if (e.keyCode == 13) {

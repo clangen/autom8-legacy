@@ -29,18 +29,16 @@ namespace("autom8.view").DeviceHomeView = (function() {
 
       /* container is used to host the transition animation between
       grouped and area modes */
-      var $container = $('<div class="device-home-container"></div>');
-      var $viewport = $('<div class="device-home-viewport"></div>');
-      $container.append($viewport);
+      var $viewport = this.$('.device-home-viewport');
 
       this.deviceViewContainer = this.addChild(new autom8.mvc.View({
-        el: $container
+        el: $viewport
       }));
 
       /* add the children to the view container. both are here, but only
       one will ever be displayed at a time. start with both paused, we'll
       resume the appropriate one */
-      var args = { appendToElement: $viewport };
+      var args = { appendToElement: this.$('.device-home-container') };
       this.deviceViewContainer.addChild(this.lists.flat, args);
       this.deviceViewContainer.addChild(this.lists.grouped, args);
     },
@@ -103,13 +101,13 @@ namespace("autom8.view").DeviceHomeView = (function() {
       /* start the animation */
       this.animating = true;
 
-      var $viewport = this.deviceViewContainer.$('.device-home-viewport');
+      var $container = this.$('.device-home-container');
       var panels = this.lists.all;
       var from = (grouped ? 'right' : 'left');
       var to = (from === 'left' ? 'right' : 'left');
       var self = this;
 
-      autom8.Animation.css($viewport, "devices-switch-view", {
+      autom8.Animation.css($container, "devices-switch-view", {
         duration: autom8.Config.display.animations.viewSwitchDuration,
         easing: autom8.Config.display.animations.viewSwitchEasing,
 
@@ -119,11 +117,11 @@ namespace("autom8.view").DeviceHomeView = (function() {
               panels[i].resume();
             }
 
-            $viewport.toggleClass('left', from === "left");
+            $container.toggleClass('left', from === "left");
         },
 
         onAfterStarted: function() {
-          $viewport.toggleClass('left', from !== "left");
+          $container.toggleClass('left', from !== "left");
         },
 
         onAfterCompleted: function(canceled) {
@@ -137,7 +135,7 @@ namespace("autom8.view").DeviceHomeView = (function() {
               }
             }
 
-            $viewport.removeClass('left');
+            $container.removeClass('left');
           }
         }
       });

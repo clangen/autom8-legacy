@@ -55,7 +55,7 @@ namespace("autom8").Config = (function() {
     config.display.classes.body = 'iphone';
   }
   if (isFirefox) {
-    config.display.animations.collapse = false;
+    config.display.animations.collapse = true;
     config.display.animations.viewSwitch = true;
     config.display.animations.viewSwitcher = true;
     config.display.animations.dialog = true;

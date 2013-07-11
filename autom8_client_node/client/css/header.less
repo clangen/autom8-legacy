@@ -1,3 +1,4 @@
+@import "dimens.less";
 @import "mixins.less";
 @import "buttons.less";
 
@@ -8,22 +9,19 @@
 @textShadowColor: #000;
 @logoTextTouchedColor: #444;
 
-@height: 52px;
-@headerInnerPadding: 10px;
-
-// #header {
-//     position: absolute;
-//     top: 0;
-//     left: 0;
-//     right: 0;
-//     height: @height;
-// }
+#header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: @headerHeight;
+}
 
 .header {
     background-color: @backgroundColor;
     color: @textColor;
-    padding: @headerInnerPadding;
-    min-height: @height;
+    padding: @headerPadding;
+    min-height: @headerHeight;
     .box-sizing(border-box);
     border-bottom: 1px solid @borderColor;
 }

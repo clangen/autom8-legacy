@@ -1,6 +1,10 @@
 @import "mixins.less";
 
 .firefox {
+    ::-moz-selection {
+        background: transparent;
+    }
+
     .panel {
         .transform(translate3d(0, 0, 0));
     }

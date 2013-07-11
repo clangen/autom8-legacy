@@ -1,5 +1,8 @@
+@import "dimens.less";
+@import "mixins.less";
+
 .switch-devices-view {
-    padding: 10px;
+    padding: 0 @switcherPadding;
     font-size: 90%;
     text-shadow: 1px 1px 4px #333;
     border-bottom: 1px solid #1f1f1f;
@@ -13,4 +16,5 @@
 
 .switch-label {
     display: inline-block;
+    line-height: @switcherHeight;
 }

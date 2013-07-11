@@ -67,7 +67,7 @@ namespace("autom8.util").Dialog = (function() {
         /* get the dialog prepared before we animate it into place */
         $('#dialogs').append($dialog);
         addEventHandlers();
-        $('#top-level-container').addClass('dialog-overlay-blur');
+        $('#top-level-overlay').addClass('dialog-overlay-blur');
         $('#dialogs').addClass('dialog-overlay dialog-background');
 
         if (params.view) {
@@ -100,7 +100,7 @@ namespace("autom8.util").Dialog = (function() {
           $dialog.remove();
 
           if ($("#dialogs").children().length === 0) {
-            $('#top-level-container').removeClass('dialog-overlay-blur');
+            $('#top-level-overlay').removeClass('dialog-overlay-blur');
             $('#dialogs').removeClass('dialog-overlay dialog-background');
           }
 

@@ -82,20 +82,20 @@
 
       this.stop();
       this.state = "running";
-      this.show();
 
-      var self = this;
-      _.defer(function() {
-        self.spinner.spin(self.$spinnerEl.get(0));
-        self.$el.parent().addClass('spinning');
-      });
+      this.show();
+      this.spinner.spin(this.$spinnerEl.get(0));
+
+      this.$el.parent().addClass('spinning'); /* why? */
     },
 
     stop: function() {
       this.state = "stopped";
+
       this.spinner.stop();
-      this.$el.parent().removeClass('spinning');
       this.hide();
+
+      this.$el.parent().removeClass('spinning'); /* why? */
     }
   });
 }());

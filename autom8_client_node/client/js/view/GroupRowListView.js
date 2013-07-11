@@ -1,7 +1,7 @@
 namespace("autom8.view").GroupRowListView = (function() {
   var EXPAND_DURATION_PER_ITEM = 0.075;
   var MAX_TOTAL_EXPAND_DURATION = 0.25;
-  var CHILD_DEVICE_ROW_HEIGHT = 46;
+  var CHILD_DEVICE_ROW_HEIGHT = 46 + 1; /* +1 for the border */
 
   var View = autom8.mvc.View;
 

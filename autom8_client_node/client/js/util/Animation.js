@@ -40,7 +40,7 @@
       var waitAtLeastMillis = (options.duration || 0) * 1000;
       var onTransitionEnd = waitAtLeast(waitAtLeastMillis, function() {
         if (finished) {
-          return; /* already completed. the failsafe probably fired... */
+          return; /* already completed. the failsafe probably fired. */
         }
 
         clearTimeout(failsafeTimeout);
@@ -136,7 +136,6 @@
           failsafeTimeout = setTimeout(onTransitionEnd, durationMillis * 2);
         }
       });
-
     };
   }());
 

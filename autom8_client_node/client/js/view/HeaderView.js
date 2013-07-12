@@ -1,47 +1,64 @@
 namespace("autom8.view").HeaderView = (function() {
   var View = autom8.mvc.View;
 
+  function showSignOutConfirmationDialog(context, options) {
+    options = options || { };
+
+    autom8.util.Dialog.show({
+      title: 'autom8',
+      message: 'Are you sure you want to sign out?',
+      cancelable: true,
+      buttons: [
+        {
+          caption: 'yes',
+          positive: true,
+          callback: _.bind(function() {
+            context.trigger("signout:clicked");
+          }, this)
+        },
+        {
+          caption: 'no',
+          negative: true,
+          callback: function() {
+            if (options.onCancel()) {
+              options.onCancel();
+            }
+          }
+        }
+      ]
+    });
+  }
+
+  function showAboutDialog(context) {
+    var dialog;
+
+    var aboutView = new autom8.view.AboutView({
+      events: {
+        "touch .sign-out": function(e) {
+          dialog.close();
+          showSignOutConfirmationDialog(context);
+        }
+      }
+    });
+
+    dialog = autom8.util.Dialog.show({
+      title: 'autom8',
+      view: aboutView,
+      cancelable: true,
+      buttons: [
+        {
+          caption: 'close',
+          positive: true,
+          negative: true
+        }
+      ]
+    });
+  }
+
   var HeaderView = View.extend({
     events: {
-      "touch #header-button": function() {
-        if (this.state === 'expired' || this.state === 'disconnected') {
-          HeaderView.staticEvents.trigger('signin:clicked');
-        }
-        else {
-          autom8.util.Dialog.show({
-            title: 'autom8',
-            message: 'Are you sure you want to sign out?',
-            cancelable: true,
-            buttons: [
-              {
-                caption: 'yes',
-                positive: true,
-                callback: _.bind(function() {
-                  this.trigger("signout:clicked");
-                }, this)
-              },
-              {
-                caption: 'no',
-                negative: true
-              }
-            ]
-          });
-        }
-      },
-
-      "touch .header-logo": function() {
-        autom8.util.Dialog.show({
-          title: 'autom8',
-          view: new autom8.view.AboutView(),
-          cancelable: true,
-          buttons: [
-            {
-              caption: 'ok',
-              positive: true,
-              negative: true
-            }
-          ]
-        });
+      "touch .header-controls": function() {
+        showAboutDialog(this);
       }
     },
 
@@ -64,7 +81,7 @@ namespace("autom8.view").HeaderView = (function() {
       this.state = state;
       this.$el.addClass(this.state);
       this.$('#hostname').html(window.location.hostname);
-      this.$('#header-button').html('sign out');
+      this.$('#header-button').html('sign in');
 
       switch (state) {
         case "authenticated":
@@ -74,13 +91,13 @@ namespace("autom8.view").HeaderView = (function() {
           break;
 
         case "connected":
+          this.$('#header-button').html('sign out')
           this.$('.header-host-separator').html('controlling');
           break;
 
         case "disconnected":
         case "expired":
           this.$('.header-host-separator').html('welcome to');
-          this.$('#header-button').html('sign in');
           break;
       }
     }

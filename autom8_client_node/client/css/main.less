@@ -2,6 +2,7 @@
 @import "mixins.less";
 
 @backgroundColor: #333;
+@hostnameColor: #eee;
 @textColor: #ccc;
 @textSize: 15px;
 
@@ -22,6 +23,13 @@ body {
     color: @textColor;
     font-size: @textSize;
     cursor: default;
+}
+
+#application #spinner-view {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: @headerHeight;
 }
 
 .gone {

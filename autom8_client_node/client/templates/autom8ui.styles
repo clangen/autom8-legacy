@@ -6,6 +6,7 @@
 
 <link rel="stylesheet" href="css/dialog.less"></link>
 <link rel="stylesheet" href="css/dialog-lamp.less"></link>
+<link rel="stylesheet" href="css/dialog-about.less"></link>
 
 <link rel="stylesheet" href="css/switcher.less"></link>
 

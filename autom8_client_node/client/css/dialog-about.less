@@ -1,0 +1,37 @@
+@import "buttons.less";
+
+.about-dialog {
+    .hostname {
+        margin-left: 14px;
+        font-weight: bold;
+        color: #hostnameColor;
+    }
+
+    .sign-out {
+        .button-style-4();
+        margin-left: 14px;
+        margin-top: 8px;
+        margin-bottom: 16px;
+    }
+
+    .sign-out.touched {
+        .button-style-4-touched();
+    }
+
+    .section {
+        text-decoration: underline;
+        margin-bottom: 6px;
+    }
+
+    .diag-key {
+        font-weight: bold;
+        margin-left: 14px;
+        margin-top: 2px;
+    }
+}
+
+.about-dialog.disconnected {
+    .sign-out {
+        display: none;
+    }
+}

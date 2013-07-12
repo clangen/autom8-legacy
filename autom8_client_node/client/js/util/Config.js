@@ -33,14 +33,6 @@ namespace("autom8").Config = (function() {
   if (isAndroidWebkit || isAndroidChrome) {
     config.display.classes.body = (isIOSChrome ? 'android-chrome' : 'android');
   }
-  else if (isChrome || isIOSChrome || isWebkit) {
-    config.display.animations.collapse = true;
-    config.display.animations.viewSwitch = true;
-    config.display.animations.viewSwitcher = true;
-    config.display.animations.dialog = true;
-
-    config.display.classes.body = (isIOSChrome ? 'iphone-chrome' : 'chrome') + ' fixed-header';
-  }
   else if (isIOS) {
     config.display.animations.collapse = true;
     config.display.animations.viewSwitch = true;
@@ -58,6 +50,14 @@ namespace("autom8").Config = (function() {
     }
 
     config.display.classes.body = 'iphone fixed-header';
+  }
+  else if (isChrome || isIOSChrome || isWebkit) {
+    config.display.animations.collapse = true;
+    config.display.animations.viewSwitch = true;
+    config.display.animations.viewSwitcher = true;
+    config.display.animations.dialog = true;
+
+    config.display.classes.body = (isIOSChrome ? 'iphone-chrome' : 'chrome') + ' fixed-header';
   }
   if (isFirefox) {
     config.display.animations.collapse = true;

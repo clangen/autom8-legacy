@@ -9,15 +9,13 @@
 
 <script id="autom8-View-HeaderView" type="text/x-handlebars-template">
   <div class="header">
-    <div class="header-left">
-      <span class="header-logo">autom8</span>
+    <div class="header-controls">
+      <div class="header-logo">autom8</div>
+      <br/>
       <div class="header-status">
         <div class="header-host-separator"></div>
         <div class="header-host-text" id="hostname">{{hostName}}</div>
       </div>
-    </div>
-    <div class="header-right">
-      <div class="header-button" id="header-button"></div>
     </div>
   </div>
 </script>
@@ -29,9 +27,15 @@
 </script>
 
 <script id="autom8-View-AboutView" type="text/x-handlebars-template">
-  <div><b>host</b>: {{host}}</div>
-  <div><b>status</b>: {{status}}</div>
-  <div><b>theme</b>: {{theme}}</div>
-  <div><b>version</b>: {{version}}</div>
-  <div style="margin-top: 10px; font-size: 80%;">copyright <b>casey langen</b>, 2008-2013</div>
+  <div>
+    <div class="section">controlling:</div>
+    <div class="hostname">{{host}}</div>
+    <div class="sign-out">sign out</div>
+  <br/>
+  <div class="section">diagnostics:</div>
+  <ul>
+    <li><span class="diag-key">status</span>: {{status}}</li>
+    <li><span class="diag-key">theme</span>: {{theme}}</li>
+    <li><span class="diag-key">version</span>: {{version}}</li>
+  </ul>
 </script>

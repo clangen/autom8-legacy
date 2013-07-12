@@ -1,6 +1,7 @@
 @import "dimens.less";
 @import "mixins.less";
 @import "buttons.less";
+@import "switcher.less";
 
 @backgroundColor: #262626;
 @borderColor: #1f1f1f;
@@ -14,61 +15,45 @@
     color: @textColor;
     padding: @headerPadding;
     min-height: @headerHeight;
+    text-align: center;
     .box-sizing(border-box);
     border-bottom: 1px solid @borderColor;
+
+    .header-controls {
+        display: inline-block;
+        padding: 4px 8px;
+    }
+
+    .header-controls.touched {
+        background-color: @logoTextTouchedColor;
+        border-radius: 6px;
+    }
+
+    .header-logo {
+        font-size: 120%;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .header-host-separator {
+        display: inline-block;
+        font-size: 70%;
+        color: @hostSeparatorTextColor;
+        text-shadow: 1px 1px 1px @textShadowColor;
+    }
+
+    .header-host-text {
+        display: inline-block;
+        font-weight: bold;
+        padding: 0;
+        font-size: 70%;
+        text-shadow: 1px 1px 1px @textShadowColor;
+        font-size: 76%;
+    }
+
+    .header-status {
+        display: inline-block;
+    }
 }
 
-.header-button {
-    .button-style-1();
-}
 
-.header-button.touched {
-    .button-style-1-touched();
-}
-
-.header-left {
-    position: absolute;
-}
-
-.header-right {
-    position: absolute;
-    right: 8px;
-}
-
-.header-text {
-    font-size: 120%;
-    color: @textColor;
-    text-shadow: 2px 2px 2px @textShadowColor;
-}
-
-.header-host-separator {
-    display: inline-block;
-    font-size: 70%;
-    color: @hostSeparatorTextColor;
-    text-shadow: 1px 1px 1px @textShadowColor;
-}
-
-.header-host-text {
-    display: inline-block;
-    font-weight: bold;
-    padding: 0;
-    font-size: 70%;
-    text-shadow: 1px 1px 1px @textShadowColor;
-    font-size: 76%;
-}
-
-.header-logo {
-    font-size: 110%;
-    font-weight: bold;
-}
-
-.header-logo.touched {
-    background-color: @logoTextTouchedColor;
-    margin-left: -6px;
-    padding: 2px 6px;
-    border-radius: 10px;
-}
-
-.header-status {
-    line-height: 0.75em;
-}

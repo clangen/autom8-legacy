@@ -2,8 +2,8 @@ namespace("autom8.view").SwitcherView = (function() {
   var Browser = namespace('autom8').Browser;
 
   var stateToHtmlMap = {
-    flat: "switch to area view <b>&gt;</b>",
-    grouped: "<b>&lt;</b> switch to flat view"
+    flat: "show areas <b>&gt;</b>",
+    grouped: "<b>&lt;</b> show all"
   };
 
   function getLabelOffset(context, pos) {

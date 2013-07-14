@@ -1,4 +1,4 @@
-// npm install commander connect express socket.io socket.io-client less closurecompiler clean-css
+// npm install commander express socket.io socket.io-client less closurecompiler clean-css
 // node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 (function() {

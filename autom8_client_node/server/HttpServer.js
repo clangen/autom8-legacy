@@ -308,7 +308,6 @@
 
     /* magic middleware */
     app.use(express.cookieParser(secret));
-
     app.use(express.bodyParser());
 
     app.use(express.session({

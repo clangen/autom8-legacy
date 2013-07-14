@@ -57,7 +57,7 @@ namespace("autom8.view").HeaderView = (function() {
 
   var HeaderView = View.extend({
     events: {
-      "touch .header-controls": function() {
+      "touch .header-about": function() {
         showAboutDialog(this);
       }
     },
@@ -83,6 +83,8 @@ namespace("autom8.view").HeaderView = (function() {
       this.$('#hostname').html(window.location.hostname);
       this.$('#header-button').html('sign in');
 
+      var aboutText = '?';
+
       switch (state) {
         case "authenticated":
         case "authenticating":
@@ -93,6 +95,7 @@ namespace("autom8.view").HeaderView = (function() {
         case "connected":
           this.$('#header-button').html('sign out')
           this.$('.header-host-separator').html('controlling');
+          aboutText = '✔';
           break;
 
         case "disconnected":
@@ -100,6 +103,8 @@ namespace("autom8.view").HeaderView = (function() {
           this.$('.header-host-separator').html('welcome to');
           break;
       }
+
+      this.$('.header-about').html(aboutText);
     }
   });
 

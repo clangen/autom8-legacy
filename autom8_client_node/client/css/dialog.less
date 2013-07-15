@@ -17,6 +17,10 @@
     outline: none;
 }
 
+.dialog-overlay-blur {
+    .filter(blur(2px));
+}
+
 .dialog-overlay.dialog-background {
     left: 0;
 }
@@ -32,40 +36,40 @@
     border-style: solid;
     border-color: white;
     padding: 12px;
-    margin-top: 48px;
+    margin-top: 24px;
     max-width: 80%;
     min-width: 80%;
+    max-height: 75%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     .center-horizontal();
     .box-shadow(6px, 6px, 30px, black);
+
+    .dialog-title {
+        font-weight: bold;
+        font-size: 120%;
+        margin-bottom: 10px;
+    }
+
+    .dialog-message {
+        margin-bottom: 14px;
+    }
+
+    .dialog-buttons {
+        text-align: right;
+    }
+
+    .dialog-custom-view {
+        margin-bottom: 14px;
+    }
+
+    .dialog-button {
+        display: inline-block;
+        .button-style-3();
+    }
+
+    .dialog-button.touched {
+        .button-style-3-touched();
+    }
 }
 
-.dialog-title {
-    font-weight: bold;
-    font-size: 120%;
-    margin-bottom: 10px;
-}
-
-.dialog-message {
-    margin-bottom: 14px;
-}
-
-.dialog-buttons {
-    text-align: right;
-}
-
-.dialog-custom-view {
-    margin-bottom: 14px;
-}
-
-.dialog-overlay-blur {
-    .filter(blur(2px));
-}
-
-.dialog-button {
-    display: inline-block;
-    .button-style-3();
-}
-
-.dialog-button.touched {
-    .button-style-3-touched();
-}

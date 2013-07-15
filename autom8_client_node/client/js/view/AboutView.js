@@ -5,11 +5,9 @@
     className: "about-dialog",
 
     onCreate: function(options) {
-      var status =  autom8.client.connected ? "connected" : "disconnected";
-
       var params = {
-        host: window.location.host,
-        status: status,
+        host: window.location,
+        status: autom8.client.getState(),
         theme: autom8.Config.display.classes.body || "generic",
         version: autom8.version
       };

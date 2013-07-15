@@ -45,6 +45,9 @@
 
     .header-bottom {
         display: inline-block;
+        position: absolute;
+        left: 0;
+        right: 0;
 
         .header-host-separator {
             display: inline-block;
@@ -57,6 +60,7 @@
             display: inline-block;
             font-weight: bold;
             padding: 0;
+            margin-left: -1px; /* bleh */
             font-size: 70%;
             text-shadow: 1px 1px 1px @textShadowColor;
             font-size: 76%;

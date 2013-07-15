@@ -39,6 +39,7 @@
     background-color: #555555;
     border: 1px solid #777777;
     padding: 2px 10px;
+    padding-bottom: 3px;
     cursor: pointer;
     border-radius: 12px;
     min-width: 76px;
@@ -64,13 +65,14 @@
     background-color: #B80202;
 }
 
-/* used in header */
+/* used in header for "?" button */
 .button-style-5(@size) {
     text-align: center;
-    background-color: #555555;
-    border: 1px solid #777777;
+    background-color: #353535;
+    border: 1px solid #555;
     cursor: pointer;
     .box-sizing(border-box);
+    .box-shadow(1px, 1px, 3px, #111);
     display: inline-block;
     font-size: 10px;
     font-weight: bold;
@@ -83,5 +85,5 @@
 }
 
 .button-style-5-touched() {
-    background-color: #898989;
+    background-color: #222;
 }

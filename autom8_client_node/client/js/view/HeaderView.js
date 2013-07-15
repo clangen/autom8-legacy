@@ -42,7 +42,7 @@ namespace("autom8.view").HeaderView = (function() {
     });
 
     dialog = autom8.util.Dialog.show({
-      title: 'autom8',
+      title: 'diagnostics',
       view: aboutView,
       cancelable: true,
       buttons: [
@@ -83,8 +83,6 @@ namespace("autom8.view").HeaderView = (function() {
       this.$('#hostname').html(window.location.hostname);
       this.$('#header-button').html('sign in');
 
-      var aboutText = '?';
-
       switch (state) {
         case "authenticated":
         case "authenticating":
@@ -95,7 +93,6 @@ namespace("autom8.view").HeaderView = (function() {
         case "connected":
           this.$('#header-button').html('sign out')
           this.$('.header-host-separator').html('controlling');
-          aboutText = '✔';
           break;
 
         case "disconnected":
@@ -103,8 +100,6 @@ namespace("autom8.view").HeaderView = (function() {
           this.$('.header-host-separator').html('welcome to');
           break;
       }
-
-      this.$('.header-about').html(aboutText);
     }
   });
 

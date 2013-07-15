@@ -1,5 +1,6 @@
 @import "dimens.less";
 @import "mixins.less";
+@import "buttons.less";
 
 .switch-devices-view {
     padding: 0 @switcherPadding;
@@ -8,15 +9,41 @@
     border-bottom: 1px solid #1f1f1f;
     background-color: #444;
     overflow: hidden;
+
+    .switcher-container {
+        display: inline-block;
+    }
+
+    .switcher-button {
+        .button-style-5(20px);
+        .box-shadow(1px, 1px, 3px, #222);
+
+        position: relative;
+        top: -2px;
+        display: inline-block;
+
+        &.left {
+            .box-shadow(-1px, 1px, 3px, #222);
+            margin-right: 3px;
+        }
+
+        &.right {
+            margin-left: 3px;
+        }
+    }
+
+    .switcher-button.hidden {
+        display: none;
+    }
+
+    .switcher-label {
+        display: inline-block;
+        line-height: @switcherHeight;
+    }
 }
 
 .switch-devices-view.touched {
     background-color: #3a3a3a;
-}
-
-.switch-label {
-    display: inline-block;
-    line-height: @switcherHeight;
 }
 
 

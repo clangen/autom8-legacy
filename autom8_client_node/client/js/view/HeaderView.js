@@ -56,6 +56,8 @@ namespace("autom8.view").HeaderView = (function() {
   }
 
   var HeaderView = View.extend({
+    className: "header",
+
     events: {
       "touch .header-about": function() {
         showAboutDialog(this);

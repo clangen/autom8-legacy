@@ -2,28 +2,29 @@ namespace("autom8.view").SwitcherView = (function() {
   var Browser = namespace('autom8').Browser;
 
   var stateToHtmlMap = {
-    flat: "show areas <b>&gt;</b>",
-    grouped: "<b>&lt;</b> show all"
+    flat: "show areas",
+    grouped: "show all"
   };
 
   function getLabelOffset(context, pos) {
-    var $container = context.$el;
-    var $label = this.$('.switch-label');
+    var $parent = context.$el;
+    var $container = context.$container;
 
+    var parentWidth = $parent.width();
     var containerWidth = $container.width();
-    var labelWidth = $label.width();
-    var offset = (containerWidth - labelWidth);
+    var offset = (parentWidth - containerWidth);
+
     return (pos === "left") ? -offset : offset;
   }
 
   function updateLabelOffsetWithoutTransform(context, pos) {
-    Browser.setPrefixedStyle(context.$label, 'transform', 'none');
+    Browser.setPrefixedStyle(context.$container, 'transform', 'none');
     context.$el.css('text-align', pos);
   }
 
   function updateLabelOffset(context, pos) {
     var xOffset = String(getLabelOffset(context, pos)) + 'px';
-    Browser.setPrefixedStyle(context.$label, 'transform', 'translate3d(' + xOffset + ', 0, 0)');
+    Browser.setPrefixedStyle(context.$container, 'transform', 'translate3d(' + xOffset + ', 0, 0)');
   }
 
   function getCurrentPosition(context) {
@@ -37,8 +38,14 @@ namespace("autom8.view").SwitcherView = (function() {
 
     onCreate: function(options) {
       options = options || { };
-      this.$label = $('<div class="switch-label"></div>');
-      this.$el.append(this.$label);
+
+      this.setElement(View.elementFromTemplateId('autom8-View-SwitcherView'));
+
+      this.$label = this.$('.switcher-label');
+      this.$container = this.$('.switcher-container');
+      this.$leftButton = this.$('.switcher-button.left');
+      this.$rightButton = this.$('.switcher-button.right');
+
       this.setState(localStorage['autom8.lastDevicesView'] || 'grouped', false);
       this.onResized = _.bind(_.debounce(this.onResized, 100), this);
 
@@ -65,6 +72,15 @@ namespace("autom8.view").SwitcherView = (function() {
         var to = getCurrentPosition(this); /* note: new state already set! */
         var from = (to === "left") ? "right" : "left";
 
+        if (to === 'left') {
+          this.$rightButton.addClass('hidden');
+          this.$leftButton.removeClass('hidden');
+        }
+        else {
+          this.$leftButton.addClass('hidden');
+          this.$rightButton.removeClass('hidden');
+        }
+
         if (!inDom) {
           updateLabelOffsetWithoutTransform(this, to);
         }
@@ -73,7 +89,7 @@ namespace("autom8.view").SwitcherView = (function() {
             updateLabelOffsetWithoutTransform(this, getCurrentPosition(this));
           }
           else {
-            autom8.Animation.css(this.$label, "devices-switcher-view", {
+            autom8.Animation.css(this.$container, "devices-switcher-view", {
               duration: autom8.Config.display.animations.viewSwitcherDuration,
               easing: autom8.Config.display.animations.viewSwitcherEasing,
 

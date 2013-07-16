@@ -1,6 +1,7 @@
 @import "buttons.less";
 @import "mixins.less";
 
+@childExtrasSize: 38px;
 @childRowHeight: 46px;
 @childButtonWidth: @childRowHeight;
 @childButtonHeight: @childRowHeight;
@@ -22,8 +23,14 @@
         .three-column(@childRowHeight, @childButtonWidth, @rightColumnWidth);
 
         .extras {
-            padding-left: @childRowExtrasOffset;
-            padding-top: 0px;
+            padding: 4px 13px;
+            height: @childExtrasSize;
+            width: @childExtrasSize;
+        }
+
+        .extras-button {
+            height: @childExtrasSize;
+            width: @childExtrasSize;
         }
 
         .button {
@@ -56,7 +63,7 @@
         }
 
         &.has-expander .expander {
-            display: table;
+            display: inline-block;
         }
 
         .expander-button {

@@ -58,13 +58,12 @@
     }
 }
 
-.row-expander-outer(@paddingX: 10px, @paddingY: 6px) {
-    display: table;
+.row-expander-outer(@paddingX: 8px, @paddingY: 4px) {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    padding: @paddingY @paddingX;
     text-align: center;
-    padding-top: @paddingY;
-    padding-bottom: @paddingY;
-    padding-left: @paddingX;
-    padding-right: @paddingX;
 }
 
 .row-expander-inner() {

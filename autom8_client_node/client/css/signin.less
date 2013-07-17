@@ -1,21 +1,69 @@
 @import "mixins.less";
 @import "buttons.less";
 
-.password-row {
+@inputPadding: 6px;
+@padding: 8px;
+@buttonHeight: 32px;
+@buttonWidth: 32px;
+
+.input-placeholder-color(@color) {
+    ::-webkit-input-placeholder {
+        color: @color;
+    }
+    :-moz-placeholder {
+        color: @color;
+    }
+    ::-moz-placeholder {
+        color: @color;
+    }
+    :-ms-input-placeholder {
+        color: @color;
+    }
+}
+
+.password-container {
     padding: 10px;
-}
+    .input-placeholder-color(#ccc);
 
-.password-row.gone {
-    display: none;
-}
+    *:focus {
+        outline: 0;
+    }
 
-.password {
-    .box-sizing(border-box);
-    width: 100%;
-}
+    .password {
+        .box-sizing(border-box);
+        font-size: 105%;
+        border: 1px solid #aaaaaa;
+        position: absolute;
+        left: @padding;
+        right: @padding;
+        margin-right: @buttonWidth + @padding;
+    }
 
-.password-row input {
-    font-size: 105%;
-    border: 1px solid #aaaaaa;
-    padding: 6px;
+    input {
+        padding: @inputPadding;
+        border-radius: 8px;
+        padding-left: 6px;
+        height: 32px;
+    }
+
+    .sign-in-button-touch-area {
+        position: absolute;
+        right: 0;
+        width: @buttonWidth;
+        padding: 0 8px;
+
+        .sign-in-button {
+            .button-style-5(@buttonHeight);
+            line-height: @buttonHeight;
+            background-color: #2b2b2b;
+            border: 1px solid #4b4b4b;
+            font-size: 100%;
+        }
+    }
+
+    .sign-in-button-touch-area.touched {
+        .sign-in-button {
+            background-color: #222;
+        }
+    }
 }

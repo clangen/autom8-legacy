@@ -115,6 +115,7 @@ namespace("autom8").client = (function () {
 
       var newSocket = io.connect(host, {
         'reconnect': false,
+        'transports': autom8.Config.connection.transports,
         /* internal socket.io socket may already be created and
         cached with old session cookie. when we set this flag we
         force recreation of the internal socket so connection can

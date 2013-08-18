@@ -1,13 +1,16 @@
-// npm install commander express socket.io socket.io-client less closurecompiler clean-css
-// node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
+// npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt
+// node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost clangen.dyndns.og --clientport 7901 --debug
 
 (function() {
   var program = require('commander');
-
   var config = require('./Config.js');
   var httpServer = require('./HttpServer.js');
   var clientProxy = require('./ClientProxy.js');
   var util = require('./Util.js');
+
+  var prompt = require('prompt');
+  prompt.message = "autom8";
+  prompt.start();
 
   function start() {
     config.init(program);
@@ -16,7 +19,7 @@
   }
 
   program
-    .version("0.3.0")
+    .version("0.3.2")
     .usage('params:')
     .option('--listen <port>', 'port we will listen on')
     .option('--creds <pem>', 'pem file containing both cert and private key')
@@ -30,8 +33,10 @@
   from stdin now, hash it, and cache it. */
   if (!program.clientpw) {
     var host = program.clienthost;
-    program.password('Password for ' + host + ': ', '*', function(pass) {
-      program.clientpw = util.sha256(pass);
+
+    var promptOptions = { name: 'password', hidden: true };
+    prompt.get(promptOptions, function(error, result) {
+      program.clientpw = util.sha256(result.password);
       start();
     });
   }

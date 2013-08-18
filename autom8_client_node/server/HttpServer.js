@@ -20,6 +20,7 @@
   var util = require('./Util.js');
   var sessions = require('./Sessions.js');
   var config = require('./Config.js').get();
+  var blacklist = require('./Blacklist.js');
 
   var root = process.cwd() + '/client';
 
@@ -133,7 +134,7 @@
           callback(doc);
           console.log("renderMinifiedStyles: finished");
         }
-      }
+      };
 
       var minify = function() {
         console.log("renderMinifiedStyles: concatenating compiled files");
@@ -147,7 +148,7 @@
         var minified = require('clean-css').process(combined);
 
         finalize(minified);
-      }
+      };
 
       var createParseFinishHandler = function(filename) {
         return function(err, tree) {
@@ -164,8 +165,8 @@
           if (!remaining) {
             minify();
           }
-        }
-      }
+        };
+      };
 
       for (var i = 0; i < cssFiles.length; i++) {
         var file = cssFiles[i];
@@ -217,7 +218,7 @@
     /* these are special scripts that we can't safely/easily minify. they
     will be excluded from the minification process and added to the
     document above the minified scripts */
-    var blacklist = {
+    var minifiyBlacklist = {
       '/socket.io/socket.io.js': true
     };
 
@@ -231,7 +232,7 @@
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(scriptRegex);
       if (match && match.length === 2) {
-        if (!blacklist[match[1]]) {
+        if (!minifiyBlacklist[match[1]]) {
           scriptFilenames.push(root + '/' + match[1]);
         }
       }
@@ -241,8 +242,8 @@
 
     /* render all the blacklisted <script> tags */
     console.log("renderMinifiedScripts: applying blacklist");
-    for (var k in blacklist) {
-      if (blacklist.hasOwnProperty(k)) {
+    for (var k in minifiyBlacklist) {
+      if (minifiyBlacklist.hasOwnProperty(k)) {
         minified += '<script src="' + k + '" type="text/javascript"></script>\n';
       }
     }
@@ -270,7 +271,7 @@
         callback(doc);
         console.log("renderMinifiedScripts: finished");
       }
-    }
+    };
 
     console.log("renderMinifiedScripts: starting closurecompiler");
     closurecompiler.compile(
@@ -306,6 +307,19 @@
     to correlate browser sessions with web sockets */
     var sessionStore = new express.session.MemoryStore();
 
+    /* connection validator */
+    app.use(function(req, res, next) {
+      if (!blacklist.allowConnection(req)) {
+        var address = req.connection.remoteAddress;
+        console.warn(address, "blacklisted. denying...");
+        res.writeHead(401);
+        res.end("you're blacklisted. go away.");
+      }
+      else {
+        next();
+      }
+    });
+
     /* magic middleware */
     app.use(express.cookieParser(secret));
     app.use(express.bodyParser());
@@ -324,6 +338,7 @@
         res.writeHead(200);
       }
       else {
+        blacklist.flagConnection(req);
         res.writeHead(401);
       }
 
@@ -506,7 +521,7 @@
 
           if (debug) {
             data = renderNonMinifiedStyles(data);
-            data = renderNonMinifiedScripts(data)
+            data = renderNonMinifiedScripts(data);
             writeResponse(fn, data);
           }
           else {

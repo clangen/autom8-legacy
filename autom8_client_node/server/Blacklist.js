@@ -9,16 +9,14 @@
     var entry = blacklist[address];
 
     if (entry) {
-      if (entry.failures < MAX_FAILURES) {
-        return false;
-      }
-
       var elapsed = new Date().getTime() - entry.lastAttempt;
-      if (elapsed < COOLDOWN_MILLIS) {
+      if (entry.failures > MAX_FAILURES && elapsed < COOLDOWN_MILLIS) {
         return false;
       }
 
-      delete blacklist[address];
+      if (elapsed > COOLDOWN_MILLIS) {
+        delete blacklist[address]; /* cooldown complete */
+      }
     }
 
     return true;

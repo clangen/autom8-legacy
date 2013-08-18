@@ -10,14 +10,24 @@ namespace("autom8.view").SignInView = (function() {
     'expired': 'idle'
   };
 
+  function trigger(c) {
+    var val = c.$("#password").val();
+    if (val) {
+      c.trigger("return:pressed", val);
+    }
+  }
+
   return View.extend({
     className: 'sign-in-activity',
 
     events: {
       "keydown": function(e) {
         if (e.keyCode == 13) {
-          this.trigger("return:pressed", this.$("#password").val());
+          trigger(this);
         }
+      },
+      "touch .sign-in-button-touch-area": function() {
+        trigger(this);
       }
     },
 

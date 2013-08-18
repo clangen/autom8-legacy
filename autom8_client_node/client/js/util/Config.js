@@ -1,5 +1,8 @@
 namespace("autom8").Config = (function() {
   var config = {
+    connection: {
+        transports: undefined /* undefined = all */
+    },
     display: {
       animations: {
         collapse: false,
@@ -40,13 +43,18 @@ namespace("autom8").Config = (function() {
     config.display.animations.dialog = true;
 
     var isIOS6 = /i(Phone|Pod) OS (5|6)/.test(ua) || /Apple-i(Phone|Pod)(5|6)/.test(ua);
+    var isIOS7 = /i(Phone|Pod) OS 7/.test(ua) || /Apple-i(Phone|Pod)7/.test(ua);
 
-    if (!isIOS6) {
+    if (!isIOS6 && !isIOS7) { /* todo: check awkward. fix. */
       config.display.animations.collapseEasing = 'linear';
       config.display.animations.expandEasing = 'linear';
       config.display.animations.viewSwitchEasing = 'linear';
       config.display.animations.viewSwitcherEasing = 'linear';
       config.display.animations.dialogEasing = 'linear';
+    }
+
+    if (isIOS7) {
+        config.connection.transports = ['xhr-polling'];
     }
 
     config.display.classes.body = 'iphone fixed-header';

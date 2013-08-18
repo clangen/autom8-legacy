@@ -13,7 +13,7 @@
       };
 
       this.$el.append(View.elementFromTemplateId('autom8-View-AboutView', params));
-      this.$el.addClass(status);
+      this.$el.addClass(autom8.client.getState());
     }
   });
 }());

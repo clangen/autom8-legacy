@@ -19,6 +19,7 @@
 #include "autom8.hpp"
 #include "devices/x10/cm15a/cm15a_device_system.hpp"
 #include <boost/date_time.hpp>
+#include <boost/thread/thread.hpp>
 
 /* constants */
 #define VERSION "0.5"
@@ -27,8 +28,10 @@
 
 /* logging */
 static log_func external_logger_ = 0;
+static boost::mutex external_logger_mutex_;
 
 int autom8_set_logger(log_func logger) {
+    boost::mutex::scoped_lock lock(external_logger_mutex_);
 	external_logger_ = logger;
 	return AUTOM8_OK;
 }
@@ -42,23 +45,25 @@ public:
     void on_string_logged(autom8::debug::debug_level level, std::string tag, std::string string) {
         using namespace boost::posix_time;
         using namespace boost::gregorian;
-
-		log_func fn = external_logger_;
 		bool logged = false;
 
-		if (fn) {
-			try {
-				if (fn) { /* TODO FIX THREAD SAFETY */
-					fn((int) level, tag.c_str(), string.c_str());
-					logged = true;
+		{
+			boost::mutex::scoped_lock lock(external_logger_mutex_);
+
+			if (external_logger_) {
+				try {
+					if (external_logger_) {
+						external_logger_((int) level, tag.c_str(), string.c_str());
+						logged = true;
+					}
 				}
-			}
-			catch (...) {
-				std::cerr << "remote log write failed! result will be dumped to stdout." << std::endl;
+				catch (...) {
+					std::cerr << "remote log write failed! result will be dumped to stdout." << std::endl;
+				}
 			}
 		}
 
-		/* external process couldn't handle logging. dump to stdout! */
+ 		/* external process couldn't handle logging. dump to stdout! */
 		if (!logged) {
 			time_facet* facet(new time_facet("--> [%x %X] "));
 			std::cout.imbue(std::locale(std::cout.getloc(), facet));
@@ -78,8 +83,12 @@ int autom8_init() {
 		return AUTOM8_ALREADY_INITIALIZED;
 	}
 
-	default_logger_ = new console_logger();
-	autom8::debug::init();
+	{
+		boost::mutex::scoped_lock lock(external_logger_mutex_);
+		default_logger_ = new console_logger();
+		autom8::debug::init();
+	}
+
 	initialized_ = true;
 
 	return AUTOM8_OK;
@@ -92,13 +101,15 @@ int autom8_deinit() {
 
 	autom8::server::stop();
 	
-	/* FIXME: deadlocks */
-	/*autom8::debug::deinit();
+	{
+		boost::mutex::scoped_lock lock(external_logger_mutex_);
+		autom8::debug::deinit();
 
-	if (default_logger_) {
-		delete default_logger_;
-		default_logger_ = 0;
-	}*/
+		if (default_logger_) {
+			delete default_logger_;
+			default_logger_ = 0;
+		}
+	}
 
 	external_logger_ = 0;
 	initialized_ = false;

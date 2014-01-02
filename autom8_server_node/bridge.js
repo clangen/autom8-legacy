@@ -95,6 +95,6 @@ util.makeRpcCall("server", "start", { }, function() {
 });
 
 process.on('SIGINT', function() {
-  console.log(LOCAL_LOG, "caught ctrl+c, setting exit flag (please wait a few seconds)...");
-  exit = true;
+	console.log(LOCAL_LOG, "caught ctrl+c, setting exit flag (please wait a few seconds)...");
+	exit = true;
 });

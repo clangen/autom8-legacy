@@ -62,7 +62,7 @@
     </Lib>
     <Link>
       <AdditionalLibraryDirectories>../../3rdparty/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ssleay32.lib;libeay32.lib;3rdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ssleay32MDd.lib;libeay32MDd.lib;3rdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
@@ -87,7 +87,7 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"</Command>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>../../3rdparty/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ssleay32.lib;libeay32.lib;3rdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ssleay32MD.lib;libeay32MD.lib;3rdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>lib /NOLOGO /OUT:"$(SolutionDir)\release\libautom8_static.lib" "$(SolutionDir)\libautom8\src\release\*.obj"

@@ -70,8 +70,8 @@ namespace autom8 {
         }
 
         preferences& prefs() {
-            static preferences prefs("autom8");
-            return prefs;
+            static preferences* prefs = new preferences("autom8");
+            return *prefs;
         }
 
 		std::string sha256(const char* data, unsigned int len) {

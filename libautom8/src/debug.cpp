@@ -100,7 +100,7 @@ static bool cancel_ = true;
 static void thread_proc() {
 	std::string s;
 	try {
-		while ( ! cancel_) {
+		while (!cancel_) {
 			log_queue::log_entry* entry = queue_->pop_top();
 			debug::string_logged(entry->level_, entry->tag_, entry->message_);
 			delete entry;

@@ -25,6 +25,17 @@ namespace autom8 {
         }
     }
 
+	json_value_ref json_value_from_string(const std::string& str) {
+		json_reader reader;
+		json_value_ref result = json_value_ref(new json_value());
+	
+		if (reader.parse(str.c_str(), *result)) {
+			return result;
+		}
+
+		return json_value_ref();
+	}
+
 	json_value string_vector_to_json_array(const std::vector<std::string>& input) {
 		json_value result = json_value(Json::arrayValue);
 

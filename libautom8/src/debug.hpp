@@ -7,7 +7,7 @@ namespace autom8 {
     class debug {
     public:
 		enum debug_level {
-			info,
+			info = 0,
 			warning,
 			error
 		};

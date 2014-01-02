@@ -16,6 +16,7 @@ namespace autom8 {
 	typedef boost::shared_ptr<Json::Value> json_value_ref;
 
     extern std::string json_value_to_string(const json_value& value);
+	extern json_value_ref json_value_from_string(const std::string& input);
 	extern json_value string_vector_to_json_array(const std::vector<std::string>& input);
 }
 

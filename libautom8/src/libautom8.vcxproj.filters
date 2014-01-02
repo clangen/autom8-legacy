@@ -64,7 +64,6 @@
     <ClCompile Include="message_queue.hpp">
       <Filter>libautom8\protocol\server</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="ssl_certificate.cpp">
       <Filter>libautom8\protocol</Filter>
     </ClCompile>
@@ -85,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="db.cpp">
       <Filter>libautom8\util</Filter>
+    </ClCompile>
+    <ClCompile Include="autom8.cpp">
+      <Filter>libautom8</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="db.hpp">
       <Filter>libautom8\util</Filter>
+    </ClInclude>
+    <ClInclude Include="export.h">
+      <Filter>libautom8</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

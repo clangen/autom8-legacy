@@ -21,3 +21,6 @@ debug/
 autom8_client_android/out/
 autom8_server_node/node_modules/
 ipch/
+autom8_client_android/.idea/
+autom8.suo
+autom8_cli/autom8_cli.vcxproj.user

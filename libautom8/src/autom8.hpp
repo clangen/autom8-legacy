@@ -9,6 +9,7 @@ typedef void (*rpc_callback)(const char*);
 
 #define AUTOM8_FALSE 0
 #define AUTOM8_TRUE 1
+
 #define AUTOM8_OK 1
 #define AUTOM8_UNKNOWN ~0
 #define AUTOM8_INVALID_ARGUMENT -1

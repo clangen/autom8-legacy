@@ -145,7 +145,8 @@
         }
 
         console.log("renderMinifiedStyles: minifying concatenated result");
-        var minified = require('clean-css').process(combined);
+        var CleanCSS = require('clean-css');
+        var minified = new CleanCSS().minify(combined);
 
         finalize(minified);
       };

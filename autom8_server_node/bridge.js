@@ -1,3 +1,4 @@
+/* please publish this some day */
 /* npm install ffi ref q */
 var ffi = require('ffi');
 var ref = require('ref');
@@ -10,6 +11,7 @@ var RPC_SEND = "[rpc send]".yellow;
 var RPC_RECV = "[rpc recv]".green;
 var ERROR_LOG = "[error]".red;
 var DEINIT_TIMEOUT_MILLIS = 10000;
+var POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME = 2500;
 
 var noOp = function() { };
 
@@ -28,6 +30,11 @@ console.log("\n------------------------------------------------------------\n".g
 console.log(LOCAL_LOG, "loaded libautom8.dll");
 console.log(LOCAL_LOG, "autom8_version:", dll.autom8_version());
 console.log(LOCAL_LOG, "autom8_init:", dll.autom8_init());
+
+function die(code) {
+	console.log('\n\ngoodbye...\n');
+	process.exit(parseInt(code, 10) || -1);
+}
 
 var util = {
 	initLogging: function() {
@@ -65,17 +72,29 @@ var util = {
 };
 
 util.initLogging();
+var exit = false;
 
-util.makeRpcCall("server", "start");
+util.makeRpcCall("server", "start", { }, function() {
+	var checkExit = function() {
+		if (exit) {
+			console.log(ERROR_LOG, "detected exit flag, attempting shut down...");
+			util.makeRpcCall("server", "stop", { }, function() {
+				console.log(LOCAL_LOG, "autom8_deinit:", dll.autom8_deinit());
+				die(0);
+			});
 
-setTimeout(function() {
-	util.makeRpcCall("server", "stop", { }, function() {
-		console.log(LOCAL_LOG, "autom8_deinit:", dll.autom8_deinit());
-		process.exit(0);
-	});
+			setTimeout(function() {
+				console.log(ERROR_LOG, "timed out waiting for autom8 to de-initialize. force-killing...");
+				die(-1);
+			}, DEINIT_TIMEOUT_MILLIS);
+		}
+	};
 
-	setTimeout(function() {
-		console.log(ERROR_LOG, "timed out waiting for autom8 to de-initialize");
-		process.exit(-1);
-	}, DEINIT_TIMEOUT_MILLIS);
-}, 5000);
+	/* poll sigint/ctrl+c exit flag... */
+	setInterval(checkExit, POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME); /* can we do this without polling, please? */
+});
+
+process.on('SIGINT', function() {
+  console.log(LOCAL_LOG, "caught ctrl+c, setting exit flag (please wait a few seconds)...");
+  exit = true;
+});

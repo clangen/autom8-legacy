@@ -17,7 +17,7 @@
 #include "utility.hpp"
 
 #include "autom8.hpp"
-#include "devices/x10/cm15a/cm15a_device_system.hpp"
+#include "devices/null_device_system.hpp"
 #include <boost/date_time.hpp>
 #include <boost/thread/thread.hpp>
 
@@ -126,6 +126,15 @@ static void respond_with_status(rpc_callback callback, int status_code) {
 	callback(json_value_to_string(*response).c_str());
 }
 
+static void respond_with_status(rpc_callback callback, const std::string& errmsg) {
+	using namespace autom8;
+
+	json_value_ref response = json_value_ref(new json_value());
+	(*response)["status"] = AUTOM8_UNKNOWN;
+	(*response)["message"] = errmsg;
+	callback(json_value_to_string(*response).c_str());
+}
+
 static void no_op(const char*) {
 	/* used when rpc callback not specified */
 }
@@ -152,8 +161,9 @@ static void handle_server(autom8::json_value_ref input, rpc_callback callback) {
 int autom8_server_start() {
 	using namespace autom8;
 
-    device_system_ptr cm15a(new autom8::cm15a_device_system());
-    device_system::set_instance(cm15a);
+    device_system::set_instance(
+		device_system_ptr(new autom8::null_device_system())
+	);
 		
 	if (server::is_running() && !autom8_server_stop()) {
 		return -999; /* can't stop server is fatal */
@@ -178,6 +188,24 @@ int autom8_server_stop() {
 	return 0;
 }
 
+/* system command handlers */
+static std::string autom8_system_list() {
+	return "";
+}
+
+static void handle_system(autom8::json_value_ref input, rpc_callback callback) {
+	std::string command = input->get("command", "").asString();
+
+	if (command == "system_list") {
+		respond_with_status(callback, autom8_system_list());
+	}
+/*	else if (command == "add_device") {
+		respond_with_status(callback, autom8_server_stop());
+	}*/
+	else {
+		respond_with_status(callback, AUTOM8_INVALID_COMMAND);
+	}
+}
 /* generic rpc interface */
 void autom8_rpc(const char* input, rpc_callback callback) {
 	using namespace autom8;
@@ -188,7 +216,7 @@ void autom8_rpc(const char* input, rpc_callback callback) {
 	const std::string component = parsed->get("component", "").asString();
 	const std::string command = parsed->get("command", "").asString();
 
-	debug::log(debug::info, TAG, (std::string("handling '") + component + "' command '" + command));
+	debug::log(debug::info, TAG, (std::string("handling '") + component + "' command '" + command + "'"));
 
 	if (component == "server") {
 		handle_server(parsed, callback);

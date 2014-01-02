@@ -17,14 +17,14 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfAtl>false</UseOfAtl>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseOfAtl>Static</UseOfAtl>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -48,7 +48,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./;../../3rdparty/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;TIXML_USE_TICPP;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;TIXML_USE_TICPP;TIXML_USE_STL;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -60,11 +60,24 @@
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
+    <Link>
+      <AdditionalLibraryDirectories>../../3rdparty/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ssleay32.lib;libeay32.lib;3rdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent>
+      <Command>lib /NOLOGO /OUT:"$(SolutionDir)\debug\libautom8_static.lib" "$(SolutionDir)\libautom8\src\debug\*.obj"
+
+xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-gd-1*" "$(SolutionDir)\debug\"
+xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\debug\"
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>./;../../3rdparty/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;NDEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;TIXML_USE_TICPP;TIXML_USE_STL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;NDEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -73,10 +86,19 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../3rdparty/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ssleay32.lib;libeay32.lib;3rdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>lib /NOLOGO /OUT:"$(SolutionDir)\release\libautom8_static.lib" "$(SolutionDir)\libautom8\src\release\*.obj"
+
+xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-1*" "$(SolutionDir)\release\"
+xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\release\"
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="autom8.cpp" />
     <ClCompile Include="client.cpp" />
     <ClCompile Include="common_messages.cpp" />
     <ClCompile Include="db.cpp" />
@@ -96,10 +118,6 @@
     <ClCompile Include="requests\send_device_command.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="json.cpp" />
-    <ClCompile Include="main.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="message.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="request_handler_factory.cpp" />
@@ -115,6 +133,7 @@
     <ClInclude Include="common_messages.hpp" />
     <ClInclude Include="db.hpp" />
     <ClInclude Include="devices\x10\x10_device_controller.hpp" />
+    <ClInclude Include="export.h" />
     <ClInclude Include="message_formatter.hpp" />
     <ClInclude Include="message_matcher.hpp" />
     <ClInclude Include="devices\constants.hpp" />

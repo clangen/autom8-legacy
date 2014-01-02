@@ -18,3 +18,6 @@ libautom8/src/Release/
 libautom8/src/Debug/
 release/
 debug/
+autom8_client_android/out/
+autom8_server_node/node_modules/
+ipch/

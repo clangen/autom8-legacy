@@ -24,3 +24,5 @@ ipch/
 autom8_client_android/.idea/
 autom8.suo
 autom8_cli/autom8_cli.vcxproj.user
+*.o
+autom8_cli/autom8_cli

@@ -24,11 +24,11 @@ typedef void (*rpc_callback)(const char*);
 #define AUTOM8_COMPONENT_SERVER "server"
 
 extern "C" {
-	dll_export const char* autom8_version();
-	dll_export int autom8_init();
-	dll_export int autom8_deinit();
-	dll_export int autom8_set_logger(log_func);
-	dll_export void autom8_rpc(const char*, rpc_callback);
+    dll_export const char* autom8_version();
+    dll_export int autom8_init();
+    dll_export int autom8_deinit();
+    dll_export int autom8_set_logger(log_func);
+    dll_export void autom8_rpc(const char*, rpc_callback);
 }
 
 #endif // __C_AUTOM8_HPP__

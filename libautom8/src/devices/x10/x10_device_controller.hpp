@@ -22,7 +22,6 @@ namespace autom8 {
         typedef bool (*get_device_status_func)(const char* device_address);
         get_device_status_func get_device_status;
     };
-
 }
 
 #endif

@@ -23,6 +23,11 @@
 
 using namespace autom8;
 
+#define REJECT_IF_NOT_INITIALIZED(cb) if (!initialized_) { respond_with_status(cb, AUTOM8_NOT_INITIALIZED); return; }
+#define REJECT_IF_INITIALIZED(cb) if(initialized_) { respond_with_status(cb, AUTOM8_ALREADY_INITIALIZED); return; }
+#define REJECT_IF_SERVER_NOT_STARTED(cb) if(server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_NOT_RUNNING); return; }
+#define REJECT_IF_SERVER_STARTED(cb) if(server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_ALREADY_RUNNING); return; }
+
 /* constants */
 #define VERSION "0.5"
 #define DEFAULT_PORT 7901
@@ -128,19 +133,29 @@ static void respond_with_status(rpc_callback callback, int status_code) {
 }
 
 static void respond_with_status(rpc_callback callback, const std::string& errmsg) {
-    json_value error;
-    error["error"] = errmsg;
-
     json_value_ref response = json_value_ref(new json_value());
     (*response)["status"] = AUTOM8_UNKNOWN;
-    (*response)["message"] = error;
+    (*response)["message"] = errmsg;
     callback(json_value_to_string(*response).c_str());
 }
 
 static void respond_with_status(rpc_callback callback, json_value_ref json) {
-    json_value_ref response = json_value_ref(new json_value());
-    (*response)["status"] = AUTOM8_UNKNOWN;
-    (*response)["message"] = *json;
+	/* note if json looks like this: {status: ..., message: ...} the status
+	code will be automatically extracted. otherwise AUTOM8_UNKNOWN will be used */
+
+	json_value_ref response = json_value_ref(new json_value());
+
+	int status = (int) json->get("status", AUTOM8_UNKNOWN).asInt();
+    (*response)["status"] = status;
+
+	json_value message = json->get("message", "");
+	if (!message.isNull()) {
+		(*response)["message"] = json->get("message", "");
+	}
+	else {
+		(*response)["message"] = *json;
+	}
+   
     callback(json_value_to_string(*response).c_str());
 }
 
@@ -165,8 +180,13 @@ static void handle_server(json_value_ref input, rpc_callback callback) {
         respond_with_status(callback, server_stop());
     }
     else if (command == "set_preference") {
+		REJECT_IF_SERVER_STARTED(callback)
         respond_with_status(callback, server_set_preference(options));
     }
+	else if (command == "get_preference") {
+		REJECT_IF_SERVER_STARTED(callback)
+		respond_with_status(callback, server_get_preference(options));
+	}
     else {
         respond_with_status(callback, AUTOM8_INVALID_COMMAND);
     }
@@ -181,6 +201,34 @@ int server_set_preference(json_value& options) {
     }
 
     return (utility::prefs().set(key, value) ? AUTOM8_OK : AUTOM8_UNKNOWN);
+}
+
+json_value_ref server_get_preference(json_value& options) {
+	json_value_ref result(new json_value());
+	(*result)["status"] = AUTOM8_OK;
+
+	std::string key = options.get("key", "").asString();
+	if (key.size() == 0) {
+		(*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+		(*result)["message"] = "key not specified";
+	}
+	else {
+		std::string value = "__INVALID__";
+		utility::prefs().get(key, value);
+
+		if (value == "__INVALID__") {
+			(*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+			(*result)["message"] = "key not found";
+		}
+		else {
+			json_value message;
+			message["key"] = key;
+			message["value"] = value;
+			(*result)["message"] = message;
+		}
+	}
+
+	return result;
 }
 
 int server_start() {
@@ -257,10 +305,32 @@ static json_value_ref system_add_device(json_value& options) {
         (*result)["device"] = *(device->to_json());
     }
     else {
-        (*result)["error"] = "failed to create device";
+        (*result)["message"] = "failed to create device";
+		(*result)["status"] = AUTOM8_INVALID_ARGUMENT;
     }
 
     return result;
+}
+
+static int system_delete_device(json_value& options) {
+	std::string address = options.get("address", "").asString();
+
+	if (address.length() == 0) {
+		return AUTOM8_INVALID_ARGUMENT;
+	}
+
+	device_model& model = device_system::instance()->model();
+	device_ptr device = model.find_by_address(address);
+
+	if (!device) {
+		return AUTOM8_DEVICE_NOT_FOUND;
+	}
+
+	if (!model.remove(device)) {
+		return AUTOM8_UNKNOWN;
+	}
+
+	return AUTOM8_OK;
 }
 
 static void handle_system(json_value_ref input, rpc_callback callback) {
@@ -286,6 +356,8 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
 
 /* generic rpc interface */
 void autom8_rpc(const char* input, rpc_callback callback) {
+	REJECT_IF_NOT_INITIALIZED(callback)
+
     callback = (callback ? callback : (rpc_callback) no_op);
     json_value_ref parsed;
 
@@ -311,6 +383,7 @@ void autom8_rpc(const char* input, rpc_callback callback) {
         handle_server(parsed, callback);
     }
     else if (component == "system") {
+		REJECT_IF_SERVER_STARTED(callback)
         handle_system(parsed, callback);
     }
     else {

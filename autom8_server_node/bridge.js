@@ -15,7 +15,7 @@ var POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME = 2500;
 
 var noOp = function() { };
 
-var dllDir = path.resolve(__dirname + '/../');
+var dllDir = path.resolve(__dirname + '/../Debug');
 process.chdir(dllDir);
 
 var dll = ffi.Library(dllDir + "/libautom8", {
@@ -32,7 +32,7 @@ console.log(LOCAL_LOG, "autom8_version:", dll.autom8_version());
 console.log(LOCAL_LOG, "autom8_init:", dll.autom8_init());
 
 function die(code) {
-    console.log('\n\ngoodbye...\n');
+    console.log('\ngoodbye...\n');
     process.exit(parseInt(code, 10) || -1);
 }
 
@@ -50,54 +50,64 @@ var util = {
         console.log(LOCAL_LOG, "registered logger");
     },
 
-    makeRpcCall: function(component, command, options, callback) {
-        if (typeof options === "function") {
-            callback = options;
-            options = { };
-        }
+    makeRpcCall: (function() {
+        var current;
+        var queue = [];
 
-        var logPrefix = component + "::" + command;
-        var rpcResult = null;
-
-        var rpcCallback = ffi.Callback('void', ['string'], function(result) {
-            rpcResult = (result || "{ }").replace(/(\r\n|\n|\r)/gm,""); /* no newlines */
-            console.log(RPC_RECV, logPrefix, rpcResult);
+        /* this is the callback that gets invoked by libautom8, not to be confused
+        with the async() completion callback. here, we store the result, and wait
+        for the completion event to fire */
+        var callbackHandler = ffi.Callback('void', ['string'], function(result) {
+            current.result = JSON.parse((result || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
         });
 
-        var payload = JSON.stringify({
-            "component": component,
-            "command": command,
-            "options": options || { }
-        });
+        var dequeueAndSend = function() {
+            if (queue.length) {
+                current = queue.shift();
 
-        console.log(RPC_SEND, logPrefix, payload);
+                console.log(RPC_SEND, current.logId, current.payload);
 
-        dll.autom8_rpc.async(payload, rpcCallback, function(err, res) {
-            (callback || noOp)(JSON.parse(rpcResult));
-        });
-    }
+                dll.autom8_rpc.async(current.payload, callbackHandler, function(err, res) {
+                    /* this is the completion event. our callback should have already
+                    fired, so pull the result out of the struct and notify our callback.
+                    if there is more work to do, schedule the next rpc call */
+                    console.log(RPC_RECV, current.logId, current.result);
+
+                    current.callback(current.result);
+                    current = null;
+
+                    dequeueAndSend();
+                });
+            }
+        };
+
+        return function(component, command, options, callback) {
+            if (typeof options === "function") {
+                callback = options;
+                options = { };
+            }
+
+            queue.push({
+                logId: component + "::" + command,
+
+                payload: JSON.stringify({
+                    "component": component,
+                    "command": command,
+                    "options": options || { }
+                }),
+
+                callback: callback || noOp
+            });
+
+            if (!current) {
+                dequeueAndSend();
+            }
+        };
+    }())
 };
 
 util.initLogging();
 var exit = false;
-
-util.makeRpcCall("server", "start", function() {
-    var checkExit = function() {
-        if (exit) {
-            console.log(ERROR_LOG, "detected exit flag, attempting shut down...");
-            util.makeRpcCall("server", "stop", function() {
-                console.log(LOCAL_LOG, "autom8_deinit");
-
-                dll.autom8_deinit.async(function(err, res) {
-                    die(0);
-                });
-            });
-        }
-    };
-
-    /* poll sigint/ctrl+c exit flag... */
-    setInterval(checkExit, POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME); /* can we do this without polling, please? */
-});
 
 util.makeRpcCall("system", "list", function(result) {
     console.log(LOCAL_LOG, "system::list");
@@ -127,6 +137,39 @@ util.makeRpcCall("system", "add_device", device, function(result) {
 util.makeRpcCall("system", "list_devices", function(result) {
     console.log(LOCAL_LOG, "system::list_devices");
     console.log(LOCAL_LOG, '  devices:', result.message.devices || result.message.error);
+});
+
+util.makeRpcCall("server", "get_preference", {key: "fingerprint" }, function(result) {
+    console.log(LOCAL_LOG, "system::get_preference(fingerprint)");
+    console.log(LOCAL_LOG, '  result:', result);
+});
+
+util.makeRpcCall("server", "set_preference", {key: "foo1", value: "bar1" }, function(result) {
+    console.log(LOCAL_LOG, "system::set_preference(foo1)");
+    console.log(LOCAL_LOG, '  result:', result);
+});
+
+util.makeRpcCall("server", "get_preference", {key: "foo1" }, function(result) {
+    console.log(LOCAL_LOG, "system::get_preference(foo1)");
+    console.log(LOCAL_LOG, '  result:', result);
+});
+
+util.makeRpcCall("server", "start", function() {
+    var checkExit = function() {
+        if (exit) {
+            console.log(ERROR_LOG, "detected exit flag, attempting shut down...");
+            util.makeRpcCall("server", "stop", function() {
+                console.log(LOCAL_LOG, "autom8_deinit");
+
+                dll.autom8_deinit.async(function(err, res) {
+                    die(0);
+                });
+            });
+        }
+    };
+
+    /* poll sigint/ctrl+c exit flag... */
+    setInterval(checkExit, POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME); /* can we do this without polling, please? */
 });
 
 process.on('SIGINT', function() {

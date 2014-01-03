@@ -72,8 +72,6 @@ void server::stop_instance() {
 	// will be processed. 
 	stopped_ = true;
 	acceptor_.close();
-	acceptor_thread_->join();
-
 
 	/*
 	** alright, this is a bit strange. to avoid deadlock we first make a copy
@@ -105,33 +103,33 @@ void server::stop_instance() {
 }
 
 void server::io_service_thread_proc() {
-	// start acceptor thread
-	acceptor_thread_.reset(
-		new boost::thread(
-			boost::bind(
-				&server::acceptor_thread_proc,
-				this)));
-	
-	schedule_ping();
-
-	// stop_instance() will cancel us
-	io_service_.run();
+	start_accept();		/* async tcp socket accept () */
+	schedule_ping();	/* heartbeat */
+	io_service_.run();	/* stopped by stop_instance */
 }
 
-void server::acceptor_thread_proc() {
-	try {
-		while ( ! stopped_) {
-			session_ptr s(new session(io_service_, ssl_context_));
-			acceptor_.accept(s->socket().lowest_layer());
-			boostrap_new_session(s);
+void server::start_accept() {
+	session_ptr session(new session(io_service_, ssl_context_));
 
-			// throttle new connections to 1 per second
-			//boost::this_thread::sleep(boost::posix_time::seconds(1L));
-		}
+	acceptor_.async_accept(
+		session->socket().lowest_layer(),
+		boost::bind(
+			&server::handle_accept,
+			this,
+			boost::asio::placeholders::error,
+			session
+		)
+	);	
+}
+		
+void server::handle_accept(const boost::system::error_code& error, session_ptr session) {
+	if (error) {
+		debug::log(debug::info, TAG, "socket accept failed, connection error or server shutting down");
+		return;
 	}
-	catch (...) {
-		debug::log(debug::info, TAG, "server no longer accepting connections");
-	}
+
+	boostrap_new_session(session);
+	start_accept();
 }
 
 bool server::start(int port) {

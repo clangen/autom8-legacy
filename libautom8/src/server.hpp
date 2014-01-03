@@ -61,7 +61,9 @@ namespace autom8 {
 		void boostrap_new_session(session_ptr session);
 		void handle_scheduled_ping(const error_code& error);
         void io_service_thread_proc();
-		void acceptor_thread_proc();
+
+		void start_accept();
+		void handle_accept(const boost::system::error_code&, session_ptr);
 
         boost::asio::io_service io_service_;
         boost::asio::ssl::context ssl_context_;
@@ -71,7 +73,6 @@ namespace autom8 {
         boost::mutex protect_session_list_mutex_;
 		volatile bool stopped_;
         thread_ptr io_service_thread_;
-        thread_ptr acceptor_thread_;
 		timer_ptr ping_timer_;
     };
 }

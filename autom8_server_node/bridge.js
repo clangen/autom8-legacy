@@ -1,5 +1,5 @@
 /* please publish this some day */
-/* npm install ffi ref q */
+/* npm install ffi ref colors */
 var ffi = require('ffi');
 var ref = require('ref');
 var path = require('path');
@@ -15,7 +15,7 @@ var POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME = 2500;
 
 var noOp = function() { };
 
-var dllDir = path.resolve(__dirname + '/../Debug');
+var dllDir = path.resolve(__dirname + '/../');
 process.chdir(dllDir);
 
 var dll = ffi.Library(dllDir + "/libautom8", {
@@ -56,11 +56,12 @@ var util = {
             options = { };
         }
 
+        var logPrefix = component + "::" + command;
         var rpcResult = null;
 
         var rpcCallback = ffi.Callback('void', ['string'], function(result) {
-            rpcResult = result;
-            console.log(RPC_RECV, rpcResult);
+            rpcResult = (result || "{ }").replace(/(\r\n|\n|\r)/gm,""); /* no newlines */
+            console.log(RPC_RECV, logPrefix, rpcResult);
         });
 
         var payload = JSON.stringify({
@@ -69,7 +70,8 @@ var util = {
             "options": options || { }
         });
 
-        console.log(RPC_SEND, payload);
+        console.log(RPC_SEND, logPrefix, payload);
+
         dll.autom8_rpc.async(payload, rpcCallback, function(err, res) {
             (callback || noOp)(JSON.parse(rpcResult));
         });
@@ -79,19 +81,17 @@ var util = {
 util.initLogging();
 var exit = false;
 
-util.makeRpcCall("server", "start", { }, function() {
+util.makeRpcCall("server", "start", function() {
     var checkExit = function() {
         if (exit) {
             console.log(ERROR_LOG, "detected exit flag, attempting shut down...");
-            util.makeRpcCall("server", "stop", { }, function() {
-                console.log(LOCAL_LOG, "autom8_deinit:", dll.autom8_deinit());
-                die(0);
-            });
+            util.makeRpcCall("server", "stop", function() {
+                console.log(LOCAL_LOG, "autom8_deinit");
 
-            setTimeout(function() {
-                console.log(ERROR_LOG, "timed out waiting for autom8 to de-initialize. force-killing...");
-                die(-1);
-            }, DEINIT_TIMEOUT_MILLIS);
+                dll.autom8_deinit.async(function(err, res) {
+                    die(0);
+                });
+            });
         }
     };
 
@@ -100,22 +100,17 @@ util.makeRpcCall("server", "start", { }, function() {
 });
 
 util.makeRpcCall("system", "list", function(result) {
-    console.log();
     console.log(LOCAL_LOG, "system::list");
 
     var systems = result.message.systems || [];
     for (var i = 0; i < systems.length; i++) {
         console.log(LOCAL_LOG, "  " + i + ": " + systems[i]);
     }
-
-    console.log();
 });
 
 util.makeRpcCall("system", "current", function(result) {
-    console.log();
     console.log(LOCAL_LOG, "system::current");
     console.log(LOCAL_LOG, '  system_id:', result.message.system_id);
-    console.log();
 });
 
 var device = {
@@ -125,20 +120,21 @@ var device = {
 };
 
 util.makeRpcCall("system", "add_device", device, function(result) {
-    console.log();
     console.log(LOCAL_LOG, "system::add_device");
     console.log(LOCAL_LOG, '  device:', result.message.device || result.message.error);
-    console.log();
 });
 
 util.makeRpcCall("system", "list_devices", function(result) {
-    console.log();
     console.log(LOCAL_LOG, "system::list_devices");
     console.log(LOCAL_LOG, '  devices:', result.message.devices || result.message.error);
-    console.log();
 });
 
 process.on('SIGINT', function() {
     console.log(LOCAL_LOG, "caught ctrl+c, setting exit flag (please wait a few seconds)...");
     exit = true;
+
+    setTimeout(function() {
+        console.log(ERROR_LOG, "timed out waiting for autom8 to de-initialize. force-killing...");
+        die(-1);
+    }, DEINIT_TIMEOUT_MILLIS);
 });

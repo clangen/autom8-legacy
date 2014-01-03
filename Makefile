@@ -50,6 +50,7 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 
 all: $(OBJECTS)
 	$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
+	$(CXX) -shared -o libautom8.so $(OBJECTS) $(LIBRARY_FLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<

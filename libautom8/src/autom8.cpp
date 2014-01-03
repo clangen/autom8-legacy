@@ -105,6 +105,7 @@ int autom8_deinit() {
 
     {
         boost::mutex::scoped_lock lock(external_logger_mutex_);
+
         debug::deinit();
 
         if (default_logger_) {
@@ -320,6 +321,3 @@ void autom8_rpc(const char* input, rpc_callback callback) {
 const char* autom8_version() {
     return VERSION;
 }
-
-
-

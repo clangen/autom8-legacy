@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 	autom8_deinit();
 	printf("\nautom8-cli finished...\n");
 	getchar();
+
 	return 0;
 }
 

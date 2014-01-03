@@ -88,14 +88,10 @@ namespace autom8 {
 	};
 } // namespace autom8
 
-typedef boost::shared_ptr<boost::thread> thread_ptr;
-typedef boost::shared_ptr<log_queue> queue_ptr;
-
-static thread_ptr thread_;
-static queue_ptr queue_;
-static boost::recursive_mutex mutex_;
-
-static bool cancel_ = true;
+static boost::thread* thread_ = NULL;
+static log_queue* queue_ = NULL;
+static boost::recursive_mutex system_mutex_;
+static volatile bool cancel_ = true;
 
 static void thread_proc() {
 	std::string s;
@@ -105,42 +101,51 @@ static void thread_proc() {
 			debug::string_logged(entry->level_, entry->tag_, entry->message_);
 			delete entry;
 		}
+
+		if (cancel_ || !cancel_) {
+			printf("hello");
+		}
 	}
 	catch (log_queue::stopped_exception&) {
 	}
 }
 
 void debug::init() {
-    boost::recursive_mutex::scoped_lock lock(mutex_);
+    boost::recursive_mutex::scoped_lock lock(system_mutex_);
 
 	if (queue_ || thread_) {
 		return;
 	}
 
 	deinit();
+
 	cancel_ = false;
-	queue_.reset(new log_queue());
-    thread_.reset(new boost::thread(boost::bind(&thread_proc)));
+	queue_ = new log_queue();
+	thread_ = new boost::thread(boost::bind(&thread_proc));
 }
 
 void debug::deinit() {
-    boost::recursive_mutex::scoped_lock lock(mutex_);
+    boost::recursive_mutex::scoped_lock lock(system_mutex_);
 
 	cancel_ = true;
 
-	if (queue_) {
+	if (thread_ && queue_) {
+		/* ordering is important here... stop the queue, then
+		join the thread. stop will trigger a stopped_exception the
+		thread may be blocking on, waiting for the next message */
 		queue_->stop();
-		queue_ = queue_ptr();
-	}
-
-	if (thread_) {
 		thread_->join();
-		thread_ = thread_ptr();
+
+		/* don't delete anything until the join has completed */
+		delete thread_;
+		thread_ = NULL;
+		delete queue_;
+		queue_ = NULL;
 	}
 }
 
 void debug::log(debug_level level, const std::string& tag, const std::string& string) {
-    boost::recursive_mutex::scoped_lock lock(mutex_);
+	boost::recursive_mutex::scoped_lock lock(system_mutex_);
 
 	if (queue_) {
 		queue_->push(new log_queue::log_entry(level, tag, string));

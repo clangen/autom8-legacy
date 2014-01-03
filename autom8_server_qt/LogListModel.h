@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <boost/thread.hpp>
 #include <sigslot/sigslot.h>
-#include <sqlite/sqlite3.h>
+#include <sqlite3.h>
 #include <vector>
 #include <debug.hpp>
 

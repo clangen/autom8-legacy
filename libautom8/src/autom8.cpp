@@ -141,14 +141,14 @@ static void respond_with_status(rpc_callback callback, const std::string& errmsg
 
 static void respond_with_status(rpc_callback callback, json_value_ref json) {
 	/* note if json looks like this: {status: ..., message: ...} the status
-	code will be automatically extracted. otherwise AUTOM8_UNKNOWN will be used */
+	code will be automatically extracted. otherwise AUTOM8_OK will be used */
 
 	json_value_ref response = json_value_ref(new json_value());
 
-	int status = (int) json->get("status", AUTOM8_UNKNOWN).asInt();
+	int status = (int) json->get("status", AUTOM8_OK).asInt();
     (*response)["status"] = status;
 
-	json_value message = json->get("message", "");
+	json_value message = json->get("message", json_value(Json::nullValue));
 	if (!message.isNull()) {
 		(*response)["message"] = json->get("message", "");
 	}
@@ -168,7 +168,7 @@ static int server_start();
 static int server_stop();
 static int server_set_preference(json_value& options);
 static json_value_ref server_get_preference(json_value& options);
-
+    
 static void handle_server(json_value_ref input, rpc_callback callback) {
     std::string command = input->get("command", "").asString();
     json_value options = input->get("options", json_value());

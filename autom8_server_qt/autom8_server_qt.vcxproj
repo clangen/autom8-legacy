@@ -49,6 +49,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">autom8_server_ui</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">autom8_server_ui</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -63,9 +64,10 @@
       </DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalOptions>/Zm150 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmain.lib;QtCore4.lib;QtGui4.lib;ssleay32.lib;libeay32.lib;3rdparty.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmain.lib;QtCore4.lib;QtGui4.lib;ssleay32MD.lib;libeay32MD.lib;3rdparty.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)autom8_server_ui.exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;../3rdparty/lib;../release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -91,10 +93,10 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
       <PrecompiledHeaderFile>StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalOptions>/Zm110 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zm150 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;ssleay32.lib;libeay32.lib;3rdpartyd.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;ssleay32MDd.lib;libeay32MD.lib;3rdpartyd.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)autom8_server_ui.exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;../3rdparty/lib;../debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

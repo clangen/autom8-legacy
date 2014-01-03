@@ -10,7 +10,6 @@ namespace autom8 {
         static request_handler_ptr create();
         virtual bool can_handle(session_ptr, message_ptr);
         virtual void operator()(session_ptr, message_ptr);
-
     private:
         get_device_list();
     };

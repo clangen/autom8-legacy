@@ -88,6 +88,12 @@
     <ClCompile Include="autom8.cpp">
       <Filter>libautom8</Filter>
     </ClCompile>
+    <ClCompile Include="devices\null_device_system.cpp">
+      <Filter>libautom8\device</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\simple_device.cpp">
+      <Filter>libautom8\device</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="devices\device_model.hpp">
@@ -206,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="export.h">
       <Filter>libautom8</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\simple_device.hpp">
+      <Filter>libautom8\device</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

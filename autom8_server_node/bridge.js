@@ -118,6 +118,26 @@ util.makeRpcCall("system", "current", function(result) {
     console.log();
 });
 
+var device = {
+    label: "office",
+    address: "a1",
+    type: 0 /* lamp */
+};
+
+util.makeRpcCall("system", "add_device", device, function(result) {
+    console.log();
+    console.log(LOCAL_LOG, "system::add_device");
+    console.log(LOCAL_LOG, '  device:', result.message.device || result.message.error);
+    console.log();
+});
+
+util.makeRpcCall("system", "list_devices", function(result) {
+    console.log();
+    console.log(LOCAL_LOG, "system::list_devices");
+    console.log(LOCAL_LOG, '  devices:', result.message.devices || result.message.error);
+    console.log();
+});
+
 process.on('SIGINT', function() {
     console.log(LOCAL_LOG, "caught ctrl+c, setting exit flag (please wait a few seconds)...");
     exit = true;

@@ -127,9 +127,12 @@ static void respond_with_status(rpc_callback callback, int status_code) {
 }
 
 static void respond_with_status(rpc_callback callback, const std::string& errmsg) {
+	json_value error;
+	error["error"] = errmsg;
+
 	json_value_ref response = json_value_ref(new json_value());
 	(*response)["status"] = AUTOM8_UNKNOWN;
-	(*response)["message"] = errmsg;
+	(*response)["message"] = error;
 	callback(json_value_to_string(*response).c_str());
 }
 
@@ -205,6 +208,44 @@ static json_value_ref system_current() {
 	return result;
 }
 
+static json_value_ref system_list_devices() {
+	device_system& ds = *device_system::instance();
+	device_model& model = ds.model();
+	device_list devices;
+	model.all_devices(devices);
+
+	json_value list = json_value(Json::arrayValue);
+	for (size_t i = 0; i < devices.size(); i++) {
+		list.append(*(devices.at(i)->to_json()));
+	}
+
+	json_value_ref result(new json_value());
+	(*result)["devices"] = list;
+	return result;
+}
+
+static json_value_ref system_add_device(json_value_ref input) {
+	json_value options = (*input)["options"];
+	std::string label = options.get("label", "").asString();
+	std::string address = options.get("address", "").asString();
+	device_type type = (device_type) options.get("type", (int) device_type_unknown).asInt();
+	std::vector<std::string> groups; /* TODO */
+
+	device_model& model = device_system::instance()->model();
+	device_ptr device = model.add(type, address, label, groups);
+
+	json_value_ref result(new json_value());
+
+	if (device) {
+		(*result)["device"] = *(device->to_json());
+	}
+	else {
+		(*result)["error"] = "failed to create device";
+	}
+
+	return result;
+}
+
 static void handle_system(json_value_ref input, rpc_callback callback) {
 	std::string command = input->get("command", "").asString();
 
@@ -214,6 +255,12 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
 	else if (command == "current") {
 		respond_with_status(callback, system_current());
 	}
+	else if (command == "list_devices") {
+		respond_with_status(callback, system_list_devices());
+	}
+	else if (command == "add_device") {
+		respond_with_status(callback, system_add_device(input));
+	}
 	else {
 		respond_with_status(callback, AUTOM8_INVALID_COMMAND);
 	}
@@ -221,8 +268,21 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
 /* generic rpc interface */
 void autom8_rpc(const char* input, rpc_callback callback) {
 	callback = (callback ? callback : (rpc_callback) no_op);
+	json_value_ref parsed;
 
-	json_value_ref parsed = json_value_from_string(std::string(input));
+	try {
+		parsed = json_value_from_string(std::string(input));
+	}
+	catch (...) {
+		/* we will return in a sec */
+	}
+
+	if (!parsed) {
+		debug::log(debug::error, TAG, "autom8_rpc input parse failed");
+		respond_with_status(callback, AUTOM8_PARSE_ERROR);
+		return;
+	}
+
 	const std::string component = parsed->get("component", "").asString();
 	const std::string command = parsed->get("command", "").asString();
 

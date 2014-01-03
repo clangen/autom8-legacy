@@ -2,13 +2,13 @@
 #define __C_AUTOM8_X10_DEVICE_HPP__
 
 #include <boost/shared_ptr.hpp>
-
+#include <devices/simple_device.hpp>
 #include "x10_device_system.hpp"
 
 namespace autom8 {
     class x10_device_system;
 
-    class x10_device: public device_base {
+    class x10_device: public simple_device {
     public:
         x10_device(
             x10_device_system* owner,
@@ -20,37 +20,17 @@ namespace autom8 {
         virtual ~x10_device();
 
         virtual void on_controller_message(const std::vector<std::string>& status_values);
-        virtual device_status status();
-        virtual std::string address();
-        virtual std::string label();
-        virtual database_id id();
-		virtual void groups(std::vector<std::string>& target);
         virtual void turn_on();
         virtual void turn_off();
 
-        virtual void update(
-            const std::string& new_address,
-            const std::string& new_label);
-
-		virtual void update(
-            const std::string& new_address,
-            const std::string& new_label,
-			const std::vector<std::string>& groups);
-
-        virtual device_type type() = 0;
-
-		void set_groups(const std::vector<std::string>& groups);
+		virtual device_type type() = 0; /* implemented by concrete classes */
 
     protected:
         x10_device_system* owner() { return owner_; }
         virtual void set_device_status(device_status new_status);
 
     private:
-        std::string label_, address_;
-		std::vector<std::string> groups_;
         x10_device_system* owner_;
-        device_status status_;
-        database_id id_;
     };
 }
 

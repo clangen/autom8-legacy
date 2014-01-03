@@ -54,7 +54,7 @@ namespace autom8 { namespace db {
 			NULL);
 
 		if (result != SQLITE_OK) {
-			throw std::exception("could not create sqlite3 statement");
+			throw std::exception(/*"could not create sqlite3 statement"*/);
 		}
 	}
 
@@ -79,7 +79,7 @@ namespace autom8 { namespace db {
 
 	bool statement::execute() {
 		if (executed_) {
-			throw std::exception("statement already executed");
+			throw std::exception(/*"statement already executed"*/);
 		}
 
 		int result = sqlite3_step(stmt_);
@@ -111,7 +111,7 @@ namespace autom8 { namespace db {
 			return true;
 		}
 		else {
-			throw std::exception("sqlite3_step failed");
+			throw std::exception(/*"sqlite3_step failed"*/);
 		}
 	}
 

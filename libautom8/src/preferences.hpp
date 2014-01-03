@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include <sqlite/sqlite3.h>
+#include <sqlite3.h>
 #include <boost/lexical_cast.hpp>
 
 namespace autom8 {

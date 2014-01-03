@@ -2,6 +2,7 @@
 #define __C_AUTOM8_DEBUG_HPP__
 
 #include <sigslot/sigslot.h>
+#include <string>
 
 namespace autom8 {
     class debug {

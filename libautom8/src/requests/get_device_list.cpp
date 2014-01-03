@@ -6,7 +6,7 @@
 
 #include "get_device_list.hpp"
 
-#include <json/Writer.h>
+#include <json/writer.h>
 
 using namespace autom8;
 

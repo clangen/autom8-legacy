@@ -4,7 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 #include "device_factory.hpp"
-#include <sqlite/sqlite3.h>
+#include <sqlite3.h>
 #include <sigslot/sigslot.h>
 
 namespace autom8 {

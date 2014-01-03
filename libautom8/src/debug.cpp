@@ -11,7 +11,7 @@ sigslot::signal3<debug::debug_level, std::string, std::string> debug::string_log
 namespace autom8 {
 	/*
 	 * Basically ripped and simplified from message_queue. Log statements get
-	 * enqueued and processed on a background thread. 
+	 * enqueued and processed on a background thread.
 	 */
 	class log_queue {
 	public:
@@ -62,7 +62,7 @@ namespace autom8 {
 			if (active_) {
 				bool was_empty = (queue_.size() == 0);
 				queue_.push(f);
-		
+
 				if (was_empty) {
 					wait_for_next_item_condition_.notify_one();
 				}
@@ -100,10 +100,6 @@ static void thread_proc() {
 			log_queue::log_entry* entry = queue_->pop_top();
 			debug::string_logged(entry->level_, entry->tag_, entry->message_);
 			delete entry;
-		}
-
-		if (cancel_ || !cancel_) {
-			printf("hello");
 		}
 	}
 	catch (log_queue::stopped_exception&) {

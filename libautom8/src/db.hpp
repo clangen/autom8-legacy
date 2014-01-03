@@ -1,7 +1,7 @@
 #ifndef __C_AUTOM8_DB_HPP__
 #define __C_AUTOM8_DB_HPP__
 
-#include <sqlite/sqlite3.h>
+#include <sqlite3.h>
 #include <string>
 
 namespace autom8 {

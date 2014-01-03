@@ -8,6 +8,7 @@ LLVMCONFIG := /usr/bin/llvm-config-3.3
 DEFAULT_INCLUDES := -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
 LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
 CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions
+LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 
 SOURCES = \
 	3rdparty/src/lib_json/json_reader.cpp \
@@ -32,6 +33,8 @@ SOURCES = \
 	libautom8/src/devices/device_base.cpp \
 	libautom8/src/devices/device_model.cpp \
 	libautom8/src/devices/device_system.cpp \
+	libautom8/src/devices/simple_device.cpp \
+	libautom8/src/devices/null_device_system.cpp \
 	libautom8/src/devices/x10/x10_appliance.cpp \
 	libautom8/src/devices/x10/x10_device.cpp \
 	libautom8/src/devices/x10/x10_device_factory.cpp \
@@ -40,14 +43,17 @@ SOURCES = \
 	libautom8/src/requests/get_device_list.cpp \
 	libautom8/src/requests/get_security_alert_count.cpp \
 	libautom8/src/requests/send_device_command.cpp \
-	libautom8/src/autom8.cpp
+	libautom8/src/autom8.cpp \
+	autom8_cli/autom8_cli.cpp
 
 OBJECTS = $(SOURCES:%.cpp=%.o)
 
 all: $(OBJECTS)
+	$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<
 
 clean:
 	-rm -f $(OBJECTS) *~
+	-rm autom8_cli/autom8_cli

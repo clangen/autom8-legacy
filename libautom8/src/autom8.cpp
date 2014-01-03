@@ -21,6 +21,8 @@
 #include <boost/date_time.hpp>
 #include <boost/thread/thread.hpp>
 
+using namespace autom8;
+
 /* constants */
 #define VERSION "0.5"
 #define DEFAULT_PORT 7901
@@ -36,13 +38,13 @@ int autom8_set_logger(log_func logger) {
 	return AUTOM8_OK;
 }
 
-class console_logger: public autom8::signal_handler {
+class console_logger: public signal_handler {
 public:
     console_logger() {
-        autom8::debug::string_logged.connect(this, &console_logger::on_string_logged);
+        debug::string_logged.connect(this, &console_logger::on_string_logged);
     }
 
-    void on_string_logged(autom8::debug::debug_level level, std::string tag, std::string string) {
+    void on_string_logged(debug::debug_level level, std::string tag, std::string string) {
         using namespace boost::posix_time;
         using namespace boost::gregorian;
 		bool logged = false;
@@ -86,7 +88,7 @@ int autom8_init() {
 	{
 		boost::mutex::scoped_lock lock(external_logger_mutex_);
 		default_logger_ = new console_logger();
-		autom8::debug::init();
+		debug::init();
 	}
 
 	initialized_ = true;
@@ -99,11 +101,11 @@ int autom8_deinit() {
 		return AUTOM8_NOT_INITIALIZED;
 	}
 
-	autom8::server::stop();
+	server::stop();
 	
 	{
 		boost::mutex::scoped_lock lock(external_logger_mutex_);
-		autom8::debug::deinit();
+		debug::deinit();
 
 		if (default_logger_) {
 			delete default_logger_;
@@ -119,19 +121,22 @@ int autom8_deinit() {
 
 /* util */
 static void respond_with_status(rpc_callback callback, int status_code) {
-	using namespace autom8;
-
 	json_value_ref response = json_value_ref(new json_value());
 	(*response)["status"] = status_code;
 	callback(json_value_to_string(*response).c_str());
 }
 
 static void respond_with_status(rpc_callback callback, const std::string& errmsg) {
-	using namespace autom8;
-
 	json_value_ref response = json_value_ref(new json_value());
 	(*response)["status"] = AUTOM8_UNKNOWN;
 	(*response)["message"] = errmsg;
+	callback(json_value_to_string(*response).c_str());
+}
+
+static void respond_with_status(rpc_callback callback, json_value_ref json) {
+	json_value_ref response = json_value_ref(new json_value());
+	(*response)["status"] = AUTOM8_UNKNOWN;
+	(*response)["message"] = *json;
 	callback(json_value_to_string(*response).c_str());
 }
 
@@ -139,33 +144,30 @@ static void no_op(const char*) {
 	/* used when rpc callback not specified */
 }
 
-/* prototypes */
-static int autom8_server_start();
-static int autom8_server_stop();
-
 /* server command handlers */
-static void handle_server(autom8::json_value_ref input, rpc_callback callback) {
+static int server_start();
+static int server_stop();
+
+static void handle_server(json_value_ref input, rpc_callback callback) {
 	std::string command = input->get("command", "").asString();
 
 	if (command == "start") {
-		respond_with_status(callback, autom8_server_start());		
+		respond_with_status(callback, server_start());		
 	}
 	else if (command == "stop") {
-		respond_with_status(callback, autom8_server_stop());
+		respond_with_status(callback, server_stop());
 	}
 	else {
 		respond_with_status(callback, AUTOM8_INVALID_COMMAND);
 	}
 }
 
-int autom8_server_start() {
-	using namespace autom8;
-
+int server_start() {
     device_system::set_instance(
-		device_system_ptr(new autom8::null_device_system())
+		device_system_ptr(new null_device_system())
 	);
 		
-	if (server::is_running() && !autom8_server_stop()) {
+	if (server::is_running() && !server_stop()) {
 		return -999; /* can't stop server is fatal */
 	}
 
@@ -177,9 +179,7 @@ int autom8_server_start() {
 	return 1;
 }
 
-int autom8_server_stop() {
-	using namespace autom8;
-
+int server_stop() {
 	if (server::stop()) {
 		device_system::clear_instance();
 		return 1;
@@ -189,27 +189,37 @@ int autom8_server_stop() {
 }
 
 /* system command handlers */
-static std::string autom8_system_list() {
-	return "";
+static json_value_ref system_list() {
+	json_value list = json_value(Json::arrayValue);
+	list.append("cm15a");
+	list.append("null/mock");
+
+	json_value_ref result(new json_value());
+	(*result)["systems"] = list;
+	return result;
 }
 
-static void handle_system(autom8::json_value_ref input, rpc_callback callback) {
+static json_value_ref system_current() {
+	json_value_ref result(new json_value());
+	(*result)["system_id"] = "null/mock";
+	return result;
+}
+
+static void handle_system(json_value_ref input, rpc_callback callback) {
 	std::string command = input->get("command", "").asString();
 
-	if (command == "system_list") {
-		respond_with_status(callback, autom8_system_list());
+	if (command == "list") {
+		respond_with_status(callback, system_list());
 	}
-/*	else if (command == "add_device") {
-		respond_with_status(callback, autom8_server_stop());
-	}*/
+	else if (command == "current") {
+		respond_with_status(callback, system_current());
+	}
 	else {
 		respond_with_status(callback, AUTOM8_INVALID_COMMAND);
 	}
 }
 /* generic rpc interface */
 void autom8_rpc(const char* input, rpc_callback callback) {
-	using namespace autom8;
-
 	callback = (callback ? callback : (rpc_callback) no_op);
 
 	json_value_ref parsed = json_value_from_string(std::string(input));
@@ -220,6 +230,9 @@ void autom8_rpc(const char* input, rpc_callback callback) {
 
 	if (component == "server") {
 		handle_server(parsed, callback);
+	}
+	else if (component == "system") {
+		handle_system(parsed, callback);
 	}
 	else {
 		debug::log(debug::error, TAG, std::string("invalid component '") + component + "' specified. rpc call ignored");

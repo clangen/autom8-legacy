@@ -5,11 +5,11 @@ var ref = require('ref');
 var path = require('path');
 require('colors');
 
-var LOCAL_LOG = "[local log]".grey;
-var SERVER_LOG = "[server log]".magenta;
-var RPC_SEND = "[rpc send]".yellow;
-var RPC_RECV = "[rpc recv]".green;
-var ERROR_LOG = "[error]".red;
+var LOCAL_LOG = "[local]".grey;
+var ERROR_LOG = "[local-error]".red;
+var SERVER_LOG = "[server]".magenta;
+var RPC_SEND = "[rpc-send]".yellow;
+var RPC_RECV = "[rpc-recv]".green;
 var DEINIT_TIMEOUT_MILLIS = 10000;
 var POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME = 2500;
 
@@ -51,6 +51,11 @@ var util = {
     },
 
     makeRpcCall: function(component, command, options, callback) {
+        if (typeof options === "function") {
+            callback = options;
+            options = { };
+        }
+
         var rpcResult = null;
 
         var rpcCallback = ffi.Callback('void', ['string'], function(result) {
@@ -66,7 +71,7 @@ var util = {
 
         console.log(RPC_SEND, payload);
         dll.autom8_rpc.async(payload, rpcCallback, function(err, res) {
-            (callback || noOp)(rpcResult);
+            (callback || noOp)(JSON.parse(rpcResult));
         });
     }
 };
@@ -92,6 +97,25 @@ util.makeRpcCall("server", "start", { }, function() {
 
     /* poll sigint/ctrl+c exit flag... */
     setInterval(checkExit, POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME); /* can we do this without polling, please? */
+});
+
+util.makeRpcCall("system", "list", function(result) {
+    console.log();
+    console.log(LOCAL_LOG, "system::list");
+
+    var systems = result.message.systems || [];
+    for (var i = 0; i < systems.length; i++) {
+        console.log(LOCAL_LOG, "  " + i + ": " + systems[i]);
+    }
+
+    console.log();
+});
+
+util.makeRpcCall("system", "current", function(result) {
+    console.log();
+    console.log(LOCAL_LOG, "system::current");
+    console.log(LOCAL_LOG, '  system_id:', result.message.system_id);
+    console.log();
 });
 
 process.on('SIGINT', function() {

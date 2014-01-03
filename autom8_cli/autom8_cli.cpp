@@ -12,6 +12,8 @@ int main(int argc, char* argv[])
 	autom8_init();
 	printf("library version: %s\n\n", autom8_version());
 	autom8_rpc("{\"component\": \"server\", \"command\": \"start\"}", 0);
+	autom8_rpc("{\"component\": \"system\", \"command\": \"list\"}", 0);
+	autom8_rpc("{\"component\": \"system\", \"command\": \"current\"}", 0);
 	sleep(5000);
 	autom8_rpc("{\"component\": \"server\", \"command\": \"stop\"}", 0);
 	sleep(1000);

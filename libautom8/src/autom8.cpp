@@ -17,16 +17,17 @@
 #include "utility.hpp"
 
 #include "autom8.hpp"
-#include "devices/null_device_system.hpp"
+#include <devices/null_device_system.hpp>
+#include <devices/x10/mochad/mochad_device_system.hpp>
 #include <boost/date_time.hpp>
 #include <boost/thread/thread.hpp>
 
 using namespace autom8;
 
 #define REJECT_IF_NOT_INITIALIZED(cb) if (!initialized_) { respond_with_status(cb, AUTOM8_NOT_INITIALIZED); return; }
-#define REJECT_IF_INITIALIZED(cb) if(initialized_) { respond_with_status(cb, AUTOM8_ALREADY_INITIALIZED); return; }
-#define REJECT_IF_SERVER_NOT_STARTED(cb) if(server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_NOT_RUNNING); return; }
-#define REJECT_IF_SERVER_STARTED(cb) if(server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_ALREADY_RUNNING); return; }
+#define REJECT_IF_INITIALIZED(cb) if (initialized_) { respond_with_status(cb, AUTOM8_ALREADY_INITIALIZED); return; }
+#define REJECT_IF_SERVER_NOT_STARTED(cb) if (server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_NOT_RUNNING); return; }
+#define REJECT_IF_SERVER_STARTED(cb) if (server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_ALREADY_RUNNING); return; }
 
 /* constants */
 #define VERSION "0.5"
@@ -95,6 +96,11 @@ int autom8_init() {
         default_logger_ = new console_logger();
         debug::init();
     }
+
+    device_system::set_instance(
+        device_system_ptr(new mochad_device_system())
+        // device_system_ptr(new null_device_system())
+    );
 
     initialized_ = true;
 
@@ -237,10 +243,6 @@ json_value_ref server_get_preference(json_value& options) {
 }
 
 int server_start() {
-    device_system::set_instance(
-        device_system_ptr(new null_device_system())
-    );
-
     if (server::is_running() && !server_stop()) {
         return -999; /* can't stop server is fatal */
     }
@@ -266,6 +268,7 @@ int server_stop() {
 static json_value_ref system_list() {
     json_value list = json_value(Json::arrayValue);
     list.append("cm15a");
+    list.append("mochad");
     list.append("null/mock");
 
     json_value_ref result(new json_value());
@@ -275,7 +278,7 @@ static json_value_ref system_list() {
 
 static json_value_ref system_current() {
     json_value_ref result(new json_value());
-    (*result)["system_id"] = "null/mock";
+    (*result)["system_id"] = "mochad";
     return result;
 }
 

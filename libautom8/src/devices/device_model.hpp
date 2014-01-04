@@ -21,7 +21,7 @@ namespace autom8 {
             device_type type,
             const std::string& address,
             const std::string& label,
-			const std::vector<std::string>& groups);
+            const std::vector<std::string>& groups);
 
         virtual bool remove(device_ptr device);
         virtual bool remove(database_id id);
@@ -32,7 +32,7 @@ namespace autom8 {
             device_type type,
             const std::string& address,
             const std::string& label,
-			const std::vector<std::string>& groups);
+            const std::vector<std::string>& groups);
 
         virtual int all_devices(device_list& target);
         virtual device_ptr find_by_address(const std::string& address);
@@ -46,9 +46,9 @@ namespace autom8 {
         virtual void on_device_removed(database_id old_device_id);
         virtual void on_device_updated(database_id id);
 
-		bool remove_groups(database_id id);
-		void get_groups(database_id id, std::vector<std::string>& groups);
-		bool set_groups(database_id id, const std::vector<std::string>& groups);
+        bool remove_groups(database_id id);
+        void get_groups(database_id id, std::vector<std::string>& groups);
+        bool set_groups(database_id id, const std::vector<std::string>& groups);
 
     private:
         device_factory_ptr factory_;

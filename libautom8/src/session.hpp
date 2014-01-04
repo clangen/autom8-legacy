@@ -23,43 +23,43 @@ namespace autom8 {
 
     class session;
     typedef boost::shared_ptr<session> session_ptr;
-	typedef boost::scoped_ptr<boost::thread> thread_ptr;
+    typedef boost::scoped_ptr<boost::thread> thread_ptr;
 
     class session : public boost::enable_shared_from_this<session> {
-	public:
-		typedef sigslot::signal1<session_ptr> disconnect_signal_type;
-		typedef sigslot::signal1<int> session_destroyed_signal_type;
+    public:
+        typedef sigslot::signal1<session_ptr> disconnect_signal_type;
+        typedef sigslot::signal1<int> session_destroyed_signal_type;
 
     public:
-		session(boost::asio::io_service& io_service, boost::asio::ssl::context& context);
+        session(boost::asio::io_service& io_service, boost::asio::ssl::context& context);
         virtual ~session();
 
         ssl_socket& socket();
         void start();
-		std::string ip_address() const;
+        std::string ip_address() const;
         bool is_authenticated() const;
-		void enqueue_write(message_formatter_ptr formatter);
-		disconnect_signal_type& disconnect_signal();
-		void disconnect(const std::string& reason = "");
+        void enqueue_write(message_formatter_ptr formatter);
+        disconnect_signal_type& disconnect_signal();
+        void disconnect(const std::string& reason = "");
 
     private:
         static bool handle_incoming_message(session_ptr session, message_ptr message);
         static bool handle_authentication(session_ptr session, message_ptr message);
-        
-		void on_disconnected();
-		void read_thread_proc();
-		void write_thread_proc();
 
-	private:
+        void on_disconnected();
+        void read_thread_proc();
+        void write_thread_proc();
+
+    private:
         ssl_socket socket_;
         volatile bool is_authenticated_;
-		volatile bool is_disconnected_;
-		std::string ip_address_;
-		boost::mutex write_lock_;
-		boost::barrier wait_for_io_threads_;
-		thread_ptr read_thread_, write_thread_;
+        volatile bool is_disconnected_;
+        std::string ip_address_;
+        boost::mutex write_lock_;
+        boost::barrier wait_for_io_threads_;
+        thread_ptr read_thread_, write_thread_;
         disconnect_signal_type disconnect_signal_;
-		message_queue_ptr write_queue_;
+        message_queue_ptr write_queue_;
     };
 }
 

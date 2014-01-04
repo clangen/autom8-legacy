@@ -20,7 +20,7 @@ namespace autom8 {
             device_type type,
             const std::string& address,
             const std::string& label,
-			const std::vector<std::string>& groups);
+            const std::vector<std::string>& groups);
 
         void device_removed(database_id id);
         void device_updated(database_id id);

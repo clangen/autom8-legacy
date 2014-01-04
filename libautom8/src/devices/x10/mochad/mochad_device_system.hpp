@@ -18,10 +18,10 @@ namespace autom8 {
         virtual std::string description() { return "mochad (cm11a/cm15a/cm19)"; }
         virtual device_model& model();
         virtual bool send_device_message(command_type message_type, const char* message_params);
-        virtual std::string controller_type() const { return "cm11a/cm15a/cm19"; }
+        virtual std::string controller_type() const { return "mochad"; }
         virtual void requery_device_status(const std::string& address);
 
-        virtual void on_message_received(const char ** argv, int argc);
+        virtual void on_message_received(std::string);
 
     private:
         void on_device_removed(database_id id);
@@ -31,7 +31,7 @@ namespace autom8 {
         mochad_controller controller_;
         device_model_ptr model_;
         device_factory_ptr factory_;
-        bool is_functional_;
+        std::string last_house_unit_;
     };
 }
 

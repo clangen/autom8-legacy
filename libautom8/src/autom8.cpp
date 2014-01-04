@@ -129,6 +129,7 @@ int autom8_deinit() {
 static void respond_with_status(rpc_callback callback, int status_code) {
     json_value_ref response = json_value_ref(new json_value());
     (*response)["status"] = status_code;
+    (*response)["message"] = json_value(Json::objectValue);
     callback(json_value_to_string(*response).c_str());
 }
 
@@ -172,6 +173,10 @@ static json_value_ref server_get_preference(json_value& options);
 static void handle_server(json_value_ref input, rpc_callback callback) {
     std::string command = input->get("command", "").asString();
     json_value options = input->get("options", json_value());
+
+    if (options.type() != Json::objectValue) {
+        options = json_value(Json::objectValue);
+    }
 
     if (command == "start") {
         respond_with_status(callback, server_start());
@@ -356,6 +361,10 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
     std::string command = input->get("command", "").asString();
     json_value options = input->get("options", json_value());
 
+    if (options.type() != Json::objectValue) {
+        options = json_value(Json::objectValue);
+    }
+
     if (command == "list") {
         respond_with_status(callback, system_list());
     }
@@ -367,6 +376,9 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
     }
     else if (command == "add_device") {
         respond_with_status(callback, system_add_device(options));
+    }
+    else if (command == "delete_device") {
+        respond_with_status(callback, system_delete_device(options));
     }
     else {
         respond_with_status(callback, AUTOM8_INVALID_COMMAND);

@@ -11,8 +11,8 @@ namespace autom8 {
             database_id id,
             const std::string& address,
             const std::string& label,
-			const std::vector<std::string>& groups = std::vector<std::string>()
-		);
+            const std::vector<std::string>& groups = std::vector<std::string>()
+        );
 
         virtual ~simple_device();
 
@@ -20,30 +20,30 @@ namespace autom8 {
         virtual std::string address();
         virtual std::string label();
         virtual database_id id();
-		virtual void groups(std::vector<std::string>& target);
+        virtual void groups(std::vector<std::string>& target);
 
         virtual device_type type() = 0;
-		virtual void turn_on() = 0;
+        virtual void turn_on() = 0;
         virtual void turn_off() = 0;
 
         virtual void update(
             const std::string& new_address,
             const std::string& new_label);
 
-		virtual void update(
+        virtual void update(
             const std::string& new_address,
             const std::string& new_label,
-			const std::vector<std::string>& groups);
+            const std::vector<std::string>& groups);
 
-		virtual void set_groups(const std::vector<std::string>& groups);
+        virtual void set_groups(const std::vector<std::string>& groups);
 
     protected:
-		virtual void on_updated();
+        virtual void on_updated();
 
     protected:
         std::string label_;
-		std::string address_;
-		std::vector<std::string> groups_;
+        std::string address_;
+        std::vector<std::string> groups_;
         device_status status_;
         database_id id_;
     };

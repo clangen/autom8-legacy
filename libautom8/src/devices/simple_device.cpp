@@ -15,24 +15,24 @@ simple_device::simple_device(
     database_id id,
     const std::string& address,
     const std::string& label,
-	const std::vector<std::string>& groups)
+    const std::vector<std::string>& groups)
 : device_base()
 , id_(id)
 , address_(address)
 , label_(label)
 , status_(device_status_unknown)
 , groups_(groups) {
-	/* nothing */
+    /* nothing */
 }
 
 simple_device::~simple_device() {
 }
 
 void simple_device::groups(std::vector<std::string>& target) {
-	std::vector<std::string>::iterator it = groups_.begin();
-	for ( ; it != groups_.end(); it++) {
-		target.push_back(*it);
-	}
+    std::vector<std::string>::iterator it = groups_.begin();
+    for ( ; it != groups_.end(); it++) {
+        target.push_back(*it);
+    }
 }
 
 device_status simple_device::status() {
@@ -60,21 +60,21 @@ void simple_device::update(
 {
     address_ = new_address;
     label_ = new_label;
-	this->on_updated();
+    this->on_updated();
 }
 
 void simple_device::update(
     const std::string& new_address,
     const std::string& new_label,
-	const std::vector<std::string>& groups)
+    const std::vector<std::string>& groups)
 {
     address_ = new_address;
     label_ = new_label;
-	set_groups(groups);
-	this->on_updated();
+    set_groups(groups);
+    this->on_updated();
 }
 
 void simple_device::set_groups(const std::vector<std::string>& groups) {
-	groups_.assign(groups.begin(), groups.end());
-	this->on_updated();
+    groups_.assign(groups.begin(), groups.end());
+    this->on_updated();
 }

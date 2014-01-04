@@ -148,58 +148,54 @@
   }
 
   function parseMessage(data) {
-    /* if there was a left-over buffer, construct a new buffer and
-       concat it with the new one */
-    if (lastBuffer) {
-      var newData = new Buffer(lastBuffer.length + data.length);
-      lastBuffer.copy(newData, 0, lastBuffer);
-      data.copy(newData, lastBuffer.length, data);
-      data = newData;
-      lastBuffer = null;
-    }
-
-    /* find the null terminator in the buffer, this is EOM */
+    /* may be a multi-part message. only read until a null terminator, then schedule
+    the remainder of the message */
     var terminator;
     for (var i = 0; i < data.length; i++) {
       if (data[i] === 0) {
         terminator = i;
         break;
       }
+      terminator = data.length;
     }
 
-    /* split the buffer, if necessary */
-    if (terminator) {
-      if (terminator < (data.length - 1)) {
-        console.log("input message will be sliced at " + terminator);
-        lastBuffer = data.slice(terminator);
+    /* schedule remainder... */
+    if (terminator > 0 && terminator < (data.length - 1)) {
+      var next = data.slice(terminator);
+      data = data.slice(0, terminator);
+
+      // var english = new Buffer(next.toString(), 'base64').toString('utf8');
+      // console.log("multi-part message... scheduling next chunk...", english);
+
+      setTimeout(function() {
+          dispatchReceivedMessage(next)
+      });
+    }
+
+    /* convert base64 message to plaintext */
+    var plainText = new Buffer(data.toString(), 'base64').toString('utf8');
+    var parts = plainText.split("\r\n");
+
+    /* parse the payload */
+    if (parts.length === 2) {
+      var message = null;
+
+      try {
+        message = {
+          uri: parts[0],
+          body: JSON.parse(parts[1])
+        };
+      }
+      catch (parseError) {
+        console.log("ERROR: message parsed failed, reconnecting...");
+        reconnect();
       }
 
-      /* convert base64 message to plaintext */
-      var plainText = new Buffer(data.toString(), 'base64').toString('utf8');
-      var parts = plainText.split("\r\n");
-
-      /* parse the payload */
-      if (parts.length === 2) {
-        var message = null;
-
-        try {
-          message = {
-            uri: parts[0],
-            body: JSON.parse(parts[1])
-          };
-        }
-        catch (parseError) {
-          console.log("ERROR: message parsed failed, reconnecting...");
-          lastBuffer = null;
-          reconnect();
-        }
-
-        if (config.debug) {
-          console.log("server said: " + JSON.stringify(message));
-        }
-
-        return message;
+      if (config.debug) {
+        console.log("server said: " + JSON.stringify(message));
       }
+
+      return message;
     }
 
     console.log("unable to parse message");

@@ -118,18 +118,23 @@ exports.init = function() {
 exports.deinit = function() {
     var deferred = Q.defer();
 
-    dll.autom8_deinit.async(function(err, res) {
-        console.log(INFO, "autom8_deinit completed");
-        initialized = false;
+    if (!initialized) {
         deferred.resolve();
-    });
+    }
+    else {
+        dll.autom8_deinit.async(function(err, res) {
+            console.log(INFO, "autom8_deinit completed");
+            initialized = false;
+            deferred.resolve();
+        });
+    }
 
     return deferred.promise;
 };
 
 exports.version = function() {
     return dll.autom8_version();
-},
+};
 
 exports.rpc = function(component, command, options) {
     var deferred = Q.defer();

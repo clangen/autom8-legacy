@@ -57,24 +57,40 @@ function testPreferences() {
     ]);
 }
 
+function log_device_add_result(result) {
+    console.log(INFO, "system::add_device");
+    console.log(INFO, '  result:', result);
+}
+
+function log_device_delete_result(result) {
+    console.log(INFO, "system::delete");
+    console.log(INFO, '  result:', result);
+}
+
 function testDevices() {
-    var device = {
-        label: "office",
-        address: "a1",
-        groups: ["downstairs", "office", "late night"],
-        type: 0 /* lamp */
-    };
+    var main_entry_p2 = { label: "", address: "p2", groups: ["sensors"], type: 2 };
+    var den_a1 = { label: "den", address: "a1", groups: ["downstairs", "den"], type: 1  };
+    var living_room_floor_a2 = { label: "living room", address: "a2", groups: ["downstairs", "living room"], type: 1 };
+    var living_room_piano_a3 = { label: "piano", address: "a3", groups: ["downstairs", "living room"], type: 1 };
+    var office_a4 = { label: "office", address: "a4", groups: ["downstairs", "office", "late night"], type: 0 };
+    var office_p3 = { label: "office motion", address: "p3", groups: ["sensors"], type: 2 };
+    var master_bedroom_entry = { label: "master bedroom entry", address: "c1", groups: ["upstairs", "master bedroom"], type: 0 };
 
     return Q.all([
-        nativeBridge.rpc("system", "add_device", device).then(function(result) {
-            console.log(INFO, "system::add_device");
-            console.log(INFO, '  device:', result.message.device || result.message.error);
-        }),
+        nativeBridge.rpc("system", "add_device", main_entry_p2).then(log_device_add_result),
+        nativeBridge.rpc("system", "add_device", den_a1).then(log_device_add_result),
+        nativeBridge.rpc("system", "add_device", living_room_floor_a2).then(log_device_add_result),
+        nativeBridge.rpc("system", "add_device", living_room_piano_a3).then(log_device_add_result),
+        nativeBridge.rpc("system", "add_device", office_a4).then(log_device_add_result),
+        nativeBridge.rpc("system", "add_device", office_p3).then(log_device_add_result),
+        nativeBridge.rpc("system", "add_device", master_bedroom_entry).then(log_device_add_result),
 
         nativeBridge.rpc("system", "list_devices").then(function(result) {
             console.log(INFO, "system::list_devices");
-            console.log(INFO, '  devices:', result.message.devices || result.message.error);
-        })
+            console.log(INFO, '  result:', result);
+        }),
+
+        nativeBridge.rpc("system", "delete_device", {address: "a1"}).then(log_device_delete_result)
     ]);
 }
 
@@ -106,11 +122,11 @@ nativeBridge.init()
     .then(startServer);
 
 process.on('SIGINT', function() {
-    console.log(INFO, "caught ctrl+c, setting exit flag (please wait a few seconds)...");
-    exit = true;
+    console.log("\n\n", ERROR, "caught ctrl+c, setting exit flag (please wait a few seconds)...\n");
+    exit = true; /* next time through the runloop will pick this up */
 
     setTimeout(function() {
         console.log(ERROR, "timed out waiting for autom8 to de-initialize. force-killing...");
-        die(-1);
+        die(-1); /* whee... */
     }, DEINIT_TIMEOUT_MILLIS);
 });

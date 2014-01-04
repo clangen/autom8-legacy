@@ -140,22 +140,22 @@ static void respond_with_status(rpc_callback callback, const std::string& errmsg
 }
 
 static void respond_with_status(rpc_callback callback, json_value_ref json) {
-	/* note if json looks like this: {status: ..., message: ...} the status
-	code will be automatically extracted. otherwise AUTOM8_OK will be used */
+    /* note if json looks like this: {status: ..., message: ...} the status
+    code will be automatically extracted. otherwise AUTOM8_OK will be used */
 
-	json_value_ref response = json_value_ref(new json_value());
+    json_value_ref response = json_value_ref(new json_value());
 
-	int status = (int) json->get("status", AUTOM8_OK).asInt();
+    int status = (int) json->get("status", AUTOM8_OK).asInt();
     (*response)["status"] = status;
 
-	json_value message = json->get("message", json_value(Json::nullValue));
-	if (!message.isNull()) {
-		(*response)["message"] = json->get("message", "");
-	}
-	else {
-		(*response)["message"] = *json;
-	}
-   
+    json_value message = json->get("message", json_value(Json::nullValue));
+    if (!message.isNull()) {
+        (*response)["message"] = json->get("message", "");
+    }
+    else {
+        (*response)["message"] = *json;
+    }
+
     callback(json_value_to_string(*response).c_str());
 }
 
@@ -168,7 +168,7 @@ static int server_start();
 static int server_stop();
 static int server_set_preference(json_value& options);
 static json_value_ref server_get_preference(json_value& options);
-    
+
 static void handle_server(json_value_ref input, rpc_callback callback) {
     std::string command = input->get("command", "").asString();
     json_value options = input->get("options", json_value());
@@ -180,13 +180,13 @@ static void handle_server(json_value_ref input, rpc_callback callback) {
         respond_with_status(callback, server_stop());
     }
     else if (command == "set_preference") {
-		REJECT_IF_SERVER_STARTED(callback)
+        REJECT_IF_SERVER_STARTED(callback)
         respond_with_status(callback, server_set_preference(options));
     }
-	else if (command == "get_preference") {
-		REJECT_IF_SERVER_STARTED(callback)
-		respond_with_status(callback, server_get_preference(options));
-	}
+    else if (command == "get_preference") {
+        REJECT_IF_SERVER_STARTED(callback)
+        respond_with_status(callback, server_get_preference(options));
+    }
     else {
         respond_with_status(callback, AUTOM8_INVALID_COMMAND);
     }
@@ -204,31 +204,31 @@ int server_set_preference(json_value& options) {
 }
 
 json_value_ref server_get_preference(json_value& options) {
-	json_value_ref result(new json_value());
-	(*result)["status"] = AUTOM8_OK;
+    json_value_ref result(new json_value());
+    (*result)["status"] = AUTOM8_OK;
 
-	std::string key = options.get("key", "").asString();
-	if (key.size() == 0) {
-		(*result)["status"] = AUTOM8_INVALID_ARGUMENT;
-		(*result)["message"] = "key not specified";
-	}
-	else {
-		std::string value = "__INVALID__";
-		utility::prefs().get(key, value);
+    std::string key = options.get("key", "").asString();
+    if (key.size() == 0) {
+        (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+        (*result)["message"] = "key not specified";
+    }
+    else {
+        std::string value = "__INVALID__";
+        utility::prefs().get(key, value);
 
-		if (value == "__INVALID__") {
-			(*result)["status"] = AUTOM8_INVALID_ARGUMENT;
-			(*result)["message"] = "key not found";
-		}
-		else {
-			json_value message;
-			message["key"] = key;
-			message["value"] = value;
-			(*result)["message"] = message;
-		}
-	}
+        if (value == "__INVALID__") {
+            (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+            (*result)["message"] = "key not found";
+        }
+        else {
+            json_value message;
+            message["key"] = key;
+            message["value"] = value;
+            (*result)["message"] = message;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 int server_start() {
@@ -306,31 +306,31 @@ static json_value_ref system_add_device(json_value& options) {
     }
     else {
         (*result)["message"] = "failed to create device";
-		(*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+        (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
     }
 
     return result;
 }
 
 static int system_delete_device(json_value& options) {
-	std::string address = options.get("address", "").asString();
+    std::string address = options.get("address", "").asString();
 
-	if (address.length() == 0) {
-		return AUTOM8_INVALID_ARGUMENT;
-	}
+    if (address.length() == 0) {
+        return AUTOM8_INVALID_ARGUMENT;
+    }
 
-	device_model& model = device_system::instance()->model();
-	device_ptr device = model.find_by_address(address);
+    device_model& model = device_system::instance()->model();
+    device_ptr device = model.find_by_address(address);
 
-	if (!device) {
-		return AUTOM8_DEVICE_NOT_FOUND;
-	}
+    if (!device) {
+        return AUTOM8_DEVICE_NOT_FOUND;
+    }
 
-	if (!model.remove(device)) {
-		return AUTOM8_UNKNOWN;
-	}
+    if (!model.remove(device)) {
+        return AUTOM8_UNKNOWN;
+    }
 
-	return AUTOM8_OK;
+    return AUTOM8_OK;
 }
 
 static void handle_system(json_value_ref input, rpc_callback callback) {
@@ -356,7 +356,7 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
 
 /* generic rpc interface */
 void autom8_rpc(const char* input, rpc_callback callback) {
-	REJECT_IF_NOT_INITIALIZED(callback)
+    REJECT_IF_NOT_INITIALIZED(callback)
 
     callback = (callback ? callback : (rpc_callback) no_op);
     json_value_ref parsed;
@@ -383,7 +383,7 @@ void autom8_rpc(const char* input, rpc_callback callback) {
         handle_server(parsed, callback);
     }
     else if (component == "system") {
-		REJECT_IF_SERVER_STARTED(callback)
+        REJECT_IF_SERVER_STARTED(callback)
         handle_system(parsed, callback);
     }
     else {

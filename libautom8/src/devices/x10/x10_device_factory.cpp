@@ -15,7 +15,7 @@ device_ptr x10_device_factory::create(
     device_type type,
     const std::string& address,
     const std::string& label,
-	const std::vector<std::string>& groups)
+    const std::vector<std::string>& groups)
 {
     {
         boost::mutex::scoped_lock lock(id_device_map_mutex_);
@@ -32,7 +32,7 @@ device_ptr x10_device_factory::create(
         }
     }
 
-	x10_device* raw_device = NULL;
+    x10_device* raw_device = NULL;
     device_ptr result;
 
     switch (type) {
@@ -45,15 +45,15 @@ device_ptr x10_device_factory::create(
     case device_type_security_sensor:
         raw_device = new x10_security_sensor(owner_, id, address, label);
         break;
-            
+
     default:
         break;
     }
 
-	if (raw_device) {
-		raw_device->set_groups(groups);
-		result = device_ptr(raw_device);
-	}
+    if (raw_device) {
+        raw_device->set_groups(groups);
+        result = device_ptr(raw_device);
+    }
 
     if (result) {
         boost::mutex::scoped_lock lock(id_device_map_mutex_);

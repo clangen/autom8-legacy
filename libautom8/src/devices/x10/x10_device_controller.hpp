@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 namespace autom8 {
-	typedef void (*on_message_received_func)(const char** argv, int argc);
+    typedef void (*on_message_received_func)(const char** argv, int argc);
 
     struct x10_device_controller {
         typedef bool (*init_func)(void);

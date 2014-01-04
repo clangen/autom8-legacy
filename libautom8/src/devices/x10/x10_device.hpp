@@ -15,7 +15,7 @@ namespace autom8 {
             database_id id,
             const std::string& address,
             const std::string& label,
-			const std::vector<std::string>& groups = std::vector<std::string>());
+            const std::vector<std::string>& groups = std::vector<std::string>());
 
         virtual ~x10_device();
 
@@ -23,7 +23,7 @@ namespace autom8 {
         virtual void turn_on();
         virtual void turn_off();
 
-		virtual device_type type() = 0; /* implemented by concrete classes */
+        virtual device_type type() = 0; /* implemented by concrete classes */
 
     protected:
         x10_device_system* owner() { return owner_; }

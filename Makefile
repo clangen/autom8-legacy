@@ -40,6 +40,8 @@ SOURCES = \
 	libautom8/src/devices/x10/x10_device_factory.cpp \
 	libautom8/src/devices/x10/x10_lamp.cpp \
 	libautom8/src/devices/x10/x10_security_sensor.cpp \
+	libautom8/src/devices/x10/mochad/mochad_controller.cpp \
+	libautom8/src/devices/x10/mochad/mochad_device_system.cpp \
 	libautom8/src/requests/get_device_list.cpp \
 	libautom8/src/requests/get_security_alert_count.cpp \
 	libautom8/src/requests/send_device_command.cpp \

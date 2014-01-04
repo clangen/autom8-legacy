@@ -68,7 +68,7 @@ function log_device_delete_result(result) {
 }
 
 function testDevices() {
-    var main_entry_p2 = { label: "", address: "p2", groups: ["sensors"], type: 2 };
+    var main_entry_p2 = { label: "front door", address: "p2", groups: ["sensors"], type: 2 };
     var den_a1 = { label: "den", address: "a1", groups: ["downstairs", "den"], type: 1  };
     var living_room_floor_a2 = { label: "living room", address: "a2", groups: ["downstairs", "living room"], type: 1 };
     var living_room_piano_a3 = { label: "piano", address: "a3", groups: ["downstairs", "living room"], type: 1 };
@@ -77,6 +77,9 @@ function testDevices() {
     var master_bedroom_entry = { label: "master bedroom entry", address: "c1", groups: ["upstairs", "master bedroom"], type: 0 };
 
     return Q.all([
+        nativeBridge.rpc("system", "delete_device", {address: "a1"}).then(log_device_delete_result),
+        nativeBridge.rpc("system", "delete_device", {address: "p2"}).then(log_device_delete_result),
+
         nativeBridge.rpc("system", "add_device", main_entry_p2).then(log_device_add_result),
         nativeBridge.rpc("system", "add_device", den_a1).then(log_device_add_result),
         nativeBridge.rpc("system", "add_device", living_room_floor_a2).then(log_device_add_result),
@@ -88,9 +91,7 @@ function testDevices() {
         nativeBridge.rpc("system", "list_devices").then(function(result) {
             console.log(INFO, "system::list_devices");
             console.log(INFO, '  result:', result);
-        }),
-
-        nativeBridge.rpc("system", "delete_device", {address: "a1"}).then(log_device_delete_result)
+        })
     ]);
 }
 

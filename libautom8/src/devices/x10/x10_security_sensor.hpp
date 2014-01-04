@@ -32,7 +32,7 @@ namespace autom8 {
 
     protected:
         virtual void on_status_changed();
-		virtual void get_extended_json_attributes(json_value& target);
+        virtual void get_extended_json_attributes(json_value& target);
 
     protected:
         bool is_tripped_;

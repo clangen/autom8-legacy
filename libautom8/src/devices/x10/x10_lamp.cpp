@@ -50,7 +50,7 @@ void x10_lamp::on_controller_message(const std::vector<std::string>& status_valu
 }
 
 void x10_lamp::get_extended_json_attributes(json_value& target) {
-	target["brightness"] = brightness_;
+    target["brightness"] = brightness_;
 }
 
 void x10_lamp::set_brightness(int new_brightness) {
@@ -59,7 +59,7 @@ void x10_lamp::set_brightness(int new_brightness) {
         return;
     }
 
-    // when you adjust the brightness you first need to determine whether the 
+    // when you adjust the brightness you first need to determine whether the
     // new value will cause the lamp to bright, or dim, then calculate a delta.
     if (new_brightness != brightness_) {
         std::string command = (new_brightness > brightness_) ? "bright" : "dim";

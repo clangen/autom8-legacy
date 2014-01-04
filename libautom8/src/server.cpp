@@ -103,9 +103,9 @@ void server::stop_instance() {
 }
 
 void server::io_service_thread_proc() {
-    start_accept();        /* async tcp socket accept () */
+    start_accept();     /* async tcp socket accept () */
     schedule_ping();    /* heartbeat */
-    io_service_.run();    /* stopped by stop_instance */
+    io_service_.run();  /* stopped by stop_instance */
 }
 
 void server::start_accept() {

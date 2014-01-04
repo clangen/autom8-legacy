@@ -32,8 +32,8 @@ device_type x10_security_sensor::type() {
 }
 
 void x10_security_sensor::get_extended_json_attributes(json_value& target) {
-	target["armed"] = is_armed_;
-	target["tripped"] = is_tripped_;
+    target["armed"] = is_armed_;
+    target["tripped"] = is_tripped_;
 }
 
 void x10_security_sensor::arm() {

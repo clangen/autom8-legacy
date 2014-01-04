@@ -21,9 +21,9 @@ namespace autom8 {
         virtual std::string controller_type() const { return "cm15a"; }
         virtual void requery_device_status(const std::string& address);
 
-		virtual void on_message_received(const char ** argv, int argc);
+        virtual void on_message_received(const char ** argv, int argc);
 
-	private:
+    private:
         void on_device_removed(database_id id);
         void on_device_updated(database_id id);
 

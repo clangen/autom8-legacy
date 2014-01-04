@@ -1,0 +1,38 @@
+#ifndef __C_AUTOM8_MOCHAD_DEVICE_SYSTEM_HPP__
+#define __C_AUTOM8_MOCHAD_DEVICE_SYSTEM_HPP__
+
+#include <boost/shared_ptr.hpp>
+#include <signal_handler.hpp>
+#include <devices/x10/x10_device_system.hpp>
+#include <devices/x10/x10_device.hpp>
+#include <devices/device_model.hpp>
+
+#include <devices/x10/mochad/mochad_controller.hpp>
+
+namespace autom8 {
+    class mochad_device_system: public x10_device_system, public signal_handler {
+    public:
+        mochad_device_system();
+        virtual ~mochad_device_system();
+
+        virtual std::string description() { return "mochad (cm11a/cm15a/cm19)"; }
+        virtual device_model& model();
+        virtual bool send_device_message(command_type message_type, const char* message_params);
+        virtual std::string controller_type() const { return "cm11a/cm15a/cm19"; }
+        virtual void requery_device_status(const std::string& address);
+
+        virtual void on_message_received(const char ** argv, int argc);
+
+    private:
+        void on_device_removed(database_id id);
+        void on_device_updated(database_id id);
+
+        device_list devices_;
+        mochad_controller controller_;
+        device_model_ptr model_;
+        device_factory_ptr factory_;
+        bool is_functional_;
+    };
+}
+
+#endif // __C_AUTOM8_MOCHAD_DEVICE_SYSTEM_HPP__

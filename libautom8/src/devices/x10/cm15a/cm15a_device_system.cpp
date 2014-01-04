@@ -23,13 +23,13 @@ static instance_list *instances_ = new instance_list();
 static boost::mutex *instance_mutex_ = new boost::mutex();
 
 void on_message_received(const char **argv, int argc) {
-	boost::mutex::scoped_lock lock(*instance_mutex_);
+    boost::mutex::scoped_lock lock(*instance_mutex_);
 
-	instance_list::iterator it = instances_->begin();
-	while (it != instances_->end()) {
-		(*it)->on_message_received(argv, argc);
-		++it;
-	}
+    instance_list::iterator it = instances_->begin();
+    while (it != instances_->end()) {
+        (*it)->on_message_received(argv, argc);
+        ++it;
+    }
 }
 
 cm15a_device_system::cm15a_device_system()
@@ -52,28 +52,28 @@ cm15a_device_system::cm15a_device_system()
     // pump. the server doesn't have a message pump, so it must run in a dll.
     dll_ = ::LoadLibrary(L"cm15a_controller.dll");
     if (dll_ != NULL) {
-		typedef x10_device_controller c;
+        typedef x10_device_controller c;
         controller_.init = (c::init_func) ::GetProcAddress(dll_, "init");
         controller_.deinit = (c::deinit_func) ::GetProcAddress(dll_, "deinit");
-		controller_.set_message_received_callback = (c::set_message_received_callback_func) ::GetProcAddress(dll_, "set_message_received_callback");
+        controller_.set_message_received_callback = (c::set_message_received_callback_func) ::GetProcAddress(dll_, "set_message_received_callback");
         controller_.send_device_message = (c::send_device_message_func) ::GetProcAddress(dll_, "send_device_message");
         controller_.get_device_status   = (c::get_device_status_func) ::GetProcAddress(dll_, "get_device_status");
     }
-	else {
-		MessageBox(NULL, L"cm15a_controller.dll not found. this program will now crash.", L"autom8 server", MB_OK);
-		throw std::exception();
-	}
+    else {
+        MessageBox(NULL, L"cm15a_controller.dll not found. this program will now crash.", L"autom8 server", MB_OK);
+        throw std::exception();
+    }
 
     is_functional_ = true;
 
-	{
-		boost::mutex::scoped_lock lock(*instance_mutex_);
-		instances_->insert(this);
-		
-		if (instances_->size() == 1) {
-			is_functional_ = controller_.init();
-		}
-	}
+    {
+        boost::mutex::scoped_lock lock(*instance_mutex_);
+        instances_->insert(this);
+
+        if (instances_->size() == 1) {
+            is_functional_ = controller_.init();
+        }
+    }
 
     if (is_functional_) {
         controller_.set_message_received_callback(::on_message_received);
@@ -81,18 +81,18 @@ cm15a_device_system::cm15a_device_system()
 }
 
 cm15a_device_system::~cm15a_device_system() {
-	{
-		boost::mutex::scoped_lock lock(*instance_mutex_);
-		instances_->erase(instances_->find(this));
+    {
+        boost::mutex::scoped_lock lock(*instance_mutex_);
+        instances_->erase(instances_->find(this));
 
-		if (instances_->size() == 0) {
-			controller_.deinit();
-			delete instances_;
-			instances_ = NULL;
-		}
-	}
-	
-	if (dll_ != NULL) {
+        if (instances_->size() == 0) {
+            controller_.deinit();
+            delete instances_;
+            instances_ = NULL;
+        }
+    }
+
+    if (dll_ != NULL) {
         ::FreeLibrary(dll_);
         dll_ = NULL;
     }

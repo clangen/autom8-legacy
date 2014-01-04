@@ -23,7 +23,7 @@ namespace autom8 {
         virtual void on_controller_message(const std::vector<std::string>& status_values);
 
     protected:
-		virtual void get_extended_json_attributes(json_value& target);
+        virtual void get_extended_json_attributes(json_value& target);
 
     private:
         int brightness_;

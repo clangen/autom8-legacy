@@ -61,6 +61,7 @@ function testDevices() {
     var device = {
         label: "office",
         address: "a1",
+        groups: ["downstairs", "office", "late night"],
         type: 0 /* lamp */
     };
 

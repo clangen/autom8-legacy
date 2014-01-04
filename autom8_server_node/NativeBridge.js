@@ -86,7 +86,7 @@ var initLogging = function() {
     var levels = { '0': '[nfo]', '1': '[wrn]', '2': '[err]' };
 
     var log = function(level, tag, message) {
-        console.log(INFO, "[" + tag + "]" + levels[level] + " " + message);
+        console.log(INFO, "[" + tag + "] " + levels[level] + " " + message);
     };
 
     var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);

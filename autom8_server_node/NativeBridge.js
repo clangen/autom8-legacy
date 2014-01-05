@@ -27,20 +27,36 @@ var loadLibrary = function(dllDir) {
 };
 
 var makeRpcCall = (function() {
+    var nextId = 0;
     var noOp = function() { };
-    var current;
+    var processing = false;
     var queue = [];
-
-    /* this is the callback that gets invoked by libautom8, not to be confused
-    with the async() completion callback. here, we store the result, and wait
-    for the completion event to fire */
-    var callbackHandler = ffi.Callback('void', ['string'], function(result) {
-        current.result = JSON.parse((result || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
-    });
 
     var dequeueAndSend = function() {
         if (queue.length) {
-            current = queue.shift();
+            processing = true;
+            var current = queue.shift();
+            var called = false;
+
+            /* this is the callback that gets invoked by libautom8, not to be confused
+            with the async() completion callback. here, we store the result, and wait
+            for the completion event to fire */
+            var callbackHandler = ffi.Callback('void', ['string'], function(result) {
+                /* FIXME: weird win32 bug -- sometimes callbacks are called multiple times,
+                sometimes after things have been GC'd, which leads to all sorts of strange
+                bugs. in this case, just return. this appears to be a bug in FFI -- i can't
+                reproduce it on other platforms */
+                if (called) {
+                    console.log("***** CALLBACK CALLED MULTIPLE TIMES *****".red, current.logId, current.id);
+                    return;
+                }
+
+                called = true;
+                current.result = JSON.parse((result || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
+                current.promise.resolve(current.result);
+
+                console.log(RPC_RECV, current.logId, current.result);
+            });
 
             console.log(RPC_SEND, current.logId, current.payload);
 
@@ -49,15 +65,10 @@ var makeRpcCall = (function() {
                     current.promise.reject({status: -1, message: "low-level call failed"});
                 }
                 else {
-                    /* this is the completion event. our callback should have already
-                    fired, so pull the result out of the struct and notify our callback.
-                    if there is more work to do, schedule the next rpc call */
-                    console.log(RPC_RECV, current.logId, current.result);
-
                     current.promise.resolve(current.result);
-                    current = null;
                 }
 
+                processing = false;
                 dequeueAndSend();
             });
         }
@@ -65,6 +76,7 @@ var makeRpcCall = (function() {
 
     return function(component, command, options, promise) {
         queue.push({
+            id: nextId++,
             logId: component + "::" + command,
 
             payload: JSON.stringify({
@@ -76,7 +88,7 @@ var makeRpcCall = (function() {
             promise: promise
         });
 
-        if (!current) {
+        if (!processing) {
             dequeueAndSend();
         }
     };
@@ -105,9 +117,9 @@ exports.init = function() {
     }
 
     if (!initialized) {
+        initLogging();
         console.log(INFO, "autom8_version:", dll.autom8_version());
         console.log(INFO, "autom8_version:", dll.autom8_init());
-        initLogging();
         initialized = true;
     }
 

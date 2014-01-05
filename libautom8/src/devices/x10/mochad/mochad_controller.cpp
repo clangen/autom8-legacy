@@ -3,8 +3,8 @@
 #include <utility.hpp>
 
 #define TAG "mochad"
-#undef LOG_CONNECTION 0
-#undef LOG_SEND 0
+#undef LOG_CONNECTION
+#undef LOG_SEND
 
 static std::string default_mochad_host_ = "127.0.0.1";
 static std::string default_mochad_port_ = "1099";

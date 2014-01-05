@@ -307,7 +307,7 @@ static json_value_ref system_add_device(json_value& options) {
     json_value groups_json = options.get("groups", ""); /* read */
     std::vector<std::string> groups; /* write */
     if (groups_json.isArray()) {
-        for (int i = 0; i < groups_json.size(); i++) {
+        for (unsigned i = 0; i < groups_json.size(); i++) {
             groups.push_back(groups_json.get(i, "").asString());
         }
     }

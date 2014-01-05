@@ -1,9 +1,13 @@
 #include "mochad_controller.hpp"
 #include <debug.hpp>
+#include <utility.hpp>
 
 #define TAG "mochad"
 #undef LOG_CONNECTION 0
 #undef LOG_SEND 0
+
+static std::string default_mochad_host_ = "127.0.0.1";
+static std::string default_mochad_port_ = "1099";
 
 using namespace autom8;
 using boost::asio::ip::tcp;
@@ -211,7 +215,14 @@ void mochad_controller::start_connecting() {
     std::cerr << "connecting now..." << std::endl;
 #endif
 
-    tcp::resolver::query query("127.0.0.1", "1099");
+    std::string host = default_mochad_host_;
+    std::string port = default_mochad_port_;
+    utility::prefs().get("mochad.host", host);
+    utility::prefs().get("mochad.port", port);
+
+    debug::log(debug::info, TAG, "connecting to " + host + ":" + port);
+
+    tcp::resolver::query query(host, port);
 
     resolver_.async_resolve(
         query,

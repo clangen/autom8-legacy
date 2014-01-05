@@ -40,16 +40,19 @@ namespace autom8 {
         void handle_read(const boost::system::error_code&, size_t);
         void read_next_message();
         void start_next_write();
+        void disconnect();
+        void schedule_reconnect();
 
     private:
         boost::asio::io_service io_service_;
-        boost::asio::ip::tcp::socket socket_;
+        boost::asio::ip::tcp::socket* socket_;
         boost::asio::ip::tcp::resolver resolver_;
         boost::shared_ptr<boost::thread> io_thread_;
         boost::asio::streambuf read_buffer_;
         std::queue<std::string> write_queue_;
         boost::mutex write_queue_lock_, connection_lock_;
-        bool initialized_, connected_, writing_;
+        bool initialized_, connected_, reconnecting_, writing_;
+        boost::asio::deadline_timer reconnect_timer_;
     };
 }
 

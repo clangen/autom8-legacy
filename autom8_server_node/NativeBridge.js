@@ -13,6 +13,8 @@ var RPC_RECV = "[rpc recv]".green;
 
 var dll = null;
 var initialized = false;
+var nextId = 0;
+var pending = { };
 
 var loadLibrary = function(dllDir) {
     dllDir = dllDir || ".";
@@ -26,73 +28,59 @@ var loadLibrary = function(dllDir) {
     });
 };
 
-var makeRpcCall = (function() {
-    var nextId = 0;
-    var noOp = function() { };
-    var processing = false;
-    var queue = [];
+var makeRpcCall = function(component, command, options, promise) {
+    var id = nextId++;
+    var logId = component + "::" + command;
+    var completed = false;
 
-    var dequeueAndSend = function() {
-        if (queue.length) {
-            processing = true;
-            var current = queue.shift();
-            var called = false;
+    var payload = JSON.stringify({
+        "component": component,
+        "command": command,
+        "options": options || { }
+    });
 
-            /* this is the callback that gets invoked by libautom8, not to be confused
-            with the async() completion callback. here, we store the result, and wait
-            for the completion event to fire */
-            var callbackHandler = ffi.Callback('void', ['string'], function(result) {
-                /* FIXME: weird win32 bug -- sometimes callbacks are called multiple times,
-                sometimes after things have been GC'd, which leads to all sorts of strange
-                bugs. in this case, just return. this appears to be a bug in FFI -- i can't
-                reproduce it on other platforms */
-                if (called) {
-                    console.log("***** CALLBACK CALLED MULTIPLE TIMES *****".red, current.logId, current.id);
-                    return;
-                }
-
-                called = true;
-                current.result = JSON.parse((result || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
-                current.promise.resolve(current.result);
-
-                console.log(RPC_RECV, current.logId, current.result);
-            });
-
-            console.log(RPC_SEND, current.logId, current.payload);
-
-            dll.autom8_rpc.async(current.payload, callbackHandler, function(err, res) {
-                if (err) {
-                    current.promise.reject({status: -1, message: "low-level call failed"});
-                }
-                else {
-                    current.promise.resolve(current.result);
-                }
-
-                processing = false;
-                dequeueAndSend();
-            });
+    /* this is the code that gets run when ffi invokes the callback */
+    var completionHandler = function(response) {
+        /* FIXME: weird win32 bug -- sometimes callbacks are called multiple times,
+        sometimes after things have been GC'd, which leads to all sorts of strange
+        bugs. in this case, just return. this appears to be a bug in FFI -- i can't
+        reproduce it on other platforms */
+        if (completed) {
+            console.log("***** CALLBACK CALLED MULTIPLE TIMES *****".red, current.logId, current.id);
+            return;
         }
-    };
 
-    return function(component, command, options, promise) {
-        queue.push({
-            id: nextId++,
-            logId: component + "::" + command,
+        completed = true;
+        var result = JSON.parse((response || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
+        console.log(RPC_RECV, logId, result);
 
-            payload: JSON.stringify({
-                "component": component,
-                "command": command,
-                "options": options || { }
-            }),
-
-            promise: promise
+        setImmediate(function() {
+            promise.resolve(result);
+            delete pending[id];
         });
-
-        if (!processing) {
-            dequeueAndSend();
-        }
     };
-}());
+
+    /* this thing wraps a javascript function, and provides a C-like function
+    pointer. to us, it's a thing that proxies functions between native and js */
+    var functionPointer = ffi.Callback('void', ['string'], completionHandler);
+
+    /* retain a reference to the function, and the function pointer, so it
+    doesn't get garbage collected. the interop layer has no way of knowing
+    when C has finished processing the event */
+    pending[id] = {c: completionHandler, fp: functionPointer, id: id};
+
+    console.log(RPC_SEND, logId, payload);
+    dll.autom8_rpc.async(payload, functionPointer, function(err, res) {
+        /* invoke the callback in the next pass through the event loop. we do this
+        because if we throw an error in the completion callback, it sometimes
+        bubbles up and causes the native runtime to die */
+        if (err) {
+            setImmediate(function() {
+                promise.reject({status: -1, message: "low-level call failed"});
+            });
+        }
+    });
+};
 
 var initLogging = function() {
     var levels = { '0': '[nfo]', '1': '[wrn]', '2': '[err]' };

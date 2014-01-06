@@ -15,7 +15,7 @@
 #include <set>
 
 /* example: 01/04 12:14:17 Tx PL HouseUnit: A4 */
-#define MOCHAD_MESSAGE_REGEX "^\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (Tx|Rx) (PL|RF) (HouseUnit: |House: )(.+)$"
+#define MOCHAD_MESSAGE_REGEX "^\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (Tx|Rx) (PL|RFSEC) (HouseUnit: |House: )(.+)$"
 #define LOWER(x) std::transform(x.begin(), x.end(), x.begin(), ::tolower)
 
 using namespace autom8;
@@ -32,12 +32,9 @@ mochad_device_system::mochad_device_system() {
 
     controller_.message_received.connect(
         this, &mochad_device_system::on_message_received);
-
-    controller_.init();
 }
 
 mochad_device_system::~mochad_device_system() {
-    controller_.deinit();
 }
 
 bool update_x10_device(device_model& model, const std::string& address, const std::vector<std::string>& values) {

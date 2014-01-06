@@ -15,6 +15,7 @@ using boost::asio::ip::tcp;
 mochad_controller::mochad_controller()
 : resolver_(io_service_)
 , reconnect_timer_(io_service_)
+, ping_timer_(io_service_)
 {
     socket_ = NULL;
     initialized_ = false;
@@ -41,12 +42,13 @@ bool mochad_controller::init() {
         initialized_ = true;
     }
 
-    return true;
+    return false;
 }
 
 void mochad_controller::deinit() {
     io_service_.stop();
     disconnect();
+    io_thread_->join();
     initialized_ = false;
 }
 
@@ -64,6 +66,42 @@ void mochad_controller::disconnect() {
     connected_ = false;
     reconnecting_ = false;
     writing_ = false;
+}
+
+void mochad_controller::send_ping() {
+    {
+        boost::mutex::scoped_lock lock(connection_lock_);
+
+        if (!connected_) {
+            return;
+        }
+    }
+
+    /* sending two seems to be more reliable for detecting
+    dead sockets */
+#ifdef LOG_CONNECTION
+    std::cerr << "pinging now...\n";
+#endif
+    send("\n");
+    send("\n");
+
+    schedule_ping();
+}
+
+void mochad_controller::schedule_ping() {
+#ifdef LOG_CONNECTION
+    std::cerr << "scheduling ping...\n";
+#endif
+
+    boost::mutex::scoped_lock lock(connection_lock_);
+
+    if (connected_) {
+        ping_timer_.expires_from_now(boost::posix_time::seconds(10));
+
+        ping_timer_.async_wait(boost::bind(
+            &mochad_controller::send_ping, this
+        ));
+    }
 }
 
 void mochad_controller::schedule_reconnect() {
@@ -149,7 +187,7 @@ void mochad_controller::handle_connect(
 #endif
 
         debug::log(debug::info, TAG, "connected to socket");
-        send("\n"); /* tests the socket */
+        send_ping();
         start_next_write();
         read_next_message();
     }

@@ -16,12 +16,13 @@ namespace autom8 {
         mochad_controller();
         ~mochad_controller();
 
-        bool init();
-        void deinit();
         bool send(std::string msg);
         bool requery(const std::string& device_address);
 
     private:
+        bool init();
+        void deinit();
+
         void io_thread_proc();
 
         void start_connecting();
@@ -43,6 +44,9 @@ namespace autom8 {
         void disconnect();
         void schedule_reconnect();
 
+        void schedule_ping();
+        void send_ping();
+
     private:
         boost::asio::io_service io_service_;
         boost::asio::ip::tcp::socket* socket_;
@@ -52,7 +56,7 @@ namespace autom8 {
         std::queue<std::string> write_queue_;
         boost::mutex write_queue_lock_, connection_lock_;
         bool initialized_, connected_, reconnecting_, writing_;
-        boost::asio::deadline_timer reconnect_timer_;
+        boost::asio::deadline_timer reconnect_timer_, ping_timer_;
     };
 }
 

@@ -29,10 +29,82 @@ using namespace autom8;
 #define REJECT_IF_SERVER_NOT_STARTED(cb) if (server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_NOT_RUNNING); return; }
 #define REJECT_IF_SERVER_STARTED(cb) if (server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_ALREADY_RUNNING); return; }
 
+/* prototypes, forward decls */
+class rpc_request;
+void process_rpc_request(boost::shared_ptr<rpc_request>);
+
 /* constants */
 #define VERSION "0.5"
 #define DEFAULT_PORT 7901
 #define TAG "c_api"
+#define RPC_TAG "rpc_queue"
+
+/* processing thread */
+boost::thread* io_thread_ = 0;
+boost::mutex io_thread_lock_, enforce_serial_lock_;
+boost::asio::io_service io_service_;
+
+struct rpc_request {
+    rpc_request(rpc_callback callback, const std::string& input) {
+        callback_ = callback;
+        input_ = input;
+    }
+
+    rpc_callback callback_;
+    std::string input_;
+};
+
+static void io_thread_proc() {
+    debug::log(debug::info, RPC_TAG, "thread started");
+
+    /* the io_service will close itself if it thinks there is no
+    more work to be done. this line prevents it from auto-stopping */
+    boost::asio::io_service::work work(io_service_);
+    io_service_.run();
+
+    debug::log(debug::info, RPC_TAG, "thread finished");
+}
+
+static void handle_rpc_request(boost::shared_ptr<rpc_request> request) {
+    /* regardless of the thread we're being called from, make sure only
+    one request is processed at a time. */
+    boost::mutex::scoped_lock lock(enforce_serial_lock_);
+
+    try {
+        process_rpc_request(request);
+    }
+    catch (...) {
+        debug::log(debug::error, RPC_TAG, "request processing threw!");
+    }
+}
+
+static void enqueue_rpc_request(const std::string& request, rpc_callback callback) {
+    boost::mutex::scoped_lock lock(io_thread_lock_);
+
+    boost::shared_ptr<rpc_request> work(new rpc_request(callback, request));
+    io_service_.post(boost::bind(&handle_rpc_request, work));
+}
+
+static void start_rpc_queue() {
+    boost::mutex::scoped_lock lock(io_thread_lock_);
+
+    if (io_thread_ == 0) {
+        io_thread_ = new boost::thread(boost::bind(&io_thread_proc));
+    }
+
+    debug::log(debug::info, RPC_TAG, "initialized");
+}
+
+static void stop_rpc_queue() {
+    boost::mutex::scoped_lock lock(io_thread_lock_);
+
+    io_service_.stop();
+    io_thread_->join();
+    delete io_thread_;
+    io_thread_ = NULL;
+
+    debug::log(debug::info, RPC_TAG, "deinitialized");
+}
 
 /* logging */
 static log_func external_logger_ = 0;
@@ -91,6 +163,8 @@ int autom8_init() {
         return AUTOM8_ALREADY_INITIALIZED;
     }
 
+    start_rpc_queue();
+
     {
         boost::mutex::scoped_lock lock(external_logger_mutex_);
         default_logger_ = new console_logger();
@@ -127,6 +201,8 @@ int autom8_deinit() {
 
     external_logger_ = 0;
     initialized_ = false;
+
+    stop_rpc_queue();
 
     return AUTOM8_OK;
 }
@@ -393,10 +469,14 @@ void autom8_rpc(const char* input, rpc_callback callback) {
     REJECT_IF_NOT_INITIALIZED(callback)
 
     callback = (callback ? callback : (rpc_callback) no_op);
+    enqueue_rpc_request(std::string(input), callback);
+}
+
+void process_rpc_request(boost::shared_ptr<rpc_request> request) {
     json_value_ref parsed;
 
     try {
-        parsed = json_value_from_string(std::string(input));
+        parsed = json_value_from_string(std::string(request->input_));
     }
     catch (...) {
         /* we will return in a sec */
@@ -404,7 +484,7 @@ void autom8_rpc(const char* input, rpc_callback callback) {
 
     if (!parsed) {
         debug::log(debug::error, TAG, "autom8_rpc input parse failed");
-        respond_with_status(callback, AUTOM8_PARSE_ERROR);
+        respond_with_status(request->callback_, AUTOM8_PARSE_ERROR);
         return;
     }
 
@@ -414,11 +494,11 @@ void autom8_rpc(const char* input, rpc_callback callback) {
     debug::log(debug::info, TAG, (std::string("handling '") + component + "' command '" + command + "'"));
 
     if (component == "server") {
-        handle_server(parsed, callback);
+        handle_server(parsed, request->callback_);
     }
     else if (component == "system") {
-        REJECT_IF_SERVER_STARTED(callback)
-        handle_system(parsed, callback);
+        REJECT_IF_SERVER_STARTED(request->callback_)
+        handle_system(parsed, request->callback_);
     }
     else {
         debug::log(debug::error, TAG, std::string("invalid component '") + component + "' specified. rpc call ignored");

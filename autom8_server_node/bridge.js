@@ -4,6 +4,7 @@ var ffi = require('ffi');
 var ref = require('ref');
 var path = require('path');
 var Q = require('q');
+var nativeBridge = require("./NativeBridge.js");
 require('colors');
 
 var INFO = "[local]".grey;
@@ -18,8 +19,6 @@ function die(code) {
     process.exit(parseInt(code, 10) || -1);
 }
 
-var exit = false;
-
 function testSystem() {
     return Q.all([
         nativeBridge.rpc("system", "list").then(function(result) {
@@ -33,7 +32,7 @@ function testSystem() {
 
         nativeBridge.rpc("system", "current").then(function(result) {
             console.log(INFO, "system::current");
-            console.log(INFO, '  system_id:', result.message.system_id);
+            console.log(INFO, '  system_id:', result);
         })
     ]);
 }
@@ -96,25 +95,8 @@ function testDevices() {
 }
 
 function startServer() {
-    return nativeBridge.rpc("server", "start").then(function() {
-        var checkExit = function() {
-            if (exit) {
-                console.log(ERROR, "detected exit flag, attempting shut down...");
-
-                nativeBridge.rpc("server", "stop").then(function() {
-                    nativeBridge.deinit().then(function() {
-                        die(0);
-                    });
-                });
-            }
-        };
-
-        /* poll sigint/ctrl+c exit flag... */
-        setInterval(checkExit, POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME); /* can we do this without polling, please? */
-    });
+    return nativeBridge.rpc("server", "start");
 }
-
-var nativeBridge = require("./NativeBridge.js");
 
 nativeBridge.init()
     .then(testSystem)
@@ -122,6 +104,24 @@ nativeBridge.init()
     .then(testDevices)
     .then(startServer);
 
+/* poll sigint/ctrl+c exit flag... */
+var exit = false;
+var poller = setInterval(function() {
+    if (exit) {
+        console.log(ERROR, "detected exit flag, attempting shut down...");
+
+        clearInterval(poller);
+        poller = null;
+
+        nativeBridge.rpc("server", "stop").then(function() {
+            nativeBridge.deinit().then(function() {
+                die(0);
+            });
+        });
+    }
+}, POLL_INTERVAL_MS_THIS_SUCKS_FIX_ME);
+
+/* wait for ctrl+c to exit */
 process.on('SIGINT', function() {
     console.log("\n\n", ERROR, "caught ctrl+c, setting exit flag (please wait a few seconds)...\n");
     exit = true; /* next time through the runloop will pick this up */

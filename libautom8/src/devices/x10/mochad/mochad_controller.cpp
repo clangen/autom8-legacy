@@ -177,7 +177,7 @@ void mochad_controller::handle_connect(
 {
     {
         boost::mutex::scoped_lock lock(connection_lock_);
-        connected_ = error ? false : true;
+        if (error) { connected_ = false; } else { connected_ = true; }
         reconnecting_ = false;
     }
 

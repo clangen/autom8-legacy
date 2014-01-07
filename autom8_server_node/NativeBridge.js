@@ -40,7 +40,6 @@ var loadLibrary = function(dllDir) {
 var makeRpcCall = function(component, command, options, promise) {
     var id = nextId++;
     var logId = component + "::" + command;
-    var completed = false;
 
     var payload = JSON.stringify({
         "component": component,
@@ -50,16 +49,6 @@ var makeRpcCall = function(component, command, options, promise) {
 
     /* this is the code that gets run when ffi invokes the callback */
     var completionHandler = function(response) {
-        /* FIXME: weird win32 bug -- sometimes callbacks are called multiple times,
-        sometimes after things have been GC'd, which leads to all sorts of strange
-        bugs. in this case, just return. this appears to be a bug in FFI -- i can't
-        reproduce it on other platforms */
-        if (completed) {
-            console.log("***** CALLBACK CALLED MULTIPLE TIMES *****".red, current.logId, current.id);
-            return;
-        }
-
-        completed = true;
         var result = JSON.parse((response || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
         console.log(RPC_RECV, logId, result);
 
@@ -100,7 +89,7 @@ var initLogging = function() {
 
     /* make sure neither of these methods get garbage collected,
     they need to exist for the duration of the app run */
-    pinned.logger = {callback: log, functionPointer: nativeLogCallback }
+    pinned.logger = { callback: log, functionPointer: nativeLogCallback };
 
     dll.autom8_set_logger(nativeLogCallback);
     console.log(INFO, "logger registered");

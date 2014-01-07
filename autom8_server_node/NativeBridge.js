@@ -10,11 +10,20 @@ var INFO = "[bridge]".grey;
 var ERROR = "[bridge]".magenta;
 var RPC_SEND = "[rpc send]".yellow;
 var RPC_RECV = "[rpc recv]".green;
+var LOG_LEVELS = { '0': '[nfo]', '1': '[wrn]', '2': '[err]' };
 
 var dll = null;
 var initialized = false;
 var nextId = 0;
-var pending = { };
+
+/* hash of things we don't want the GC to collect. these
+are mostly callbacks handed to the native portion that
+ffi can't predict the lifetime of */
+var pinned = { };
+
+process.on('exit', function() {
+    pinned;
+});
 
 var loadLibrary = function(dllDir) {
     dllDir = dllDir || ".";
@@ -56,7 +65,7 @@ var makeRpcCall = function(component, command, options, promise) {
 
         setImmediate(function() {
             promise.resolve(result);
-            delete pending[id];
+            delete pinned['rpc-' + id];
         });
     };
 
@@ -67,7 +76,7 @@ var makeRpcCall = function(component, command, options, promise) {
     /* retain a reference to the function, and the function pointer, so it
     doesn't get garbage collected. the interop layer has no way of knowing
     when C has finished processing the event */
-    pending[id] = {c: completionHandler, fp: functionPointer, id: id};
+    pinned['rpc-' + id] = {callback: completionHandler, fp: functionPointer, id: id};
 
     console.log(RPC_SEND, logId, payload);
     dll.autom8_rpc.async(payload, functionPointer, function(err, res) {
@@ -83,15 +92,17 @@ var makeRpcCall = function(component, command, options, promise) {
 };
 
 var initLogging = function() {
-    var levels = { '0': '[nfo]', '1': '[wrn]', '2': '[err]' };
-
     var log = function(level, tag, message) {
-        console.log(INFO, "[" + tag + "] " + levels[level] + " " + message);
+        console.log(INFO, "[" + tag + "] " + LOG_LEVELS[level] + " " + message);
     };
 
     var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);
-    dll.autom8_set_logger(nativeLogCallback);
 
+    /* make sure neither of these methods get garbage collected,
+    they need to exist for the duration of the app run */
+    pinned.logger = {callback: log, functionPointer: nativeLogCallback }
+
+    dll.autom8_set_logger(nativeLogCallback);
     console.log(INFO, "logger registered");
 };
 

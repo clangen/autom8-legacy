@@ -31,7 +31,8 @@ using namespace autom8;
 
 /* prototypes, forward decls */
 class rpc_request;
-void process_rpc_request(boost::shared_ptr<rpc_request>);
+static void process_rpc_request(boost::shared_ptr<rpc_request>);
+static int system_select(const std::string& system);
 
 /* constants */
 #define VERSION "0.5"
@@ -171,10 +172,10 @@ int autom8_init() {
         debug::init();
     }
 
-    device_system::set_instance(
-        device_system_ptr(new mochad_device_system())
-        // device_system_ptr(new null_device_system())
-    );
+    /* select the last selected system, or null by default */
+    std::string system = "null";
+    utility::prefs().get("system.selected", system);
+    system_select(system);
 
     initialized_ = true;
 
@@ -352,10 +353,44 @@ static json_value_ref system_list() {
     return result;
 }
 
-static json_value_ref system_current() {
+static json_value_ref system_selected() {
     json_value_ref result(new json_value());
-    (*result)["system_id"] = "mochad";
+
+    std::string system = "null";
+    utility::prefs().get("system.selected", system);
+    (*result)["system_id"] = system;
+
     return result;
+}
+
+static int system_select(json_value& options) {
+    return system_select(options["system"].asString());
+}
+
+static int system_select(const std::string& system) {
+    if (system == "null" || system == "null/mock") {
+        device_system::set_instance(
+            device_system_ptr(new null_device_system())
+        );
+    }
+    else if (system == "mochad") {
+        device_system::set_instance(
+            device_system_ptr(new mochad_device_system())
+        );
+    }
+#ifdef WIN32
+    else if (system == "cm15a") {
+        device_system::set_instance(
+            device_system_ptr(new cm15a_device_system())
+        );
+    }
+#endif
+    else {
+        return AUTOM8_INVALID_SYSTEM;
+    }
+
+    utility::prefs().set("system.selected", system);
+    return AUTOM8_OK;
 }
 
 static json_value_ref system_list_devices() {
@@ -447,8 +482,11 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
     if (command == "list") {
         respond_with_status(callback, system_list());
     }
-    else if (command == "current") {
-        respond_with_status(callback, system_current());
+    else if (command == "selected") {
+        respond_with_status(callback, system_selected());
+    }
+    else if (command == "select") {
+        respond_with_status(callback, system_select(options));
     }
     else if (command == "list_devices") {
         respond_with_status(callback, system_list_devices());
@@ -472,7 +510,7 @@ void autom8_rpc(const char* input, rpc_callback callback) {
     enqueue_rpc_request(std::string(input), callback);
 }
 
-void process_rpc_request(boost::shared_ptr<rpc_request> request) {
+static void process_rpc_request(boost::shared_ptr<rpc_request> request) {
     json_value_ref parsed;
 
     try {

@@ -23,6 +23,7 @@ typedef void (*rpc_callback)(const char*);
 #define AUTOM8_DEVICE_ALREADY_EXISTS -10
 #define AUTOM8_SERVER_ALREADY_RUNNING -11
 #define AUTOM8_SERVER_NOT_RUNNING -12
+#define AUTOM8_INVALID_SYSTEM 13
 
 #define AUTOM8_COMPONENT_SYSTEM "system"
 #define AUTOM8_COMPONENT_SERVER "server"

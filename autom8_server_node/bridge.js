@@ -30,9 +30,24 @@ function testSystem() {
             }
         }),
 
-        nativeBridge.rpc("system", "current").then(function(result) {
-            console.log(INFO, "system::current");
-            console.log(INFO, '  system_id:', result);
+        nativeBridge.rpc("system", "select", {system: "null"}).then(function(result) {
+            console.log(INFO, "system::selected");
+            console.log(INFO, '  result:', result);
+        }),
+
+        nativeBridge.rpc("system", "selected").then(function(result) {
+            console.log(INFO, "system::selected");
+            console.log(INFO, '  result:', result);
+        }),
+
+        nativeBridge.rpc("system", "select", {system: "mochad"}).then(function(result) {
+            console.log(INFO, "system::selected");
+            console.log(INFO, '  result:', result);
+        }),
+
+        nativeBridge.rpc("system", "selected").then(function(result) {
+            console.log(INFO, "system::selected");
+            console.log(INFO, '  result:', result);
         })
     ]);
 }

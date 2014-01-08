@@ -53,8 +53,8 @@ var makeRpcCall = function(component, command, options, promise) {
         console.log(RPC_RECV, logId, result);
 
         setImmediate(function() {
-            promise.resolve(result);
             delete pinned['rpc-' + id];
+            promise.resolve(result);
         });
     };
 
@@ -74,6 +74,7 @@ var makeRpcCall = function(component, command, options, promise) {
         bubbles up and causes the native runtime to die */
         if (err) {
             setImmediate(function() {
+                delete pinned['rpc-' + id];
                 promise.reject({status: -1, message: "low-level call failed"});
             });
         }

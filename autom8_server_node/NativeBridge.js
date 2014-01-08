@@ -29,7 +29,7 @@ var loadLibrary = function(dllDir) {
     dllDir = dllDir || ".";
 
     return ffi.Library(dllDir + "/libautom8", {
-    "autom8_version": ['string', []],
+        "autom8_version": ['string', []],
         "autom8_init": ['int', []],
         "autom8_deinit": ['int', []],
         "autom8_set_logger": ['int', ['pointer']],

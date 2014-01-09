@@ -33,7 +33,8 @@ extern "C" {
     dll_export int autom8_init();
     dll_export int autom8_deinit();
     dll_export int autom8_set_logger(log_func);
-    dll_export void autom8_rpc(const char*, rpc_callback);
+    dll_export int autom8_set_rpc_callback(rpc_callback);
+    dll_export void autom8_rpc(const char*);
 }
 
 #endif // __C_AUTOM8_HPP__

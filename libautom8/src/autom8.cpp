@@ -24,15 +24,19 @@
 
 using namespace autom8;
 
-#define REJECT_IF_NOT_INITIALIZED(cb) if (!initialized_) { respond_with_status(cb, AUTOM8_NOT_INITIALIZED); return; }
-#define REJECT_IF_INITIALIZED(cb) if (initialized_) { respond_with_status(cb, AUTOM8_ALREADY_INITIALIZED); return; }
-#define REJECT_IF_SERVER_NOT_STARTED(cb) if (server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_NOT_RUNNING); return; }
-#define REJECT_IF_SERVER_STARTED(cb) if (server::is_running()) { respond_with_status(cb, AUTOM8_SERVER_ALREADY_RUNNING); return; }
+#define REJECT_IF_NOT_INITIALIZED(input) if (!initialized_) { respond_with_status(input, AUTOM8_NOT_INITIALIZED); return; }
+#define REJECT_IF_INITIALIZED(input) if (initialized_) { respond_with_status(input, AUTOM8_ALREADY_INITIALIZED); return; }
+#define REJECT_IF_SERVER_NOT_STARTED(input) if (server::is_running()) { respond_with_status(input, AUTOM8_SERVER_NOT_RUNNING); return; }
+#define REJECT_IF_SERVER_STARTED(input) if (server::is_running()) { respond_with_status(input, AUTOM8_SERVER_ALREADY_RUNNING); return; }
+
+static void no_op(const char*) {
+    /* used when rpc callback not specified */
+}
 
 /* prototypes, forward decls */
-class rpc_request;
-static void process_rpc_request(boost::shared_ptr<rpc_request>);
+static void process_rpc_request(const std::string& input);
 static int system_select(const std::string& system);
+rpc_callback rpc_callback_ = no_op;
 
 /* constants */
 #define VERSION "0.5"
@@ -45,16 +49,6 @@ boost::thread* io_thread_ = 0;
 boost::mutex io_thread_lock_, enforce_serial_lock_;
 boost::asio::io_service io_service_;
 
-struct rpc_request {
-    rpc_request(rpc_callback callback, const std::string& input) {
-        callback_ = callback;
-        input_ = input;
-    }
-
-    rpc_callback callback_;
-    std::string input_;
-};
-
 static void io_thread_proc() {
     debug::log(debug::info, RPC_TAG, "thread started");
 
@@ -66,24 +60,22 @@ static void io_thread_proc() {
     debug::log(debug::info, RPC_TAG, "thread finished");
 }
 
-static void handle_rpc_request(boost::shared_ptr<rpc_request> request) {
+static void handle_rpc_request(std::string input) {
     /* regardless of the thread we're being called from, make sure only
     one request is processed at a time. */
     boost::mutex::scoped_lock lock(enforce_serial_lock_);
 
     try {
-        process_rpc_request(request);
+        process_rpc_request(input);
     }
     catch (...) {
         debug::log(debug::error, RPC_TAG, "request processing threw!");
     }
 }
 
-static void enqueue_rpc_request(const std::string& request, rpc_callback callback) {
+static void enqueue_rpc_request(const std::string& request) {
     boost::mutex::scoped_lock lock(io_thread_lock_);
-
-    boost::shared_ptr<rpc_request> work(new rpc_request(callback, request));
-    io_service_.post(boost::bind(&handle_rpc_request, work));
+    io_service_.post(boost::bind(&handle_rpc_request, request));
 }
 
 static void start_rpc_queue() {
@@ -114,6 +106,11 @@ static boost::mutex external_logger_mutex_;
 int autom8_set_logger(log_func logger) {
     boost::mutex::scoped_lock lock(external_logger_mutex_);
     external_logger_ = logger;
+    return AUTOM8_OK;
+}
+
+int autom8_set_rpc_callback(rpc_callback callback) {
+    rpc_callback_ = callback;
     return AUTOM8_OK;
 }
 
@@ -209,25 +206,29 @@ int autom8_deinit() {
 }
 
 /* util */
-static void respond_with_status(rpc_callback callback, int status_code) {
+static void respond_with_status(json_value_ref input, int status_code) {
     json_value_ref response = json_value_ref(new json_value());
+    (*response)["id"] = (*input)["id"].asString();
     (*response)["status"] = status_code;
     (*response)["message"] = json_value(Json::objectValue);
-    callback(json_value_to_string(*response).c_str());
+    rpc_callback_(json_value_to_string(*response).c_str());
 }
 
-static void respond_with_status(rpc_callback callback, const std::string& errmsg) {
+static void respond_with_status(json_value_ref input, const std::string& errmsg) {
     json_value_ref response = json_value_ref(new json_value());
+    (*response)["id"] = (*input)["id"].asString();
     (*response)["status"] = AUTOM8_UNKNOWN;
     (*response)["message"] = errmsg;
-    callback(json_value_to_string(*response).c_str());
+    rpc_callback_(json_value_to_string(*response).c_str());
 }
 
-static void respond_with_status(rpc_callback callback, json_value_ref json) {
+static void respond_with_status(json_value_ref input, json_value_ref json) {
     /* note if json looks like this: {status: ..., message: ...} the status
     code will be automatically extracted. otherwise AUTOM8_OK will be used */
 
     json_value_ref response = json_value_ref(new json_value());
+
+    (*response)["id"] = (*input)["id"].asString();
 
     int status = (int) json->get("status", AUTOM8_OK).asInt();
     (*response)["status"] = status;
@@ -240,11 +241,7 @@ static void respond_with_status(rpc_callback callback, json_value_ref json) {
         (*response)["message"] = *json;
     }
 
-    callback(json_value_to_string(*response).c_str());
-}
-
-static void no_op(const char*) {
-    /* used when rpc callback not specified */
+    rpc_callback_(json_value_to_string(*response).c_str());
 }
 
 /* server command handlers */
@@ -253,7 +250,7 @@ static int server_stop();
 static int server_set_preference(json_value& options);
 static json_value_ref server_get_preference(json_value& options);
 
-static void handle_server(json_value_ref input, rpc_callback callback) {
+static void handle_server(json_value_ref input) {
     std::string command = input->get("command", "").asString();
     json_value options = input->get("options", json_value());
 
@@ -262,21 +259,21 @@ static void handle_server(json_value_ref input, rpc_callback callback) {
     }
 
     if (command == "start") {
-        respond_with_status(callback, server_start());
+        respond_with_status(input, server_start());
     }
     else if (command == "stop") {
-        respond_with_status(callback, server_stop());
+        respond_with_status(input, server_stop());
     }
     else if (command == "set_preference") {
-        REJECT_IF_SERVER_STARTED(callback)
-        respond_with_status(callback, server_set_preference(options));
+        REJECT_IF_SERVER_STARTED(input)
+        respond_with_status(input, server_set_preference(options));
     }
     else if (command == "get_preference") {
-        REJECT_IF_SERVER_STARTED(callback)
-        respond_with_status(callback, server_get_preference(options));
+        REJECT_IF_SERVER_STARTED(input)
+        respond_with_status(input, server_get_preference(options));
     }
     else {
-        respond_with_status(callback, AUTOM8_INVALID_COMMAND);
+        respond_with_status(input, AUTOM8_INVALID_COMMAND);
     }
 }
 
@@ -471,7 +468,7 @@ static int system_delete_device(json_value& options) {
     return AUTOM8_OK;
 }
 
-static void handle_system(json_value_ref input, rpc_callback callback) {
+static void handle_system(json_value_ref input) {
     std::string command = input->get("command", "").asString();
     json_value options = input->get("options", json_value());
 
@@ -480,49 +477,48 @@ static void handle_system(json_value_ref input, rpc_callback callback) {
     }
 
     if (command == "list") {
-        respond_with_status(callback, system_list());
+        respond_with_status(input, system_list());
     }
     else if (command == "selected") {
-        respond_with_status(callback, system_selected());
+        respond_with_status(input, system_selected());
     }
     else if (command == "select") {
-        respond_with_status(callback, system_select(options));
+        respond_with_status(input, system_select(options));
     }
     else if (command == "list_devices") {
-        respond_with_status(callback, system_list_devices());
+        respond_with_status(input, system_list_devices());
     }
     else if (command == "add_device") {
-        respond_with_status(callback, system_add_device(options));
+        respond_with_status(input, system_add_device(options));
     }
     else if (command == "delete_device") {
-        respond_with_status(callback, system_delete_device(options));
+        respond_with_status(input, system_delete_device(options));
     }
     else {
-        respond_with_status(callback, AUTOM8_INVALID_COMMAND);
+        respond_with_status(input, AUTOM8_INVALID_COMMAND);
     }
 }
 
 /* generic rpc interface */
-void autom8_rpc(const char* input, rpc_callback callback) {
-    REJECT_IF_NOT_INITIALIZED(callback)
-
-    callback = (callback ? callback : (rpc_callback) no_op);
-    enqueue_rpc_request(std::string(input), callback);
+void autom8_rpc(const char* input) {
+    enqueue_rpc_request(std::string(input));
 }
 
-static void process_rpc_request(boost::shared_ptr<rpc_request> request) {
+static void process_rpc_request(const std::string& input) {
     json_value_ref parsed;
 
     try {
-        parsed = json_value_from_string(std::string(request->input_));
+        parsed = json_value_from_string(input);
     }
     catch (...) {
         /* we will return in a sec */
     }
 
+    REJECT_IF_NOT_INITIALIZED(parsed)
+
     if (!parsed) {
         debug::log(debug::error, TAG, "autom8_rpc input parse failed");
-        respond_with_status(request->callback_, AUTOM8_PARSE_ERROR);
+        respond_with_status(parsed, AUTOM8_PARSE_ERROR);
         return;
     }
 
@@ -532,11 +528,11 @@ static void process_rpc_request(boost::shared_ptr<rpc_request> request) {
     debug::log(debug::info, TAG, (std::string("handling '") + component + "' command '" + command + "'"));
 
     if (component == "server") {
-        handle_server(parsed, request->callback_);
+        handle_server(parsed);
     }
     else if (component == "system") {
-        REJECT_IF_SERVER_STARTED(request->callback_)
-        handle_system(parsed, request->callback_);
+        REJECT_IF_SERVER_STARTED(parsed)
+        handle_system(parsed);
     }
     else {
         debug::log(debug::error, TAG, std::string("invalid component '") + component + "' specified. rpc call ignored");

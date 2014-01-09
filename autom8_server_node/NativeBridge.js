@@ -16,6 +16,8 @@ var dll = null;
 var initialized = false;
 var nextId = 0;
 
+var handlers = { };
+
 /* hash of things we don't want the GC to collect. these
 are mostly callbacks handed to the native portion that
 ffi can't predict the lifetime of */
@@ -33,45 +35,33 @@ var loadLibrary = function(dllDir) {
         "autom8_init": ['int', []],
         "autom8_deinit": ['int', []],
         "autom8_set_logger": ['int', ['pointer']],
-        "autom8_rpc": ['void', ['string', 'pointer']],
+        "autom8_set_rpc_callback": ['int', ['pointer']],
+        "autom8_rpc": ['void', ['string']],
     });
 };
 
 var makeRpcCall = function(component, command, options, promise) {
-    var id = nextId++;
+    var id = "nodeRpcCall-" + nextId++;
     var logId = component + "::" + command;
 
     var payload = JSON.stringify({
+        "id": id,
         "component": component,
         "command": command,
         "options": options || { }
     });
 
     /* this is the code that gets run when ffi invokes the callback */
-    var completionHandler = function(response) {
-        var result = JSON.parse((response || "{ }").replace(/(\r\n|\n|\r)/gm,"")); /* no newlines */
-        console.log(RPC_RECV, logId, result);
+    handlers[id] = function(result) {
+        console.log(RPC_RECV, logId, JSON.stringify(result));
 
         setImmediate(function() {
-            delete pinned['rpc-' + id];
             promise.resolve(result);
         });
     };
 
-    /* this thing wraps a javascript function, and provides a C-like function
-    pointer. to us, it's a thing that proxies functions between native and js */
-    var functionPointer = ffi.Callback('void', ['string'], completionHandler);
-
-    /* retain a reference to the function, and the function pointer, so it
-    doesn't get garbage collected. the interop layer has no way of knowing
-    when C has finished processing the event */
-    pinned['rpc-' + id] = {callback: completionHandler, fp: functionPointer, id: id};
-
     console.log(RPC_SEND, logId, payload);
-    dll.autom8_rpc.async(payload, functionPointer, function(err, res) {
-        /* invoke the callback in the next pass through the event loop. we do this
-        because if we throw an error in the completion callback, it sometimes
-        bubbles up and causes the native runtime to die */
+    dll.autom8_rpc.async(payload, function(err, res) {
         if (err) {
             setImmediate(function() {
                 delete pinned['rpc-' + id];
@@ -88,12 +78,30 @@ var initLogging = function() {
 
     var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);
 
-    /* make sure neither of these methods get garbage collected,
-    they need to exist for the duration of the app run */
-    pinned.logger = { callback: log, functionPointer: nativeLogCallback };
+    pinned.logger = { callback: log, functionPointer: nativeLogCallback }; /* don't gc me! */
 
     dll.autom8_set_logger(nativeLogCallback);
     console.log(INFO, "logger registered");
+};
+
+var initRpcCallback = function() {
+    var rpcCallback = ffi.Callback('void', ['string'], function(response) {
+        console.log(JSON.stringify(response));
+
+        response = JSON.parse(response);
+        var id = response.id;
+        var handler = handlers[id];
+
+        if (handler) {
+            handler(response);
+            delete handlers[id];
+        }
+    });
+
+    pinned.rpcCallback = rpcCallback; /* don't gc me! */
+
+    dll.autom8_set_rpc_callback(rpcCallback);
+    console.log(INFO, "rpc callback registered");
 };
 
 exports.init = function() {
@@ -107,6 +115,7 @@ exports.init = function() {
 
     if (!initialized) {
         initLogging();
+        initRpcCallback();
         console.log(INFO, "autom8_version:", dll.autom8_version());
         console.log(INFO, "autom8_version:", dll.autom8_init());
         initialized = true;

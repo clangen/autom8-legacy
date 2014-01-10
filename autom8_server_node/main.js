@@ -59,13 +59,13 @@ function testPreferences() {
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("server", "set_preference", {key: "foo1", value: "bar2" }).then(function(result) {
-            console.log(INFO, "system::set_preference(foo1)");
+        nativeBridge.rpc("server", "set_preference", {key: "rpc.mode", value: "sync" }).then(function(result) {
+            console.log(INFO, "system::set_preference(rpc.mode)");
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("server", "get_preference", {key: "foo1" }).then(function(result) {
-            console.log(INFO, "system::get_preference(foo1)");
+        nativeBridge.rpc("server", "get_preference", {key: "rpc.mode" }).then(function(result) {
+            console.log(INFO, "system::get_preference(rpc.mode)");
             console.log(INFO, '  result:', result);
         })
     ]);
@@ -114,8 +114,8 @@ function startServer() {
 }
 
 nativeBridge.init()
-    .then(testSystem)
     .then(testPreferences)
+    .then(testSystem)
     .then(testDevices)
     .then(startServer);
 

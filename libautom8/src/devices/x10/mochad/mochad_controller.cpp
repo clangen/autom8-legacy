@@ -49,6 +49,7 @@ void mochad_controller::deinit() {
     io_service_.stop();
     disconnect();
     io_thread_->join();
+    io_service_.reset();
     initialized_ = false;
 }
 
@@ -152,23 +153,26 @@ void mochad_controller::handle_read(const boost::system::error_code& error, size
         std::string line;
         std::getline(is, line);
         message_received(line);
+        read_next_message();
     }
-
-    read_next_message();
 }
 
 void mochad_controller::read_next_message() {
-    boost::asio::async_read_until(
-        *socket_,
-        read_buffer_,
-        '\n',
-        boost::bind(
-            &mochad_controller::handle_read,
-            this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred
-        )
-    );
+    boost::mutex::scoped_lock lock(connection_lock_);
+
+    if (connected_) {
+        boost::asio::async_read_until(
+            *socket_,
+            read_buffer_,
+            '\n',
+            boost::bind(
+                &mochad_controller::handle_read,
+                this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred
+            )
+        );
+    }
 }
 
 void mochad_controller::handle_connect(

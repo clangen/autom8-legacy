@@ -501,7 +501,15 @@ static void handle_system(json_value_ref input) {
 
 /* generic rpc interface */
 void autom8_rpc(const char* input) {
-    enqueue_rpc_request(std::string(input));
+    std::string rpcMode = "sync";
+    utility::prefs().get("rpc.mode", rpcMode);
+
+    if (rpcMode == "sync") {
+        process_rpc_request(std::string(input));
+    }
+    else {
+        enqueue_rpc_request(std::string(input));
+    }
 }
 
 static void process_rpc_request(const std::string& input) {

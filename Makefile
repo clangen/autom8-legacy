@@ -63,7 +63,8 @@ all: $(OBJECTS)
 	$(CXX) -shared -o libautom8.so $(OBJECTS) $(LIBRARY_FLAGS)
 #	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
 #	scp autom8_cli/autom8_cli pi@192.168.1.245:/home/pi/src/autom8/autom8_cli
-#	scp autom8_server_node/* pi@192.168.1.245:/home/pi/src/autom8/autom8_server_node
+#	scp autom8_node/server/app/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/app
+#	scp autom8_node/server/server/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/server
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<

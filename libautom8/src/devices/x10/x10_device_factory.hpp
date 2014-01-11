@@ -34,4 +34,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_X10_DEVICE_FACTORY_HPP__
+#endif

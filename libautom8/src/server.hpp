@@ -77,4 +77,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_SERVER_HPP__
+#endif

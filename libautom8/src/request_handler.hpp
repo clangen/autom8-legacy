@@ -18,4 +18,4 @@ namespace autom8 {
     typedef boost::shared_ptr<request_handler> request_handler_ptr;
 }
 
-#endif //__C_AUTOM8_REQUEST_HANDLER_HPP__
+#endif

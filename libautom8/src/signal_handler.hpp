@@ -7,4 +7,4 @@ namespace autom8 {
     typedef sigslot::has_slots<> signal_handler;
 }
 
-#endif // __C_AUTOM8_SIGNAL_HANDLER_HPP__
+#endif

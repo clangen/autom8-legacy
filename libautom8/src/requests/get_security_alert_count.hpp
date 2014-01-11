@@ -13,4 +13,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_REQUEST_HANDLER_GET_SECURITY_ALERT_COUNT_HPP__
+#endif

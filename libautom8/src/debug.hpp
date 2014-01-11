@@ -20,4 +20,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_DEBUG_HPP__
+#endif

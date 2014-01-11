@@ -31,4 +31,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_X10_LAMP_HPP__
+#endif

@@ -40,4 +40,4 @@ namespace autom8 {
     typedef boost::shared_ptr<message> message_ptr;
 }
 
-#endif // __C_AUTOM8_MESSAGE_HPP__
+#endif

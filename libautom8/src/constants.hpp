@@ -8,4 +8,4 @@
 #define MESSAGE_URI_TYPE_RESPONSE "response"
 #define MESSAGE_URI_REGEX_MATCH "^(autom8:\\/\\/)(request|response)/(\\w+)$"
 
-#endif // __C_AUTOM8_CONSTANTS_HPP__
+#endif

@@ -7,7 +7,7 @@
 namespace autom8 {
 	class response;
     typedef boost::shared_ptr<response> response_ptr;
-	
+
 	class response {
 	public:
         enum response_target {
@@ -28,4 +28,4 @@ namespace autom8 {
 
 }
 
-#endif /* __C_AUTOM8_RESPONSE_HPP__ */
+#endif

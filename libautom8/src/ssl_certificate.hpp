@@ -13,4 +13,4 @@ namespace autom8 {
     }
 }
 
-#endif // __C_AUTOM8_SSL_CERTIFICATE_HPP__
+#endif

@@ -15,4 +15,4 @@ namespace autom8 {
     }
 }
 
-#endif // __C_AUTOM8_UTILITY_HPP__
+#endif

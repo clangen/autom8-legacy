@@ -24,4 +24,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_RESPONSE_HANDLER_SET_DEVICE_STATUS_HPP_
+#endif

@@ -23,4 +23,4 @@ namespace autom8 {
     typedef long long database_id;
 }
 
-#endif // __C_AUTOM8_DEVICE_CONSTANTS_HPP__
+#endif

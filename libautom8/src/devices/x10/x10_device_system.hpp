@@ -12,4 +12,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_X10_DEVICE_SYSTEM_HPP__
+#endif

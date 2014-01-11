@@ -60,4 +60,4 @@ namespace autom8 {
     typedef boost::shared_ptr<device_model> device_model_ptr;
 }
 
-#endif // __C_AUTOM8_DEVICE_MODEL_HPP__
+#endif

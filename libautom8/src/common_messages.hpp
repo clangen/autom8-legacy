@@ -26,4 +26,4 @@ namespace autom8 {
     } // messages
 } // autom8
 
-#endif // __C_AUTOM8_COMMON_MESSAGES_HPP__
+#endif

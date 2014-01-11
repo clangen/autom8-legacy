@@ -27,4 +27,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_REQUEST_HANDLER_FACTORY_HPP__
+#endif

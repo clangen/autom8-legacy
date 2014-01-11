@@ -15,4 +15,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_REQUEST_HANDLER_GET_DEVICE_LIST_HPP__
+#endif

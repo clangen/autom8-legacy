@@ -15,7 +15,7 @@ namespace autom8 {
             device_type type,
             const std::string& address,
             const std::string& label,
-			const std::vector<std::string>& groups) = 0;
+            const std::vector<std::string>& groups) = 0;
 
         virtual std::string name() const = 0;
     };
@@ -23,4 +23,4 @@ namespace autom8 {
     typedef boost::shared_ptr<device_factory> device_factory_ptr;
 }
 
-#endif // __C_AUTOM8_DEVICE_FACTORY_HPP__
+#endif

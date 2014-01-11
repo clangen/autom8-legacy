@@ -73,4 +73,4 @@ namespace autom8 {
     };
 }
 
-#endif //__C_AUTOM8_DEVICE_HPP__
+#endif

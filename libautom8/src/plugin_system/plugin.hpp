@@ -51,4 +51,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_PLUGIN_SYSTEM_PLUGIN_HPP__
+#endif

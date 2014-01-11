@@ -37,4 +37,4 @@ extern "C" {
     dll_export void autom8_rpc(const char*);
 }
 
-#endif // __C_AUTOM8_HPP__
+#endif

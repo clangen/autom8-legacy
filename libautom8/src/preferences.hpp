@@ -94,4 +94,4 @@ namespace autom8 {
     }
 }
 
-#endif // __C_AUTOM8_PREFERENCES_HPP__
+#endif

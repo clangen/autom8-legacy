@@ -1,13 +1,21 @@
-CXX := clang++
+#CXX := clang++
+#LLVMCONFIG := /usr/bin/llvm-config-3.3
+#DEFAULT_INCLUDES := -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -g
+#LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 
-LLVMCONFIG := /usr/bin/llvm-config-3.3
+#CXX := arm-linux-gnueabihf-g++
+#DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
+#DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -fPIC
+#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 
-#LLVMCOMPONENTS := cppbackend
-#LLVMLDFLAGS := $(shell $(LLVMCONFIG) --ldflags --libs $(LLVMCOMPONENTS)) -v
-
-DEFAULT_INCLUDES := -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
+CXX := g++
+DEFAULT_INCLUDES :=
 LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens
+CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
 LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 
 SOURCES = \
@@ -53,6 +61,9 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 all: $(OBJECTS)
 	$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
 	$(CXX) -shared -o libautom8.so $(OBJECTS) $(LIBRARY_FLAGS)
+#	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
+#	scp autom8_cli/autom8_cli pi@192.168.1.245:/home/pi/src/autom8/autom8_cli
+#	scp autom8_server_node/* pi@192.168.1.245:/home/pi/src/autom8/autom8_server_node
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<

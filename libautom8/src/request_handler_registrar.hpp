@@ -14,4 +14,4 @@ namespace autom8 {
     };
 }
 
-#endif // __C_AUTOM8_REQUEST_HANDLER_REGISTRAR_HPP__
+#endif

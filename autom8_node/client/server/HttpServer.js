@@ -1,4 +1,4 @@
-// npm install commander connect express socket.io socket.io-client less uglify clean-css
+// npm install commander connect express socket.io socket.io-client less closurecompiler prompt clean-css
 // node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
 
 
@@ -22,7 +22,7 @@
   var config = require('./Config.js').get();
   var blacklist = require('./Blacklist.js');
 
-  var root = process.cwd() + '/client';
+  var root = process.cwd() + '/app';
 
   /*
    * Encapsulated file cache for the server. This will be used to
@@ -234,7 +234,13 @@
       match = lines[i].match(scriptRegex);
       if (match && match.length === 2) {
         if (!minifiyBlacklist[match[1]]) {
-          scriptFilenames.push(root + '/' + match[1]);
+          var fn = match[1];
+
+          if (fn.indexOf("shared/") === 0) { /* bleh */
+            fn = "../../" + fn;
+          }
+
+          scriptFilenames.push(root + '/' + fn);
         }
       }
     }
@@ -408,10 +414,14 @@
         config.appCache.version = new Date();
       }
 
-      /* empty root (or those trying to game relative paths)
-      receive index.html */
       if (fn === "" || fn.indexOf("..") > -1) {
         fn = "index.html";
+      }
+
+      /* shared functionality actually lives in the parent directory,
+      so look for it there. */
+      if (fn.indexOf("shared/") > -1) {
+        fn = "../../" + fn;
       }
 
       var appcache = (config.appCache.enabled && !debug);
@@ -423,7 +433,7 @@
       /* determine the MIME type we'll write in the response */
       var mimeType = util.getMimeType(fn);
 
-      fn = root + '/' + fn;
+      fn = require('path').resolve(root + '/' + fn);
 
       /* given the request, figure out what type of encoding to use when
       writing the result */

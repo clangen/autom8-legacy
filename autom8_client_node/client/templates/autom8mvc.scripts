@@ -1,9 +1,0 @@
-<script src="js/mvc/mvc.js" type="text/javascript"></script>
-<script src="js/mvc/Lifecycle.js" type="text/javascript"></script>
-<script src="js/mvc/TouchableMixin.js" type="text/javascript"></script>
-<script src="js/mvc/ViewInflaterMixin.js" type="text/javascript"></script>
-<script src="js/mvc/ViewContainerMixin.js" type="text/javascript"></script>
-<script src="js/mvc/ViewDebugMixin.js" type="text/javascript"></script>
-<script src="js/mvc/View.js" type="text/javascript"></script>
-<script src="js/mvc/ControllerContainerMixin.js" type="text/javascript"></script>
-<script src="js/mvc/Controller.js" type="text/javascript"></script>

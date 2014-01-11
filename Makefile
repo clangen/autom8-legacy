@@ -5,18 +5,18 @@
 #CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -g
 #LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 
-#CXX := arm-linux-gnueabihf-g++
-#DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
-#DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -fPIC
-#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
-
-CXX := g++
-DEFAULT_INCLUDES :=
+CXX := arm-linux-gnueabihf-g++
+DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
+DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
 LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
-LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -fPIC
+LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+
+#CXX := g++
+#DEFAULT_INCLUDES :=
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
+#LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 
 SOURCES = \
 	3rdparty/src/lib_json/json_reader.cpp \
@@ -61,13 +61,15 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 all: $(OBJECTS)
 	$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
 	$(CXX) -shared -o libautom8.so $(OBJECTS) $(LIBRARY_FLAGS)
-#	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
-#	scp autom8_cli/autom8_cli pi@192.168.1.245:/home/pi/src/autom8/autom8_cli
-#	scp autom8_node/server/app/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/app
-#	scp autom8_node/server/server/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/server
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<
+
+push: all
+	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
+#	scp autom8_cli/autom8_cli pi@192.168.1.245:/home/pi/src/autom8/autom8_cli
+	scp autom8_node/server/frontend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/frontend
+	scp autom8_node/server/backend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/backend
 
 clean:
 	-rm -f $(OBJECTS) *~

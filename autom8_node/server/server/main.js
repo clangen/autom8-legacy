@@ -1,5 +1,5 @@
 /* please publish this some day */
-/* npm install ffi ref colors */
+/* npm install ffi ref colors q */
 var ffi = require('ffi');
 var ref = require('ref');
 var path = require('path');

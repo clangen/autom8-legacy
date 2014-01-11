@@ -108,9 +108,9 @@ exports.init = function() {
     var deferred = Q.defer();
 
     if (!dll) {
-        var directory = path.resolve(__dirname + '/../');
+        var directory = path.resolve(__dirname + '/../../../');
         dll = loadLibrary(directory);
-        console.log(INFO, "loaded libautom8.dll");
+        console.log(INFO, "loaded libautom8");
     }
 
     if (!initialized) {

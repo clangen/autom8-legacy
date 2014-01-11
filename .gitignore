@@ -1,4 +1,5 @@
-autom8_client_node/node_modules
+autom8_node/client/node_modules
+autom8_node/server/node_modules
 autom8_client_android/bin
 autom8_client_android/gen
 autom8_client_android/.settings

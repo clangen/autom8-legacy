@@ -1,7 +1,3 @@
-// npm install commander connect express socket.io socket.io-client less closurecompiler prompt clean-css
-// node.exe server/Server.js --listen 7902 --creds server/autom8.pem --clienthost ricochet.ath.cx --clientport 7901 --debug
-
-
 /*
  * Object which encapsulates all of the https server logic. Exposes
  * a single "start()" method that should be called befoore starting

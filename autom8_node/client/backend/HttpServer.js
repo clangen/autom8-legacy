@@ -22,7 +22,7 @@
   var config = require('./Config.js').get();
   var blacklist = require('./Blacklist.js');
 
-  var root = process.cwd() + '/app';
+  var root = process.cwd() + '/frontend';
 
   /*
    * Encapsulated file cache for the server. This will be used to

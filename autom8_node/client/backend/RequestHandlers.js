@@ -1,6 +1,7 @@
 (function() {
-  var config = require("./Config.js").get();
-  var blacklist = require('./Blacklist.js');
+  var shared = "./../../shared/js/backend/";
+  var config = require(shared + "Config.js").get();
+  var blacklist = require(shared + 'Blacklist.js');
 
   function renderAppcacheManifest(req, res) {
     console.log('rendering appcache (' + config.appCache.version.getTime() + ')...');

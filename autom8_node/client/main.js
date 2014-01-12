@@ -5,12 +5,14 @@
   var program = require('commander');
   var prompt = require('prompt');
 
-  var config = require('./backend/Config.js');
-  var httpServer = require('./backend/HttpServer.js');
+  var shared = "./../shared/js/backend/";
+  var config = require(shared + 'Config.js');
+  var httpServer = require(shared + 'HttpServer.js');
+  var util = require(shared + 'Util.js');
+  var sessions = require(shared + 'Sessions.js');
+
   var clientProxy = require('./backend/ClientProxy.js');
-  var util = require('./backend/Util.js');
   var handlers = require('./backend/RequestHandlers.js');
-  var sessions = require('./backend/Sessions.js');
 
   prompt.message = "autom8";
   prompt.start();

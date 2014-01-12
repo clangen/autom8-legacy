@@ -7,9 +7,11 @@
 (function() {
   var tls = require('tls');
 
+  var shared = "./../../shared/js/backend/";
+  var config = require(shared + 'Config.js').get();
+  var sessions = require(shared + 'Sessions.js');
+
   var constants = require('./Constants.js');
-  var config = require('./Config.js').get();
-  var sessions = require('./Sessions.js');
 
   var socketStream = null;
   var lastBuffer = null;

@@ -45,22 +45,21 @@ Type: files; Name: {app}\boost_system-vc100-mt-1_44.dll;
 Type: files; Name: {app}\boost_thread-vc100-mt-1_44.dll;
 
 [Files]
-Source: ..\release\autom8_server_ui.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\autom8_client_qt.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\QtCore4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\QtGui4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\QtNetwork4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\QtWebkit4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\phonon4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\boost_date_time-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\boost_filesystem-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\boost_regex-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\boost_system-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\boost_thread-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\release\cm15a_controller.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\license.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\autom8_server_ui.exe; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\autom8_client_qt.exe; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\QtCore4.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\QtGui4.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\QtNetwork4.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\phonon4.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\boost_date_time-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\boost_filesystem-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\boost_regex-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\boost_system-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\boost_thread-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\cm15a_controller.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\license.txt; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

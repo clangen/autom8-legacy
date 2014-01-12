@@ -25,11 +25,14 @@
   function renderTemplates(doc) {
     var result = "";
     var path = root + '/templates/';
-    var files = fs.readdirSync(path) || [];
-    for (var i = 0; i < files.length; i++) {
-      if (files[i].match(/.*\.html$/)) {
-        result += fs.readFileSync(path + files[i], "utf8");
-        result += "\n\n";
+
+    if (fs.existsSync(path)) {
+      var files = fs.readdirSync(path) || [];
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].match(/.*\.html$/)) {
+          result += fs.readFileSync(path + files[i], "utf8");
+          result += "\n\n";
+        }
       }
     }
 
@@ -46,13 +49,16 @@
     var typesRegex = new RegExp(".*\\.(" + types.join("|") + ")$");
 
     var path = root + '/templates/';
-    var files = fs.readdirSync(path) || [];
-    var contents;
 
-    for (var i = 0; i < files.length; i++) {
-      if (files[i].match(typesRegex)) {
-        contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
-        doc = doc.replace("{{" + files[i] + "}}", contents);
+    if (fs.existsSync(path)) {
+      var files = fs.readdirSync(path) || [];
+      var contents;
+
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].match(typesRegex)) {
+          contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
+          doc = doc.replace("{{" + files[i] + "}}", contents);
+        }
       }
     }
 
@@ -96,6 +102,12 @@
           console.log("renderMinifiedStyles: finished");
         }
       };
+
+      /* short circuit if there are no files to process */
+      if (!cssFiles.length) {
+        finalize('');
+        return;
+      }
 
       var minify = function() {
         console.log("renderMinifiedStyles: concatenating compiled files");
@@ -241,14 +253,20 @@
       }
     };
 
-    console.log("renderMinifiedScripts: starting closurecompiler");
-    closurecompiler.compile(
-      scriptFilenames, { }, minificationCompleteHandler);
+    if (!scriptFilenames.length) {
+      console.log("renderMinifiedScripts: nothing to process");
+      callback('');
+    }
+    else {
+      console.log("renderMinifiedScripts: starting closurecompiler");
+      closurecompiler.compile(scriptFilenames, { }, minificationCompleteHandler);
+    }
   }
 
   module.exports = exports = {
+    createLessParser: createLessParser,
     renderTemplates: renderTemplates,
-    renderNonMinifiedScripts: renderNonMinifiedStyles,
+    renderNonMinifiedScripts: renderNonMinifiedScripts,
     renderNonMinifiedStyles: renderNonMinifiedStyles,
     renderMinifiedStyles: renderMinifiedStyles,
     renderMinifiedScripts: renderMinifiedScripts

@@ -145,7 +145,7 @@
       }
 
       if (fn.match(/.*\.less$/)) {
-        var parser = createLessParser(fn);
+        var parser = minifier.createLessParser(fn);
 
         parser.parse(data.toString(), function (err, tree) {
             if (!err) {

@@ -68,8 +68,8 @@ all: $(OBJECTS)
 push: all
 	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
 #	scp autom8_cli/autom8_cli pi@192.168.1.245:/home/pi/src/autom8/autom8_cli
-	scp autom8_node/server/frontend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/frontend
-	scp autom8_node/server/backend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/backend
+	scp -r autom8_node/server/frontend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/frontend
+	scp -r autom8_node/server/backend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/backend
 
 clean:
 	-rm -f $(OBJECTS) *~

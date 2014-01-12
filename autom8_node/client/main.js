@@ -1,5 +1,5 @@
 // npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt
-// node.exe main.js --listen 7902 --creds backend/autom8.pem --clienthost 127.0.0.1 --clientport 7901 --debug
+// node.exe main.js --listen 7902 --creds ../shared/conf/autom8.pem --clienthost 127.0.0.1 --clientport 7901 --debug
 
 (function() {
   var program = require('commander');

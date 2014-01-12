@@ -1,6 +1,6 @@
 /*
  * Object which encapsulates all of the https server logic. Exposes
- * a single "start()" method that should be called befoore starting
+ * a single "create()" method that should be called befoore starting
  * the client.
  */
 (function() {

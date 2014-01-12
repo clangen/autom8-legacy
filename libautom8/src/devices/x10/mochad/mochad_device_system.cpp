@@ -3,6 +3,8 @@
 
 #include <boost/thread.hpp>
 #include <boost/algorithm/string_regex.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <devices/device_model.hpp>
 #include <devices/x10/x10_device_factory.hpp>
@@ -117,10 +119,36 @@ void mochad_device_system::requery_device_status(const std::string& address) {
 }
 
 bool mochad_device_system::send_device_message(command_type message_type, const char* message_params) {
-    /* as of right now, the base x10 device types will use messages in
-    the following format: [ADDR] [CMD] [EXTRA]. */
+    static int MOCHAD_MAX_LAMP_BRIGHTNESS = 31;
+    static int X10_MAX_LAMP_BRIGHTNESS = 100;
+
+    /* split the params into parts. depending on the message, we may
+    need to futz with some of the params before we pass it along to
+    the controller */
+    std::string input(message_params);
+    std::vector<std::string> parts;
+    boost::split(parts, input, boost::is_any_of(" "));
+
+    /* for bright/dim commands, x10_lamp assumes the range is from 0..100.
+    however, mochad uses 0..31. normalize here before passing along*/
+    if (parts.size() == 3 && (parts.at(1) == "bright" || parts.at(1) == "dim")) {
+        try {
+            int value = boost::lexical_cast<int>(parts.at(2));
+            value = (value * MOCHAD_MAX_LAMP_BRIGHTNESS) / X10_MAX_LAMP_BRIGHTNESS;
+            parts.at(2) = boost::lexical_cast<std::string>(value);
+        }
+        catch (boost::bad_lexical_cast) {
+            /* nothing we can do... move on */
+        }
+    }
+
+    /* reassemble message. as of right now, the base x10 device types will use
+    messages in the following format: [TYPE] [ADDR] [CMD] [EXTRA].*/
     std::string message = (message_type == powerline_command) ? "pl " : "rf ";
-    message += std::string(message_params);
+
+    for (size_t i = 0; i < parts.size(); i++) {
+        message += (" " + parts.at(i));
+    }
 
     controller_.send(message);
     return true;

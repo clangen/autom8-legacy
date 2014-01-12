@@ -4,7 +4,7 @@ var ffi = require('ffi');
 var ref = require('ref');
 var path = require('path');
 var Q = require('q');
-var nativeBridge = require("./NativeBridge.js");
+var libautom8 = require("./NativeBridge.js");
 require('colors');
 
 var INFO = "[local]".grey;
@@ -21,7 +21,7 @@ function die(code) {
 
 function testSystem() {
     return Q.all([
-        nativeBridge.rpc("system", "list").then(function(result) {
+        libautom8.rpc("system", "list").then(function(result) {
             console.log(INFO, "system::list");
 
             var systems = result.message.systems || [];
@@ -30,22 +30,22 @@ function testSystem() {
             }
         }),
 
-        nativeBridge.rpc("system", "select", {system: "null"}).then(function(result) {
+        libautom8.rpc("system", "select", {system: "null"}).then(function(result) {
             console.log(INFO, "system::selected");
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("system", "selected").then(function(result) {
+        libautom8.rpc("system", "selected").then(function(result) {
             console.log(INFO, "system::selected");
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("system", "select", {system: "mochad"}).then(function(result) {
+        libautom8.rpc("system", "select", {system: "mochad"}).then(function(result) {
             console.log(INFO, "system::selected");
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("system", "selected").then(function(result) {
+        libautom8.rpc("system", "selected").then(function(result) {
             console.log(INFO, "system::selected");
             console.log(INFO, '  result:', result);
         })
@@ -54,17 +54,17 @@ function testSystem() {
 
 function testPreferences() {
     return Q.all([
-        nativeBridge.rpc("server", "get_preference", {key: "fingerprint" }).then(function(result) {
+        libautom8.rpc("server", "get_preference", {key: "fingerprint" }).then(function(result) {
             console.log(INFO, "system::get_preference(fingerprint)");
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("server", "set_preference", {key: "rpc.mode", value: "sync" }).then(function(result) {
+        libautom8.rpc("server", "set_preference", {key: "rpc.mode", value: "sync" }).then(function(result) {
             console.log(INFO, "system::set_preference(rpc.mode)");
             console.log(INFO, '  result:', result);
         }),
 
-        nativeBridge.rpc("server", "get_preference", {key: "rpc.mode" }).then(function(result) {
+        libautom8.rpc("server", "get_preference", {key: "rpc.mode" }).then(function(result) {
             console.log(INFO, "system::get_preference(rpc.mode)");
             console.log(INFO, '  result:', result);
         })
@@ -91,18 +91,18 @@ function testDevices() {
     var master_bedroom_entry = { label: "master bedroom entry", address: "c1", groups: ["upstairs", "master bedroom"], type: 0 };
 
     return Q.all([
-        nativeBridge.rpc("system", "delete_device", {address: "a1"}).then(log_device_delete_result),
-        nativeBridge.rpc("system", "delete_device", {address: "p2"}).then(log_device_delete_result),
+        libautom8.rpc("system", "delete_device", {address: "a1"}).then(log_device_delete_result),
+        libautom8.rpc("system", "delete_device", {address: "p2"}).then(log_device_delete_result),
 
-        nativeBridge.rpc("system", "add_device", main_entry_p2).then(log_device_add_result),
-        nativeBridge.rpc("system", "add_device", den_a1).then(log_device_add_result),
-        nativeBridge.rpc("system", "add_device", living_room_floor_a2).then(log_device_add_result),
-        nativeBridge.rpc("system", "add_device", living_room_piano_a3).then(log_device_add_result),
-        nativeBridge.rpc("system", "add_device", office_a4).then(log_device_add_result),
-        nativeBridge.rpc("system", "add_device", office_p3).then(log_device_add_result),
-        nativeBridge.rpc("system", "add_device", master_bedroom_entry).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", main_entry_p2).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", den_a1).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", living_room_floor_a2).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", living_room_piano_a3).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", office_a4).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", office_p3).then(log_device_add_result),
+        libautom8.rpc("system", "add_device", master_bedroom_entry).then(log_device_add_result),
 
-        nativeBridge.rpc("system", "list_devices").then(function(result) {
+        libautom8.rpc("system", "list_devices").then(function(result) {
             console.log(INFO, "system::list_devices");
             console.log(INFO, '  result:', result);
         })
@@ -110,10 +110,10 @@ function testDevices() {
 }
 
 function startServer() {
-    return nativeBridge.rpc("server", "start");
+    return libautom8.rpc("server", "start");
 }
 
-nativeBridge.init()
+libautom8.init()
     .then(testPreferences)
     .then(testSystem)
     .then(testDevices)
@@ -128,8 +128,8 @@ var poller = setInterval(function() {
         clearInterval(poller);
         poller = null;
 
-        nativeBridge.rpc("server", "stop").then(function() {
-            nativeBridge.deinit().then(function() {
+        libautom8.rpc("server", "stop").then(function() {
+            libautom8.deinit().then(function() {
                 die(0);
             });
         });

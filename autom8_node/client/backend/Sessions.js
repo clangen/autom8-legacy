@@ -1,9 +1,10 @@
 (function() {
   var io = require('socket.io');
-  
   var util = require('./Util.js');
-  var clientProxy = require('./ClientProxy.js');
   var config = require('./Config.js').get();
+
+  /* callbacks that are triggered when messages are received */
+  var handlers = [];
 
   /* set via init() */
   var httpServer = null;
@@ -27,7 +28,7 @@
       var cookieString = data.headers.cookie || "";
       var cookies = util.parseCookie(cookieString);
       var sessionId = cookies['connect.sid'];
-      
+
       /* no session id at all is an instant rejection */
       if (!sessionId) {
         console.log("WARNING: socket connection with no session, rejecting.");
@@ -79,25 +80,30 @@
       var addr = socket.handshake.address;
       console.log("client connected (" + addr.address + ":" + addr.port + ")");
 
-      socket.on('sendMessage', function(message) {
-        clientProxy.send(message.uri, message.body);
-      });
+      for (var i = 0; i < handlers.length; i++) {
+        socket.on(handlers[i].message, handlers[i].handler);
+      }
     });
 
     return socketServer;
   }
 
-  /* public API */
-  exports.init = function(httpServer, sessionStore) {
-    if (webSocketServer) {
-      console.log("already initialized! aborting");
-      throw new Error('aborting');
+  exports = module.exports = {
+    init: function(app) {
+      if (webSocketServer) {
+        console.log("already initialized! aborting");
+        throw new Error('aborting');
+      }
+
+      webSocketServer = createSocketServer(app.httpServer, app.sessionStore);
+    },
+
+    broadcast: function(message, options) {
+      webSocketServer.sockets.emit(message, options);
+    },
+
+    on: function(message, handler) {
+      handlers.push({message: message, handler: handler});
     }
-
-    webSocketServer = createSocketServer(httpServer, sessionStore);
-  };
-
-  exports.broadcast = function(message) {
-    webSocketServer.sockets.emit('recvMessage', message);
   };
 }());

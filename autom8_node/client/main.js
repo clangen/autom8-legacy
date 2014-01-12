@@ -1,20 +1,32 @@
 // npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt
-// node.exe backend/Server.js --listen 7902 --creds backend/autom8.pem --clienthost 127.0.0.1 --clientport 7901 --debug
+// node.exe main.js --listen 7902 --creds backend/autom8.pem --clienthost 127.0.0.1 --clientport 7901 --debug
 
 (function() {
   var program = require('commander');
-  var config = require('./Config.js');
-  var httpServer = require('./HttpServer.js');
-  var clientProxy = require('./ClientProxy.js');
-  var util = require('./Util.js');
-
   var prompt = require('prompt');
+
+  var config = require('./backend/Config.js');
+  var httpServer = require('./backend/HttpServer.js');
+  var clientProxy = require('./backend/ClientProxy.js');
+  var util = require('./backend/Util.js');
+  var handlers = require('./backend/RequestHandlers.js');
+  var sessions = require('./backend/Sessions.js');
+
   prompt.message = "autom8";
   prompt.start();
 
   function start() {
     config.init(program);
-    httpServer.start();
+
+    sessions.on('sendMessage', function(message) {
+      clientProxy.send(message.uri, message.body);
+    });
+
+    var app = httpServer.create();
+    handlers.add(app);
+    sessions.init(app);
+    app.start();
+
     clientProxy.connect();
   }
 

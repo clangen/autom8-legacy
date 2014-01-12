@@ -12,14 +12,15 @@
     };
 
     config.server = {
-      port: program['listen'],
-      pem: program['creds']
+      port: program.listen,
+      pem: program.creds,
+      cookieSecret: "autom84Lyfe"
     };
 
     config.client = {
-      host: program['clienthost'],
-      port: program['clientport'],
-      password: program['clientpw']
+      host: program.clienthost,
+      port: program.clientport,
+      password: program.clientpw
     };
   };
 

@@ -143,7 +143,7 @@
         send(constants.requests.get_device_list);
       }
 
-      sessions.broadcast(message);
+      sessions.broadcast('recvMessage', message);
     }
   }
 
@@ -168,7 +168,7 @@
       // console.log("multi-part message... scheduling next chunk...", english);
 
       setTimeout(function() {
-          dispatchReceivedMessage(next)
+          dispatchReceivedMessage(next);
       });
     }
 

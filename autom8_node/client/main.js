@@ -4,6 +4,7 @@
 (function() {
   var program = require('commander');
   var prompt = require('prompt');
+  require('colors');
 
   var shared = "./../shared/js/backend/";
   var config = require(shared + 'Config.js');

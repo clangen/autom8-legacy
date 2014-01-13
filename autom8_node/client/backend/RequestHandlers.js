@@ -1,10 +1,12 @@
 (function() {
+  var TAG = "[request handlers]".yellow;
+
   var shared = "./../../shared/js/backend/";
   var config = require(shared + "Config.js").get();
   var blacklist = require(shared + 'Blacklist.js');
 
   function renderAppcacheManifest(req, res) {
-    console.log('rendering appcache (' + config.appCache.version.getTime() + ')...');
+    console.log(TAG, 'rendering appcache (' + config.appCache.version.getTime() + ')...');
 
     var manifest = "CACHE MANIFEST\n";
     manifest += "# VERSION: " + config.appCache.version.getTime() + "\n\n";

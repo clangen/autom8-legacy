@@ -6,12 +6,16 @@
  * Disabled in debug mode.
  */
 (function() {
+  var TAG = '[file cache]'.green;
+
   var cache = { };
 
   module.exports = exports = {
     get: function (fn, encoding) {
       cache[encoding] = cache[encoding] || { };
-      return cache[encoding][fn];
+      var result = cache[encoding][fn];
+      console.log(TAG, result ? 'hit' : 'miss', fn.grey);
+      return result;
     },
 
     put: function (fn, encoding, data) {
@@ -20,6 +24,7 @@
     },
 
     clear: function() {
+      console.log(TAG, 'cleared');
       cache = { };
     }
   };

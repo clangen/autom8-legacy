@@ -5,6 +5,8 @@
  * has been started (i.e. after autom8.server.start() has been called).
  */
 (function() {
+  var TAG = "[client proxy]".magenta;
+
   var tls = require('tls');
 
   var shared = "./../../shared/js/backend/";
@@ -29,11 +31,11 @@
 
   function reconnect(err) {
     if (connecting) {
-      console.log("reconnect() called but already connecting.");
+      console.log(TAG, "reconnect() called but already connecting.");
       return;
     }
 
-    console.log("attempting to reconnect...");
+    console.log(TAG, "attempting to reconnect...");
     disconnect();
 
     setTimeout(function() {
@@ -45,7 +47,7 @@
 
   function connect() {
     if (connected) {
-      console.log('connect() called, but already connected. bailing...');
+      console.log(TAG, 'connect() called, but already connected. bailing...');
       return;
     }
 
@@ -64,7 +66,7 @@
       }
       else {
         /* successful connection, authenticate */
-        console.log('connected to autom8 server');
+        console.log(TAG, 'connected to autom8 server');
         connecting = false;
         connected = true;
 
@@ -82,7 +84,7 @@
   }
 
   function disconnect(stream) {
-    console.log('disconnecting...');
+    console.log(TAG, 'disconnecting...');
 
     stream = stream || socketStream;
 
@@ -95,7 +97,7 @@
         stream.destroy();
       }
       catch (e) {
-        console.log('socket.destroy() threw');
+        console.log(TAG, 'socket.destroy() threw');
       }
     }
 
@@ -105,7 +107,7 @@
       socketStream = null;
     }
 
-    console.log('disconnected.');
+    console.log(TAG, 'disconnected.');
   }
 
   function send(uri, body) {
@@ -134,7 +136,7 @@
        * of error is retried until the the user exists the process.
        */
       if (message.uri === constants.responses.authenticate_failed) {
-        console.log("connection failed: password rejected.");
+        console.log(TAG, "connection failed: password rejected.");
         process.exit(-99);
       }
       /*
@@ -167,7 +169,7 @@
       data = data.slice(0, terminator);
 
       // var english = new Buffer(next.toString(), 'base64').toString('utf8');
-      // console.log("multi-part message... scheduling next chunk...", english);
+      // console.log(TAG, "multi-part message... scheduling next chunk...", english);
 
       setTimeout(function() {
           dispatchReceivedMessage(next);
@@ -189,18 +191,18 @@
         };
       }
       catch (parseError) {
-        console.log("ERROR: message parsed failed, reconnecting...");
+        console.log(TAG, "ERROR: message parsed failed, reconnecting...");
         reconnect();
       }
 
       if (config.debug) {
-        console.log("server said: " + JSON.stringify(message));
+        console.log(TAG, "server said: " + JSON.stringify(message));
       }
 
       return message;
     }
 
-    console.log("unable to parse message");
+    console.log(TAG, "unable to parse message");
     return null;
   }
 

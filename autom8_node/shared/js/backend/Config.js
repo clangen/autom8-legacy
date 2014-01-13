@@ -3,6 +3,7 @@
 
   exports.init = function(program) {
     config.debug = program.debug;
+    config.socketDebug = false;
     config.sessionTimeout = 3600000 * 24; /* 24 hours session time, millis */
     config.allowSelfSignedCerts = true;
 

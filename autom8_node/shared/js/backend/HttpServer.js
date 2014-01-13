@@ -145,17 +145,8 @@
       }
 
       if (fn.match(/.*\.less$/)) {
-        var parser = minifier.createLessParser(fn);
-
-        parser.parse(data.toString(), function (err, tree) {
-            if (!err) {
-              console.log("LESS: successfully processed " + fn);
-              data = tree.toCSS();
-              writeResponse(fn, data);
-            }
-            else {
-              console.log("LESS: CSS parse failed because " + require('util').inspect(err));
-            }
+        minifier.minifyLessData(data, fn, function(error, data) {
+          writeResponse(fn, data || '');
         });
       }
       else if (fn.match(/.*\.html$/)) {
@@ -183,11 +174,9 @@
     };
 
     if (cachedFile) {
-      console.log("cache hit: " + fn);
       writeResponse(fn, cachedFile, {fromCache: true});
     }
     else {
-      console.log("cache miss: " + fn);
       fs.readFile(fn, fileReadHandler);
     }
   }
@@ -199,8 +188,6 @@
     /* connection validator */
     app.use(function(req, res, next) {
       if (!blacklist.allowConnection(req)) {
-        var address = req.connection.remoteAddress;
-        console.warn(address, "blacklisted. denying...");
         res.writeHead(401);
         res.end("you're blacklisted. go away.");
       }

@@ -3,6 +3,7 @@
 
 (function() {
   var program = require('commander');
+  require('colors');
 
   var shared = "./../shared/js/backend/";
   var config = require(shared + 'Config.js');
@@ -28,7 +29,7 @@
   }
 
   program
-    .version("0.3.2")
+    .version("0.6.0")
     .usage('params:')
     .option('--listen <port>', 'port we will listen on')
     .option('--creds <pem>', 'pem file containing both cert and private key')

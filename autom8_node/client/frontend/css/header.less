@@ -1,6 +1,6 @@
+@import "../../../shared/css/mixins.less";
+@import "../../../shared/css/buttons.less";
 @import "dimens.less";
-@import "mixins.less";
-@import "buttons.less";
 @import "switcher.less";
 
 @backgroundColor: #262626;
@@ -9,6 +9,13 @@
 @textColor: #ccc;
 @textShadowColor: #000;
 @aboutButtonSize: 22px;
+
+#application #spinner-view {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: @headerHeight;
+}
 
 .header {
     background-color: @backgroundColor;

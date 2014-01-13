@@ -23,7 +23,7 @@
 
     var app = httpServer.create();
     // handlers.add(app);
-    // sessions.init(app);
+    sessions.init(app);
     app.start();
   }
 

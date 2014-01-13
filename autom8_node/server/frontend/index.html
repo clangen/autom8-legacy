@@ -1,1 +1,38 @@
-hello, world.
+<!DOCTYPE html>
+<html manifest="{{manifest}}">
+  <head>
+    <title>autom8</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon-precomposed" href="icon.png"/>
+
+    {{autom8ui.styles}}
+        {{minified_styles}}
+
+    {{templates}}
+
+    {{3rdparty.scripts}}
+    {{autom8mvc.scripts}}
+        {{minified_scripts}}
+
+    <script>
+      // namespace("autom8").version = "0.3.1 ({{version}})";
+
+      // $(document).ready(function() {
+      //   controller = new autom8.controller.MainController();
+      //   controller.resume();
+      // });
+    </script>
+  </head>
+  <body>
+    hello, world.
+    <div id="application">
+      <div class="header"></div>
+      <div id="main-content"></div>
+      <div id="spinner-view"></div>
+    </div>
+    <div id="dialogs"></div>
+  </body>
+</html>

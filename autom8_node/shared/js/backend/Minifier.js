@@ -10,6 +10,7 @@
   var path = require('path');
   var closurecompiler = require('closurecompiler');
   var config = require('./Config.js').get();
+
   var root = process.cwd() + '/frontend';
 
   function createLessParser(filename, paths) {
@@ -46,19 +47,34 @@
       types = [types];
     }
 
+    var i;
+    var files = [];
     var typesRegex = new RegExp(".*\\.(" + types.join("|") + ")$");
 
-    var path = root + '/templates/';
-
-    if (fs.existsSync(path)) {
-      var files = fs.readdirSync(path) || [];
-      var contents;
-
-      for (var i = 0; i < files.length; i++) {
-        if (files[i].match(typesRegex)) {
-          contents = fs.readFileSync(path + files[i]).toString() + "\n\n";
-          doc = doc.replace("{{" + files[i] + "}}", contents);
+    /* given a path, adds all the .scripts, .styles, .html files
+    to the files array declared just above */
+    var addTemplates = function(newPath) {
+      if (fs.existsSync(newPath)) {
+        var newFiles = fs.readdirSync(newPath) || [];
+        for (i = 0; i < newFiles.length; i++) {
+          files.push({
+            path: newPath + '/' + newFiles[i],
+            name: newFiles[i]
+          });
         }
+      }
+    };
+
+    /* more specific comes first */
+    addTemplates(path.resolve(root + '/templates/'));
+    addTemplates(path.resolve(root + '/../../shared/templates'));
+
+    /* do the replacement */
+    var contents;
+    for (i = 0; i < files.length; i++) {
+      if (files[i].name.match(typesRegex)) {
+        contents = fs.readFileSync(files[i].path).toString() + "\n\n";
+        doc = doc.replace("{{" + files[i].name + "}}", contents);
       }
     }
 
@@ -144,19 +160,24 @@
 
       for (var i = 0; i < cssFiles.length; i++) {
         var file = cssFiles[i];
-        if (file.type === "css") {
+        console.log('processing: ' + file.name);
+
+        if (file.type === ".css") {
           outputCache[file.name] = file.data;
           --remaining;
         }
-        else if (file.type === "less") {
+        else if (file.type === ".less") {
           try {
-            console.log('processing: ' + file.name);
             parser = createLessParser(file.name);
             parser.parse(file.data, createParseFinishHandler(file.name));
           }
           catch(exception) {
             console.log('exception during less.parse(): ' + exception);
           }
+        }
+        else {
+          console.log('asked to process unknown css, ignoring', cssFiles[i].name);
+          --remaining;
         }
       }
     };
@@ -170,10 +191,15 @@
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(regex);
       if (match && match.length === 2) {
-        var name = root + '/' + match[1];
+        if (match[1].indexOf("shared/") === 0) { /* bleh, fixme */
+          match[1] = "../../" + match[1];
+        }
+
+        var name = path.resolve(root + '/' + match[1]).toString();
+
         cssFiles.push({
           data: fs.readFileSync(name).toString(),
-          type: match[1].split('.')[1],
+          type: path.extname(match[1]),
           name: name
         });
       }
@@ -209,7 +235,7 @@
         if (!minifiyBlacklist[match[1]]) {
           var fn = match[1];
 
-          if (fn.indexOf("shared/") === 0) { /* bleh */
+          if (fn.indexOf("shared/") === 0) { /* bleh, fixme */
             fn = "../../" + fn;
           }
 

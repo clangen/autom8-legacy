@@ -1,26 +1,13 @@
-<link rel="stylesheet" href="css/reset.css"></link>
-
-<link rel="stylesheet" href="css/main.less"></link>
 <link rel="stylesheet" href="css/header.less"></link>
 <link rel="stylesheet" href="css/signin.less"></link>
-
-<link rel="stylesheet" href="css/dialog.less"></link>
 <link rel="stylesheet" href="css/dialog-lamp.less"></link>
 <link rel="stylesheet" href="css/dialog-about.less"></link>
-
 <link rel="stylesheet" href="css/switcher.less"></link>
-
 <link rel="stylesheet" href="css/devicelist.less"></link>
-
 <link rel="stylesheet" href="css/devicerow.less"></link>
 <link rel="stylesheet" href="css/devicerow-grouped.less"></link>
 <link rel="stylesheet" href="css/devicerow-appliance.less"></link>
 <link rel="stylesheet" href="css/devicerow-lamp.less"></link>
 <link rel="stylesheet" href="css/devicerow-sensor.less"></link>
 <link rel="stylesheet" href="css/devicerow-loading.less"></link>
-
 <link rel="stylesheet" href="css/fixed-header.less"></link>
-
-<link rel="stylesheet" href="css/iphone.less"></link>
-<link rel="stylesheet" href="css/chrome-iphone.less"></link>
-<link rel="stylesheet" href="css/firefox.less"></link>

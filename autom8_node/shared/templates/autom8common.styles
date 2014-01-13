@@ -1,0 +1,6 @@
+<link rel="stylesheet" href="shared/css/reset.css"></link>
+<link rel="stylesheet" href="shared/css/main.less"></link>
+<link rel="stylesheet" href="shared/css/dialog.less"></link>
+<link rel="stylesheet" href="shared/css/iphone.less"></link>
+<link rel="stylesheet" href="shared/css/chrome-iphone.less"></link>
+<link rel="stylesheet" href="shared/css/firefox.less"></link>

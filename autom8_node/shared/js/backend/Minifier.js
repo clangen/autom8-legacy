@@ -113,7 +113,7 @@
       var remaining = cssFiles.length;
 
       var finalize = function(minified) {
-        console.log(CSS, "minification finalizing");
+        // console.log(CSS, "minification finalizing");
         doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
         doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
 
@@ -261,7 +261,7 @@
     }
 
     var minificationCompleteHandler = function(error, result) {
-      console.log(JS, "minification finalizing");
+      // console.log(JS, "minification finalizing");
       if (error) {
         console.log(JS, 'closure compiler warnings and errors', error);
       }
@@ -299,10 +299,10 @@
     the same directory for @includes */
     var parser = createLessParser(fn);
 
-    console.log(LESS, "processing data", fn.grey);
+    console.log(LESS, "processing file", fn.grey);
     parser.parse(data.toString(), function (err, tree) {
         if (!err) {
-          console.log(LESS, "finished processing", fn.grey);
+          // console.log(LESS, "finished processing", fn.grey);
           data = tree.toCSS();
           callback(false, data);
         }

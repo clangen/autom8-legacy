@@ -223,6 +223,10 @@
     we do this so other parts of the code can do things like attach event
     handlers before starting */
     app.start = function() {
+      /* standard request handlers for various bits of shared functionality */
+      require('./Auth.js').add(app);
+      require('./AppCache.js').add(app);
+
       /* general request handler; looks at the request, figures out which file
       to return. Deals with caching, compression, and unathenticated clients.
       make sure we do this as late as possible, to give the calling application

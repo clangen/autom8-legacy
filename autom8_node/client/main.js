@@ -13,7 +13,6 @@
   var sessions = require(shared + 'Sessions.js');
 
   var clientProxy = require('./backend/ClientProxy.js');
-  var handlers = require('./backend/RequestHandlers.js');
 
   prompt.message = "autom8";
   prompt.start();
@@ -21,12 +20,11 @@
   function start() {
     config.init(program);
 
-    sessions.on('sendMessage', function(message) {
+    sessions.on('sendMessage', function(message, socket) {
       clientProxy.send(message.uri, message.body);
     });
 
     var app = httpServer.create();
-    handlers.add(app);
     sessions.init(app);
     app.start();
 

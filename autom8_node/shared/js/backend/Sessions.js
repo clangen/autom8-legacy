@@ -82,8 +82,19 @@
       var addr = socket.handshake.address;
       console.log(TAG, "client connected (" + addr.address + ":" + addr.port + ")");
 
+      /* makes sure the socket that generated the message is
+      the second param of callback */
+      var wrap = function(fn, socket) {
+        return function() {
+          fn.call(fn, arguments[0], socket);
+        }
+      };
+
       for (var i = 0; i < handlers.length; i++) {
-        socket.on(handlers[i].message, handlers[i].handler);
+        socket.on(
+          handlers[i].message,
+          wrap(handlers[i].handler, socket)
+        );
       }
     });
 

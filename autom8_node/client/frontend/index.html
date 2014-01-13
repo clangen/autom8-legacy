@@ -16,12 +16,13 @@
 
     {{3rdparty.scripts}}
     {{autom8mvc.scripts}}
+    {{autom8config.scripts}}
     {{autom8ui.scripts}}
     {{autom8client.scripts}}
         {{minified_scripts}}
 
     <script>
-      namespace("autom8").version = "0.3.1 ({{version}})";
+      namespace("autom8").version = "0.6.0 ({{version}})";
 
       $(document).ready(function() {
         controller = new autom8.controller.MainController();

@@ -2,6 +2,8 @@
 // node.exe main.js --listen 7903 --creds ../shared/conf/autom8.pem --debug
 
 (function() {
+  var path = require('path');
+
   var program = require('commander');
   require('colors');
 
@@ -11,21 +13,28 @@
   var util = require(shared + 'Util.js');
   var sessions = require(shared + 'Sessions.js');
 
-  // var prompt = require('prompt');
-  // prompt.message = "autom8-server";
-  // prompt.start();
+  var LIBRARY_PATH = path.resolve(__dirname + '/../../');
+
+  var autom8 = require('./backend/NativeBridge.js');
+  var app;
 
   function start() {
     config.init(program);
+    config.get().client.password = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* TODO FIX ME */
 
-    // sessions.on('sendMessage', function(message) {
-    //   clientProxy.send(message.uri, message.body);
-    // });
+    /* establish binding with native layer before starting
+    the http server */
+    autom8.init().then(function() {
+      app = httpServer.create();
+      sessions.init(app); /* accept socket sessions */
 
-    var app = httpServer.create();
-    // handlers.add(app);
-    sessions.init(app);
-    app.start();
+      /* backend entry point for rpc call from trusted client */
+      sessions.on('sendMessage', function(request) {
+        console.log(JSON.stringify(request));
+      });
+
+      app.start();
+    });
   }
 
   program

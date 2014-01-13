@@ -86,7 +86,7 @@ var initLogging = function() {
 
 var initRpcCallback = function() {
     var rpcCallback = ffi.Callback('void', ['string'], function(response) {
-        console.log(JSON.stringify(response));
+        // console.log(JSON.stringify(response));
 
         response = JSON.parse(response);
         var id = response.id;
@@ -104,11 +104,12 @@ var initRpcCallback = function() {
     console.log(INFO, "rpc callback registered");
 };
 
-exports.init = function() {
+exports.init = function(directory) {
     var deferred = Q.defer();
 
     if (!dll) {
-        var directory = path.resolve(__dirname + '/../../../');
+        directory = directory || path.resolve(__dirname + '/../../../');
+        console.log(INFO, "loading libautom8 from", directory);
         dll = loadLibrary(directory);
         console.log(INFO, "loaded libautom8");
     }

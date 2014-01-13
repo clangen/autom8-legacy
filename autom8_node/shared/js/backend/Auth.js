@@ -1,29 +1,8 @@
 (function() {
-  var TAG = "[request handlers]".yellow;
+  var TAG = "[auth]".yellow;
 
-  var shared = "./../../shared/js/backend/";
-  var config = require(shared + "Config.js").get();
-  var blacklist = require(shared + 'Blacklist.js');
-
-  function renderAppcacheManifest(req, res) {
-    console.log(TAG, 'rendering appcache (' + config.appCache.version.getTime() + ')...');
-
-    var manifest = "CACHE MANIFEST\n";
-    manifest += "# VERSION: " + config.appCache.version.getTime() + "\n\n";
-
-    manifest += "CACHE:\n\n";
-    manifest += "/socket.io/socket.io.js\n";
-    manifest += "/icon.png\n\n";
-
-    manifest += "NETWORK:\n";
-    manifest += "*\n\n";
-
-    res.writeHead(200, {
-      'content-type': 'text/cache-manifest'
-    });
-
-    res.end(manifest);
-  }
+  var config = require("./Config.js").get();
+  var blacklist = require('./Blacklist.js');
 
   function signIn(req, res) {
     if (req.body.password === config.client.password) {
@@ -64,7 +43,6 @@
     app.post('/signin.action', signIn);
     app.post('/signout.action', signOut);
     app.get('/signedin.action', isSignedIn);
-    app.get(/autom8.appcache/, renderAppcacheManifest);
   }
 
   exports = module.exports = {

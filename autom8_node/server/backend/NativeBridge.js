@@ -3,21 +3,27 @@
 var ffi = require('ffi');
 var ref = require('ref');
 var path = require('path');
+var Colors = require('colors');
 var Q = require('q');
 require('colors');
 
 var RPC_MODE_SYNC = 1;
 var RPC_MODE_ASYNC = 2;
 
-var INFO = "[bridge]".grey;
+var INIT = "[init]";
+var BRIDGE_LOG = "[bridge log]".grey;
 var ERROR = "[bridge]".magenta;
+var RPC_ENGINE = "[rpc engine]".grey;
 var RPC_SEND = "[rpc send]".yellow;
 var RPC_RECV = "[rpc recv]".green;
-var LOG_LEVELS = { '0': '[nfo]', '1': '[wrn]', '2': '[err]' };
+var LOG_LEVELS = { '0': '[nfo]'.grey, '1': '[wrn]'.yellow, '2': '[err]'.red };
 
 var dll = null;
 var initialized = false;
 var nextId = 0;
+
+var tagColors = { };
+var allColors = ['red', 'yellow', 'green', 'blue', 'magenta'];
 
 var handlers = { };
 
@@ -76,7 +82,15 @@ var makeRpcCall = function(component, command, options, promise) {
 
 var initLogging = function() {
     var log = function(level, tag, message) {
-        console.log(INFO, "[" + tag + "] " + LOG_LEVELS[level] + " " + message);
+
+        var color = tagColors[tag];
+        if (!color) {
+            var random = Math.round(Math.random() * (allColors.length - 1));
+            color = tagColors[tag] = allColors[random];
+        }
+
+        var colorFn = Colors[color];
+        console.log(BRIDGE_LOG, LOG_LEVELS[level], "[" + colorFn.call(this, tag) + "]", message);
     };
 
     var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);
@@ -84,7 +98,7 @@ var initLogging = function() {
     pinned.logger = { callback: log, functionPointer: nativeLogCallback }; /* don't gc me! */
 
     dll.autom8_set_logger(nativeLogCallback);
-    console.log(INFO, "logger registered");
+    console.log(BRIDGE_LOG, "initialized");
 };
 
 var initRpcCallback = function() {
@@ -104,28 +118,28 @@ var initRpcCallback = function() {
     pinned.rpcCallback = rpcCallback; /* don't gc me! */
 
     dll.autom8_set_rpc_callback(rpcCallback);
-    console.log(INFO, "rpc callback registered");
+    console.log(RPC_ENGINE, "rpc callback registered");
 };
 
 exports.init = function(options) {
     var deferred = Q.defer();
 
     options = options || { };
-    var rpcMode = options.rpcMode || RPC_MODE_ASYNC;
+    var rpcMode = options.rpcMode || RPC_MODE_SYNC;
     var directory = options.directory;
 
     if (!dll) {
         directory = directory || path.resolve(__dirname + '/../../../');
-        console.log(INFO, "loading libautom8 from", directory);
+        console.log(INIT, "loading libautom8 from", directory);
         dll = loadLibrary(directory);
-        console.log(INFO, "loaded libautom8");
+        console.log(INIT, "loaded libautom8");
     }
 
     if (!initialized) {
         initLogging();
         initRpcCallback();
-        console.log(INFO, "autom8_version:", dll.autom8_version());
-        console.log(INFO, "autom8_version:", dll.autom8_init(rpcMode));
+        console.log(INIT, "autom8_version:", dll.autom8_version());
+        console.log(INIT, "autom8_version:", dll.autom8_init(rpcMode));
         initialized = true;
     }
 
@@ -141,7 +155,7 @@ exports.deinit = function() {
     }
     else {
         dll.autom8_deinit.async(function(err, res) {
-            console.log(INFO, "autom8_deinit completed");
+            console.log(INIT, "autom8_deinit completed");
             initialized = false;
             deferred.resolve();
         });

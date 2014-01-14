@@ -112,7 +112,9 @@
         data = compressed.toString(writeEncode);
 
         if (!debug) {
-          fileCache.put(fn, responseEncoding, data);
+          if (fn.split('/').pop() !== "index.html") {
+            fileCache.put(fn, responseEncoding, data);
+          }
         }
 
         /* figure out response headers */

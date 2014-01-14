@@ -11,9 +11,12 @@
   var closurecompiler = require('closurecompiler');
   var config = require('./Config.js').get();
 
-  var CSS = "[minifier-css]".blue;
-  var JS = "[minifier-js]".blue;
-  var LESS = "[minifier-less]".blue;
+  var CSS = "[minifier]".blue;
+  var JS = "[minifier]".blue;
+  var LESS = "[minifier]".blue;
+
+  var closureCompileRunning = false;
+  var cached = {styles: '', scripts: ''};
 
   var root = process.cwd() + '/frontend';
 
@@ -98,7 +101,13 @@
   }
 
   function renderMinifiedStyles(doc, callback) {
-    console.log(CSS, "minification starting");
+    if (cached.styles) {
+      console.log(CSS, "rendered styles cache hit ...".green);
+      callback(cached.styles);
+      return;
+    }
+
+    console.log(CSS, "processing css...");
 
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .css files that we will minify */
@@ -118,8 +127,9 @@
         doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
 
         if (callback) {
+          cached.styles = doc;
           callback(doc);
-          console.log(CSS, "minification finished");
+          // console.log(CSS, "minification finished");
         }
       };
 
@@ -130,7 +140,7 @@
       }
 
       var minify = function() {
-        console.log(CSS, "concatenating files");
+        console.log(CSS, "concatenating");
 
         var combined = "";
         for (var i = 0 ; i < cssFiles.length; i++) {
@@ -138,7 +148,7 @@
           combined += data + "\n";
         }
 
-        console.log(CSS, "minifying concatenated result");
+        console.log(CSS, "minifying");
 
         var CleanCSS = require('clean-css');
         var minified = new CleanCSS().minify(combined);
@@ -166,7 +176,7 @@
 
       for (var i = 0; i < cssFiles.length; i++) {
         var file = cssFiles[i];
-        console.log(LESS, 'processing: ' + file.name);
+        console.log(LESS, 'processing', file.name.grey, '' + (i+1) + ' of ' + cssFiles.length);
 
         if (file.type === ".css") {
           outputCache[file.name] = file.data;
@@ -215,7 +225,19 @@
   }
 
   function renderMinifiedScripts(doc, callback) {
-    console.log(JS, "minification started");
+    if (closureCompileRunning) {
+      console.log(JS, "closure compiler already running, bailing...".yellow);
+      callback('compiling, try again in a few...');
+      return;
+    }
+
+    if (cached.scripts) {
+      console.log(JS, "closure compiler cache hit ...".green);
+      callback(cached.scripts);
+      return;
+    }
+
+    console.log(JS, "javascript minification started");
 
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .js files that we will minify */
@@ -234,7 +256,7 @@
 
     /* run through each line, seeing if it's a <script> file. if it is,
     add it to the scriptFilenames[] array. */
-    console.log(JS, "minification discovering files");
+    //console.log(JS, "minification discovering files");
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(scriptRegex);
       if (match && match.length === 2) {
@@ -261,6 +283,9 @@
     }
 
     var minificationCompleteHandler = function(error, result) {
+      closureCompileRunning = false;
+      console.log(JS, "closure compiler finished");
+
       // console.log(JS, "minification finalizing");
       if (error) {
         console.log(JS, 'closure compiler warnings and errors', error);
@@ -279,8 +304,9 @@
       doc = doc.replace(/\{\{.*\.scripts\}\}/g, "");
 
       if (callback) {
-        callback(doc);
-        console.log(JS, "minification finished");
+        cached.scripts = doc;
+        // callback(doc);
+        // console.log(JS, "returning document");
       }
     };
 
@@ -289,8 +315,10 @@
       callback('');
     }
     else {
-      console.log(JS, "running closurecompiler");
+      console.log(JS, "starting closurecompiler", '(' + scriptFilenames.length + ' files)');
       closurecompiler.compile(scriptFilenames, { }, minificationCompleteHandler);
+      closureCompileRunning = true;
+      callback("starting up, please try back in a second...");
     }
   }
 

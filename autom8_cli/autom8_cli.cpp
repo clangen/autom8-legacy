@@ -11,11 +11,18 @@
 #include <signal.h>
 #endif
 
+static void rpc_recv_handler(const char* json) {
+    std::cerr << "recv: " << json << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
     autom8_init();
+    autom8_set_rpc_callback(rpc_recv_handler);
     printf("library version: %s\n\n", autom8_version());
-    autom8_rpc("{\"component\": \"server\", \"command\": \"set_preference\", \"options\": { \"key\": \"password\", \"value\": \"c66247c6abc4c8d745969b4ea11674c7ad8579a40ce1e5da01ff3a845dc72d35\" } }");
+    for (int i = 0; i < 100; i++) {
+        autom8_rpc("{\"component\": \"server\", \"command\": \"set_preference\", \"options\": { \"key\": \"password\", \"value\": \"c66247c6abc4c8d745969b4ea11674c7ad8579a40ce1e5da01ff3a845dc72d35\" } }");
+    }
     // autom8_rpc("{\"component\": \"server\", \"command\": \"get_preference\", \"options\": { \"key\": \"password\" } }", 0);
     autom8_rpc("{\"component\": \"server\", \"command\": \"start\"}");
     // autom8_rpc("{\"component\": \"system\", \"command\": \"list\"}", 0);
@@ -32,4 +39,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-

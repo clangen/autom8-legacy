@@ -4,19 +4,35 @@
 #LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
 #CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -g
 #LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+#LD_FLAGS := -shared -o libautom8.so
 
+# cross compile
 #CXX := arm-linux-gnueabihf-g++
 #DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
 #DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
 #LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
 #CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -fPIC
 #LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+#LD_FLAGS := -shared -o libautom8.so
 
-CXX := g++
+# linux
+#CXX := g++
+#DEFAULT_INCLUDES :=
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
+#LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+#LD_FLAGS := -shared -o libautom8.so
+
+# mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems
+# when using node.js with ffi. specifically: memory allocation issues and random
+# segfaults. why? who knows...
+CXX := clang++
 DEFAULT_INCLUDES :=
+DEFAULT_LIBRARIES := -L/usr/local/lib
 LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
 CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
-LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lsqlite3 -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
+LD_FLAGS := -dynamiclib -o libautom8.dylib
 
 SOURCES = \
 	3rdparty/src/lib_json/json_reader.cpp \
@@ -59,8 +75,8 @@ SOURCES = \
 OBJECTS = $(SOURCES:%.cpp=%.o)
 
 all: $(OBJECTS)
-	$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
-	$(CXX) -shared -o libautom8.so $(OBJECTS) $(LIBRARY_FLAGS)
+	#$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
+	$(CXX) $(LD_FLAGS) $(OBJECTS) $(LIBRARY_FLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<

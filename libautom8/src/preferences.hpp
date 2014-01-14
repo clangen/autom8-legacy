@@ -2,9 +2,9 @@
 #define __C_AUTOM8_PREFERENCES_HPP__
 
 #include <string>
-#include <map>
 #include <sqlite3.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
 
 namespace autom8 {
     class preferences {
@@ -19,14 +19,16 @@ namespace autom8 {
         bool set(const KT& key, const VT& value);
 
     private:
-        std::map<std::string, std::string> item_map_;
+        boost::mutex connection_lock_;
         sqlite3* connection_;
         std::string name_;
     };
 
     template <typename KT, typename VT>
     VT& preferences::get(const KT& key, VT& value) {
-        std::string query = " SELECT value FROM " + name_ + " WHERE key LIKE ?;";
+        boost::mutex::scoped_lock lock(connection_lock_); /* TODO: heavy handed. why is this necessary?? */
+
+        std::string query = std::string(" SELECT value FROM ") + name_ + std::string(" WHERE key LIKE ?;");
 
         std::string key_str = boost::lexical_cast<std::string>(key);
 
@@ -37,7 +39,8 @@ namespace autom8 {
             query.c_str(),
             (int) query.size(),
             &stmt,
-            NULL);
+            NULL
+        );
 
         if (result == SQLITE_OK) {
             sqlite3_bind_text(stmt, 1, key_str.c_str(), -1, SQLITE_STATIC);
@@ -62,6 +65,8 @@ namespace autom8 {
 
     template <typename KT, typename VT>
     bool preferences::set(const KT& key, const VT& value) {
+        boost::mutex::scoped_lock lock(connection_lock_); /* TODO: heavy handed. necessary? */
+
         std::string key_str, value_str;
         try {
             key_str = boost::lexical_cast<std::string>(key);

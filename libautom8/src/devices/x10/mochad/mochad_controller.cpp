@@ -46,11 +46,13 @@ bool mochad_controller::init() {
 }
 
 void mochad_controller::deinit() {
-    io_service_.stop();
-    disconnect();
-    io_thread_->join();
-    io_service_.reset();
-    initialized_ = false;
+    if (initialized_) {
+        io_service_.stop();
+        disconnect();
+        io_thread_->join();
+        io_service_.reset();
+        initialized_ = false;
+    }
 }
 
 void mochad_controller::disconnect() {

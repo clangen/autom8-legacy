@@ -1,0 +1,21 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				""
+			],
+			"folder_exclude_patterns":
+			[
+				"3rdparty/include/boost"
+			],
+			"follow_symlinks": true,
+			"path": "/Users/clangen/suncrash/autom8"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	]
+}

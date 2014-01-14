@@ -55,7 +55,7 @@ namespace autom8 {
         boost::asio::streambuf read_buffer_;
         std::queue<std::string> write_queue_;
         boost::mutex write_queue_lock_, connection_lock_;
-        bool initialized_, connected_, reconnecting_, writing_;
+        volatile bool initialized_, connected_, reconnecting_, writing_;
         boost::asio::deadline_timer reconnect_timer_, ping_timer_;
     };
 }

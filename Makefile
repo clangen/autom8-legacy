@@ -7,34 +7,43 @@
 #LD_FLAGS := -shared -o libautom8.so
 
 # cross compile
+#C := arm-linux-gnueabihf-gcc
 #CXX := arm-linux-gnueabihf-g++
 #DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
 #DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
 #LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -fPIC
+#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -fPIC
+#CXXFLAGS := $(CFLAGS) -fexceptions
 #LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 #LD_FLAGS := -shared -o libautom8.so
 
 # linux
+#C := gcc
 #CXX := g++
 #DEFAULT_INCLUDES :=
 #LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
+#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
+#CXXFLAGS := $(CFLAGS) -fexceptions
 #LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 #LD_FLAGS := -shared -o libautom8.so
 
 # mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems
 # when using node.js with ffi. specifically: memory allocation issues and random
 # segfaults. why? who knows...
+C := clang
 CXX := clang++
 DEFAULT_INCLUDES :=
 DEFAULT_LIBRARIES := -L/usr/local/lib
 LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -g
-LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lsqlite3 -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
+CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
+CXXFLAGS := $(CFLAGS) -fexceptions
+LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
 LD_FLAGS := -dynamiclib -o libautom8.dylib
 
-SOURCES = \
+C_SOURCES = \
+	3rdparty/src/sqlite/sqlite3.c
+
+CXX_SOURCES = \
 	3rdparty/src/lib_json/json_reader.cpp \
 	3rdparty/src/lib_json/json_writer.cpp \
 	3rdparty/src/lib_json/json_value.cpp \
@@ -72,14 +81,18 @@ SOURCES = \
 	libautom8/src/autom8.cpp \
 	autom8_cli/autom8_cli.cpp
 
-OBJECTS = $(SOURCES:%.cpp=%.o)
+CXX_OBJECTS = $(CXX_SOURCES:%.cpp=%.o)
+C_OBJECTS = $(C_SOURCES:%.c=%.o)
 
-all: $(OBJECTS)
-	#$(CXX) -o autom8_cli/autom8_cli $(OBJECTS) $(LIBRARY_FLAGS)
-	$(CXX) $(LD_FLAGS) $(OBJECTS) $(LIBRARY_FLAGS)
+all: $(C_OBJECTS) $(CXX_OBJECTS)
+	#$(CXX) -o autom8_cli/autom8_cli $(C_OBJECTS) $(CXX_OBJECTS) $(LIBRARY_FLAGS)
+	$(CXX) $(LD_FLAGS) $(C_OBJECTS) $(CXX_OBJECTS) $(LIBRARY_FLAGS)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(LOCAL_INCLUDES) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%.o: %.c
+	$(C) $(CFLAGS) -c -o $@ $<
 
 push: all
 	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
@@ -88,5 +101,7 @@ push: all
 	scp -r autom8_node/server/backend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/backend
 
 clean:
-	-rm -f $(OBJECTS) *~
+	-rm -f $(CXX_OBJECTS) $(C_OBJECTS) *~
 	-rm autom8_cli/autom8_cli
+	-rm libautom8.so
+	-rm libautom8.dylib

@@ -7,12 +7,13 @@
 using namespace autom8;
 
 static const std::string TAG = "preferences";
+static const int OPEN_FLAGS = SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX;
 
 preferences::preferences(const std::string& name)
 : connection_(NULL)
 , name_(name) {
     std::string filename = utility::settings_directory() + "preferences.db";
-    if (sqlite3_open(filename.c_str(), &connection_) != SQLITE_OK) {
+    if (sqlite3_open_v2(filename.c_str(), &connection_, OPEN_FLAGS, 0) != SQLITE_OK) {
         debug::log(debug::error, TAG, "unable to open preferences file!");
         throw std::exception();
     }

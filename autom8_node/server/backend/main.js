@@ -59,7 +59,7 @@ function testPreferences() {
             console.log(INFO, '  result:', result);
         }),
 
-        libautom8.rpc("server", "set_preference", {key: "rpc.mode", value: "sync" }).then(function(result) {
+        libautom8.rpc("server", "set_preference", {key: "rpc.mode", value: "async" }).then(function(result) {
             console.log(INFO, "system::set_preference(rpc.mode)");
             console.log(INFO, '  result:', result);
         }),

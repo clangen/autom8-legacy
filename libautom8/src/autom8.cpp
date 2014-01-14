@@ -21,6 +21,7 @@
 #include <devices/x10/mochad/mochad_device_system.hpp>
 #include <boost/date_time.hpp>
 #include <boost/thread/thread.hpp>
+#include <sqlite3.h>
 
 using namespace autom8;
 
@@ -45,6 +46,7 @@ rpc_callback rpc_callback_ = no_op;
 #define RPC_TAG "rpc_queue"
 
 /* processing thread */
+static volatile int rpc_mode_ = AUTOM8_RPC_MODE_ASYNC;
 boost::thread* io_thread_ = 0;
 boost::mutex io_thread_lock_, enforce_serial_lock_;
 boost::asio::io_service io_service_;
@@ -156,12 +158,17 @@ static console_logger* default_logger_ = 0;
 /* init, deinit */
 static bool initialized_ = false;
 
-int autom8_init() {
+int autom8_init(int rpc_mode) {
     if (initialized_) {
         return AUTOM8_ALREADY_INITIALIZED;
     }
 
-    start_rpc_queue();
+    sqlite3_config(SQLITE_CONFIG_SERIALIZED);
+
+    rpc_mode_ = rpc_mode;
+    if (rpc_mode == AUTOM8_RPC_MODE_ASYNC) {
+        start_rpc_queue();
+    }
 
     {
         boost::mutex::scoped_lock lock(external_logger_mutex_);
@@ -501,14 +508,11 @@ static void handle_system(json_value_ref input) {
 
 /* generic rpc interface */
 void autom8_rpc(const char* input) {
-    std::string rpcMode = "sync";
-    utility::prefs().get("rpc.mode", rpcMode);
-
-    if (rpcMode == "sync") {
-        process_rpc_request(std::string(input));
+    if (rpc_mode_ == AUTOM8_RPC_MODE_ASYNC) {
+        enqueue_rpc_request(std::string(input));
     }
     else {
-        enqueue_rpc_request(std::string(input));
+        process_rpc_request(std::string(input));
     }
 }
 

@@ -10,6 +10,9 @@ typedef void (*rpc_callback)(const char*);
 #define AUTOM8_FALSE 0
 #define AUTOM8_TRUE 1
 
+#define AUTOM8_RPC_MODE_SYNC 1
+#define AUTOM8_RPC_MODE_ASYNC 2
+
 #define AUTOM8_OK 1
 #define AUTOM8_UNKNOWN -1
 #define AUTOM8_INVALID_ARGUMENT -2
@@ -30,7 +33,7 @@ typedef void (*rpc_callback)(const char*);
 
 extern "C" {
     dll_export const char* autom8_version();
-    dll_export int autom8_init();
+    dll_export int autom8_init(int rpc_mode = AUTOM8_RPC_MODE_ASYNC);
     dll_export int autom8_deinit();
     dll_export int autom8_set_logger(log_func);
     dll_export int autom8_set_rpc_callback(rpc_callback);

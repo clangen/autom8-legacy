@@ -19,15 +19,12 @@ namespace autom8 {
         bool set(const KT& key, const VT& value);
 
     private:
-        boost::mutex connection_lock_;
         sqlite3* connection_;
         std::string name_;
     };
 
     template <typename KT, typename VT>
     VT& preferences::get(const KT& key, VT& value) {
-        boost::mutex::scoped_lock lock(connection_lock_); /* TODO: heavy handed. why is this necessary?? */
-
         std::string query = std::string(" SELECT value FROM ") + name_ + std::string(" WHERE key LIKE ?;");
 
         std::string key_str = boost::lexical_cast<std::string>(key);
@@ -65,8 +62,6 @@ namespace autom8 {
 
     template <typename KT, typename VT>
     bool preferences::set(const KT& key, const VT& value) {
-        boost::mutex::scoped_lock lock(connection_lock_); /* TODO: heavy handed. necessary? */
-
         std::string key_str, value_str;
         try {
             key_str = boost::lexical_cast<std::string>(key);
@@ -76,7 +71,7 @@ namespace autom8 {
             return false;
         }
 
-        std::string query = " REPLACE INTO " + name_ + " (key, value) VALUES(?, ?);";
+        std::string query = std::string(" REPLACE INTO ") + name_ + std::string(" (key, value) VALUES(?, ?);");
 
         sqlite3_stmt* stmt = NULL;
 

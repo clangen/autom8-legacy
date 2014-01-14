@@ -6,6 +6,9 @@ var path = require('path');
 var Q = require('q');
 require('colors');
 
+var RPC_MODE_SYNC = 1;
+var RPC_MODE_ASYNC = 2;
+
 var INFO = "[bridge]".grey;
 var ERROR = "[bridge]".magenta;
 var RPC_SEND = "[rpc send]".yellow;
@@ -32,7 +35,7 @@ var loadLibrary = function(dllDir) {
 
     return ffi.Library(dllDir + "/libautom8", {
         "autom8_version": ['string', []],
-        "autom8_init": ['int', []],
+        "autom8_init": ['int', ['int']],
         "autom8_deinit": ['int', []],
         "autom8_set_logger": ['int', ['pointer']],
         "autom8_set_rpc_callback": ['int', ['pointer']],
@@ -64,7 +67,7 @@ var makeRpcCall = function(component, command, options, promise) {
     dll.autom8_rpc.async(payload, function(err, res) {
         if (err) {
             setImmediate(function() {
-                delete pinned['rpc-' + id];
+                delete handlers[id];
                 promise.reject({status: -1, message: "low-level call failed"});
             });
         }
@@ -104,8 +107,12 @@ var initRpcCallback = function() {
     console.log(INFO, "rpc callback registered");
 };
 
-exports.init = function(directory) {
+exports.init = function(options) {
     var deferred = Q.defer();
+
+    options = options || { };
+    var rpcMode = options.rpcMode || RPC_MODE_ASYNC;
+    var directory = options.directory;
 
     if (!dll) {
         directory = directory || path.resolve(__dirname + '/../../../');
@@ -118,7 +125,7 @@ exports.init = function(directory) {
         initLogging();
         initRpcCallback();
         console.log(INFO, "autom8_version:", dll.autom8_version());
-        console.log(INFO, "autom8_version:", dll.autom8_init());
+        console.log(INFO, "autom8_version:", dll.autom8_init(rpcMode));
         initialized = true;
     }
 

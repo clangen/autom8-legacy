@@ -28,3 +28,4 @@ autom8_cli/autom8_cli.vcxproj.user
 autom8_cli/autom8_cli
 libautom8.so
 libautom8.dylib
+autom8_server_qt/GeneratedFiles/

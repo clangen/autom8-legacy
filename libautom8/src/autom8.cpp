@@ -23,6 +23,10 @@
 #include <boost/thread/thread.hpp>
 #include <sqlite3.h>
 
+#ifdef WIN32
+#include <devices/x10/cm15a/cm15a_device_system.hpp>
+#endif
+
 using namespace autom8;
 
 #define REJECT_IF_NOT_INITIALIZED(input) if (!initialized_) { respond_with_status(input, AUTOM8_NOT_INITIALIZED); return; }

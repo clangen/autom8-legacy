@@ -94,6 +94,12 @@
     <ClCompile Include="devices\simple_device.cpp">
       <Filter>libautom8\device</Filter>
     </ClCompile>
+    <ClCompile Include="devices\x10\mochad\mochad_device_system.cpp">
+      <Filter>libautom8\device\x10\mochad</Filter>
+    </ClCompile>
+    <ClCompile Include="devices\x10\mochad\mochad_controller.cpp">
+      <Filter>libautom8\device\x10\mochad</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="devices\device_model.hpp">
@@ -216,6 +222,12 @@
     <ClInclude Include="devices\simple_device.hpp">
       <Filter>libautom8\device</Filter>
     </ClInclude>
+    <ClInclude Include="devices\x10\mochad\mochad_device_system.hpp">
+      <Filter>libautom8\device\x10\mochad</Filter>
+    </ClInclude>
+    <ClInclude Include="devices\x10\mochad\mochad_controller.hpp">
+      <Filter>libautom8\device\x10\mochad</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="libautom8">
@@ -244,6 +256,9 @@
     </Filter>
     <Filter Include="libautom8\protocol\server\request_handlers">
       <UniqueIdentifier>{0eb3c203-9f1c-4c7b-8a16-ef4658b8fdce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libautom8\device\x10\mochad">
+      <UniqueIdentifier>{6bef4c88-85cf-4493-b0e8-70ec3a6a67ed}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

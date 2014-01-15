@@ -104,6 +104,8 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
     <ClCompile Include="db.cpp" />
     <ClCompile Include="devices\null_device_system.cpp" />
     <ClCompile Include="devices\simple_device.cpp" />
+    <ClCompile Include="devices\x10\mochad\mochad_controller.cpp" />
+    <ClCompile Include="devices\x10\mochad\mochad_device_system.cpp" />
     <ClCompile Include="request.cpp" />
     <ClCompile Include="response.cpp" />
     <ClCompile Include="devices\device_base.cpp" />
@@ -135,6 +137,8 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
     <ClInclude Include="common_messages.hpp" />
     <ClInclude Include="db.hpp" />
     <ClInclude Include="devices\simple_device.hpp" />
+    <ClInclude Include="devices\x10\mochad\mochad_controller.hpp" />
+    <ClInclude Include="devices\x10\mochad\mochad_device_system.hpp" />
     <ClInclude Include="devices\x10\x10_device_controller.hpp" />
     <ClInclude Include="export.h" />
     <ClInclude Include="message_formatter.hpp" />

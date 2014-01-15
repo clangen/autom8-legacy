@@ -2,16 +2,13 @@
 	"folders":
 	[
 		{
-			"file_exclude_patterns":
-			[
-				""
-			],
 			"folder_exclude_patterns":
 			[
-				"3rdparty/include/boost"
+				"3rdparty/include/win32",
+				"autom8_node/node_modules"
 			],
 			"follow_symlinks": true,
-			"path": "/Users/clangen/suncrash/autom8"
+			"path": "."
 		},
 		{
 			"follow_symlinks": true,

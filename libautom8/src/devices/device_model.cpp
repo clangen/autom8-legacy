@@ -20,6 +20,7 @@ using namespace autom8;
 #define DEVICE_ID_COLUMN "device_id"
 
 static const std::string TAG = "device_model";
+static const int OPEN_FLAGS = SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX;
 
 device_model::device_model(device_factory_ptr factory)
 : factory_(factory)
@@ -29,7 +30,7 @@ device_model::device_model(device_factory_ptr factory)
 
     // connect to the db.
     std::string filename = utility::settings_directory() + "devices.db";
-    if (sqlite3_open(filename.c_str(), &connection_) != SQLITE_OK) {
+    if (sqlite3_open_v2(filename.c_str(), &connection_, OPEN_FLAGS, 0) != SQLITE_OK) {
         debug::log(debug::error, TAG, "unable to open devices database!");
         throw std::exception();
     }

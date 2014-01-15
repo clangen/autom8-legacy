@@ -1,1 +1,2 @@
 <script src="js/controller/MainController.js" type="text/javascript"></script>
+<script src="js/view/MainView.js" type="text/javascript"></script>

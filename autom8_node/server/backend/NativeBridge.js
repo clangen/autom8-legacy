@@ -70,14 +70,7 @@ var makeRpcCall = function(component, command, options, promise) {
     };
 
     console.log(RPC_SEND, logId, payload);
-    dll.autom8_rpc.async(payload, function(err, res) {
-        if (err) {
-            setImmediate(function() {
-                delete handlers[id];
-                promise.reject({status: -1, message: "low-level call failed"});
-            });
-        }
-    });
+    dll.autom8_rpc(payload);
 };
 
 var initLogging = function() {
@@ -103,8 +96,6 @@ var initLogging = function() {
 
 var initRpcCallback = function() {
     var rpcCallback = ffi.Callback('void', ['string'], function(response) {
-        // console.log(JSON.stringify(response));
-
         response = JSON.parse(response);
         var id = response.id;
         var handler = handlers[id];
@@ -143,29 +134,27 @@ exports.init = function(options) {
         initialized = true;
     }
 
-    deferred.resolve();
+    setTimeout(function(){
+        deferred.resolve();
+    });
+
     return deferred.promise;
 };
 
 exports.deinit = function() {
     var deferred = Q.defer();
 
-    if (!initialized) {
+    if (initialized) {
+        dll.autom8_deinit();
+        console.log(INIT, "autom8_deinit completed");
+        initialized = false;
+    }
+
+    setTimeout(function() {
         deferred.resolve();
-    }
-    else {
-        dll.autom8_deinit.async(function(err, res) {
-            console.log(INIT, "autom8_deinit completed");
-            initialized = false;
-            deferred.resolve();
-        });
-    }
+    });
 
     return deferred.promise;
-};
-
-exports.version = function() {
-    return dll.autom8_version();
 };
 
 exports.rpc = function(component, command, options) {

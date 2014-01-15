@@ -5,7 +5,7 @@ namespace("autom8.controller").MainController = (function() {
     ],
 
     onCreate: function(options) {
-      this.view = new autom8.mvc.View({el: $("#main-content")});
+      this.view = new autom8.view.MainView();
       autom8.client.on('connected', this.onConnected, this);
       autom8.client.on('disconnected', this.onDisconnected, this);
       autom8.client.on('expired', this.onDisconnected, this);
@@ -15,8 +15,11 @@ namespace("autom8.controller").MainController = (function() {
         autom8.client.connect();
 
         setTimeout(function() {
-          debugger;
-          autom8.client.send("autom8://service/rpc", {hello: "world"});
+          // autom8.client.send("autom8://service/rpc", {
+          //     component: "server",
+          //     command: "start",
+          //     options: { }
+          // });
         }, 2000);
       }, 2000);
     },
@@ -28,7 +31,7 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onConnected: function() {
-      debugger;
+
     },
 
     onDisconnected: function() {

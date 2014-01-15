@@ -24,13 +24,22 @@
 
     /* establish binding with native layer before starting
     the http server */
-    autom8.init().then(function() {
+    autom8.init()
+
+    .then(function() {
       app = httpServer.create();
       sessions.init(app); /* accept socket sessions */
 
       /* backend entry point for rpc call from trusted client */
-      sessions.on('sendMessage', function(request) {
-        console.log(JSON.stringify(request));
+      sessions.on('sendMessage', function(message) {
+        if (message.uri === "autom8://service/rpc") {
+          var parts = message.body;
+          autom8.rpc(parts.component, parts.command, parts.options || { })
+
+          .then(function(result) {
+            console.log(result);
+          });
+        }
       });
 
       app.start();

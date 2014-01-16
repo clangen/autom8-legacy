@@ -1,21 +1,23 @@
+#C := clang
 #CXX := clang++
-#LLVMCONFIG := /usr/bin/llvm-config-3.3
+#LLVMCONFIG := /usr/bin/llvm-config-3.4
 #DEFAULT_INCLUDES := -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
 #LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -g
-#LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
+#CXXFLAGS := $(CFLAGS) -fexceptions
+#LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 #LD_FLAGS := -shared -o libautom8.so
 
 # cross compile
-#C := arm-linux-gnueabihf-gcc
-#CXX := arm-linux-gnueabihf-g++
-#DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
-#DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -fPIC
-#CXXFLAGS := $(CFLAGS) -fexceptions
-#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
-#LD_FLAGS := -shared -o libautom8.so
+C := arm-linux-gnueabihf-gcc
+CXX := arm-linux-gnueabihf-g++
+DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
+DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
+LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src -g
+CFLAGS := $(LOCAL_INCLUDES) $(DEFAULT_INCLUDES)  -Wno-extra-tokens -fPIC
+CXXFLAGS := $(CFLAGS) -fexceptions
+LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+LD_FLAGS := -shared -o libautom8.so
 
 # linux
 #C := gcc
@@ -30,15 +32,15 @@
 # mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems
 # when using node.js with ffi. specifically: memory allocation issues and random
 # segfaults. why? who knows...
-C := clang
-CXX := clang++
-DEFAULT_INCLUDES :=
-DEFAULT_LIBRARIES := -L/usr/local/lib
-LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
-CXXFLAGS := $(CFLAGS) -fexceptions
-LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
-LD_FLAGS := -dynamiclib -o libautom8.dylib
+#C := clang
+#CXX := clang++
+#DEFAULT_INCLUDES :=
+#DEFAULT_LIBRARIES := -L/usr/local/lib
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
+#CXXFLAGS := $(CFLAGS) -fexceptions
+#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
+#LD_FLAGS := -dynamiclib -o libautom8.dylib
 
 C_SOURCES = \
 	3rdparty/src/sqlite/sqlite3.c
@@ -95,10 +97,10 @@ all: $(C_OBJECTS) $(CXX_OBJECTS)
 	$(C) $(CFLAGS) -c -o $@ $<
 
 push: all
-	scp libautom8.so pi@192.168.1.245:/home/pi/src/autom8/
-#	scp autom8_cli/autom8_cli pi@192.168.1.245:/home/pi/src/autom8/autom8_cli
-	scp -r autom8_node/server/frontend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/frontend
-	scp -r autom8_node/server/backend/* pi@192.168.1.245:/home/pi/src/autom8/autom8_node/server/backend
+	scp libautom8.so pi@autom8:/home/pi/src/autom8/
+#	scp autom8_cli/autom8_cli pi@autom8:/home/pi/src/autom8/autom8_cli
+#	scp -r autom8_node/server/frontend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/frontend
+#	scp -r autom8_node/server/backend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/backend
 
 clean:
 	-rm -f $(CXX_OBJECTS) $(C_OBJECTS) *~

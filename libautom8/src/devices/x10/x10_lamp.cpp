@@ -34,11 +34,15 @@ void x10_lamp::on_controller_message(const std::vector<std::string>& status_valu
     std::string type(status_values[2]);
     std::transform(type.begin(), type.end(), type.begin(), tolower);
 
-    // X10 isn't smart enough to restore brightness state when we
-    // turn a lamp off, then back on. first, remember the current brightness...
-    if (type == "off") {
-        last_brightness_ = brightness_;
-        brightness_ = 100;
+    {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+        // X10 isn't smart enough to restore brightness state when we
+        // turn a lamp off, then back on. first, remember the current brightness...
+        if (type == "off") {
+            last_brightness_ = brightness_;
+            brightness_ = 100;
+        }
     }
 
     base::on_controller_message(status_values);
@@ -50,32 +54,42 @@ void x10_lamp::on_controller_message(const std::vector<std::string>& status_valu
 }
 
 void x10_lamp::get_extended_json_attributes(json_value& target) {
+    boost::recursive_mutex::scoped_lock lock(state_mutex());
     target["brightness"] = brightness_;
 }
 
 void x10_lamp::set_brightness(int new_brightness) {
-    if (status() == device_status_off) {
-        last_brightness_ = new_brightness;
-        return;
+    std::string command_string;
+    bool update = false;
+
+    {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+        if (status_ == device_status_off) {
+            last_brightness_ = new_brightness;
+            return;
+        }
+
+        // when you adjust the brightness you first need to determine whether the
+        // new value will cause the lamp to bright, or dim, then calculate a delta.
+        if (new_brightness != brightness_) {
+            std::string command = (new_brightness > brightness_) ? "bright" : "dim";
+            int delta = abs(new_brightness - brightness_);
+
+            // build the string
+            std::string command_string = (boost::format("%1% %2% %3%")
+                % address_
+                % command
+                % delta).str();
+
+            // update clients
+            brightness_ = new_brightness;
+            update = true;
+        }
     }
 
-    // when you adjust the brightness you first need to determine whether the
-    // new value will cause the lamp to bright, or dim, then calculate a delta.
-    if (new_brightness != brightness_) {
-        std::string command = (new_brightness > brightness_) ? "bright" : "dim";
-        int delta = abs(new_brightness - brightness_);
-
-        // build the string
-        std::string command_string = (boost::format("%1% %2% %3%")
-            % address()
-            % command
-            % delta).str();
-
-        // send the command
+    if (update) {
         owner()->send_device_message(powerline_command, command_string.c_str());
-
-        // update clients
-        brightness_ = new_brightness;
         on_status_changed();
         server::send(messages::responses::device_status_updated(shared_from_this()));
     }

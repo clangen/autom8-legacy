@@ -2,6 +2,8 @@
 #define __C_AUTOM8_SIMPLE_DEVICE_HPP__
 
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
+
 #include "device_base.hpp"
 
 namespace autom8 {
@@ -39,6 +41,7 @@ namespace autom8 {
 
     protected:
         virtual void on_updated();
+        boost::recursive_mutex& state_mutex();
 
     protected:
         std::string label_;
@@ -46,6 +49,7 @@ namespace autom8 {
         std::vector<std::string> groups_;
         device_status status_;
         database_id id_;
+        boost::recursive_mutex state_mutex_;
     };
 }
 

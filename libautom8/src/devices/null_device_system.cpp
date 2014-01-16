@@ -35,6 +35,8 @@ public:
 
     /* device base */
     void get_extended_json_attributes(json_value& target) {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
+
         if (type_ == device_type_lamp) {
             target["brightness"] = brightness_;
         }
@@ -46,64 +48,127 @@ public:
 
     /* simple device */
     virtual device_type type() {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
         return type_;
     }
 
     virtual void turn_on() {
-        if (status_ != device_status_on) {
-            status_ = device_status_on;
+        bool changed = false;
+
+        {
+            boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+            if (status_ != device_status_on) {
+                status_ = device_status_on;
+                changed = true;
+            }
+        }
+
+        if (changed) {
             on_status_changed();
         }
     }
 
     virtual void turn_off() {
-        if (status_ != device_status_off) {
-            status_ = device_status_off;
+        bool changed = false;
+
+        {
+            boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+            if (status_ != device_status_off) {
+                status_ = device_status_off;
+                changed = true;
+            }
+        }
+
+        if (changed) {
             on_status_changed();
         }
     }
 
     /* lamp */
     virtual int brightness() {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
         return brightness_;
     }
 
     virtual void set_brightness(int brightness) {
-        if (brightness != brightness_) {
-            brightness_ = brightness;
+        bool changed = false;
+
+        {
+            boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+            if (brightness != brightness_) {
+                brightness_ = brightness;
+                changed = true;
+            }
+        }
+
+        if (changed) {
             on_status_changed();
         }
     };
 
     /* security_sensor */
     virtual void arm() {
-        if (!armed_ || status_ != device_status_on) {
-            armed_ = true;
-            status_ = device_status_on;
+        bool changed = false;
+
+        {
+            boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+            if (!armed_ || status_ != device_status_on) {
+                armed_ = true;
+                status_ = device_status_on;
+                changed = true;
+            }
+        }
+
+        if (changed) {
             on_status_changed();
         }
     }
 
     virtual void disarm() {
-        if (armed_ || status_ == device_status_on) {
-            armed_ = false;
-            status_ = device_status_off;
+        bool changed = false;
+
+        {
+            boost::recursive_mutex::scoped_lock lock(state_mutex());
+
+            if (armed_ || status_ == device_status_on) {
+                armed_ = false;
+                status_ = device_status_off;
+                changed = true;
+            }
+        }
+
+        if (changed) {
             on_status_changed();
         }
     }
 
     virtual void reset() {
-        if (tripped_) {
-            tripped_ = false;
+        bool changed = false;
+
+        {
+            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            if (tripped_) {
+                tripped_ = false;
+                changed = true;
+            }
+        }
+
+        if (changed) {
             on_status_changed();
         }
     }
 
     virtual bool is_armed() {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
         return armed_;
     }
 
     virtual bool is_tripped() {
+        boost::recursive_mutex::scoped_lock lock(state_mutex());
         return tripped_;
     }
 

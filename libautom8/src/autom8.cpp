@@ -516,7 +516,7 @@ void autom8_rpc(const char* input) {
         enqueue_rpc_request(std::string(input));
     }
     else {
-        process_rpc_request(std::string(input));
+        handle_rpc_request(std::string(input));
     }
 }
 

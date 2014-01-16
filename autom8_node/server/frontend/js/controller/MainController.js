@@ -33,42 +33,60 @@ namespace("autom8.controller").MainController = (function() {
       this.view = new autom8.view.MainView({ el: $('.main-content-left') });
 
       var self = this;
-      this.view.on('restartClicked', function() {
-          Q.all([
-            autom8.client.rpc.send({
-              component: "server", command: "status", options: { }
-            }),
 
-            autom8.client.rpc.send({
-              component: "system", command: "list_devices", options: { }
-            })
-          ])
+      this.view.on('start:clicked', function() {
+        autom8.client.rpc.send({
+          component: "server", command: "start", options: { }
+        });
+          // Q.all([
+          //   autom8.client.rpc.send({
+          //     component: "server", command: "status", options: { }
+          //   }),
 
-          .spread(function(status, devices) {
-            renderServerStatus(self.view, status);
-          })
+          //   autom8.client.rpc.send({
+          //     component: "system", command: "list_devices", options: { }
+          //   })
+          // ])
+
+          // .spread(function(status, devices) {
+          //   renderServerStatus(self.view, status);
+          // });
+      });
+
+      this.view.on('stop:clicked', function() {
+        autom8.client.rpc.send({
+          component: "server", command: "stop", options: { }
+        });
       });
 
       autom8.client.on('connected', this.onConnected, this);
       autom8.client.on('disconnected', this.onDisconnected, this);
       autom8.client.on('expired', this.onDisconnected, this);
-      autom8.client.authenticate("empty");
+      autom8.client.on('state:changed', this.onClientStateChanged, this);
 
-      setTimeout(function() { /* wait for auth. fixme */
-        autom8.client.connect();
-      }, 2000);
+      /* get auth cookie. after we have the auth cookie we can connect */
+      autom8.client.authenticate("empty");
     },
 
     onDestroy: function() {
       autom8.client.off('connected', this.onConnected, this);
       autom8.client.off('disconnected', this.onDisconnected, this);
       autom8.client.off('expired', this.onDisconnected, this);
+      autom8.client.pff('state:changed', this.onClientStateChanged, this);
     },
 
     onConnected: function() {
+      debugger;
     },
 
     onDisconnected: function() {
+      debugger;
+    },
+
+    onClientStateChanged: function(state) {
+      if (state === "authenticated") {
+        autom8.client.connect();
+      }
     }
   });
 }());

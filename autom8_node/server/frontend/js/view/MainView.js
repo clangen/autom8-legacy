@@ -3,8 +3,12 @@
 
   var MainView = View.extend({
     events: {
-      'touch .restart-button': function(e) {
-        this.trigger('restartClicked');
+      'touch .button.start': function(e) {
+        this.trigger('start:clicked');
+      },
+
+      'touch .button.stop': function(e) {
+        this.trigger('stop:clicked');
       }
     },
 

@@ -1,10 +1,12 @@
-#CXX := clang++
-#LLVMCONFIG := /usr/bin/llvm-config-3.3
-#DEFAULT_INCLUDES := -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CXXFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -fexceptions -Wno-extra-tokens -g
-#LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
-#LD_FLAGS := -shared -o libautom8.so
+C := clang
+CXX := clang++
+LLVMCONFIG := /usr/bin/llvm-config-3.4
+DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
+LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
+CXXFLAGS := $(CFLAGS) -fexceptions
+LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+LD_FLAGS := -shared -o libautom8.so
 
 # cross compile
 #C := arm-linux-gnueabihf-gcc
@@ -30,15 +32,15 @@
 # mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems
 # when using node.js with ffi. specifically: memory allocation issues and random
 # segfaults. why? who knows...
-C := clang
-CXX := clang++
-DEFAULT_INCLUDES :=
-DEFAULT_LIBRARIES := -L/usr/local/lib
-LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
-CXXFLAGS := $(CFLAGS) -fexceptions
-LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
-LD_FLAGS := -dynamiclib -o libautom8.dylib
+#C := clang
+#CXX := clang++
+#DEFAULT_INCLUDES :=
+#DEFAULT_LIBRARIES := -L/usr/local/lib
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
+#CXXFLAGS := $(CFLAGS) -fexceptions
+#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
+#LD_FLAGS := -dynamiclib -o libautom8.dylib
 
 C_SOURCES = \
 	3rdparty/src/sqlite/sqlite3.c

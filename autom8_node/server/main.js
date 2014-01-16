@@ -31,14 +31,23 @@
       sessions.init(app); /* accept socket sessions */
 
       /* backend entry point for rpc call from trusted client */
-      sessions.on('sendMessage', function(message) {
-        if (message.uri === "autom8://service/rpc") {
+      sessions.on('sendMessage', function(message, socket) {
+        if (message.uri === "autom8://request/libautom8/rpc") {
           var parts = message.body;
-          autom8.rpc(parts.component, parts.command, parts.options || { })
 
-          .then(function(result) {
-            console.log(result);
-          });
+          if (parts.id && parts.component && parts.command) {
+            autom8.rpc(parts.component, parts.command, parts.options || { })
+
+            .then(function(result) {
+              result.id = parts.id;
+              console.log(result);
+
+              socket.emit('recvMessage', {
+                uri: 'autom8://response/libautom8/rpc',
+                body: result
+              });
+            });
+          }
         }
       });
 

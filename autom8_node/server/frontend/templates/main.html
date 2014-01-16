@@ -1,8 +1,25 @@
 <script id="autom8-View-MainView" type="text/x-handlebars-template">
+  <div class="restart-button">query</div>
+</script>
+
+<script id="autom8-View-ServerInfo" type="text/x-handlebars-template">
+  <div class="setting-row">
+    <div class="label">version:</div>
+    <div class="value">{{version}}</div>
+  </div>
   <div class="setting-row">
     <div class="label">system:</div>
-    <div class="value">unknown</div>
+    <div class="value">{{system}}</div>
   </div>
+  <div class="setting-row">
+    <div class="label">fingerprint:</div>
+    <div class="value">{{fingerprint}}</div>
+  </div>
+</script>
 
-  <div class="restart-button"></div>
+<script id="autom8-View-SettingRow" type="text/x-handlebars-template">
+  <div class="setting-row">
+    <div class="label">{{key}}:</div>
+    <div class="value">{{value}}</div>
+  </div>
 </script>

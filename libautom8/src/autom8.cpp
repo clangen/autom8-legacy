@@ -260,6 +260,7 @@ static int server_start();
 static int server_stop();
 static int server_set_preference(json_value& options);
 static json_value_ref server_get_preference(json_value& options);
+static json_value_ref server_status();
 
 static void handle_server(json_value_ref input) {
     std::string command = input->get("command", "").asString();
@@ -269,7 +270,10 @@ static void handle_server(json_value_ref input) {
         options = json_value(Json::objectValue);
     }
 
-    if (command == "start") {
+    if (command == "status") {
+        respond_with_status(input, server_status());
+    }
+    else if (command == "start") {
         respond_with_status(input, server_start());
     }
     else if (command == "stop") {
@@ -323,6 +327,21 @@ json_value_ref server_get_preference(json_value& options) {
             (*result)["message"] = message;
         }
     }
+
+    return result;
+}
+
+json_value_ref server_status() {
+    json_value_ref result(new json_value());
+
+    std::string system = "null", fingerprint = "unknown";
+    utility::prefs().get("system.selected", system);
+    utility::prefs().get("fingerprint", fingerprint);
+
+    (*result)["system_id"] = system;
+    (*result)["fingerprint"] = fingerprint;
+    (*result)["running"] = server::is_running();
+    (*result)["version"] = std::string(VERSION);
 
     return result;
 }
@@ -493,20 +512,23 @@ static void handle_system(json_value_ref input) {
     else if (command == "selected") {
         respond_with_status(input, system_selected());
     }
-    else if (command == "select") {
-        respond_with_status(input, system_select(options));
-    }
     else if (command == "list_devices") {
         respond_with_status(input, system_list_devices());
     }
-    else if (command == "add_device") {
-        respond_with_status(input, system_add_device(options));
-    }
-    else if (command == "delete_device") {
-        respond_with_status(input, system_delete_device(options));
-    }
     else {
-        respond_with_status(input, AUTOM8_INVALID_COMMAND);
+        REJECT_IF_SERVER_STARTED(input)
+        else if (command == "select") {
+            respond_with_status(input, system_select(options));
+        }
+        else if (command == "add_device") {
+            respond_with_status(input, system_add_device(options));
+        }
+        else if (command == "delete_device") {
+            respond_with_status(input, system_delete_device(options));
+        }
+        else {
+            respond_with_status(input, AUTOM8_INVALID_COMMAND);
+        }
     }
 }
 
@@ -547,7 +569,6 @@ static void process_rpc_request(const std::string& input) {
         handle_server(parsed);
     }
     else if (component == "system") {
-        REJECT_IF_SERVER_STARTED(parsed)
         handle_system(parsed);
     }
     else {

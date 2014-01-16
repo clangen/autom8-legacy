@@ -334,14 +334,22 @@ json_value_ref server_get_preference(json_value& options) {
 json_value_ref server_status() {
     json_value_ref result(new json_value());
 
-    std::string system = "null", fingerprint = "unknown";
+    std::string system = "null", fingerprint = "unknown", port = "7901";
     utility::prefs().get("system.selected", system);
     utility::prefs().get("fingerprint", fingerprint);
+    utility::prefs().get("port", port);
+
+    std::string description;
+    if (device_system::instance()) {
+        description = device_system::instance()->description();
+    }
 
     (*result)["system_id"] = system;
+    (*result)["system_description"] = description;
     (*result)["fingerprint"] = fingerprint;
     (*result)["running"] = server::is_running();
     (*result)["version"] = std::string(VERSION);
+    (*result)["port"] = port;
 
     return result;
 }

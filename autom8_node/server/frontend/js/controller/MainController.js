@@ -47,6 +47,10 @@ namespace("autom8.controller").MainController = (function() {
       })
       .then(function(result) {
         self.view.statusView.update(result);
+
+        var $btns = self.view.buttonsView.$el;
+        $btns.find('.button').removeClass('disabled');
+        $btns.find(result.running ? '.start' : '.stop').addClass('disabled');
       });
 
       autom8.client.rpc.send({

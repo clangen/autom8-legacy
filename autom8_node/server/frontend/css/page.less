@@ -44,6 +44,7 @@ body {
 
     td.label {
         text-align: right;
+        padding-right: 8px;
     }
 
     td.value {
@@ -74,13 +75,41 @@ body {
         line-height: 1.1em;
     }
 
-    .device-row {
-        padding: 6px;
-        background-color: #666;
+    li {
+        display: inline-block;
+        width: 50%;
     }
 
-    .odd .device-row {
-        background-color: #444;
+    .device-row:hover {
+        background-color: #777;
+        .box-shadow(0px, 0px, 12px, #444);
+    }
+
+    .device-row {
+        padding: 6px;
+        padding-left: 0;
+        background-color: #666;
+        margin-left: 8px;
+        font-size: 110%;
+        line-height: 110%;
+
+        .value.name {
+            font-size: 110%;
+            text-decoration: underline;
+            padding-bottom: 8px;
+            padding-left: 8px;
+            display: inline-block;
+            color: #eee;
+        }
+
+        .key {
+            font-size: 70%;
+            width: 60px;
+            text-align: right;
+            padding-right: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
     }
 }
 

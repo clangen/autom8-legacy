@@ -1,0 +1,4 @@
+<script src="shared/js/frontend/util/Dialog.js" type="text/javascript"></script>
+<script src="shared/js/frontend/util/Browser.js" type="text/javascript"></script>
+<script src="shared/js/frontend/util/Animation.js" type="text/javascript"></script>
+<script src="shared/js/frontend/util/Timer.js" type="text/javascript"></script>

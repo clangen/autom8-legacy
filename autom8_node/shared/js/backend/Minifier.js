@@ -19,6 +19,7 @@
   var cached = {styles: '', scripts: ''};
 
   var root = process.cwd() + '/frontend';
+  var shared = process.cwd() + '/../shared';
 
   function createLessParser(filename, paths) {
       filename = filename || "";
@@ -32,17 +33,21 @@
 
   function renderTemplates(doc) {
     var result = "";
-    var path = root + '/templates/';
 
-    if (fs.existsSync(path)) {
-      var files = fs.readdirSync(path) || [];
-      for (var i = 0; i < files.length; i++) {
-        if (files[i].match(/.*\.html$/)) {
-          result += fs.readFileSync(path + files[i], "utf8");
-          result += "\n\n";
+    var concat = function(path) {
+      if (fs.existsSync(path)) {
+        var files = fs.readdirSync(path) || [];
+        for (var i = 0; i < files.length; i++) {
+          if (files[i].match(/.*\.html$/)) {
+            result += fs.readFileSync(path + files[i], "utf8");
+            result += "\n\n";
+          }
         }
       }
-    }
+    };
+
+    concat(root + '/templates/');
+    concat(shared + '/templates/');
 
     return doc.replace("{{templates}}", result);
   }

@@ -8,15 +8,15 @@ body {
 .main-content-left {
     position: absolute;
     top: 0;
-    bottom: 0;
     left: 0;
+    min-height: 100%;
     max-width: 640px;
     width: 75%;
     background-color: #555;
     .box-shadow(0px, 0px, 64px, #111);
 
     .header {
-        background-color: #444;
+        background-color: #333;
         padding: 8px;
         margin-bottom: 8px;
     }
@@ -67,14 +67,20 @@ body {
     padding-bottom: 10px;
 
     ul {
-        list-style-type: disc;
-        list-style-position: inside;
-        margin-left: 12px;
     }
 
     ul li {
         padding-bottom: 8px;
         line-height: 1.1em;
+    }
+
+    .device-row {
+        padding: 6px;
+        background-color: #666;
+    }
+
+    .odd .device-row {
+        background-color: #444;
     }
 }
 

@@ -16,6 +16,29 @@
       this.$el.append(View.elementFromTemplateId('autom8-View-MainView'));
     },
 
+    onCreate: function(options) {
+      this.statusView = new autom8.view.StatusView({
+        el: $('.server-info')
+      });
+
+      this.devicesView = new autom8.view.DeviceListView({
+        el: $('.devices')
+      });
+
+      this.buttonsView = new View({
+        el: $('.bottom-buttons'),
+        template: 'autom8-View-ButtonRow'
+      });
+
+      this.nameToViewMap = {
+        'devices': this.devicesView,
+        'status': this.statusView
+      };
+    },
+
+    update: function(view, model) {
+      this.nameToViewMap[view].update(model);
+    }
   });
 
   namespace("autom8.view").MainView = MainView;

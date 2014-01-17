@@ -19,7 +19,7 @@
         <td class="value">{{fingerprint}}</td>
       </tr>
       <tr>
-        <td class="label">port:</td>
+        <td class="label">server port:</td>
         <td class="value"><input class="port-input" value="{{port}}"></input></td>
       </tr>
       <tr>
@@ -33,6 +33,19 @@
 <script id="autom8-View-Devices" type="text/x-handlebars-template">
   <div class="devices">
     <div class="header">connected devices</div>
+    <ul class="list">
+
+    </ul>
+  </div>
+</script>
+
+<script id="autom8-View-DeviceRow" type="text/x-handlebars-template">
+  <div class="device-row">
+    <div>address: {{address}}</div>
+    <div>groups: {{groups}}</div>
+    <div>label: {{label}}</div>
+    <div>status: {{status}}</div>
+    <div>type: {{type}}</div>
   </div>
 </script>
 

@@ -1,3 +1,5 @@
 <script src="js/util/ClientRpc.js" type="text/javascript"></script>
 <script src="js/controller/MainController.js" type="text/javascript"></script>
 <script src="js/view/MainView.js" type="text/javascript"></script>
+<script src="js/view/StatusView.js" type="text/javascript"></script>
+<script src="js/view/DeviceListView.js" type="text/javascript"></script>

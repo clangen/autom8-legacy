@@ -18,10 +18,14 @@ public:
         : simple_device(id, address, label, groups)
         , type_(type)
         , brightness_(100)
-        , armed_(true)
+        , armed_(false)
         , tripped_(false)
     {
+        status_ = device_status_off;
 
+        if (type == device_type_security_sensor) {
+            armed_ = true;
+        }
     }
 
     virtual void on_status_changed() {
@@ -178,6 +182,10 @@ private:
     bool armed_, tripped_;
 };
 
+typedef std::map<std::string, device_ptr> addr_map;
+addr_map addr_to_dev_;
+boost::mutex device_map_mutex_;
+
 device_ptr null_device_system::null_device_factory::create(
     database_id id,
     device_type type,
@@ -185,7 +193,18 @@ device_ptr null_device_system::null_device_factory::create(
     const std::string& label,
     const std::vector<std::string>& groups)
 {
-    return device_ptr(new null_device(id, address, label, groups, type));
+    boost::mutex::scoped_lock lock(device_map_mutex_);
+
+    if (addr_to_dev_.find(address) != addr_to_dev_.end()) {
+        return addr_to_dev_.find(address)->second;
+    }
+
+    device_ptr device = device_ptr(
+        new null_device(id, address, label, groups, type));
+
+    addr_to_dev_[address] = device;
+
+    return device;
 }
 
 std::string null_device_system::null_device_factory::name() const {

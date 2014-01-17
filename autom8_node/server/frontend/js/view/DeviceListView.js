@@ -61,9 +61,18 @@
             'label': d.label || "unnamed",
             'address': d.address,
             'groups': (d.groups || []).join(", ") || "none",
-            'status': statusToString[d.status || -1],
+            'status': statusToString[d.status === undefined ? -1 : d.status],
             'type': typeToString[d.type === undefined ? -1 : d.type]
           };
+
+          if (d.type === 2) {
+            if (d.status === 3) {
+              normalized.status = "ALERT!";
+            }
+            else {
+              normalized.status = (d.attributes.armed) ? "armed" : "disarmed";
+            }
+          }
 
           var row = new View({
             className: i % 2 === 0 ? 'even' : 'odd',

@@ -83,7 +83,9 @@ var initLogging = function() {
         }
 
         var colorFn = Colors[color];
-        console.log(BRIDGE_LOG, LOG_LEVELS[level], "[" + colorFn.call(this, tag) + "]", message);
+        var args = [BRIDGE_LOG, LOG_LEVELS[level], "[" + colorFn.call(this, tag) + "]", message];
+        console.log.apply(this, args);
+        EXPORTS.events.emit('log', args);
     };
 
     var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);
@@ -112,7 +114,11 @@ var initRpcCallback = function() {
     console.log(RPC_ENGINE, "rpc callback registered");
 };
 
-exports.init = function(options) {
+var EXPORTS = { };
+exports = module.exports = EXPORTS;
+EXPORTS.events = Object.create(require('events').EventEmitter.prototype);
+
+EXPORTS.init = function(options) {
     var deferred = Q.defer();
 
     options = options || { };
@@ -141,7 +147,7 @@ exports.init = function(options) {
     return deferred.promise;
 };
 
-exports.deinit = function() {
+EXPORTS.deinit = function() {
     var deferred = Q.defer();
 
     if (initialized) {
@@ -157,7 +163,7 @@ exports.deinit = function() {
     return deferred.promise;
 };
 
-exports.rpc = function(component, command, options) {
+EXPORTS.rpc = function(component, command, options) {
     var deferred = Q.defer();
     makeRpcCall(component, command, options, deferred);
     return deferred.promise;

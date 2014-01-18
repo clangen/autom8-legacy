@@ -23,6 +23,30 @@ body {
     }
 }
 
+.main-content-right {
+    position: fixed;
+    right: 0px;
+    width: 400px;
+    top: 0;
+    bottom: 60px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: #111;
+    border-bottom-left-radius: 10px;
+    .box-shadow(0px, 0px, 64px, #111);
+    direction:rtl;  /* Right To Left */
+    text-align:left; /* Override direction */
+
+    .console {
+        padding: 16px;
+
+        .log-entry {
+            padding-bottom: 6px;
+            display: inline-block;
+        }
+    }
+}
+
 .connection {
     background-color: green;
     position: static;
@@ -96,13 +120,30 @@ body {
         font-size: 110%;
         line-height: 110%;
 
+        .device-row-attr {
+            position: relative;
+        }
+
+        .key, .value {
+            display: inline-block;
+        }
+
+        .value {
+            position: absolute;
+            left: 70px;
+            right: 0px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
         .value.name {
             font-size: 110%;
             text-decoration: underline;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             padding-left: 8px;
-            display: inline-block;
             color: #eee;
+            position: static;
         }
 
         .key {
@@ -111,7 +152,6 @@ body {
             text-align: right;
             padding-right: 4px;
             font-weight: bold;
-            display: inline-block;
         }
     }
 }

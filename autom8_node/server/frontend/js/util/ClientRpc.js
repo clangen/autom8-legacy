@@ -42,9 +42,14 @@
       },
 
       recv: function(uri, body) {
-        if (uri === "autom8://response/libautom8/rpc") {
-          body = JSON.parse(body);
+        body = JSON.parse(body);
 
+        if (uri === "autom8://response/libautom8/log") {
+          /* TODO FIXME  HACK SHOULDN'T MODIFY DOM HERE. reaise
+          and event, or something. */
+          $('.console').append($(body.html));
+        }
+        if (uri === "autom8://response/libautom8/rpc") {
           var deferred = pending[body.id];
           delete pending[body.id];
           if (deferred) {

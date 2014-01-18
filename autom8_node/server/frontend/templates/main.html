@@ -35,19 +35,17 @@
 <script id="autom8-View-Devices" type="text/x-handlebars-template">
   <div class="devices">
     <div class="header">connected devices</div>
-    <ul class="list">
-
-    </ul>
+    <ul class="list"></ul>
   </div>
 </script>
 
 <script id="autom8-View-DeviceRow" type="text/x-handlebars-template">
   <div class="device-row">
-    <div><span class="value name">{{label}}</span></div>
-    <div><span class="key">areas:</span> <span class="value">{{groups}}</span></div>
-    <div><span class="key">type:</span> <span class="value">{{type}}</span></div>
-    <div><span class="key">status:</span> <span class="value">{{status}}</span></div>
-    <div><span class="key">address:</span> <span class="value">{{address}}</span></div>
+    <div class="device-row-attr"><div class="value name">{{label}}</div></div>
+    <div class="device-row-attr"><div class="key">areas:</div> <div class="value">{{groups}}</div></div>
+    <div class="device-row-attr"><div class="key">type:</div> <div class="value">{{type}}</div></div>
+    <div class="device-row-attr"><div class="key">status:</div> <div class="value">{{status}}</div></div>
+    <div class="device-row-attr"><div class="key">address:</div> <div class="value">{{address}}</div></div>
   </div>
 </script>
 

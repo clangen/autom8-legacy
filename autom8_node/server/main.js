@@ -12,6 +12,7 @@
   var httpServer = require(shared + 'HttpServer.js');
   var util = require(shared + 'Util.js');
   var sessions = require(shared + 'Sessions.js');
+  require(shared + 'colors-html.js');
 
   var LIBRARY_PATH = path.resolve(__dirname + '/../../');
 
@@ -27,6 +28,15 @@
     autom8.init()
 
     .then(function() {
+      console.log(require("util").inspect(autom8));
+      autom8.events.on('log', function(args) {
+        /* allow clients to draw the console output */
+        sessions.broadcast('recvMessage', {
+          uri: 'autom8://response/libautom8/log',
+          body: {html: (args || []).join(' ').toHtml()}
+        });
+      });
+
       app = httpServer.create();
       sessions.init(app); /* accept socket sessions */
 
@@ -52,6 +62,10 @@
       });
 
       app.start();
+    })
+
+    .fail(function(ex) {
+      console.log('*** FATAL ***', ex);
     });
   }
 

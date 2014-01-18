@@ -1,24 +1,6 @@
  (function() {
   var View = autom8.mvc.View;
 
-  // namespace("autom8").DeviceType = {
-  //   Unknown: -1,
-  //   Lamp: 0,
-  //   Appliance: 1,
-  //   SecuritySensor: 2
-  // };
-
-  // namespace("autom8").CommandType = {
-  //   PowerLine: 0,
-  //   RadioFrequency: 1
-  // };
-
-  // namespace("autom8").DeviceStatus = {
-  //   Unknown: 1,
-  //   Off: 0,
-  //   On: 1
-  // };
-
   var typeToString = {
     '-1': 'unknown',
     '0': 'lamp',
@@ -65,8 +47,8 @@
             'type': typeToString[d.type === undefined ? -1 : d.type]
           };
 
-          if (d.type === 2) {
-            if (d.status === 3) {
+          if (d.type === 2) { /* security sensor */
+            if (d.status === 3) { /* tripped */
               normalized.status = "ALERT!";
             }
             else {

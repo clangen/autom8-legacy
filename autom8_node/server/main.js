@@ -43,8 +43,6 @@
           uri: 'autom8://response/libautom8/log',
           body: {html: encodeLog(args)}
         });
-
-        console.log(encodeLog(args));
       });
 
       app = httpServer.create();

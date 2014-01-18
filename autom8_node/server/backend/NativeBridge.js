@@ -86,7 +86,7 @@ var initLogging = function() {
         var colorFn = Colors[color];
         var args = [BRIDGE_LOG, LOG_LEVELS[level], colorFn.call(this, tag), message];
         console.log.apply(this, args);
-        EXPORTS.events.emit('log', args);
+        EXPORTS.events.emit('log', args.slice(1));
     };
 
     var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);

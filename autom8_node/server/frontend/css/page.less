@@ -1,10 +1,6 @@
 @import "../../../shared/css/mixins.less";
 @import "../../../shared/css/buttons.less";
 
-body {
-    // background-color: #555;
-}
-
 .main-content-left {
     position: absolute;
     top: 0;
@@ -29,28 +25,6 @@ body {
     left: 660px;
     top: 0;
     bottom: 60px;
-    background-color: #111;
-    border-bottom-left-radius: 10px;
-    font-size: 80%;
-    .box-shadow(0px, 0px, 64px, #111);
-
-    .console-container {
-        padding: 16px;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        overflow-y: scroll;
-        overflow-x: hidden;
-
-        .console {
-            .log-entry {
-                padding-bottom: 6px;
-                display: block;
-            }
-        }
-    }
 }
 
 .connection {
@@ -62,134 +36,4 @@ body {
     height: 13px;
     border: 1px solid #222;
     float: right;
-}
-
-.server-info {
-    padding: 10px;
-
-    td {
-        padding: 8px 2px;
-    }
-
-    td:first-child {
-        padding-top: 0px;
-    }
-
-    td.label {
-        text-align: right;
-        padding-right: 8px;
-    }
-
-    td.value {
-        font-weight: bold;
-    }
-
-    input {
-        outline-width: 0;
-        padding: 2px;
-        border: 1px solid #aaaaaa;
-        height: 24px;
-        width: 96px;
-        .box-sizing(border-box);
-        border-radius: 8px;
-        padding-left: 6px;
-    }
-}
-
-.devices {
-    padding: 0 8px;
-    padding-bottom: 10px;
-
-    ul {
-    }
-
-    ul li {
-        padding-bottom: 8px;
-        line-height: 1.1em;
-    }
-
-    li {
-        display: inline-block;
-        width: 50%;
-    }
-
-    .device-row:hover {
-        background-color: #777;
-        .box-shadow(0px, 0px, 12px, #444);
-    }
-
-    .device-row {
-        padding: 6px;
-        padding-left: 0;
-        background-color: #666;
-        margin-left: 8px;
-        font-size: 110%;
-        line-height: 110%;
-
-        .device-row-attr {
-            position: relative;
-        }
-
-        .key, .value {
-            display: inline-block;
-        }
-
-        .value {
-            position: absolute;
-            left: 70px;
-            right: 0px;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-
-        .value.name {
-            font-size: 110%;
-            text-decoration: underline;
-            padding-bottom: 6px;
-            padding-left: 8px;
-            color: #eee;
-            position: static;
-        }
-
-        .key {
-            font-size: 70%;
-            width: 60px;
-            text-align: right;
-            padding-right: 4px;
-            font-weight: bold;
-        }
-    }
-}
-
-.bottom-buttons {
-    padding: 0 8px;
-    padding-bottom: 10px;
-
-    .button-row {
-        text-align: center;
-    }
-
-    .button {
-        .button-style-4();
-        background-color: #333;
-        padding: 8px 24px;
-    }
-
-    .button:hover {
-        background-color: #444;
-    }
-
-    .button.touched {
-        .button-style-2-touched();
-        background-color: #555;
-    }
-
-    .button.stop {
-        margin-left: 8px;
-    }
-
-    .button.disabled {
-        opacity: 0.2;
-    }
 }

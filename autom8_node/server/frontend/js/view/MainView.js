@@ -30,6 +30,10 @@
         template: 'autom8-View-ButtonRow'
       });
 
+      this.consoleView = new autom8.view.ConsoleView({
+        el: $('.main-content-right')
+      });
+
       this.nameToViewMap = {
         'devices': this.devicesView,
         'status': this.statusView

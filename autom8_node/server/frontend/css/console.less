@@ -1,0 +1,51 @@
+@import "../../../shared/css/mixins.less";
+
+.main-content-right {
+    background-color: #111;
+    border-bottom-left-radius: 10px;
+    font-size: 80%;
+    .box-shadow(0px, 0px, 64px, #111);
+
+    .console-container {
+        padding: 16px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        font-family: "Courier New", Courier, monospace;
+
+        .console {
+            .log-entry {
+                /* monokai colors: http://eclipsecolorthemes.org/?view=theme&id=52 */
+                .color-white { color: #F8F8F2; }
+                .color-black { color: #272822; }
+                .color-gray { color: #757575; }
+                .color-blue { color: #1E90FF; }
+                .color-cyan { color: #BED6FF; }
+                .color-green { color: #D9E577; }
+                .color-magenta { color: #D197D9; }
+                .color-red { color: #D25252; }
+                .color-yellow { color: #EFB571; }
+                .background-color-white { background-color: #F8F8F2; }
+                .background-color-black { background-color: #272822; }
+                .background-color-gray { background-color: #757575; }
+                .background-color-blue { background-color: #1E90FF; }
+                .background-color-cyan { background-color: #BED6FF; }
+                .background-color-green { background-color: #D9E577; }
+                .background-color-magenta { background-color: #D197D9; }
+                .background-color-red { background-color: #D25252; }
+                .background-color-yellow { background-color: #EFB571; }
+
+                padding-bottom: 6px;
+                display: block;
+
+                span {
+                    padding-right: 4px;
+                }
+            }
+        }
+    }
+}

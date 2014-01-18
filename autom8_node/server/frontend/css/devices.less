@@ -1,0 +1,68 @@
+@import "../../../shared/css/mixins.less";
+@import "../../../shared/css/buttons.less";
+
+.devices {
+    padding: 0 8px;
+    padding-bottom: 10px;
+
+    ul {
+    }
+
+    ul li {
+        padding-bottom: 8px;
+        line-height: 1.1em;
+    }
+
+    li {
+        display: inline-block;
+        width: 50%;
+    }
+
+    .device-row:hover {
+        background-color: #777;
+        .box-shadow(0px, 0px, 12px, #444);
+    }
+
+    .device-row {
+        padding: 6px;
+        padding-left: 0;
+        background-color: #666;
+        margin-left: 8px;
+        font-size: 110%;
+        line-height: 110%;
+
+        .device-row-attr {
+            position: relative;
+        }
+
+        .key, .value {
+            display: inline-block;
+        }
+
+        .value {
+            position: absolute;
+            left: 70px;
+            right: 0px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .value.name {
+            font-size: 110%;
+            text-decoration: underline;
+            padding-bottom: 6px;
+            padding-left: 8px;
+            color: #eee;
+            position: static;
+        }
+
+        .key {
+            font-size: 70%;
+            width: 60px;
+            text-align: right;
+            padding-right: 4px;
+            font-weight: bold;
+        }
+    }
+}

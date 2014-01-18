@@ -1,0 +1,16 @@
+<script id="autom8-View-Devices" type="text/x-handlebars-template">
+  <div class="devices">
+    <div class="header">connected devices</div>
+    <ul class="list"></ul>
+  </div>
+</script>
+
+<script id="autom8-View-DeviceRow" type="text/x-handlebars-template">
+  <div class="device-row">
+    <div class="device-row-attr"><div class="value name">{{label}}</div></div>
+    <div class="device-row-attr"><div class="key">areas:</div> <div class="value">{{groups}}</div></div>
+    <div class="device-row-attr"><div class="key">type:</div> <div class="value">{{type}}</div></div>
+    <div class="device-row-attr"><div class="key">status:</div> <div class="value">{{status}}</div></div>
+    <div class="device-row-attr"><div class="key">address:</div> <div class="value">{{address}}</div></div>
+  </div>
+</script>

@@ -47,6 +47,7 @@
         if (uri === "autom8://response/libautom8/log") {
           /* TODO FIXME  HACK SHOULDN'T MODIFY DOM HERE. reaise
           and event, or something. */
+          autom8.client.trigger('log', body.html);
           $('.console').append($(body.html));
         }
         if (uri === "autom8://response/libautom8/rpc") {

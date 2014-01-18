@@ -1,4 +1,4 @@
-// npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt
+// npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt ent
 // node.exe main.js --listen 7903 --creds ../shared/conf/autom8.pem --debug
 
 (function() {
@@ -19,6 +19,14 @@
   var autom8 = require('./backend/NativeBridge.js');
   var app;
 
+  function encodeLog(args) {
+    var result = '<span class="log-entry">';
+    for (var i = 0; i < args.length; i++) {
+      result += args[i].toString().toHtml();
+    }
+    return result + '</span>';
+  }
+
   function start() {
     config.init(program);
     config.get().client.password = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* TODO FIX ME */
@@ -33,8 +41,10 @@
         /* allow clients to draw the console output */
         sessions.broadcast('recvMessage', {
           uri: 'autom8://response/libautom8/log',
-          body: {html: (args || []).join(' ').toHtml()}
+          body: {html: encodeLog(args)}
         });
+
+        console.log(encodeLog(args));
       });
 
       app = httpServer.create();

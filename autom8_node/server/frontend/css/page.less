@@ -26,23 +26,29 @@ body {
 .main-content-right {
     position: fixed;
     right: 0px;
-    width: 400px;
+    left: 660px;
     top: 0;
     bottom: 60px;
-    overflow-y: scroll;
-    overflow-x: hidden;
     background-color: #111;
     border-bottom-left-radius: 10px;
+    font-size: 80%;
     .box-shadow(0px, 0px, 64px, #111);
-    direction:rtl;  /* Right To Left */
-    text-align:left; /* Override direction */
 
-    .console {
+    .console-container {
         padding: 16px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        overflow-y: scroll;
+        overflow-x: hidden;
 
-        .log-entry {
-            padding-bottom: 6px;
-            display: inline-block;
+        .console {
+            .log-entry {
+                padding-bottom: 6px;
+                display: block;
+            }
         }
     }
 }

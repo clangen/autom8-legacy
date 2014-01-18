@@ -82,8 +82,9 @@ var initLogging = function() {
             color = tagColors[tag] = allColors[random];
         }
 
+        tag = "[" + tag + "]";
         var colorFn = Colors[color];
-        var args = [BRIDGE_LOG, LOG_LEVELS[level], "[" + colorFn.call(this, tag) + "]", message];
+        var args = [BRIDGE_LOG, LOG_LEVELS[level], colorFn.call(this, tag), message];
         console.log.apply(this, args);
         EXPORTS.events.emit('log', args);
     };

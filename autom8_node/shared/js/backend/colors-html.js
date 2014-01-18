@@ -1,4 +1,5 @@
 require ("colors");
+var ent = require('ent');
 
 String.prototype.toHtml = (function() {
     var table = {
@@ -36,13 +37,17 @@ String.prototype.toHtml = (function() {
     };
 
     return function() {
-        var regex;
         var result = this;
         for (var k in table) {
             if (table.hasOwnProperty(k)) {
                 result = result.replace(new RegExp(k, "g"), table[k]);
             }
         }
-        return '<span class="log-entry">' + result + '</span>';
+
+        if (result.indexOf("<") !== 0) {
+            result = "<span>" + result + "</span>";
+        }
+
+        return result;
     };
 }());

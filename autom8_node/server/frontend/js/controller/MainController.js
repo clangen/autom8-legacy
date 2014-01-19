@@ -1,4 +1,25 @@
 namespace("autom8.controller").MainController = (function() {
+  function refreshStatus() { /* should happen automagically */
+    /* assumes this is bound to instance */
+    var self = this;
+
+    autom8.client.rpc.send({
+      component: "server", command: "status", options: { }
+    })
+    .then(function(result) {
+      self.view.statusView.update(result);
+
+      var $btns = self.view.buttonsView.$el;
+      $btns.find('.button').removeClass('disabled');
+
+      /* toggle red/green header status indicators */
+      var r = result.running;
+      $btns.find(r ? '.start' : '.stop').addClass('disabled');
+      self.view.buttonsView.$('.connection').toggleClass('connected', r);
+      self.view.statusView.$('.connection').toggleClass('connected', autom8.client.connected);
+    });
+  }
+
   return autom8.mvc.Controller.extend({
     mixins: [
       autom8.mvc.mixins.ControllerContainer
@@ -12,13 +33,17 @@ namespace("autom8.controller").MainController = (function() {
       this.view.on('start:clicked', function() {
         autom8.client.rpc.send({
           component: "server", command: "start", options: { }
-        });
+        })
+
+        .then(refreshStatus.bind(self));
       });
 
       this.view.on('stop:clicked', function() {
         autom8.client.rpc.send({
           component: "server", command: "stop", options: { }
-        });
+        })
+
+        .then(refreshStatus.bind(self));
       });
 
       autom8.client.on('connected', this.onConnected, this);
@@ -38,20 +63,10 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onConnected: function() {
-      $('.connection').css('background-color', 'green');
 
       var self = this;
 
-      autom8.client.rpc.send({
-        component: "server", command: "status", options: { }
-      })
-      .then(function(result) {
-        self.view.statusView.update(result);
-
-        var $btns = self.view.buttonsView.$el;
-        $btns.find('.button').removeClass('disabled');
-        $btns.find(result.running ? '.start' : '.stop').addClass('disabled');
-      });
+      refreshStatus.call(this);
 
       autom8.client.rpc.send({
         component: "system", command: "list_devices", options: { }
@@ -62,7 +77,6 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onDisconnected: function() {
-      $('.connection').css('background-color', 'red');
     },
 
     onClientStateChanged: function(state) {

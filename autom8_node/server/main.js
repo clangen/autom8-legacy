@@ -27,6 +27,7 @@
   var recentLogs = [];
 
   function encodeLog(args) {
+    args[0] = '<span class="timestamp">' + args[0] + '</span>';
     var result = '<span class="log-entry">';
     for (var i = 0; i < args.length; i++) {
       result += args[i].toString().toHtml();

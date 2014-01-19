@@ -1,6 +1,15 @@
 @import "../../../shared/css/mixins.less";
 @import "../../../shared/css/buttons.less";
 
+#application {
+    .header {
+        background-color: #333;
+        padding: 8px;
+        margin-bottom: 8px;
+        line-height: 16px;
+    }
+}
+
 .main-content-left {
     position: absolute;
     top: 0;
@@ -10,13 +19,6 @@
     width: 75%;
     background-color: #555;
     .box-shadow(0px, 0px, 64px, #111);
-
-    .header {
-        background-color: #333;
-        padding: 8px;
-        margin-bottom: 8px;
-        line-height: 16px;
-    }
 }
 
 .main-content-right {

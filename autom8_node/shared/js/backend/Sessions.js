@@ -82,12 +82,14 @@
       var addr = socket.handshake.address;
       console.log(TAG, "client connected (" + addr.address + ":" + addr.port + ")");
 
+      EXPORTS.events.emit('connection', socket);
+
       /* makes sure the socket that generated the message is
       the second param of callback */
       var wrap = function(fn, socket) {
         return function() {
           fn.call(fn, arguments[0], socket);
-        }
+        };
       };
 
       for (var i = 0; i < handlers.length; i++) {
@@ -101,22 +103,24 @@
     return socketServer;
   }
 
-  exports = module.exports = {
-    init: function(app) {
-      if (webSocketServer) {
-        console.log(TAG, "already initialized! aborting");
-        throw new Error('aborting');
-      }
+  var EXPORTS = { };
+  exports = module.exports = EXPORTS;
+  EXPORTS.events = Object.create(require('events').EventEmitter.prototype);
 
-      webSocketServer = createSocketServer(app.httpServer, app.sessionStore);
-    },
-
-    broadcast: function(message, options) {
-      webSocketServer.sockets.emit(message, options);
-    },
-
-    on: function(message, handler) {
-      handlers.push({message: message, handler: handler});
+  EXPORTS.init = function(app) {
+    if (webSocketServer) {
+      console.log(TAG, "already initialized! aborting");
+      throw new Error('aborting');
     }
+
+    webSocketServer = createSocketServer(app.httpServer, app.sessionStore);
+  };
+
+  EXPORTS.broadcast = function(message, options) {
+    webSocketServer.sockets.emit(message, options);
+  };
+
+  EXPORTS.on = function(message, handler) {
+    handlers.push({message: message, handler: handler});
   };
 }());

@@ -17,14 +17,27 @@
   var LIBRARY_PATH = path.resolve(__dirname + '/../../');
 
   var autom8 = require('./backend/NativeBridge.js');
+
   var app;
+
+  /* we'll replay the last 100 logs for every connected
+  client so they can see what's going on */
+  var MAX_LOGS = 100;
+  var recentLogs = [];
 
   function encodeLog(args) {
     var result = '<span class="log-entry">';
     for (var i = 0; i < args.length; i++) {
       result += args[i].toString().toHtml();
     }
-    return result + '</span>';
+    result += "</span>";
+
+    recentLogs.push(result);
+    if (recentLogs.length > 100) {
+      recentLogs.shift();
+    }
+
+    return result;
   }
 
   function start() {
@@ -36,9 +49,8 @@
     autom8.init()
 
     .then(function() {
-      console.log(require("util").inspect(autom8));
+      /* for new log entries, broadcast them individually */
       autom8.events.on('log', function(args) {
-        /* allow clients to draw the console output */
         sessions.broadcast('recvMessage', {
           uri: 'autom8://response/libautom8/log',
           body: {html: encodeLog(args)}
@@ -46,7 +58,17 @@
       });
 
       app = httpServer.create();
+
       sessions.init(app); /* accept socket sessions */
+
+      sessions.events.on('connection', function(socket) {
+        /* when a new session is connected, send the most recent
+        log entries */
+        socket.emit('recvMessage', {
+          uri: 'autom8://response/libautom8/log',
+          body: {html: recentLogs}
+        });
+      });
 
       /* backend entry point for rpc call from trusted client */
       sessions.on('sendMessage', function(message, socket) {

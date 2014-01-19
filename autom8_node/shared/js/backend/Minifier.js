@@ -10,6 +10,7 @@
   var path = require('path');
   var closurecompiler = require('closurecompiler');
   var config = require('./Config.js').get();
+  var log = require('./Logger.js');
 
   var CSS = "[minifier]".blue;
   var JS = "[minifier]".blue;
@@ -107,12 +108,12 @@
 
   function renderMinifiedStyles(doc, callback) {
     if (cached.styles) {
-      console.log(CSS, "rendered styles cache hit ...".green);
+      log.info(CSS, "rendered styles cache hit".green);
       callback(cached.styles);
       return;
     }
 
-    console.log(CSS, "processing css...");
+    log.info(CSS, "processing css");
 
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .css files that we will minify */
@@ -145,7 +146,7 @@
       }
 
       var minify = function() {
-        console.log(CSS, "concatenating");
+        log.info(CSS, "concatenating");
 
         var combined = "";
         for (var i = 0 ; i < cssFiles.length; i++) {
@@ -153,7 +154,7 @@
           combined += data + "\n";
         }
 
-        console.log(CSS, "minifying");
+        log.info(CSS, "minifying");
 
         var CleanCSS = require('clean-css');
         var minified = new CleanCSS().minify(combined);
@@ -170,7 +171,7 @@
           }
           else {
             err = require('util').inspect(err);
-            console.log(LESS, "parse failed because " + err);
+            log.error(LESS, "parse failed because " + err);
           }
 
           if (!remaining) {
@@ -181,7 +182,7 @@
 
       for (var i = 0; i < cssFiles.length; i++) {
         var file = cssFiles[i];
-        console.log(LESS, 'processing', file.name.grey, '' + (i+1) + ' of ' + cssFiles.length);
+        log.info(LESS, 'processing', file.name.grey, '' + (i+1) + ' of ' + cssFiles.length);
 
         if (file.type === ".css") {
           outputCache[file.name] = file.data;
@@ -193,11 +194,11 @@
             parser.parse(file.data, createParseFinishHandler(file.name));
           }
           catch(exception) {
-            console.log(LESS, 'exception during less.parse()', exception);
+            log.error(LESS, 'exception during less.parse()', exception);
           }
         }
         else {
-          console.log(CSS, 'asked to process unknown style, ignoring', cssFiles[i].name);
+          log.warn(CSS, 'asked to process unknown style, ignoring', cssFiles[i].name);
           --remaining;
         }
       }
@@ -231,18 +232,18 @@
 
   function renderMinifiedScripts(doc, callback) {
     if (closureCompileRunning) {
-      console.log(JS, "closure compiler already running, bailing...".yellow);
+      log.warn(JS, "closure compiler already running, bailing...".yellow);
       callback('compiling, try again in a few...');
       return;
     }
 
     if (cached.scripts) {
-      console.log(JS, "closure compiler cache hit ...".green);
+      log.info(JS, "closure compiler cache hit ...".green);
       callback(cached.scripts);
       return;
     }
 
-    console.log(JS, "javascript minification started");
+    log.info(JS, "javascript minification started");
 
     /* separate the rendered scripts into an array of lines. we'll use
     this to build a list of all the .js files that we will minify */
@@ -280,7 +281,7 @@
     var minified = "";
 
     /* render all the blacklisted <script> tags */
-    console.log(JS, "applying minification blacklist");
+    log.info(JS, "applying minification blacklist");
     for (var k in minifiyBlacklist) {
       if (minifiyBlacklist.hasOwnProperty(k)) {
         minified += '<script src="' + k + '" type="text/javascript"></script>\n';
@@ -289,11 +290,11 @@
 
     var minificationCompleteHandler = function(error, result) {
       closureCompileRunning = false;
-      console.log(JS, "closure compiler finished");
+      log.info(JS, "closure compiler finished");
 
       // console.log(JS, "minification finalizing");
       if (error) {
-        console.log(JS, 'closure compiler warnings and errors', error);
+        log.warn(JS, 'closure compiler warnings and errors', error);
       }
 
       if (result) {
@@ -316,11 +317,11 @@
     };
 
     if (!scriptFilenames.length) {
-      console.log(JS, "nothing to minify");
+      log.warn(JS, "nothing to minify");
       callback('');
     }
     else {
-      console.log(JS, "starting closurecompiler", '(' + scriptFilenames.length + ' files)');
+      log.info(JS, "starting closurecompiler", '(' + scriptFilenames.length + ' files)');
       closurecompiler.compile(scriptFilenames, { }, minificationCompleteHandler);
       closureCompileRunning = true;
       callback("starting up, please try back in a second...");
@@ -332,7 +333,7 @@
     the same directory for @includes */
     var parser = createLessParser(fn);
 
-    console.log(LESS, "processing file", fn.grey);
+    log.info(LESS, "processing file", fn.grey);
     parser.parse(data.toString(), function (err, tree) {
         if (!err) {
           // console.log(LESS, "finished processing", fn.grey);
@@ -340,7 +341,7 @@
           callback(false, data);
         }
         else {
-          console.log(LESS, "parse failed because ", require('util').inspect(err));
+          log.error(LESS, "parse failed because ", require('util').inspect(err));
           callback(true);
         }
     });

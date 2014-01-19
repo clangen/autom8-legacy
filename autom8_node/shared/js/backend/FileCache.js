@@ -6,6 +6,7 @@
  * Disabled in debug mode.
  */
 (function() {
+  var log = require('./Logger.js');
   var TAG = '[file cache]'.green;
 
   var cache = { };
@@ -14,7 +15,7 @@
     get: function (fn, encoding) {
       cache[encoding] = cache[encoding] || { };
       var result = cache[encoding][fn];
-      console.log(TAG, result ? 'hit' : 'miss', fn.grey);
+      log.info(TAG, result ? 'hit' : 'miss', fn.grey);
       return result;
     },
 
@@ -24,7 +25,7 @@
     },
 
     clear: function() {
-      console.log(TAG, 'cleared');
+      log.info(TAG, 'cleared');
       cache = { };
     }
   };

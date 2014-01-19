@@ -1,10 +1,11 @@
 (function() {
-  var TAG = "[app cache]".yellow;
+  var log = require('./Logger.js');
+  var TAG = "[appcache]".yellow;
 
   var config = require("./Config.js").get();
 
   function renderAppcacheManifest(req, res) {
-    console.log(TAG, 'rendering appcache (' + config.appCache.version.getTime() + ')...');
+    log.info(TAG, 'rendering appcache (' + config.appCache.version.getTime() + ')...');
 
     var manifest = "CACHE MANIFEST\n";
     manifest += "# VERSION: " + config.appCache.version.getTime() + "\n\n";

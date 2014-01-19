@@ -12,6 +12,7 @@
   var httpServer = require(shared + 'HttpServer.js');
   var util = require(shared + 'Util.js');
   var sessions = require(shared + 'Sessions.js');
+  var log = require(shared + 'Logger.js');
   require(shared + 'colors-html.js');
 
   var LIBRARY_PATH = path.resolve(__dirname + '/../../');
@@ -50,7 +51,7 @@
 
     .then(function() {
       /* for new log entries, broadcast them individually */
-      autom8.events.on('log', function(args) {
+      log.on('log', function(args) {
         sessions.broadcast('recvMessage', {
           uri: 'autom8://response/libautom8/log',
           body: {html: encodeLog(args)}

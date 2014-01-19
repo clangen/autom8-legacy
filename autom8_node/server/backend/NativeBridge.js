@@ -7,16 +7,21 @@ var Colors = require('colors');
 var Q = require('q');
 require('colors');
 
+var shared = "./../../shared/js/backend/";
+var log = require(shared + 'Logger.js');
+
 var RPC_MODE_SYNC = 1;
 var RPC_MODE_ASYNC = 2;
 
-var INIT = "[init]";
-var BRIDGE_LOG = "[bridge log]".grey;
-var ERROR = "[bridge]".magenta;
-var RPC_ENGINE = "[rpc engine]".grey;
+var NATIVE_LOG = "[libautom8]".grey;
 var RPC_SEND = "[rpc send]".yellow;
 var RPC_RECV = "[rpc recv]".green;
-var LOG_LEVELS = { '0': '[nfo]'.grey, '1': '[wrn]'.yellow, '2': '[err]'.red };
+
+var LOG_LEVELS = {
+    '0': log.info,
+    '1': log.warn,
+    '2': log.error
+};
 
 var dll = null;
 var initialized = false;
@@ -74,8 +79,7 @@ var makeRpcCall = function(component, command, options, promise) {
 };
 
 var initLogging = function() {
-    var log = function(level, tag, message) {
-
+    var localLogCallback = function(level, tag, message) {
         var color = tagColors[tag];
         if (!color) {
             var random = Math.round(Math.random() * (allColors.length - 1));
@@ -84,17 +88,18 @@ var initLogging = function() {
 
         tag = "[" + tag + "]";
         var colorFn = Colors[color];
-        var args = [BRIDGE_LOG, LOG_LEVELS[level], colorFn.call(this, tag), message];
-        console.log.apply(this, args);
-        EXPORTS.events.emit('log', args.slice(1));
+        var args = [NATIVE_LOG, colorFn.call(this, tag), message];
+
+        var logFn = LOG_LEVELS[level] || log.info;
+        logFn.apply(this, args);
     };
 
-    var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], log);
+    var nativeLogCallback = ffi.Callback('void', ['int', 'string', 'string'], localLogCallback);
 
-    pinned.logger = { callback: log, functionPointer: nativeLogCallback }; /* don't gc me! */
+    pinned.logger = { callback: localLogCallback, functionPointer: nativeLogCallback }; /* don't gc me! */
 
     dll.autom8_set_logger(nativeLogCallback);
-    console.log(BRIDGE_LOG, "initialized");
+    log.info(NATIVE_LOG, "initialized");
 };
 
 var initRpcCallback = function() {
@@ -112,7 +117,7 @@ var initRpcCallback = function() {
     pinned.rpcCallback = rpcCallback; /* don't gc me! */
 
     dll.autom8_set_rpc_callback(rpcCallback);
-    console.log(RPC_ENGINE, "rpc callback registered");
+    log.info(NATIVE_LOG, "rpc callback registered");
 };
 
 var EXPORTS = { };
@@ -128,16 +133,16 @@ EXPORTS.init = function(options) {
 
     if (!dll) {
         directory = directory || path.resolve(__dirname + '/../../../');
-        console.log(INIT, "loading libautom8 from", directory);
+        log.info(NATIVE_LOG, "loading libautom8 from", directory);
         dll = loadLibrary(directory);
-        console.log(INIT, "loaded libautom8");
+        log.info(NATIVE_LOG, "loaded libautom8");
     }
 
     if (!initialized) {
         initLogging();
         initRpcCallback();
-        console.log(INIT, "autom8_version:", dll.autom8_version());
-        console.log(INIT, "autom8_version:", dll.autom8_init(rpcMode));
+        log.info(NATIVE_LOG, "autom8_version:", dll.autom8_version());
+        log.info(NATIVE_LOG, "autom8_version:", dll.autom8_init(rpcMode));
         initialized = true;
     }
 
@@ -153,7 +158,7 @@ EXPORTS.deinit = function() {
 
     if (initialized) {
         dll.autom8_deinit();
-        console.log(INIT, "autom8_deinit completed");
+        log.info(NATIVE_LOG, "autom8_deinit completed");
         initialized = false;
     }
 

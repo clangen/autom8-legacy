@@ -4,6 +4,7 @@
   var io = require('socket.io');
   var util = require('./Util.js');
   var config = require('./Config.js').get();
+  var log = require('./Logger.js');
 
   /* callbacks that are triggered when messages are received */
   var handlers = [];
@@ -33,7 +34,7 @@
 
       /* no session id at all is an instant rejection */
       if (!sessionId) {
-        console.log(TAG, "WARNING: socket connection with no session, rejecting.");
+        log.warn(TAG, "socket connection with no session, rejecting.");
         return accept("unauthorized", false);
       }
 
@@ -49,18 +50,18 @@
       /* now make sure the session specified in the request actually exists */
       sessionStore.get(sessionId, function(err, s) {
         if (err || !s) {
-          console.log(TAG, "WARNING: socket connection with invalid session, rejecting.");
+          log.warn(TAG, "socket connection with invalid session, rejecting.");
           return accept("unauthorized", false);
         }
 
         if (!s.cookie) {
-          console.log(TAG, "WARNING: socket connection with no cookie, rejecting.");
+          log.warn(TAG, "socket connection with no cookie, rejecting.");
           return accept("unauthorized", false);
         }
 
         if (!s.cookie.expires) {
           /* invalid expiry date in session */
-          console.log(TAG, "WARNING: socket connection with no expiry, rejecting.");
+          log.warn(TAG, "socket connection with no expiry, rejecting.");
           return accept("unauthorized", false);
         }
 
@@ -68,19 +69,19 @@
         var now = new Date();
         if (expires - now <= 0) {
           /* cookie expired, reject... */
-          console.log(TAG, "WARNING: socket connection with expired session, rejecting.");
+          log.warn(TAG, "socket connection with expired session, rejecting.");
           return accept("unauthorized", false);
         }
 
         /* if we get all the way here then our session is trusted */
-        console.log(TAG, "INFO: socket connection with valid session, accepting.");
+        log.info(TAG, "socket connection with valid session, accepting.");
         return accept(null, true);
       });
     });
 
     socketServer.sockets.on('connection', function (socket) {
       var addr = socket.handshake.address;
-      console.log(TAG, "client connected (" + addr.address + ":" + addr.port + ")");
+      log.info(TAG, "client connected (" + addr.address + ":" + addr.port + ")");
 
       EXPORTS.events.emit('connection', socket);
 
@@ -109,7 +110,7 @@
 
   EXPORTS.init = function(app) {
     if (webSocketServer) {
-      console.log(TAG, "already initialized! aborting");
+      log.error(TAG, "already initialized! aborting");
       throw new Error('aborting');
     }
 

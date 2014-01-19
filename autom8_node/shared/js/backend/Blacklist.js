@@ -1,4 +1,6 @@
 (function() {
+  var log = require('./Logger.js');
+
   var TAG = "[blacklist]".red;
   var MAX_FAILURES = 3;
   var COOLDOWN_MILLIS = 60000;
@@ -12,12 +14,12 @@
     if (entry) {
       var elapsed = new Date().getTime() - entry.lastAttempt;
       if (entry.failures > MAX_FAILURES && elapsed < COOLDOWN_MILLIS) {
-        console.log(TAG, "denied access for " + address + ". too many bad auth attempts.");
+        log.error(TAG, "denied access for " + address + ". too many bad auth attempts.");
         return false;
       }
 
       if (elapsed > COOLDOWN_MILLIS) {
-        console.log(TAG, "cooldown complete for", address);
+        log.warn(TAG, "cooldown complete for", address);
         delete blacklist[address]; /* cooldown complete */
       }
     }
@@ -36,7 +38,7 @@
 
     blacklist[address] = entry;
 
-    console.log(TAG, "client with address " + address + " flagged with " + entry.failures + " bad attempts");
+    log.warn(TAG, "client with address", address, "flagged with", entry.failures, "bad attempts");
   }
 
   exports.allowConnection = allowConnection;

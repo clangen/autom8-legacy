@@ -58,7 +58,7 @@
 
     onDestroy: function() {
       autom8.client.off('log', onRpcLog, this);
-    },
+    }
   });
 
   namespace("autom8.view").ConsoleView = ConsoleView;

@@ -1,6 +1,7 @@
  (function() {
   var View = autom8.mvc.View;
   var MAX_ENTRIES = 100;
+  var oddEven = 0;
 
   var onRpcLog = function(html) {
     var scrollToBottom = false;
@@ -30,7 +31,8 @@
     }
 
     for (var i = 0; i < html.length; i++) {
-      this.$console.append($(html[i]));
+      var cls = (oddEven++ % 2 === 0) ? "even" : "odd";
+      this.$console.append($(html[i]).addClass(cls));
     }
 
     /* the height() calculation on $console may not be accurate

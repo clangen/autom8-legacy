@@ -14,7 +14,8 @@
     }
 
     li {
-        display: inline-block;
+        // display: inline-block;
+        float: left;
         width: 50%;
     }
 
@@ -30,6 +31,18 @@
         margin-left: 8px;
         font-size: 110%;
         line-height: 110%;
+
+        /* fixed height sucks, but is done so we can insert
+        a big "add device" button as the first item in
+        the list */
+        height: 104px;
+
+        &.add-device {
+            text-align: center;
+            line-height: 104px;
+            text-decoration: underline;
+            text-shadow: 0 0 4px #222;
+        }
 
         .device-row-attr {
             position: relative;
@@ -50,7 +63,7 @@
 
         .value.name {
             font-size: 110%;
-            text-decoration: underline;
+            text-shadow: 0 0 6px #222;
             padding-bottom: 6px;
             padding-left: 8px;
             color: #eee;
@@ -63,6 +76,19 @@
             text-align: right;
             padding-right: 4px;
             font-weight: bold;
+        }
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    .devices {
+        li {
+            width: 100%;
+        }
+
+        .device-row.add-device {
+            height: 52px;
+            line-height: 52px;
         }
     }
 }

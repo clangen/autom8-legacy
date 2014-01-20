@@ -1,23 +1,17 @@
  (function() {
   var View = autom8.mvc.View;
 
-  var typeToString = {
-    '-1': 'unknown',
-    '0': 'lamp',
-    '1': 'appliance',
-    '2': 'security sensor'
-  };
-
-  var statusToString = {
-    '-1': 'unknown',
-    '0': 'off',
-    '1': 'on'
-  };
-
   var DeviceListView = View.extend({
     template: 'autom8-View-Devices',
 
     events: {
+      'touch .device-row.add-device': function(e) {
+        console.log("ADD NEW DEVICE!");
+      },
+
+      'touch .device-row': function(e) {
+        console.log("EDIT DEVICE!");
+      }
     },
 
     onCreate: function(options) {
@@ -36,33 +30,12 @@
       this.model = model;
 
       if (model.devices) {
+        this.clearChildren();
+        this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
+
         for (var i = 0; i < model.devices.length; i++) {
-          var d = model.devices[i];
-
-          var normalized = {
-            'label': d.label || "unnamed",
-            'address': d.address,
-            'groups': (d.groups || []).join(", ") || "none",
-            'status': statusToString[d.status === undefined ? -1 : d.status],
-            'type': typeToString[d.type === undefined ? -1 : d.type]
-          };
-
-          if (d.type === 2) { /* security sensor */
-            if (d.status === 3) { /* tripped */
-              normalized.status = "ALERT!";
-            }
-            else {
-              normalized.status = (d.attributes.armed) ? "armed" : "disarmed";
-            }
-          }
-
-          var row = new View({
-            className: i % 2 === 0 ? 'even' : 'odd',
-            tagName: 'li',
-            template: 'autom8-View-DeviceRow',
-            templateParams: normalized
-          });
-
+          var row = new autom8.view.DeviceRow({ model: model.devices[i] });
+          row.$el.addClass(i % 2 === 0 ? 'even' : 'odd');
           this.addChild(row, {appendToElement: $list});
         }
       }

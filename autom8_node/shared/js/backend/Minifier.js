@@ -232,13 +232,13 @@
 
   function renderMinifiedScripts(doc, callback) {
     if (closureCompileRunning) {
-      log.warn(JS, "closure compiler already running, bailing...".yellow);
-      callback('compiling, try again in a few...');
+      log.warn(JS, "closure compiler already running, bailing".yellow);
+      callback('compiling, try again in a few');
       return;
     }
 
     if (cached.scripts) {
-      log.info(JS, "closure compiler cache hit ...".green);
+      log.info(JS, "closure compiler cache hit".green);
       callback(cached.scripts);
       return;
     }
@@ -324,7 +324,7 @@
       log.info(JS, "starting closurecompiler", '(' + scriptFilenames.length + ' files)');
       closurecompiler.compile(scriptFilenames, { }, minificationCompleteHandler);
       closureCompileRunning = true;
-      callback("starting up, please try back in a second...");
+      callback("starting up, please try back in a second");
     }
   }
 

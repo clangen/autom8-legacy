@@ -281,7 +281,13 @@ void mochad_controller::start_connecting() {
 
 void mochad_controller::io_thread_proc() {
     start_connecting();
+
+    /* the io_service will close itself if it thinks there is no
+    more work to be done. this line prevents it from auto-stopping
+    when the server is stopped. */
+    boost::asio::io_service::work work(io_service_);
     io_service_.run();
+
     disconnect();
 }
 

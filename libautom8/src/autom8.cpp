@@ -369,11 +369,10 @@ int server_start() {
 
 int server_stop() {
     if (server::stop()) {
-        device_system::clear_instance();
-        return 1;
+        return AUTOM8_OK;
     }
 
-    return 0;
+    return AUTOM8_FALSE;
 }
 
 /* system command handlers */

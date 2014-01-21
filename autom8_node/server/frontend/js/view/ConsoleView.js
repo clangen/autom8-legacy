@@ -10,7 +10,6 @@
     why is this necessary? */
     var overflow = this.$console.height() - this.$container.height();
 
-    console.log(this.$console.height(), this.$container.height());
     if (overflow > 0) {
       var pos = this.$container.scrollTop();
       scrollToBottom = (pos >= (overflow - 4));

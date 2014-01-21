@@ -75,6 +75,10 @@ namespace("autom8").Config = (function() {
     config.display.classes.body = 'firefox fixed-header';
   }
 
+  if (!('ontouchstart' in document)) {
+    config.display.classes.body += ' no-touch';
+  }
+
   $(document).ready(function() {
     $('body').addClass(config.display.classes.body);
   });

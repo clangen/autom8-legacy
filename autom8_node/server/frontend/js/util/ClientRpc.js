@@ -1,7 +1,7 @@
  (function() {
   var RPC_REQUEST_TIMEOUT_MILLIS = 5000;
   var PREFIX = "autom8-server-ui-";
-  var DEBUG = true;
+  var DEBUG = false;
   var TAG = "[ClientRpc]";
   var nextId = 0;
   var pending = { };

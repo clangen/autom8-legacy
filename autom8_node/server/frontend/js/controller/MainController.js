@@ -24,39 +24,56 @@ namespace("autom8.controller").MainController = (function() {
 
   function saveSystemInfo() {
     var deferred = Q.defer();
+    var self = this;
+
+    var onFailed = function() {
+      autom8.util.Dialog.show({
+        title: "bad settings",
+        message: "the specified settings are invalid. please make sure the " +
+          "password is non-empty, and the port is a valid number.",
+        buttons: [{
+            caption: "ok",
+            positive: true,
+            negative: true
+        }],
+        onClosed: function() {
+          deferred.reject();
+        }
+      });
+    };
 
     var systemInfo = this.view.statusView;
     if (systemInfo.dirty()) {
       var port = parseInt(this.view.statusView.$('.port-input').val(), 10);
       var pw = this.view.statusView.$('.password-input').val();
 
-      if (!_.isNumber(port) || port <= 0 || !pw) {
-        deferred.reject();
+      if (!_.isNumber(port) || _.isNaN(port) || port <= 0 || !pw) {
+        onFailed();
       }
+      else {
+        var promises = [];
 
-      var promises = [];
+        if (systemInfo.passwordChanged) {
+          promises.push(autom8.client.rpc.send({
+            component: "server", command: "set_preference", options: {
+              key: "password",
+              value: CryptoJS.SHA256(pw).toString(CryptoJS.enc.Hex)
+            }
+          }));
+        }
 
-      if (systemInfo.passwordChanged) {
-        promises.push(autom8.client.rpc.send({
-          component: "server", command: "set_preference", options: {
-            key: "password",
-            value: CryptoJS.SHA256(pw).toString(CryptoJS.enc.Hex)
-          }
-        }));
+        if (systemInfo.portChanged) {
+          promises.push(autom8.client.rpc.send({
+            component: "server", command: "set_preference", options: {
+              key: "port",
+              value: port.toString()
+            }
+          }));
+        }
+
+        systemInfo.resetDirtyState();
+        return Q.all(promises).then(deferred.resolve).fail(onFailed);
       }
-
-      if (systemInfo.portChanged) {
-        promises.push(autom8.client.rpc.send({
-          component: "server", command: "set_preference", options: {
-            key: "port",
-            value: port.toString()
-          }
-        }));
-      }
-
-      systemInfo.resetDirtyState();
-
-      return Q.all(promises).then(deferred.resolve);
     }
     else {
       deferred.resolve();

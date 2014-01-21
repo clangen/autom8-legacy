@@ -17,8 +17,8 @@
     },
 
     onCreate: function(options) {
-      this.statusView = new autom8.view.StatusView({
-        el: $('.server-info')
+      this.systemInfoView = new autom8.view.SystemInfoView({
+        el: $('.system-info')
       });
 
       this.devicesView = new autom8.view.DeviceListView({
@@ -36,7 +36,7 @@
 
       this.nameToViewMap = {
         'devices': this.devicesView,
-        'status': this.statusView
+        'status': this.systemInfoView
       };
     },
 

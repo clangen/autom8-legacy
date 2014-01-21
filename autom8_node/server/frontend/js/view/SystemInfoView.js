@@ -2,8 +2,8 @@
   var View = autom8.mvc.View;
   var EMPTY_PASSWORD = '••••••••';
 
-  var StatusView = View.extend({
-    template: 'autom8-View-ServerInfo',
+  var SystemInfoView = View.extend({
+    template: 'autom8-View-SystemInfo',
 
     events: {
       'input .password-input': function(event) {
@@ -42,7 +42,7 @@
       model = model || { };
 
       this.inflate(
-        'autom8-View-ServerInfo', {
+        'autom8-View-SystemInfo', {
           controller: model.system_description || model.system_id,
           fingerprint: model.fingerprint,
           port: model.port,
@@ -77,5 +77,5 @@
     }
   });
 
-  namespace("autom8.view").StatusView = StatusView;
+  namespace("autom8.view").SystemInfoView = SystemInfoView;
 }());

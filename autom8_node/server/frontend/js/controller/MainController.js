@@ -7,7 +7,7 @@ namespace("autom8.controller").MainController = (function() {
       component: "server", command: "status", options: { }
     })
     .then(function(result) {
-      self.view.statusView.update(result);
+      self.view.systemInfoView.update(result);
 
       var $btns = self.view.buttonsView.$el;
       $btns.find('.button').removeClass('disabled');
@@ -16,7 +16,7 @@ namespace("autom8.controller").MainController = (function() {
       var r = result.running;
       $btns.find(r ? '.start' : '.stop').addClass('disabled');
       self.view.buttonsView.$('.connection').toggleClass('connected', r);
-      self.view.statusView.$('.connection').toggleClass('connected', autom8.client.connected);
+      self.view.systemInfoView.$('.connection').toggleClass('connected', autom8.client.connected);
 
       self.view.devicesView.enable(!r);
     });
@@ -42,10 +42,10 @@ namespace("autom8.controller").MainController = (function() {
       });
     };
 
-    var systemInfo = this.view.statusView;
-    if (systemInfo.dirty()) {
-      var port = parseInt(this.view.statusView.$('.port-input').val(), 10);
-      var pw = this.view.statusView.$('.password-input').val();
+    var systemInfoView = this.view.systemInfoView;
+    if (systemInfoView.dirty()) {
+      var port = parseInt(systemInfoView.$('.port-input').val(), 10);
+      var pw = systemInfoView.$('.password-input').val();
 
       if (!_.isNumber(port) || _.isNaN(port) || port <= 0 || !pw) {
         onFailed();
@@ -53,7 +53,7 @@ namespace("autom8.controller").MainController = (function() {
       else {
         var promises = [];
 
-        if (systemInfo.passwordChanged) {
+        if (systemInfoView.passwordChanged) {
           promises.push(autom8.client.rpc.send({
             component: "server", command: "set_preference", options: {
               key: "password",
@@ -62,7 +62,7 @@ namespace("autom8.controller").MainController = (function() {
           }));
         }
 
-        if (systemInfo.portChanged) {
+        if (systemInfoView.portChanged) {
           promises.push(autom8.client.rpc.send({
             component: "server", command: "set_preference", options: {
               key: "port",
@@ -71,7 +71,7 @@ namespace("autom8.controller").MainController = (function() {
           }));
         }
 
-        systemInfo.resetDirtyState();
+        systemInfoView.resetDirtyState();
         return Q.all(promises).then(deferred.resolve).fail(onFailed);
       }
     }

@@ -42,6 +42,15 @@
     return result;
   }
 
+  function startServerIfDevicesConnected() {
+    autom8.rpc("system", "list_devices", { }).then(function(result) {
+      var msg = result && result.message;
+      if (msg && msg.devices && msg.devices.length) {
+        autom8.rpc("server", "start", { });
+      }
+    });
+  }
+
   function start() {
     config.init(program);
     config.get().client.password = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* TODO FIX ME */
@@ -51,6 +60,8 @@
     autom8.init()
 
     .then(function() {
+      startServerIfDevicesConnected();
+
       /* for new log entries, broadcast them individually */
       log.on('log', function(args) {
         sessions.broadcast('recvMessage', {

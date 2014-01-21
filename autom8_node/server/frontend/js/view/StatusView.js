@@ -50,10 +50,10 @@
       });
 
       this.$('.password-input').val(EMPTY_PASSWORD);
-      this.setEnabled(!model.running);
+      this.enable(!model.running);
     },
 
-    setEnabled: function(enabled) {
+    enable: function(enabled) {
       enabled = enabled || (enabled === undefined);
 
       this.$('.content').toggleClass('disabled', !enabled);

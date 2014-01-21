@@ -5,7 +5,12 @@
     padding: 0 8px;
     padding-bottom: 10px;
 
+    .content {
+        position: relative;
+    }
+
     ul {
+        overflow: hidden; /* trick to fix float height calculation */
     }
 
     ul li {
@@ -14,7 +19,6 @@
     }
 
     li {
-        // display: inline-block;
         float: left;
         width: 50%;
     }
@@ -41,7 +45,9 @@
             text-align: center;
             line-height: 104px;
             text-decoration: underline;
-            text-shadow: 0 0 4px #222;
+            text-shadow: 0 0 8px #333;
+            color: #eee;
+            font-size: 120%;
         }
 
         .device-row-attr {
@@ -75,7 +81,6 @@
             width: 60px;
             text-align: right;
             padding-right: 4px;
-            font-weight: bold;
         }
     }
 }

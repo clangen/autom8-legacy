@@ -17,6 +17,8 @@ namespace("autom8.controller").MainController = (function() {
       $btns.find(r ? '.start' : '.stop').addClass('disabled');
       self.view.buttonsView.$('.connection').toggleClass('connected', r);
       self.view.statusView.$('.connection').toggleClass('connected', autom8.client.connected);
+
+      self.view.devicesView.enable(!r);
     });
   }
 

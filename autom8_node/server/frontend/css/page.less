@@ -34,6 +34,14 @@
     .content.disabled {
         opacity: 0.5;
     }
+
+    .disabled .content-guard {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
 }
 
 .main-content-left {
@@ -43,6 +51,7 @@
     bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     min-height: 100%;
     max-width: 640px;
     width: 75%;

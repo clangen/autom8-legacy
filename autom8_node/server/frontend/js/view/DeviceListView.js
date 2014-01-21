@@ -39,6 +39,11 @@
           this.addChild(row, {appendToElement: $list});
         }
       }
+    },
+
+    enable: function(enabled) {
+      enabled = enabled || (enabled === undefined);
+      this.$('.content').toggleClass('disabled', !enabled);
     }
   });
 

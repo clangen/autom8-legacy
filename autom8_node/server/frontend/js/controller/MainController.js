@@ -7,7 +7,7 @@ namespace("autom8.controller").MainController = (function() {
       component: "server", command: "status", options: { }
     })
     .then(function(result) {
-      self.view.systemInfoView.update(result);
+      self.systemInfoController.update(result);
 
       var $btns = self.view.buttonsView.$el;
       $btns.find('.button').removeClass('disabled');
@@ -16,70 +16,9 @@ namespace("autom8.controller").MainController = (function() {
       var r = result.running;
       $btns.find(r ? '.start' : '.stop').addClass('disabled');
       self.view.buttonsView.$('.connection').toggleClass('connected', r);
-      self.view.systemInfoView.$('.connection').toggleClass('connected', autom8.client.connected);
 
       self.view.devicesView.enable(!r);
     });
-  }
-
-  function saveSystemInfo() {
-    var deferred = Q.defer();
-    var self = this;
-
-    var onFailed = function() {
-      autom8.util.Dialog.show({
-        title: "bad settings",
-        message: "the specified settings are invalid. please make sure the " +
-          "password is non-empty, and the port is a valid number.",
-        buttons: [{
-            caption: "ok",
-            positive: true,
-            negative: true
-        }],
-        onClosed: function() {
-          deferred.reject();
-        }
-      });
-    };
-
-    var systemInfoView = this.view.systemInfoView;
-    if (systemInfoView.dirty()) {
-      var port = parseInt(systemInfoView.$('.port-input').val(), 10);
-      var pw = systemInfoView.$('.password-input').val();
-
-      if (!_.isNumber(port) || _.isNaN(port) || port <= 0 || !pw) {
-        onFailed();
-      }
-      else {
-        var promises = [];
-
-        if (systemInfoView.passwordChanged) {
-          promises.push(autom8.client.rpc.send({
-            component: "server", command: "set_preference", options: {
-              key: "password",
-              value: CryptoJS.SHA256(pw).toString(CryptoJS.enc.Hex)
-            }
-          }));
-        }
-
-        if (systemInfoView.portChanged) {
-          promises.push(autom8.client.rpc.send({
-            component: "server", command: "set_preference", options: {
-              key: "port",
-              value: port.toString()
-            }
-          }));
-        }
-
-        systemInfoView.resetDirtyState();
-        return Q.all(promises).then(deferred.resolve).fail(onFailed);
-      }
-    }
-    else {
-      deferred.resolve();
-    }
-
-    return deferred.promise;
   }
 
   return autom8.mvc.Controller.extend({
@@ -90,10 +29,14 @@ namespace("autom8.controller").MainController = (function() {
     onCreate: function(options) {
       this.view = new autom8.view.MainView({ el: $('.main-content-left') });
 
+      this.systemInfoController = this.addChild(
+        new autom8.controller.SystemInfoController()
+      );
+
       var self = this;
 
       this.view.on('start:clicked', function() {
-        saveSystemInfo.call(self)
+        self.systemInfoController.save()
 
         .then(function() {
           autom8.client.rpc.send({

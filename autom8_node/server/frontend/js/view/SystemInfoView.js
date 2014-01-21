@@ -49,6 +49,7 @@
           version: model.version
       });
 
+      this.$('.connection').toggleClass('connected', autom8.client.connected);
       this.$('.password-input').val(EMPTY_PASSWORD);
       this.enable(!model.running);
     },

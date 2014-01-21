@@ -17,10 +17,6 @@
     },
 
     onCreate: function(options) {
-      this.systemInfoView = new autom8.view.SystemInfoView({
-        el: $('.system-info')
-      });
-
       this.devicesView = new autom8.view.DeviceListView({
         el: $('.devices')
       });
@@ -35,8 +31,7 @@
       });
 
       this.nameToViewMap = {
-        'devices': this.devicesView,
-        'status': this.systemInfoView
+        'devices': this.devicesView
       };
     },
 

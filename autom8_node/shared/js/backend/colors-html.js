@@ -38,7 +38,7 @@ String.prototype.toHtml = (function() {
         var result = this;
         for (var k in table) {
             if (table.hasOwnProperty(k)) {
-                result = result.replace(new RegExp(k, "g"), table[k]);
+                result = result.replace(new RegExp(k, "g"), table[k]) + ' ';
             }
         }
 

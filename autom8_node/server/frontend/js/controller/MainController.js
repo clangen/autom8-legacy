@@ -20,6 +20,49 @@ namespace("autom8.controller").MainController = (function() {
     });
   }
 
+  function saveSystemInfo() {
+    var deferred = Q.defer();
+
+    var systemInfo = this.view.statusView;
+    if (systemInfo.dirty()) {
+      var port = parseInt(this.view.statusView.$('.port-input').val(), 10);
+      var pw = this.view.statusView.$('.password-input').val();
+
+      if (!_.isNumber(port) || port <= 0 || !pw) {
+        deferred.reject();
+      }
+
+      var promises = [];
+
+      if (systemInfo.passwordChanged) {
+        promises.push(autom8.client.rpc.send({
+          component: "server", command: "set_preference", options: {
+            key: "password",
+            value: CryptoJS.SHA256(pw).toString(CryptoJS.enc.Hex)
+          }
+        }));
+      }
+
+      if (systemInfo.portChanged) {
+        promises.push(autom8.client.rpc.send({
+          component: "server", command: "set_preference", options: {
+            key: "port",
+            value: port.toString()
+          }
+        }));
+      }
+
+      systemInfo.resetDirtyState();
+
+      return Q.all(promises).then(deferred.resolve);
+    }
+    else {
+      deferred.resolve();
+    }
+
+    return deferred.promise;
+  }
+
   return autom8.mvc.Controller.extend({
     mixins: [
       autom8.mvc.mixins.ControllerContainer
@@ -31,8 +74,12 @@ namespace("autom8.controller").MainController = (function() {
       var self = this;
 
       this.view.on('start:clicked', function() {
-        autom8.client.rpc.send({
-          component: "server", command: "start", options: { }
+        saveSystemInfo.call(self)
+
+        .then(function() {
+          autom8.client.rpc.send({
+            component: "server", command: "start", options: { }
+          });
         })
 
         .then(refreshStatus.bind(self));
@@ -63,9 +110,7 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onConnected: function() {
-
       var self = this;
-
       refreshStatus.call(this);
 
       autom8.client.rpc.send({

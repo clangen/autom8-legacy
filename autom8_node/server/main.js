@@ -28,11 +28,11 @@
 
   function encodeLog(args) {
     args[0] = '<span class="timestamp">' + args[0] + '</span>';
-    var result = '<span class="log-entry">';
+    var result = '<div class="log-entry">';
     for (var i = 0; i < args.length; i++) {
       result += args[i].toString().toHtml();
     }
-    result += "</span>";
+    result += "</div>";
 
     recentLogs.push(result);
     if (recentLogs.length > 100) {

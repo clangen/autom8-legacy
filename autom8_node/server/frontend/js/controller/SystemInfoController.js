@@ -76,7 +76,7 @@ namespace("autom8.controller").SystemInfoController = (function() {
     },
 
     save: function() {
-      return saveSystemInfo.call(this).fail(function(){ });
+      return saveSystemInfo.call(this);
     }
   });
 }());

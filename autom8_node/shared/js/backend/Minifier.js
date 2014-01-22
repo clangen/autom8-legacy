@@ -347,6 +347,11 @@
     });
   }
 
+  function clearCache() {
+    log.info(CSS, "cleared cache".red);
+    cached = {styles: '', scripts: ''};
+  }
+
   module.exports = exports = {
     createLessParser: createLessParser,
     minifyLessData: minifyLessData,
@@ -354,7 +359,8 @@
     renderNonMinifiedScripts: renderNonMinifiedScripts,
     renderNonMinifiedStyles: renderNonMinifiedStyles,
     renderMinifiedStyles: renderMinifiedStyles,
-    renderMinifiedScripts: renderMinifiedScripts
+    renderMinifiedScripts: renderMinifiedScripts,
+    clearCache: clearCache
   };
 
 }());

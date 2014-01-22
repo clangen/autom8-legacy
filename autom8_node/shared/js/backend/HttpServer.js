@@ -42,6 +42,13 @@
       debug = config.debug && true;
     }
 
+    if (fn === "reset.html") { /* ehh */
+      minifier.clearCache();
+      res.writeHead(200);
+      res.end('minifier cache reset ' + Math.random());
+      return;
+    }
+
     /* if we're hitting the debug endpoint then invalidate the
     appcache manifest */
     if (debug) {

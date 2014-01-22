@@ -3,9 +3,11 @@
 
   var redraw = function() {
     var model = this.systemModel;
+    var running = model.get('running');
     this.$('.button').removeClass('disabled');
-    this.$(model.get('running') ? '.start' : '.stop').addClass('disabled');
-    this.$('.connection').toggleClass('connected', model.get('running'));
+    this.$(running ? '.start' : '.stop').addClass('disabled');
+    this.$('.stop-message').toggleClass('disabled', !running);
+    this.$('.connection').toggleClass('connected', running);
   };
 
   var ServerControlView = View.extend({
@@ -13,11 +15,15 @@
 
     events: {
       'touch .button.start': function(e) {
-        this.trigger('start:clicked');
+        if (!this.systemModel.get('running')) {
+          this.trigger('start:clicked');
+        }
       },
 
       'touch .button.stop': function(e) {
-        this.trigger('stop:clicked');
+        if (this.systemModel.get('running')) {
+          this.trigger('stop:clicked');
+        }
       }
     },
 

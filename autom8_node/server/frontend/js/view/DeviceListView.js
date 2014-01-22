@@ -26,19 +26,19 @@
 
     redraw: function() {
       var $list = this.$el.find('.list');
-      var devices = this.systemModel.get('devices');
+      var deviceList = this.systemModel.get('deviceList');
 
       this.clearChildren();
       $list.empty();
 
-      if (!devices || !devices.length) {
+      if (!deviceList || !deviceList.length) {
         return;
       }
 
       this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
 
-      for (var i = 0; i < devices.length; i++) {
-        var row = new autom8.view.DeviceRow({ model: devices[i] });
+      for (var i = 0; i < deviceList.length; i++) {
+        var row = new autom8.view.DeviceRow({ model: deviceList.at(i) });
         row.$el.addClass(i % 2 === 0 ? 'even' : 'odd');
         this.addChild(row, {appendToElement: $list});
       }

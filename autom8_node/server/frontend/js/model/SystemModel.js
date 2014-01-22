@@ -2,6 +2,12 @@ namespace("autom8.model").SystemModel = (function() {
   var fetching;
 
   var Model = Backbone.Model.extend({
+    initialize: function() {
+      this.set({
+        deviceList: new autom8.model.DeviceList()
+      });
+    },
+
     fetch: function() {
       if (fetching) {
         return;
@@ -20,8 +26,22 @@ namespace("autom8.model").SystemModel = (function() {
       ])
 
       .spread(function(status, devices) {
-        var attrs = _.extend({devices: devices.devices}, status);
-        self.set(attrs);
+        devices = devices.devices || [];
+
+        var deviceList = self.get('deviceList'), device;
+        for (var i = 0; i < devices.length; i++) {
+          /* bleh, "attributes" conflicts with the backbone Model's
+          internal field. rename to attrs */
+          devices[i].attrs = devices[i].attributes;
+          delete devices[i].attributes;
+
+          if (!deviceList.update(devices[i])) { /* update needs the raw data */
+            device = new autom8.model.Device(devices[i]);
+            deviceList.add(device);
+          }
+        }
+
+        self.set(status);
       })
 
       .done(function(result) {

@@ -24,13 +24,15 @@
     onCreate: function(options) {
       this.model = options.model;
       this.render();
+      this.model.on('change', this.render, this);
     },
 
     onDestroy: function() {
+      this.model.off('change', this.render, this);
     },
 
     render: function() {
-      var d = this.model || { };
+      var d = (this.model && this.model.toJSON()) || { };
 
       var normalized = {
         'label': d.label || "unnamed",
@@ -45,7 +47,7 @@
           normalized.status = "ALERT!";
         }
         else {
-          normalized.status = (d.attributes.armed) ? "armed" : "disarmed";
+          normalized.status = (d.attrs.armed) ? "armed" : "disarmed";
         }
       }
 

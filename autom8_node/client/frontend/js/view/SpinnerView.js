@@ -25,11 +25,6 @@
       options.spinnerOptions = _.extend(
         { }, spinnerOptions, options.spinnerOptions);
 
-      if (options.template) {
-        this.$el.append(View.elementFromTemplateId(
-          options.template, options.templateParams || { }));
-      }
-
       this.$spinnerEl = this.$el;
       if (options.spinnerSelector) {
         this.$spinnerEl = this.$(options.spinnerSelector) || this.$el;

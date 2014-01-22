@@ -15,30 +15,35 @@
     },
 
     onCreate: function(options) {
-      this.update(this);
+      this.systemModel = autom8.model.SystemModel;
+      this.systemModel.on('change', this.redraw, this);
+      this.redraw();
     },
 
-    update: function(model) {
-      var $list = this.$el.find('.list');
+    onDestroy: function() {
+      this.systemModel.off('change', this.redraw, this);
+    },
 
-      if (!model) {
-        $list.empty();
-        this.model = null;
+    redraw: function() {
+      var $list = this.$el.find('.list');
+      var devices = this.systemModel.get('devices');
+
+      this.clearChildren();
+      $list.empty();
+
+      if (!devices || !devices.length) {
         return;
       }
 
-      this.model = model;
+      this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
 
-      if (model.devices) {
-        this.clearChildren();
-        this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
-
-        for (var i = 0; i < model.devices.length; i++) {
-          var row = new autom8.view.DeviceRow({ model: model.devices[i] });
-          row.$el.addClass(i % 2 === 0 ? 'even' : 'odd');
-          this.addChild(row, {appendToElement: $list});
-        }
+      for (var i = 0; i < devices.length; i++) {
+        var row = new autom8.view.DeviceRow({ model: devices[i] });
+        row.$el.addClass(i % 2 === 0 ? 'even' : 'odd');
+        this.addChild(row, {appendToElement: $list});
       }
+
+      this.enable(!this.systemModel.get('running'));
     },
 
     enable: function(enabled) {

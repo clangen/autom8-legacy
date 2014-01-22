@@ -2,41 +2,18 @@
   var View = autom8.mvc.View;
 
   var MainView = View.extend({
-    events: {
-      'touch .button.start': function(e) {
-        this.trigger('start:clicked');
-      },
-
-      'touch .button.stop': function(e) {
-        this.trigger('stop:clicked');
-      }
-    },
-
     onBeforeCreate: function(options) {
       this.$el.append(View.elementFromTemplateId('autom8-View-MainView'));
     },
 
     onCreate: function(options) {
-      this.devicesView = new autom8.view.DeviceListView({
-        el: $('.devices')
-      });
-
-      this.buttonsView = new View({
-        el: $('.bottom-buttons'),
-        template: 'autom8-View-ButtonRow'
+      this.serverControlView = new autom8.view.ServerControlView({
+        el: $('.server-control')
       });
 
       this.consoleView = new autom8.view.ConsoleView({
         el: $('.main-content-right')
       });
-
-      this.nameToViewMap = {
-        'devices': this.devicesView
-      };
-    },
-
-    update: function(view, model) {
-      this.nameToViewMap[view].update(model);
     }
   });
 

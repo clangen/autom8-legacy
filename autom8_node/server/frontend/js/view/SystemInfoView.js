@@ -2,6 +2,22 @@
   var View = autom8.mvc.View;
   var EMPTY_PASSWORD = '••••••••';
 
+  var redraw = function() {
+    var model = this.systemModel;
+
+    this.inflate(
+      'autom8-View-SystemInfo', {
+        controller: model.get('system_description') || model.get('system_id'),
+        fingerprint: model.get('fingerprint'),
+        port: model.get('port'),
+        version: model.get('version')
+    });
+
+    this.$('.connection').toggleClass('connected', autom8.client.connected);
+    this.$('.password-input').val(EMPTY_PASSWORD);
+    this.enable(!model.get('running'));
+  };
+
   var SystemInfoView = View.extend({
     template: 'autom8-View-SystemInfo',
 
@@ -35,23 +51,12 @@
     },
 
     onCreate: function(options) {
-      this.update(null);
+      this.systemModel = autom8.model.SystemModel;
+      this.systemModel.on('change', redraw, this);
     },
 
-    update: function(model) {
-      model = model || { };
-
-      this.inflate(
-        'autom8-View-SystemInfo', {
-          controller: model.system_description || model.system_id,
-          fingerprint: model.fingerprint,
-          port: model.port,
-          version: model.version
-      });
-
-      this.$('.connection').toggleClass('connected', autom8.client.connected);
-      this.$('.password-input').val(EMPTY_PASSWORD);
-      this.enable(!model.running);
+    onDestroy: function() {
+      this.systemModel.off('change', redraw, this);
     },
 
     enable: function(enabled) {

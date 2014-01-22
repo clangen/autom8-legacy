@@ -1,9 +1,12 @@
 <script src="js/util/ClientRpc.js" type="text/javascript"></script>
 <script src="js/controller/MainController.js" type="text/javascript"></script>
 <script src="js/controller/SystemInfoController.js" type="text/javascript"></script>
+<script src="js/controller/DeviceListController.js" type="text/javascript"></script>
 <script src="js/view/MainView.js" type="text/javascript"></script>
 <script src="js/view/SystemInfoView.js" type="text/javascript"></script>
+<script src="js/view/ServerControlView.js" type="text/javascript"></script>
 <script src="js/view/DeviceListView.js" type="text/javascript"></script>
 <script src="js/view/DeviceRow.js" type="text/javascript"></script>
 <script src="js/view/AddDeviceRow.js" type="text/javascript"></script>
 <script src="js/view/ConsoleView.js" type="text/javascript"></script>
+<script src="js/model/SystemModel.js" type="text/javascript"></script>

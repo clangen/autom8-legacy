@@ -1,24 +1,28 @@
 namespace("autom8.controller").MainController = (function() {
-  function refreshStatus() { /* should happen automagically */
-    /* assumes this is bound to instance */
+  function refreshStatus() {
+    autom8.model.SystemModel.fetch();
+  }
+
+  function onStartClicked() {
     var self = this;
 
-    autom8.client.rpc.send({
-      component: "server", command: "status", options: { }
+    self.systemInfoController.save()
+
+    .then(function() {
+      autom8.client.rpc.send({
+        component: "server", command: "start", options: { }
+      });
     })
-    .then(function(result) {
-      self.systemInfoController.update(result);
 
-      var $btns = self.view.buttonsView.$el;
-      $btns.find('.button').removeClass('disabled');
+    .then(refreshStatus);
+  }
 
-      /* toggle red/green header status indicators */
-      var r = result.running;
-      $btns.find(r ? '.start' : '.stop').addClass('disabled');
-      self.view.buttonsView.$('.connection').toggleClass('connected', r);
+  function onStopClicked() {
+    autom8.client.rpc.send({
+      component: "server", command: "stop", options: { }
+    })
 
-      self.view.devicesView.enable(!r);
-    });
+    .then(refreshStatus);
   }
 
   return autom8.mvc.Controller.extend({
@@ -33,27 +37,12 @@ namespace("autom8.controller").MainController = (function() {
         new autom8.controller.SystemInfoController()
       );
 
-      var self = this;
+      this.deviceListController = this.addChild(
+        new autom8.controller.DeviceListController()
+      );
 
-      this.view.on('start:clicked', function() {
-        self.systemInfoController.save()
-
-        .then(function() {
-          autom8.client.rpc.send({
-            component: "server", command: "start", options: { }
-          });
-        })
-
-        .then(refreshStatus.bind(self));
-      });
-
-      this.view.on('stop:clicked', function() {
-        autom8.client.rpc.send({
-          component: "server", command: "stop", options: { }
-        })
-
-        .then(refreshStatus.bind(self));
-      });
+      this.view.serverControlView.on('start:clicked', onStartClicked, this);
+      this.view.serverControlView.on('stop:clicked', onStopClicked, this);
 
       autom8.client.on('connected', this.onConnected, this);
       autom8.client.on('disconnected', this.onDisconnected, this);
@@ -72,15 +61,7 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onConnected: function() {
-      var self = this;
-      refreshStatus.call(this);
-
-      autom8.client.rpc.send({
-        component: "system", command: "list_devices", options: { }
-      })
-      .then(function(result) {
-        self.view.devicesView.update(result);
-      });
+      refreshStatus();
     },
 
     onDisconnected: function() {

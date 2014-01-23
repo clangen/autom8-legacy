@@ -1,10 +1,23 @@
  (function() {
   var View = autom8.mvc.View;
 
+  function elementToDevice(e) {
+    var index = $(e).parents('.device-row').attr('data-index');
+    if (index) {
+      index = parseInt(index, 10);
+      return this.systemModel.get('deviceList').at(index);
+    }
+  }
+
   var DeviceListView = View.extend({
     template: 'autom8-View-Devices',
 
     events: {
+      'touch .device-row .delete': function(e) {
+        var d = elementToDevice.call(this, e.currentTarget);
+        this.trigger('delete:clicked', d);
+      },
+
       'touch .device-row.add-device': function(e) {
         console.log("ADD NEW DEVICE!");
       },
@@ -31,15 +44,16 @@
       this.clearChildren();
       $list.empty();
 
+      this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
+
       if (!deviceList || !deviceList.length) {
         return;
       }
 
-      this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
-
       for (var i = 0; i < deviceList.length; i++) {
         var row = new autom8.view.DeviceRow({ model: deviceList.at(i) });
         row.$el.addClass(i % 2 === 0 ? 'even' : 'odd');
+        row.$el.find('.device-row').attr('data-index', i);
         this.addChild(row, {appendToElement: $list});
       }
 

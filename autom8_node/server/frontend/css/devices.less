@@ -31,11 +31,22 @@
         margin-left: 8px;
         font-size: 110%;
         line-height: 110%;
+        position: relative;
 
         /* fixed height sucks, but is done so we can insert
         a big "add device" button as the first item in
         the list */
         height: 104px;
+
+        .delete {
+            position: absolute;
+            right: 0;
+            top: 0;
+            text-decoration: underline;
+            padding: 4px;
+            font-size: 75%;
+            cursor: pointer;
+        }
 
         &.add-device {
             text-align: center;

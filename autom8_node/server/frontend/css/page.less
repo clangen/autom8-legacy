@@ -81,3 +81,30 @@
 .connection.connected {
     background-color: #7FB347;
 }
+
+.dialogs, .dialog-overlay {
+    max-width: 640px;
+    width: 100%;
+    right: auto;
+}
+
+@media only screen and (max-width: 860px) {
+    .main-content-right {
+        display: none;
+    }
+
+    .main-content-left {
+        position: absolute;
+        max-width: 640px;
+        width: 100%;
+        left: 0;
+        right: 0;
+        top: 0;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .main-content-right {
+
+    }
+}

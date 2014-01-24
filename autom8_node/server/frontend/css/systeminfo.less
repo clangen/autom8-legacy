@@ -32,11 +32,18 @@
     input {
         outline-width: 0;
         padding: 2px;
-        border: 1px solid #aaaaaa;
+        border: 1px solid #aaa;
+        background-color: #fff;
         height: 24px;
         width: 96px;
         .box-sizing(border-box);
         border-radius: 8px;
         padding-left: 6px;
+        font-weight: bold;
+    }
+
+    .content.disabled input {
+        background-color: #777;
+        color: #ccc;
     }
 }

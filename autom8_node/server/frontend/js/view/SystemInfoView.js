@@ -16,7 +16,7 @@
       }
     );
 
-    this.addChild(view, {appendToElement: this.$el});
+    this.addChild(view, {appendToElement: this.$el.find('.content')});
 
     setTimeout(function() {
       var connected = autom8.client.connected;

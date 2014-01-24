@@ -36,12 +36,18 @@
 
     /* the height() calculation on $console may not be accurate
     until the next time through the runloop... */
-    if (scrollToBottom) {
+    if (scrollToBottom || this.scrolledToBottom) {
       var self = this;
       setTimeout(function() {
         self.$container.scrollTop(self.$console.height());
+        this.scrolledToBottom = true;
       });
     }
+
+    /* note that when the console becomes invisible -- e.g. due to a
+    media query -- scrolling no longer works. so, we remember whether
+    or not we're scrolled to the bottom last time around. */
+    this.scrolledToBottom = false;
   };
 
   var ConsoleView = View.extend({
@@ -53,7 +59,6 @@
     onCreate: function(options) {
       this.$console = this.$('.console');
       this.$container = this.$('.console-container');
-
       autom8.client.on('log', onRpcLog, this);
     },
 

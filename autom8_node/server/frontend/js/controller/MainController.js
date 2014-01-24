@@ -3,6 +3,16 @@ namespace("autom8.controller").MainController = (function() {
     autom8.model.SystemModel.fetch();
   }
 
+  function reconnect(options) {
+    var c = autom8.client;
+    var s = autom8.client.getState();
+    if (!c.connected && !c.connecting && s !== "authenticating") {
+      autom8.client.authenticate("empty").fail(function() {
+        autom8.client.connect();
+      });
+    }
+  }
+
   function onStartClicked() {
     var self = this;
 
@@ -49,15 +59,14 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.on('expired', this.onDisconnected, this);
       autom8.client.on('state:changed', this.onClientStateChanged, this);
 
-      /* get auth cookie. after we have the auth cookie we can connect */
-      autom8.client.authenticate("empty");
+      reconnect({immediate: true});
     },
 
     onDestroy: function() {
       autom8.client.off('connected', this.onConnected, this);
       autom8.client.off('disconnected', this.onDisconnected, this);
       autom8.client.off('expired', this.onDisconnected, this);
-      autom8.client.pff('state:changed', this.onClientStateChanged, this);
+      autom8.client.off('state:changed', this.onClientStateChanged, this);
     },
 
     onConnected: function() {
@@ -65,6 +74,12 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onDisconnected: function() {
+      if (!this.reconnectTimeout) {
+        this.reconnectTimeout = setTimeout(function() {
+          this.reconnectTimeout = null;
+          reconnect();
+        }.bind(this), 5000);
+      }
     },
 
     onClientStateChanged: function(state) {

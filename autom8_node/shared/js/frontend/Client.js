@@ -195,6 +195,7 @@ namespace("autom8").client = (function () {
 
     authenticate: function(password) {
       setState(this, 'authenticating');
+      var deferred = Q.defer();
 
       var self = this;
       $.ajax({
@@ -205,11 +206,15 @@ namespace("autom8").client = (function () {
         },
         success: function(data) {
           setState(self, 'authenticated');
+          deferred.resolve();
         },
         error: function (xhr, status, error) {
           setState(self, 'disconnected', {errorCode: -99});
+          deferred.reject();
         }
       });
+
+      return deferred.promise;
     }
   });
 

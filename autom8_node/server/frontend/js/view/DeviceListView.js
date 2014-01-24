@@ -19,7 +19,7 @@
       },
 
       'touch .device-row.add-device': function(e) {
-        console.log("ADD NEW DEVICE!");
+        this.trigger('add:clicked');
       },
 
       'touch .device-row': function(e) {

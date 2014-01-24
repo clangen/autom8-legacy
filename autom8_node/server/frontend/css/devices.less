@@ -61,6 +61,14 @@
             position: relative;
         }
 
+        .device-row-attr:nth-child(2) {
+            /* the device name is absolutely positioned, while the
+            attributes are relatively positioned. add padding to the
+            first non-device-name attribute to offset it vertically,
+            otherwise it overlaps with the name */
+            padding-top: 26px;
+        }
+
         .key, .value {
             display: inline-block;
         }
@@ -80,7 +88,10 @@
             padding-bottom: 6px;
             padding-left: 8px;
             color: #eee;
-            position: static;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 40px;
         }
 
         .key {

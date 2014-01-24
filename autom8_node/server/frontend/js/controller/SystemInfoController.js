@@ -66,9 +66,15 @@ namespace("autom8.controller").SystemInfoController = (function() {
 
     onCreate: function(options) {
       this.view = new autom8.view.SystemInfoView({ el: $('.system-info') });
+      autom8.client.on('disconnected', this.onDisconnected, this);
     },
 
     onDestroy: function() {
+      autom8.client.off('disconnected', this.onDisconnected, this);
+    },
+
+    onDisconnected: function() {
+      this.view.render();
     },
 
     update: function(model) {

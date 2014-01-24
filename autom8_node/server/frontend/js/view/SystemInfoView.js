@@ -59,6 +59,10 @@
       this.systemModel.off('change', redraw, this);
     },
 
+    render: function() {
+      redraw.call(this);
+    },
+
     enable: function(enabled) {
       enabled = enabled || (enabled === undefined);
 

@@ -32,14 +32,20 @@ namespace("autom8.controller").DeviceListController = (function() {
     }
   }
 
+  function addDevice() {
+    console.log("ADD NEW DEVICE!");
+  }
+
   return autom8.mvc.Controller.extend({
     onCreate: function(options) {
       this.view = new autom8.view.DeviceListView({ el: $('.devices') });
       this.view.on('delete:clicked', deleteDevice, this);
+      this.view.on('add:clicked', addDevice, this);
     },
 
     onDestroy: function(options) {
       this.view.off('delete:clicked', deleteDevice, this);
+      this.view.off('add:clicked', addDevice, this);
     }
   });
 }());

@@ -19,9 +19,31 @@
     }
 
     li {
-        float: left;
-        // display: inline-block;
+        // float: left;
+        display: inline-block;
         width: 50%;
+    }
+
+    .crud-action {
+        text-decoration: underline;
+        padding: 4px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .header {
+        position: relative;
+
+        .create {
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+    }
+
+    .disabled .create {
+        cursor: default;
+        color: #777;
     }
 
     .device-row {
@@ -42,10 +64,6 @@
             position: absolute;
             right: 0;
             top: 0;
-            text-decoration: underline;
-            padding: 4px;
-            font-size: 75%;
-            cursor: pointer;
 
             /* make easier to click on touch devices */
             padding-left: 14px;

@@ -1,6 +1,9 @@
 <script id="autom8-View-Devices" type="text/x-handlebars-template">
   <div class="devices">
-    <div class="header">connected devices</div>
+    <div class="header">
+    connected devices
+    <div class="crud-action create">add new device...</div>
+    </div>
     <div class="content">
       <ul class="list"></ul>
       <div class="content-guard"></div>
@@ -15,7 +18,7 @@
     <div class="device-row-attr"><div class="key">type:</div> <div class="value">{{type}}</div></div>
     <div class="device-row-attr"><div class="key">status:</div> <div class="value">{{status}}</div></div>
     <div class="device-row-attr"><div class="key">address:</div> <div class="value">{{address}}</div></div>
-    <div class="delete">delete</div>
+    <div class="crud-action delete">delete</div>
   </div>
 </script>
 

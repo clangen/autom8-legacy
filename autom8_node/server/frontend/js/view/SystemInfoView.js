@@ -21,9 +21,7 @@
     setTimeout(function() {
       var connected = autom8.client.connected;
       var $el = this.$('.connection');
-      var hasClass = $el.hasClass('connected');
-      if (!connected && hasClass) { $el.removeClass('connected'); }
-      else if (connected && !hasClass) { $el.addClass('connected'); }
+      $el.toggleClass('connected', connected);
     }.bind(this));
 
     this.$('.password-input').val(EMPTY_PASSWORD);

@@ -2,11 +2,18 @@
   var View = autom8.mvc.View;
 
   function elementToDevice(e) {
-    var index = $(e).parents('.device-row').attr('data-index');
+    var $el = $(e);
+    $el = $el.hasClass('device-row') ? $el : $el.parents('.device-row');
+
+    var index = $el.attr('data-index');
     if (index) {
       index = parseInt(index, 10);
       return this.systemModel.get('deviceList').at(index);
     }
+  }
+
+  function running(c) {
+    return c.systemModel.get('running');
   }
 
   var DeviceListView = View.extend({
@@ -14,16 +21,23 @@
 
     events: {
       'touch .device-row .delete': function(e) {
-        var d = elementToDevice.call(this, e.currentTarget);
-        this.trigger('delete:clicked', d);
+        if (!running(this)) {
+          var d = elementToDevice.call(this, e.currentTarget);
+          this.trigger('delete:clicked', d);
+        }
       },
 
-      'touch .device-row.add-device': function(e) {
-        this.trigger('add:clicked');
+      'touch .header .create': function(e) {
+        if (!running(this)) {
+          this.trigger('create:clicked');
+        }
       },
 
       'touch .device-row': function(e) {
-        console.log("EDIT DEVICE!");
+        if (!running(this)) {
+          var d = elementToDevice.call(this, e.currentTarget);
+          this.trigger('edit:clicked', d);
+        }
       }
     },
 
@@ -44,7 +58,7 @@
       this.clearChildren();
       $list.empty();
 
-      this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
+      // this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
 
       if (!deviceList || !deviceList.length) {
         return;
@@ -63,6 +77,7 @@
     enable: function(enabled) {
       enabled = enabled || (enabled === undefined);
       this.$('.content').toggleClass('disabled', !enabled);
+      this.$('.header').toggleClass('disabled', !enabled);
     }
   });
 

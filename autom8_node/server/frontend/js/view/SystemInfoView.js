@@ -5,15 +5,27 @@
   var redraw = function() {
     var model = this.systemModel;
 
-    this.inflate(
-      'autom8-View-SystemInfo', {
+    this.clearChildren();
+
+    var view = View.fromTemplateId(
+      'autom8-View-SystemInfoTable', {
         controller: model.get('system_description') || model.get('system_id'),
         fingerprint: model.get('fingerprint'),
         port: model.get('port'),
         version: model.get('version')
-    });
+      }
+    );
 
-    this.$('.connection').toggleClass('connected', autom8.client.connected);
+    this.addChild(view, {appendToElement: this.$el});
+
+    setTimeout(function() {
+      var connected = autom8.client.connected;
+      var $el = this.$('.connection');
+      var hasClass = $el.hasClass('connected');
+      if (!connected && hasClass) { $el.removeClass('connected'); }
+      else if (connected && !hasClass) { $el.addClass('connected'); }
+    }.bind(this));
+
     this.$('.password-input').val(EMPTY_PASSWORD);
     this.enable(!model.get('running'));
   };
@@ -53,6 +65,7 @@
     onCreate: function(options) {
       this.systemModel = autom8.model.SystemModel;
       this.systemModel.on('change', redraw, this);
+      this.render();
     },
 
     onDestroy: function() {

@@ -27,7 +27,7 @@ namespace("autom8.controller").DeviceListController = (function() {
             caption: "no",
             positive: false
           }
-        ],
+        ]
       });
     }
   }

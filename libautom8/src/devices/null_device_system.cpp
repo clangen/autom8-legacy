@@ -186,6 +186,18 @@ typedef std::map<std::string, device_ptr> addr_map;
 addr_map addr_to_dev_;
 boost::mutex device_map_mutex_;
 
+null_device_system::null_device_system()
+: model_(device_factory_ptr(new null_device_factory()))
+{
+    model_.device_updated.connect(
+        this, &null_device_system::on_device_updated
+    );
+
+    model_.device_removed.connect(
+        this, &null_device_system::on_device_removed
+    );
+}
+
 device_ptr null_device_system::null_device_factory::create(
     database_id id,
     device_type type,
@@ -200,7 +212,8 @@ device_ptr null_device_system::null_device_factory::create(
     }
 
     device_ptr device = device_ptr(
-        new null_device(id, address, label, groups, type));
+        new null_device(id, address, label, groups, type)
+    );
 
     addr_to_dev_[address] = device;
 
@@ -209,4 +222,24 @@ device_ptr null_device_system::null_device_factory::create(
 
 std::string null_device_system::null_device_factory::name() const {
     return "null";
+}
+
+void null_device_system::on_device_removed(database_id id) {
+    boost::mutex::scoped_lock lock(device_map_mutex_);
+
+    addr_map::iterator it;
+    bool found = false;
+    for (it = addr_to_dev_.begin(); it != addr_to_dev_.end(); it++) {
+        if (it->second->id() == id) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found) {
+        addr_to_dev_.erase(it);
+    }
+}
+
+void null_device_system::on_device_updated(database_id id) {
 }

@@ -443,6 +443,59 @@ static json_value_ref system_list_devices() {
     return result;
 }
 
+void json_array_to_vector(const json_value& value, std::vector<std::string>& target) {
+    if (value.isArray()) {
+        for (unsigned i = 0; i < value.size(); i++) {
+            target.push_back(value.get(i, "").asString());
+        }
+    }
+}
+
+static json_value_ref system_edit_device(json_value& options) {
+    json_value_ref result(new json_value()); /* output */
+
+    std::string original_address = options.get("address", "").asString();
+    device_model& model = device_system::instance()->model();
+    device_ptr device = model.find_by_address(original_address);
+
+    if (device) {
+        json_value new_values = options.get("device", "");
+
+        std::string address = new_values.get("address", "").asString();
+        std::string label = new_values.get("label", "").asString();
+        device_type type = (device_type) new_values.get("type", (int) device_type_unknown).asInt();
+
+        /* json array -> std::vector<> */
+        json_value groups_json = new_values.get("groups", "");
+        std::vector<std::string> groups;
+        json_array_to_vector(groups_json, groups);
+
+        /* we should have everything we need to update now... */
+        if (address.size() > 0 && label.size() > 0) {
+            std::transform(address.begin(), address.end(), address.begin(), ::tolower);
+
+            bool updated = model.update(
+                device->id(), type, address, label, groups
+            );
+
+            if (updated) {
+                device = model.find_by_address(address);
+                (*result)["device"] = *(device->to_json());
+                return result;
+            }
+        }
+
+        (*result)["message"] = "parameters specified, but invalid " + original_address;
+        (*result)["status"] = AUTOM8_DEVICE_NOT_FOUND;
+    }
+    else {
+        (*result)["message"] = "device update failed: could not find device " + original_address;
+        (*result)["status"] = AUTOM8_DEVICE_NOT_FOUND;
+    }
+
+    return result;
+}
+
 static json_value_ref system_add_device(json_value& options) {
     std::string address = options.get("address", "").asString();
     std::string label = options.get("label", "").asString();
@@ -450,12 +503,8 @@ static json_value_ref system_add_device(json_value& options) {
 
     /* json array -> std::vector<> */
     json_value groups_json = options.get("groups", ""); /* read */
-    std::vector<std::string> groups; /* write */
-    if (groups_json.isArray()) {
-        for (unsigned i = 0; i < groups_json.size(); i++) {
-            groups.push_back(groups_json.get(i, "").asString());
-        }
-    }
+    std::vector<std::string> groups;
+    json_array_to_vector(groups_json, groups);
 
     json_value_ref result(new json_value()); /* output */
 
@@ -529,6 +578,9 @@ static void handle_system(json_value_ref input) {
         }
         else if (command == "add_device") {
             respond_with_status(input, system_add_device(options));
+        }
+        else if (command == "edit_device") {
+            respond_with_status(input, system_edit_device(options));
         }
         else if (command == "delete_device") {
             respond_with_status(input, system_delete_device(options));

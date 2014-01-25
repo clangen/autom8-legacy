@@ -73,15 +73,21 @@ function testPreferences() {
 
 function log_device_add_result(result) {
     console.log(INFO, "system::add_device");
-    console.log(INFO, '  result:', result);
+    console.log(INFO, '  result:', JSON.stringify(result));
+}
+
+function log_device_edit_result(result) {
+    console.log(INFO, "system::edit_device");
+    console.log(INFO, '  result:', JSON.stringify(result));
 }
 
 function log_device_delete_result(result) {
     console.log(INFO, "system::delete");
-    console.log(INFO, '  result:', result);
+    console.log(INFO, '  result:', JSON.stringify(result));
 }
 
 function testDevices() {
+    /* regular add */
     var main_entry_p2 = { label: "front door", address: "p2", groups: ["sensors"], type: 2 };
     var den_a1 = { label: "den", address: "a1", groups: ["downstairs", "den"], type: 1  };
     var living_room_floor_a2 = { label: "living room", address: "a2", groups: ["downstairs", "living room"], type: 1 };
@@ -89,6 +95,10 @@ function testDevices() {
     var office_a4 = { label: "office", address: "a4", groups: ["downstairs", "office", "late night"], type: 0 };
     var office_p3 = { label: "office motion", address: "p3", groups: ["sensors"], type: 2 };
     var master_bedroom_entry = { label: "master bedroom entry", address: "c1", groups: ["upstairs", "master bedroom"], type: 0 };
+
+    /* delete/add/update */
+    var add_z1 = { label: "new_device", address: "z1", groups: ["foo", "bar"], type: 0 };
+    var update_z1 = {address: 'z1', device: { label: "new_device", address: "z2", groups: ["baz", "asd"], type: 1 }};
 
     return Q.all([
         libautom8.rpc("system", "delete_device", {address: "p2"}).then(log_device_delete_result),
@@ -106,6 +116,11 @@ function testDevices() {
         libautom8.rpc("system", "add_device", office_a4).then(log_device_add_result),
         libautom8.rpc("system", "add_device", office_p3).then(log_device_add_result),
         libautom8.rpc("system", "add_device", master_bedroom_entry).then(log_device_add_result),
+
+        libautom8.rpc("system", "delete_device", {address: "z1"}).then(log_device_delete_result),
+        libautom8.rpc("system", "delete_device", {address: "z2"}).then(log_device_delete_result),
+        libautom8.rpc("system", "add_device", add_z1).then(log_device_add_result),
+        libautom8.rpc("system", "edit_device", update_z1).then(log_device_edit_result),
 
         libautom8.rpc("system", "list_devices").then(function(result) {
             console.log(INFO, "system::list_devices");

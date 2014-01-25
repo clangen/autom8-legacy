@@ -1,14 +1,20 @@
 #ifndef __C_AUTOM8_NULL_DEVICE_SYSTEM_HPP__
 #define __C_AUTOM8_NULL_DEVICE_SYSTEM_HPP__
 
+#include <signal_handler.hpp>
 #include "device_system.hpp"
 
 namespace autom8 {
-    class null_device_system: public device_system {
+    class null_device_system: public device_system, public signal_handler {
     public:
-        null_device_system(): model_(device_factory_ptr(new null_device_factory())) { }
+        null_device_system();
         virtual std::string description() { return "null/mock"; }
         virtual device_model& model() { return model_; }
+
+    private:
+        void on_device_removed(database_id id);
+        void on_device_updated(database_id id);
+
 
     private:
         class null_device_factory: public device_factory {

@@ -25,7 +25,7 @@
     },
 
     render: function() {
-      
+
     }
   });
 
@@ -54,7 +54,7 @@
               return;
             }
 
-            var device = {}
+            var device = {};
             var options;
 
             for (var i = 0; i < results.length; i++) {
@@ -68,12 +68,15 @@
 
             if (operation === COMMANDS.ADD) {
               options = device;
-            } else {
+            }
+            else {
               options = {
                 address: device.address,
                 device: device
               };
             }
+
+            debugger;
 
             autom8.client.rpc.send({
               component: "system",

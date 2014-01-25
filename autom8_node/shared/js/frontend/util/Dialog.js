@@ -106,13 +106,14 @@ namespace("autom8.util").Dialog = (function() {
 
           removeEventHandlers();
 
-          var form = params.view.$('form');
           var results = null;
-          if (form) {
-            results = form.serializeArray();
-          }
-
           if (params.view) {
+            var form = params.view.$('form');
+
+            if (form) {
+              results = form.serializeArray();
+            }
+
             params.view.parent = null;
             params.view.destroy();
           }

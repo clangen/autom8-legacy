@@ -208,7 +208,12 @@ device_ptr null_device_system::null_device_factory::create(
     boost::mutex::scoped_lock lock(device_map_mutex_);
 
     if (addr_to_dev_.find(address) != addr_to_dev_.end()) {
-        return addr_to_dev_.find(address)->second;
+        device_ptr existing = addr_to_dev_.find(address)->second;
+        if (existing && existing->type() == type) {
+            simple_device* simple = (simple_device*) existing.get();
+            simple->update(address, label, groups);
+            return existing;
+        }
     }
 
     device_ptr device = device_ptr(

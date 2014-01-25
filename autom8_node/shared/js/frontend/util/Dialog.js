@@ -106,6 +106,12 @@ namespace("autom8.util").Dialog = (function() {
 
           removeEventHandlers();
 
+          var form = params.view.$('form');
+          var results = null;
+          if (form) {
+            results = form.serializeArray();
+          }
+
           if (params.view) {
             params.view.parent = null;
             params.view.destroy();
@@ -116,7 +122,7 @@ namespace("autom8.util").Dialog = (function() {
           }
 
           if (callback) {
-            callback();
+            callback(results);
           }
         };
 
@@ -190,7 +196,7 @@ namespace("autom8.util").Dialog = (function() {
           var callback = params.buttons[id].callback;
 
           if (callback) {
-            callback();
+            callback.apply(this, arguments);
           }
         });
       }

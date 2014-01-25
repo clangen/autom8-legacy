@@ -52,6 +52,8 @@
     },
 
     redraw: function() {
+      this.enable(!this.systemModel.get('running'));
+
       var $list = this.$el.find('.list');
       var $add = this.$el.find('.add-device');
       var deviceList = this.systemModel.get('deviceList');
@@ -72,8 +74,6 @@
         row.$el.find('.device-row').attr('data-index', i);
         this.addChild(row, {appendToElement: $list});
       }
-
-      this.enable(!this.systemModel.get('running'));
     },
 
     enable: function(enabled) {

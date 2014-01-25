@@ -9,4 +9,5 @@
 <script src="js/view/DeviceRow.js" type="text/javascript"></script>
 <script src="js/view/AddDeviceRow.js" type="text/javascript"></script>
 <script src="js/view/ConsoleView.js" type="text/javascript"></script>
+<script src="js/view/EditDeviceView.js" type="text/javascript"></script>
 <script src="js/model/SystemModel.js" type="text/javascript"></script>

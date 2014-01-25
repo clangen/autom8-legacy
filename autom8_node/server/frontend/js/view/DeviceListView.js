@@ -53,16 +53,18 @@
 
     redraw: function() {
       var $list = this.$el.find('.list');
+      var $add = this.$el.find('.add-device');
       var deviceList = this.systemModel.get('deviceList');
 
       this.clearChildren();
       $list.empty();
 
-      // this.addChild(new autom8.view.AddDeviceRow(), {appendToElement: $list});
-
       if (!deviceList || !deviceList.length) {
+        $add.addClass('visible');
         return;
       }
+
+      $add.removeClass('visible');
 
       for (var i = 0; i < deviceList.length; i++) {
         var row = new autom8.view.DeviceRow({ model: deviceList.at(i) });

@@ -501,32 +501,38 @@ static json_value_ref system_add_device(json_value& options) {
     std::string label = options.get("label", "").asString();
     device_type type = (device_type) options.get("type", (int) device_type_unknown).asInt();
 
-    /* json array -> std::vector<> */
-    json_value groups_json = options.get("groups", ""); /* read */
-    std::vector<std::string> groups;
-    json_array_to_vector(groups_json, groups);
-
     json_value_ref result(new json_value()); /* output */
 
-    device_model& model = device_system::instance()->model();
-    device_ptr device = model.find_by_address(address);
-
-    if (device) {
-        json_value device_json; /* ugh, so verbose */
-        device_json["device"] = *device->to_json();
-
-        (*result)["message"] = (*result)["message"] = device_json;
-        (*result)["status"] = AUTOM8_DEVICE_ALREADY_EXISTS;
+    if (address.size() == 0 || label.size() == 0 || type == device_type_unknown) {
+        (*result)["message"] = "address, label, or type invalid";
+        (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
     }
     else {
-        device = model.add(type, address, label, groups);
+        /* json array -> std::vector<> */
+        json_value groups_json = options.get("groups", ""); /* read */
+        std::vector<std::string> groups;
+        json_array_to_vector(groups_json, groups);
+
+        device_model& model = device_system::instance()->model();
+        device_ptr device = model.find_by_address(address);
 
         if (device) {
-            (*result)["device"] = *(device->to_json());
+            json_value device_json; /* ugh, so verbose */
+            device_json["device"] = *device->to_json();
+
+            (*result)["message"] = (*result)["message"] = device_json;
+            (*result)["status"] = AUTOM8_DEVICE_ALREADY_EXISTS;
         }
         else {
-            (*result)["message"] = "failed to create device";
-            (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+            device = model.add(type, address, label, groups);
+
+            if (device) {
+                (*result)["device"] = *(device->to_json());
+            }
+            else {
+                (*result)["message"] = "failed to create device";
+                (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
+            }
         }
     }
 

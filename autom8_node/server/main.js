@@ -115,8 +115,8 @@
   program
     .version("0.6.0")
     .usage('params:')
-    .option('--listen <port>', 'port we will listen on')
-    .option('--creds <pem>', 'pem file containing both cert and private key')
+    .option('--listen <port>', 'port we will listen on', Number, 7903)
+    .option('--creds <pem>', 'pem file containing both cert and private key', String, "../shared/conf/autom8.pem")
     .option('--debug', 'enable verbose debug output', Boolean, false)
     .parse(process.argv);
 

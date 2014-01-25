@@ -72,11 +72,28 @@
 
         &.add-device {
             text-align: center;
-            line-height: 104px;
-            text-decoration: underline;
-            text-shadow: 0 0 8px #333;
             color: #eee;
-            font-size: 120%;
+            font-size: 100%;
+            height: auto;
+            margin-bottom: 8px;
+            padding: 10px;
+            display: none;
+
+            &.visible {
+                display: block;
+            }
+
+            .text {
+                display: block;
+            }
+
+            .link {
+                text-decoration: underline;
+                text-shadow: 0 0 8px #333;
+                font-size: 120%;
+                padding-top: 8px;
+                cursor: pointer;
+            }
         }
 
         .device-row-attr {
@@ -138,8 +155,9 @@
         }
 
         .device-row.add-device {
-            height: 52px;
-            line-height: 52px;
+            .text {
+                display: none;
+            }
         }
     }
 }

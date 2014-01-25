@@ -17,6 +17,7 @@ namespace("autom8.util").Dialog = (function() {
       var $customViewContainer = $dialog.find('.dialog-custom-view').eq(0);
       var $buttonContainer = $dialog.find('.dialog-buttons');
       var negativeCallback, positiveCallback, cancelCallback;
+      var results;
 
       function prepareDialog() {
         /* give this dialog a unique id and tab index so it can capture
@@ -106,7 +107,6 @@ namespace("autom8.util").Dialog = (function() {
 
           removeEventHandlers();
 
-          var results = null;
           if (params.view) {
             var form = params.view.$('form');
 
@@ -162,7 +162,7 @@ namespace("autom8.util").Dialog = (function() {
         /* return/enter */
         if (event.keyCode === 13 && positiveCallback) {
           closeDialog(function() {
-            positiveCallback();
+            positiveCallback(results);
           });
         }
         /* esc */

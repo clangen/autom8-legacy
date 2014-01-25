@@ -5,6 +5,10 @@
     <div class="crud-action create">add new device...</div>
     </div>
     <div class="content">
+      <div class="device-row add-device">
+        <div class-"text">you don't have any devices configured</div>
+        <div class="link">click here to add a new device...</div>
+      </div>
       <ul class="list"></ul>
       <div class="content-guard"></div>
     </div>
@@ -23,9 +27,7 @@
 </script>
 
 <script id="autom8-View-DeviceRowAddDevice" type="text/x-handlebars-template">
-  <div class="device-row add-device">
-    <div>add new device...</div>
-  </div>
+
 </script>
 
 <script id="autom8-View-EditDevice" type="text/x-handlebars-template">
@@ -33,7 +35,7 @@
     <form class="edit-form">
       <label class="label" for="label">name:</label>
       <input class="name" name="label" value="{{label}}"></input>
-      
+
       <label class="label" for="type">type:</label>
       <select class="type" name="type">
         {{#select type}}

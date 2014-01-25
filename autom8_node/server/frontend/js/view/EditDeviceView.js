@@ -76,8 +76,6 @@
               };
             }
 
-            debugger;
-
             autom8.client.rpc.send({
               component: "system",
               command: operation,

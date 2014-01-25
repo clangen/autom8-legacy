@@ -60,8 +60,6 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.on('state:changed', this.onClientStateChanged, this);
 
       reconnect();
-
-      // autom8.view.EditDeviceView.show();
     },
 
     onDestroy: function() {

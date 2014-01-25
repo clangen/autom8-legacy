@@ -18,9 +18,11 @@
     }
   });
 
-  EditDeviceView.show = function(address) {
+  EditDeviceView.show = function(device) {
+    var title = device ? "edit device" : "add new device";
+
     autom8.util.Dialog.show({
-      title: "edit device",
+      title: title,
       view: new EditDeviceView(),
       buttons: [
         {

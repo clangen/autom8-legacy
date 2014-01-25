@@ -29,14 +29,39 @@
 </script>
 
 <script id="autom8-View-EditDevice" type="text/x-handlebars-template">
-  <form>
-    <input value="name"></input>
-    <input value="address"></input>
-    <input value="areas"></input>
-    <select>
-      <option>lamp</option>
-      <option>appliance</option>
-      <option>security sensor</option>
-    </select>
-  </form>
+  <div class="edit-device">
+    <form>
+      <table>
+        <tr>
+          <td class="label">name:</td>
+          <td>
+            <input class="name"></input>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">type:</td>
+          <td>
+            <select class="type">
+              <option>lamp</option>
+              <option>appliance</option>
+              <option>security sensor</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">areas:</td>
+          <td>
+            <input class="areas"></input>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">address:</td>
+          <td>
+            <input class="address"></input>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
 </script>
+

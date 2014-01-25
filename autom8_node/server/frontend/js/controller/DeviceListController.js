@@ -33,11 +33,11 @@ namespace("autom8.controller").DeviceListController = (function() {
   }
 
   function addDevice() {
-    console.log("ADD NEW DEVICE!");
+    autom8.view.EditDeviceView.show();
   }
 
   function editDevice(device) {
-    console.log("edit device", device.get('address'));
+    autom8.view.EditDeviceView.show(device);
   }
 
   return autom8.mvc.Controller.extend({

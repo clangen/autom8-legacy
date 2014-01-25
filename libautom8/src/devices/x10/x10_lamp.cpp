@@ -77,7 +77,7 @@ void x10_lamp::set_brightness(int new_brightness) {
             int delta = abs(new_brightness - brightness_);
 
             // build the string
-            std::string command_string = (boost::format("%1% %2% %3%")
+            command_string = (boost::format("%1% %2% %3%")
                 % address_
                 % command
                 % delta).str();

@@ -5,6 +5,13 @@
     user-select: none;
 }
 
+.enable-user-select() {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -moz-user-select: moz-text;
+    user-select: text;
+}
+
 .box-sizing(@val: none) {
     box-sizing: @val;
     -webkit-box-sizing: @val;

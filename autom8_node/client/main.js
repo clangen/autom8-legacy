@@ -34,10 +34,10 @@
   program
     .version("0.3.2")
     .usage('params:')
-    .option('--listen <port>', 'port we will listen on')
-    .option('--creds <pem>', 'pem file containing both cert and private key')
-    .option('--clienthost <hostname>', 'autom8 server to connect to')
-    .option('--clientport <port>', 'port the autom8 server is listening on')
+    .option('--listen <port>', 'port we will listen on', Number, 7902)
+    .option('--creds <pem>', 'pem file containing both cert and private key', String, "../shared/conf/autom8.pem")
+    .option('--clienthost <hostname>', 'autom8 server to connect to', String, "127.0.0.1")
+    .option('--clientport <port>', 'port the autom8 server is listening on', Number, 7901)
     .option('--clientpw <password hash>', 'password for the autom8 server')
     .option('--debug', 'enable verbose debug output', Boolean, false)
     .parse(process.argv);

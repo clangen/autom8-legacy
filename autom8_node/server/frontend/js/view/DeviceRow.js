@@ -42,14 +42,15 @@
       var name = this.$('.name').val();
       var type = parseInt(this.$('.type').val(), 10);
       var groups = this.$('.groups').val().split(', ');
+      var new_address = this.$('.address').val();
 
       // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
-      if (groups.length === 0 || !name || !type) {
+      if (groups.length === 0 || !name || !type || !new_address) {
         return 'Error';
       }
 
       var device = {
-        address: this.model.get('address'),
+        address: new_address,
         label: name,
         groups: groups,
         type: type

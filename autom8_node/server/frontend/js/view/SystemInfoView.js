@@ -28,19 +28,23 @@
     this.enable(!model.get('running'));
 
     var systemList = this.systemModel.get('systemList');
-    this.$('#system-selection-dropdown').empty().append(createDropdown(systemList));
+    var selectedSystem = this.systemModel.get('system_id');
+    this.$('#system-selection-dropdown').empty().append(
+      createDropdown.call(this, systemList, selectedSystem)
+    );
   };
 
-  var createDropdown = function(systemList) {
+  var createDropdown = function(systemList, selectedSystem) {
     var $el = $('<ul class="dropdown-menu"></div>');
 
-    var name;
+    var name, cls;
     if (systemList && systemList.length) {
       for (var i = 0; i < systemList.length; i++) {
         name = systemList.at(i).get('name');
+        cls = (selectedSystem === name) ? 'system selected' : 'system';
 
         $el.append($(
-          '<li class="system" data-system-id="' + name + '""><label>' + name + '</label></li>'
+          '<li class="' + cls + '" data-system-id="' + name + '""><label>' + name + '</label></li>'
         ));
       }
     }

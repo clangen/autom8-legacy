@@ -52,13 +52,17 @@
         .crud-actions {
             position: absolute;
             right: 5px;
-            top: 7px;
+            top: 10px;
 
-            .delete, .edit, .save {
+            .crud-action {
                 /* make easier to click on touch devices */
                 padding: 5px 7px;
                 border: 1px solid #999;
                 text-decoration: none;
+            }
+
+            .crud-action.touched {
+                background-color: #555;
             }
         }
 
@@ -70,6 +74,7 @@
             margin-bottom: 8px;
             padding: 10px;
             display: none;
+            width: 100%;
 
             &.visible {
                 display: block;

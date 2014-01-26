@@ -1,29 +1,21 @@
  (function() {
   var View = autom8.mvc.View;
 
-  var typeToString = {
-    '-1': 'unknown',
-    '0': 'lamp',
-    '1': 'appliance',
-    '2': 'security sensor'
-  };
-
-  var statusToString = {
-    '-1': 'unknown',
-    '0': 'off',
-    '1': 'on'
-  };
-
   var DeviceRow = View.extend({
     template: 'autom8-View-DeviceRow',
+    editTemplate: 'autom8-View-EditDeviceRow',
     tagName: 'li',
+    className: 'device-row',
 
     events: {
+
     },
 
     onCreate: function(options) {
       this.model = options.model;
+      this.index = options.index;
       this.render();
+      this.el.dataset.index = this.index;
       this.model.on('change', this.render, this);
     },
 
@@ -32,26 +24,49 @@
     },
 
     render: function() {
-      var d = (this.model && this.model.toJSON()) || { };
+      var normalizedData = (this.model) && this.model.toNormalizedJSON({armed: this.attrs && this.attrs.armed});
+      this.inflate(this.template, normalizedData);
+    },
 
-      var normalized = {
-        'label': d.label || "unnamed",
-        'address': d.address,
-        'groups': (d.groups || []).join(", ") || "none",
-        'status': statusToString[d.status === undefined ? -1 : d.status],
-        'type': typeToString[d.type === undefined ? -1 : d.type]
-      };
+    edit: function () {
+      var normalizedData = (this.model) && this.model.toNormalizedJSON({editing: true});
+      this.inflate(this.editTemplate, normalizedData);
+      this.$el.addClass('editing');
+    },
 
-      if (d.type === 2) { /* security sensor */
-        if (d.status === 3) { /* tripped */
-          normalized.status = "ALERT!";
-        }
-        else {
-          normalized.status = (d.attrs.armed) ? "armed" : "disarmed";
-        }
+    add: function () {
+      this.$el.addClass('adding');
+    },
+
+    save: function () {
+      var name = this.$('.name').val();
+      var type = parseInt(this.$('.type').val(), 10);
+      var groups = this.$('.groups').val().split(', ');
+
+      // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
+      if (groups.length === 0 || !name || !type) {
+        return 'Error';
       }
 
-      this.inflate(this.template, normalized);
+      var device = {
+        address: this.model.get('address'),
+        label: name,
+        groups: groups,
+        type: type
+      };
+
+      autom8.client.rpc.send({
+        component: "system",
+        command: 'edit_device',
+        options: {
+          address: this.model.get('address'),
+          device: device
+        }
+      })
+
+      .then(function() {
+        autom8.model.SystemModel.fetch();
+      });
     }
   });
 

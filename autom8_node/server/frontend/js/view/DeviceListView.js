@@ -3,9 +3,7 @@
 
   function elementToDevice(e) {
     var $el = $(e);
-    $el = $el.hasClass('device-row') ? $el : $el.parents('.device-row');
-
-    var index = $el.attr('data-index');
+    var index = $el.closest('li')[0].dataset.index;
     if (index) {
       index = parseInt(index, 10);
       return this.systemModel.get('deviceList').at(index);
@@ -27,16 +25,31 @@
         }
       },
 
-      'touch .header .create': function(e) {
-        if (!running(this)) {
-          this.trigger('create:clicked');
+      'touch .device-row .save': function (e) {
+        if (!running(this) && this.isEditting) {
+          var view = this.findViewFromEvent(e);
+
+          if (view) {
+            view.save();
+            this.isEditting = false;
+          }
         }
       },
 
-      'touch .device-row': function(e) {
+      'touch .device-row .edit': function (e) {
+        if (!running(this) && !this.isEditting) {
+          var view = this.findViewFromEvent(e);
+
+          if (view) {
+            view.edit();
+            this.isEditting = true;
+          }
+        }
+      },
+
+      'touch .header .create': function(e) {
         if (!running(this)) {
-          var d = elementToDevice.call(this, e.currentTarget);
-          this.trigger('edit:clicked', d);
+          this.trigger('create:clicked');
         }
       }
     },
@@ -58,6 +71,10 @@
       var $add = this.$el.find('.add-device');
       var deviceList = this.systemModel.get('deviceList');
 
+      if (this.isEditting) {
+        this.isEditting = false;
+      }
+
       this.clearChildren();
       $list.empty();
 
@@ -69,9 +86,8 @@
       $add.removeClass('visible');
 
       for (var i = 0; i < deviceList.length; i++) {
-        var row = new autom8.view.DeviceRow({ model: deviceList.at(i) });
+        var row = new autom8.view.DeviceRow({ model: deviceList.at(i), index: i });
         row.$el.addClass(i % 2 === 0 ? 'even' : 'odd');
-        row.$el.find('.device-row').attr('data-index', i);
         this.addChild(row, {appendToElement: $list});
       }
     },
@@ -80,6 +96,13 @@
       enabled = enabled || (enabled === undefined);
       this.$('.content').toggleClass('disabled', !enabled);
       this.$('.header').toggleClass('disabled', !enabled);
+    },
+
+    findViewFromEvent: function (e) {
+      var d = elementToDevice.call(this, e.currentTarget);
+      return this.views.filter(function (view) {
+        return view.model.cid === d.cid;
+      })[0];
     }
   });
 

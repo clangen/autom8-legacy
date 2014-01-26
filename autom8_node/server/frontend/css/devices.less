@@ -13,17 +13,6 @@
         overflow: hidden; /* trick to fix float height calculation */
     }
 
-    ul li {
-        padding-bottom: 8px;
-        line-height: 1.1em;
-    }
-
-    li {
-        // float: left;
-        display: inline-block;
-        width: 50%;
-    }
-
     .crud-action {
         text-decoration: underline;
         padding: 4px;
@@ -51,23 +40,26 @@
         padding-left: 0;
         background-color: #666;
         margin-left: 8px;
-        font-size: 110%;
-        line-height: 110%;
+        margin-bottom: 8px;
+        display: inline-block;
+        width: 48%;
+        vertical-align: top;
+        padding-bottom: 8px;
         position: relative;
+        box-sizing: border-box;
+        height: 120px;
 
-        /* fixed height sucks, but is done so we can insert
-        a big "add device" button as the first item in
-        the list */
-        height: 104px;
-
-        .delete {
+        .crud-actions {
             position: absolute;
-            right: 0;
-            top: 0;
+            right: 5px;
+            top: 7px;
 
-            /* make easier to click on touch devices */
-            padding-left: 14px;
-            padding-bottom: 12px;
+            .delete, .edit, .save {
+                /* make easier to click on touch devices */
+                padding: 5px 7px;
+                border: 1px solid #999;
+                text-decoration: none;
+            }
         }
 
         &.add-device {
@@ -98,14 +90,18 @@
 
         .device-row-attr {
             position: relative;
+            height: 20px;
+            line-height: 20px;
+            padding-left: 64px;
         }
 
-        .device-row-attr:nth-child(2) {
-            /* the device name is absolutely positioned, while the
-            attributes are relatively positioned. add padding to the
-            first non-device-name attribute to offset it vertically,
-            otherwise it overlaps with the name */
-            padding-top: 26px;
+        .device-row-attr:first-child {
+            padding-left: 0;
+            margin-bottom: 7px;
+        }
+
+        &.editing .device-row-attr {
+            margin-bottom: 8px;
         }
 
         .key, .value {
@@ -113,24 +109,29 @@
         }
 
         .value {
-            position: absolute;
-            left: 70px;
-            right: 0px;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
+            width: 100%;
         }
 
         .value.name {
             font-size: 110%;
             text-shadow: 0 0 6px #222;
-            padding-bottom: 6px;
-            padding-left: 8px;
             color: #eee;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 40px;
+            padding-left: 10px;
+        }
+
+        input.value.name {
+            text-shadow: none;
+            color: #000;
+            margin-left: 5px;
+            padding: 0 5px;
+            width: 150px;
+        }
+
+        &.editing select {
+            width: 100%;
         }
 
         .key {
@@ -138,6 +139,8 @@
             width: 60px;
             text-align: right;
             padding-right: 4px;
+            position: absolute;
+            left: 0;
         }
     }
 }

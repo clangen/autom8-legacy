@@ -4,7 +4,8 @@ namespace("autom8.model").SystemModel = (function() {
   var Model = Backbone.Model.extend({
     initialize: function() {
       this.set({
-        deviceList: new autom8.model.DeviceList()
+        deviceList: new autom8.model.DeviceList(),
+        systemList: new Backbone.Collection()
       });
     },
 
@@ -22,12 +23,17 @@ namespace("autom8.model").SystemModel = (function() {
 
         autom8.client.rpc.send({
           component: "system", command: "list_devices", options: { }
+        }),
+
+        autom8.client.rpc.send({
+          component: "system", command: "list", options: { }
         })
       ])
 
-      .spread(function(status, devices) {
+      .spread(function(status, devices, systems) {
         devices = devices.devices || [];
 
+        var i;
         var deviceList = self.get('deviceList');
 
         deviceList.reset(); /* right now we're sloppy; always re-initialize. if we
@@ -35,7 +41,7 @@ namespace("autom8.model").SystemModel = (function() {
           then that's a good thing. */
 
         var device;
-        for (var i = 0; i < devices.length; i++) {
+        for (i = 0; i < devices.length; i++) {
           /* bleh, "attributes" conflicts with the backbone Model's
           internal field. rename to attrs */
           devices[i].attrs = devices[i].attributes;
@@ -48,6 +54,15 @@ namespace("autom8.model").SystemModel = (function() {
             device = new autom8.model.Device(devices[i]);
             deviceList.add(device);
           }
+        }
+
+        var systemList = self.get('systemList');
+        systemList.reset();
+        systems = systems.systems;
+        for (i = 0; i < systems.length; i++) {
+          systemList.add(new Backbone.Model({
+            name: systems[i]
+          }));
         }
 
         self.set(status);

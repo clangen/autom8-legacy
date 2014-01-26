@@ -26,6 +26,26 @@
 
     this.$('.password-input').val(EMPTY_PASSWORD);
     this.enable(!model.get('running'));
+
+    var systemList = this.systemModel.get('systemList');
+    this.$('#system-selection-dropdown').empty().append(createDropdown(systemList));
+  };
+
+  var createDropdown = function(systemList) {
+    var $el = $('<ul class="dropdown-menu"></div>');
+
+    var name;
+    if (systemList && systemList.length) {
+      for (var i = 0; i < systemList.length; i++) {
+        name = systemList.at(i).get('name');
+
+        $el.append($(
+          '<li class="system" data-system-id="' + name + '""><label>' + name + '</label></li>'
+        ));
+      }
+    }
+
+    return $el;
   };
 
   var SystemInfoView = View.extend({
@@ -57,6 +77,14 @@
 
       'change .port-input': function(event) {
         this.portChanged = true;
+      },
+
+      'touch .system': function(event) {
+        this.$('#system-selection-dropdown').dropdown('hide');
+        var system = $(event.currentTarget).attr('data-system-id');
+        if (system) {
+          this.trigger('system:selected', system);
+        }
       }
     },
 

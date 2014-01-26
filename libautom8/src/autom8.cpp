@@ -378,7 +378,10 @@ int server_stop() {
 /* system command handlers */
 static json_value_ref system_list() {
     json_value list = json_value(Json::arrayValue);
+
+#if WIN32
     list.append("cm15a");
+#endif
     list.append("mochad");
     list.append("null/mock");
 

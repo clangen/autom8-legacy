@@ -5,6 +5,7 @@
       <div class="connection">&nbsp;</div>
     </div>
     <div class="content">
+      <div class="content-guard"></div>
     </div>
   </div>
 </script>
@@ -18,7 +19,7 @@
     <tr>
       <td class="label">controller:</td>
       <td class="value">
-        <div class="select-controller">
+        <div class="select-controller" data-dropdown="#system-selection-dropdown">
           {{controller}} <span class="caret"></span>
         </div>
       </td>
@@ -36,4 +37,6 @@
       <td class="value"><input class="password-input" value="********"></input></td>
     </tr>
   </table>
+
+  <div id="system-selection-dropdown" class="dropdown dropdown-tip"></div>
 </script>

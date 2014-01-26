@@ -66,6 +66,7 @@ namespace("autom8.controller").SystemInfoController = (function() {
 
     onCreate: function(options) {
       this.view = new autom8.view.SystemInfoView({ el: $('.system-info') });
+      this.view.on('system:selected', this.onSystemSelected, this);
       autom8.client.on('disconnected', this.onDisconnected, this);
     },
 
@@ -75,6 +76,18 @@ namespace("autom8.controller").SystemInfoController = (function() {
 
     onDisconnected: function() {
       this.view.render();
+    },
+
+    onSystemSelected: function(systemId) {
+      autom8.client.rpc.send({
+        component: "system", command: "select", options: {
+          system: systemId
+        }
+      })
+
+      .then(function() {
+        autom8.model.SystemModel.fetch();
+      });
     },
 
     update: function(model) {

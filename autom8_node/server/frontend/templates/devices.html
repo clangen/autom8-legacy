@@ -53,23 +53,30 @@
 <script id="autom8-View-EditDevice" type="text/x-handlebars-template">
   <div class="edit-device">
     <form class="edit-form">
-      <label class="label" for="label">name:</label>
-      <input class="name" name="label" value="{{label}}"></input>
+      <div><label class="label" for="label">name:</label>
+        <input class="name" name="label" value="{{label}}"></input>
+      </div>
 
-      <label class="label" for="type">type:</label>
-      <select class="type" name="type">
-        {{#select type}}
-          <option value="0">lamp</option>
-          <option value="1">appliance</option>
-          <option value="2">security sensor</option>
-        {{/select}}
-      </select>
+      <div>
+        <label class="label" for="type">type:</label>
+        <select class="type" name="type">
+          {{#select type}}
+            <option value="0">lamp</option>
+            <option value="1">appliance</option>
+            <option value="2">security sensor</option>
+          {{/select}}
+        </select>
+      </div>
 
-      <label class="label" for="groups">areas:</label>
-      <input class="areas" name="groups" value="{{areas}}"></input>
+      <div>
+        <label class="label" for="groups">areas:</label>
+        <input class="areas" name="groups" value="{{areas}}"></input>
+      </div>
 
-      <label class="label" for="address">address:</label>
-      <input class="address" name="address" value="{{address}}"></input>
+      <div>
+        <label class="label" for="address">address:</label>
+        <input class="address" name="address" value="{{address}}"></input>
+      </div>
     </form>
   </div>
 </script>

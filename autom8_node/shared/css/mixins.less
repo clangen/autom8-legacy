@@ -10,6 +10,11 @@
     -moz-user-select: text;
     -moz-user-select: moz-text;
     user-select: text;
+
+    ::-moz-selection {
+        background: #666;
+        color: #ddd;
+    }
 }
 
 .box-sizing(@val: none) {

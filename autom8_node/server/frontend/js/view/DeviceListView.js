@@ -26,23 +26,21 @@
       },
 
       'touch .device-row .save': function (e) {
-        if (!running(this) && this.isEditing) {
+        if (!running(this)) {
           var view = this.findViewFromEvent(e);
 
           if (view) {
-            view.save().fin(function() {
-              this.isEditing = false;
-            });
+            view.save();
           }
         }
       },
 
       'touch .device-row .edit': function (e) {
-        if (!running(this) && !this.isEditing) {
+        if (!running(this)) {
           var view = this.findViewFromEvent(e);
 
-          if (view && view.edit()) {
-            // this.isEditing = true;
+          if (view) {
+            view.edit();
           }
         }
       },
@@ -70,10 +68,6 @@
       var $list = this.$el.find('.list');
       var $add = this.$el.find('.add-device');
       var deviceList = this.systemModel.get('deviceList');
-
-      if (this.isEditing) {
-        this.isEditing = false;
-      }
 
       this.clearChildren();
       $list.empty();

@@ -29,8 +29,10 @@
         if (!running(this) && this.isEditing) {
           var view = this.findViewFromEvent(e);
 
-          if (view && view.save()) {
-            this.isEditing = false;
+          if (view) {
+            view.save().fin(function() {
+              this.isEditing = false;
+            });
           }
         }
       },
@@ -40,7 +42,7 @@
           var view = this.findViewFromEvent(e);
 
           if (view && view.edit()) {
-            this.isEditing = true;
+            // this.isEditing = true;
           }
         }
       },

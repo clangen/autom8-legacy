@@ -48,6 +48,7 @@
         position: relative;
         box-sizing: border-box;
         height: 120px;
+        -webkit-transition: background 0.35s ease-in;
 
         .crud-actions {
             position: absolute;
@@ -109,7 +110,29 @@
         }
 
         &.editing .device-row-attr {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
+        }
+
+        &.editing {
+            .device-row-attr:first-child {
+                padding-left: 0;
+                margin-bottom: 12px;
+            }
+
+            background-color: #444;
+
+
+            & input, & select {
+                border: none;
+                border-radius: 0;
+                padding: 0;
+                padding-left: 4px;
+                height: 18px;
+            }
+        }
+
+        &.editing:hover {
+            background-color: #444;
         }
 
         .key, .value {

@@ -1,7 +1,7 @@
 #application {
     .dropdown .dropdown-menu,
     .dropdown .dropdown-panel {
-        background: #ccc;
+        background: #333;
     }
 
     .dropdown .dropdown-menu LI > A:hover,
@@ -11,7 +11,16 @@
         cursor: pointer;
     }
 
+    .dropdown .dropdown-menu LI > A,
+    .dropdown .dropdown-menu LABEL {
+        color: #aaa;
+    }
+
+    .dropdown.dropdown-tip:before {
+      border-bottom-color: #222; /* triangle border color */
+    }
+
     .dropdown.dropdown-tip:after {
-      border-bottom: 6px solid #ccc; /* triangle color */
+      border-bottom: 6px solid #333; /* triangle color */
     }
 }

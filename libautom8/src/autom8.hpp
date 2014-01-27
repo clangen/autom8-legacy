@@ -7,13 +7,12 @@
 typedef void (*log_func)(int, const char*, const char*);
 typedef void (*rpc_callback)(const char*);
 
-#define AUTOM8_FALSE 0
-#define AUTOM8_TRUE 1
-
 #define AUTOM8_RPC_MODE_SYNC 1
 #define AUTOM8_RPC_MODE_ASYNC 2
 
 #define AUTOM8_OK 1
+#define AUTOM8_TRUE 1
+#define AUTOM8_FALSE 0
 #define AUTOM8_UNKNOWN -1
 #define AUTOM8_INVALID_ARGUMENT -2
 #define AUTOM8_ERROR_SERVER_RUNNING -3
@@ -26,7 +25,7 @@ typedef void (*rpc_callback)(const char*);
 #define AUTOM8_DEVICE_ALREADY_EXISTS -10
 #define AUTOM8_SERVER_ALREADY_RUNNING -11
 #define AUTOM8_SERVER_NOT_RUNNING -12
-#define AUTOM8_INVALID_SYSTEM 13
+#define AUTOM8_INVALID_SYSTEM -13
 
 #define AUTOM8_COMPONENT_SYSTEM "system"
 #define AUTOM8_COMPONENT_SERVER "server"

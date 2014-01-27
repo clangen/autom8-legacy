@@ -6,6 +6,25 @@
   var nextId = 0;
   var pending = { };
 
+  var STATUS = {
+    AUTOM8_OK: 1,
+    AUTOM8_TRUE: 1,
+    AUTOM8_FALSE: 0,
+    AUTOM8_UNKNOWN: -1,
+    AUTOM8_INVALID_ARGUMENT: -2,
+    AUTOM8_ERROR_SERVER_RUNNING: -3,
+    AUTOM8_ERROR_SERVER_STOPPED: -4,
+    AUTOM8_INVALID_COMMAND: -5,
+    AUTOM8_ALREADY_INITIALIZED: -6,
+    AUTOM8_NOT_INITIALIZED: -7,
+    AUTOM8_PARSE_ERROR: -8,
+    AUTOM8_DEVICE_NOT_FOUND: -9,
+    AUTOM8_DEVICE_ALREADY_EXISTS: -10,
+    AUTOM8_SERVER_ALREADY_RUNNING: -11,
+    AUTOM8_SERVER_NOT_RUNNING: -12,
+    AUTOM8_INVALID_SYSTEM: -13
+  };
+
   function addRpcInterfaceToClient() {
     autom8.client.rpc = {
       init: function() {
@@ -51,7 +70,12 @@
           var deferred = pending[body.id];
           delete pending[body.id];
           if (deferred) {
-            body.message.id = body.id;
+            if (typeof body.message === 'string') {
+              body.message = {message: body.message};
+            }
+
+            body.message.ID = body.id;
+            body.message.STATUS = body.status;
 
             if (DEBUG) {
               console.log(TAG, "recv", body.message);
@@ -60,7 +84,9 @@
             deferred.resolve(body.message);
           }
         }
-      }
+      },
+
+      STATUS: STATUS
     };
 
     autom8.client.rpc.init();

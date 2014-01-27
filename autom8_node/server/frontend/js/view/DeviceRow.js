@@ -45,6 +45,11 @@
           this.render();
         }
       }
+      else if (e.keyCode === 13) {
+        if (this.$el.hasClass('editing')) {
+          this.save();
+        }
+      }
     },
 
     render: function() {
@@ -71,12 +76,19 @@
       var groups = this.$('.groups').val().split(', ');
       var newAddress = this.$('.address').val();
 
+      var rejectWithBadInput = function() {
+        showBadInputDialog();
+        deferred.reject();
+      };
+
       // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
       if (groups.length === 0 || !name || !_.isNumber(type) || !newAddress) {
         showBadInputDialog();
         deferred.reject();
       }
       else {
+        var oldAddress = this.model.get('address');
+
         var device = {
           address: newAddress,
           label: name,
@@ -84,23 +96,32 @@
           type: type
         };
 
+        var self = this;
+
         autom8.client.rpc.send({
           component: "system",
           command: 'edit_device',
           options: {
-            address: this.model.get('address'),
+            address: oldAddress,
             device: device
           }
         })
 
-        .then(function() {
-          autom8.model.SystemModel.fetch();
-          deferred.resolve();
+        .then(function(result) {
+          if (result.STATUS === autom8.client.rpc.STATUS.AUTOM8_OK) {
+            var deviceList = autom8.model.SystemModel.get('deviceList');
+            deviceList.update(device, {address: oldAddress});
+            self.$el.removeClass('editing adding');
+            self.render();
+            deferred.resolve();
+          }
+          else {
+            rejectWithBadInput();
+          }
         })
 
         .fail(function() {
-          showBadInputDialog();
-          deferred.reject();
+          rejectWithBadInput();
         });
       }
 

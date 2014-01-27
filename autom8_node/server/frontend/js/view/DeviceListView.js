@@ -26,23 +26,21 @@
       },
 
       'touch .device-row .save': function (e) {
-        if (!running(this) && this.isEditting) {
+        if (!running(this) && this.isEditing) {
           var view = this.findViewFromEvent(e);
 
-          if (view) {
-            view.save();
-            this.isEditting = false;
+          if (view && view.save()) {
+            this.isEditing = false;
           }
         }
       },
 
       'touch .device-row .edit': function (e) {
-        if (!running(this) && !this.isEditting) {
+        if (!running(this) && !this.isEditing) {
           var view = this.findViewFromEvent(e);
 
-          if (view) {
-            view.edit();
-            this.isEditting = true;
+          if (view && view.edit()) {
+            this.isEditing = true;
           }
         }
       },
@@ -71,8 +69,8 @@
       var $add = this.$el.find('.add-device');
       var deviceList = this.systemModel.get('deviceList');
 
-      if (this.isEditting) {
-        this.isEditting = false;
+      if (this.isEditing) {
+        this.isEditing = false;
       }
 
       this.clearChildren();

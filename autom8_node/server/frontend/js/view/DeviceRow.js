@@ -32,6 +32,7 @@
       var normalizedData = (this.model) && this.model.toNormalizedJSON({editing: true});
       this.inflate(this.editTemplate, normalizedData);
       this.$el.addClass('editing');
+      return true;
     },
 
     add: function () {
@@ -46,7 +47,7 @@
 
       // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
       if (groups.length === 0 || !name || !_.isNumber(type) || !new_address) {
-        return 'Error';
+        return false;
       }
 
       var device = {
@@ -68,6 +69,8 @@
       .then(function() {
         autom8.model.SystemModel.fetch();
       });
+
+      return true;
     }
   });
 

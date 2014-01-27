@@ -45,7 +45,7 @@
       var new_address = this.$('.address').val();
 
       // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
-      if (groups.length === 0 || !name || !type || !new_address) {
+      if (groups.length === 0 || !name || !_.isNumber(type) || !new_address) {
         return 'Error';
       }
 

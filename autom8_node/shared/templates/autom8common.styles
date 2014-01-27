@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="shared/css/reset.css"></link>
 <link rel="stylesheet" href="shared/css/3rdparty/jquery.dropdown.css"></link>
+<link rel="stylesheet" href="shared/css/dropdown.less"></link>
 <link rel="stylesheet" href="shared/css/main.less"></link>
 <link rel="stylesheet" href="shared/css/scrollbar.less"></link>
 <link rel="stylesheet" href="shared/css/dialog.less"></link>

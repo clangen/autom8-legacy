@@ -18,6 +18,7 @@
   var DeviceRow = View.extend({
     template: 'autom8-View-DeviceRow',
     editTemplate: 'autom8-View-EditDeviceRow',
+    addTemplate: 'autom8-View-AddDeviceRow',
     tagName: 'li',
     className: 'device-row',
 
@@ -83,6 +84,7 @@
     },
 
     add: function () {
+      this.inflate(this.addTemplate);
       this.$el.addClass('adding');
     },
 
@@ -113,27 +115,33 @@
 
       // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
       if (!values) {
-        showBadInputDialog();
-        deferred.reject();
+        rejectWithBadInput();
       }
       else {
         var oldAddress = this.model.get('address');
-
         var self = this;
+        var options = {};
+        var command;
+
+        if (!oldAddress) {
+          options = values;
+          command = 'add_device';
+        } else {
+          options.address = oldAddress;
+          options.device = values;
+          command = 'edit_device';
+        }
 
         autom8.client.rpc.send({
           component: "system",
-          command: 'edit_device',
-          options: {
-            address: oldAddress,
-            device: values
-          }
+          command: command,
+          options: options
         })
 
         .then(function(result) {
           if (result.STATUS === autom8.client.rpc.STATUS.AUTOM8_OK) {
             var deviceList = autom8.model.SystemModel.get('deviceList');
-            deviceList.update(values, {address: oldAddress});
+            deviceList.update(values, {address: command === 'add_device' ? values.address : oldAddress});
             self.$el.removeClass('editing adding');
             self.render();
             deferred.resolve();

@@ -4,6 +4,10 @@
   function elementToDevice(e) {
     var $el = $(e);
     var index = $el.closest('li')[0].dataset.index;
+    if (index === '-1') {
+      return;
+    }
+
     if (index) {
       index = parseInt(index, 10);
       return this.systemModel.get('deviceList').at(index);
@@ -47,7 +51,9 @@
 
       'touch .header .create': function(e) {
         if (!running(this)) {
-          this.trigger('create:clicked');
+          var row = new autom8.view.DeviceRow({ model: new autom8.model.Device(), index: -1});
+          row.add();
+          this.addChild(row, {prependToElement: this.$el.find('.list')});
         }
       },
 
@@ -101,6 +107,10 @@
     findViewFromEvent: function (e) {
       var d = elementToDevice.call(this, e.currentTarget);
       return this.views.filter(function (view) {
+        if (!d) {
+          return view.el.dataset.index === '-1';
+        }
+        
         return view.model.cid === d.cid;
       })[0];
     }

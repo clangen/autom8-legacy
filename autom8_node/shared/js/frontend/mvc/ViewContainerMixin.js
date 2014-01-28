@@ -28,6 +28,13 @@
 
           options.appendToElement.append(view.$el);
         }
+        else if (options.prependToElement && view.$el) {
+          if (_.isString(options.prependToElement)) {
+            options.prependToElement = this.$(options.prependToElement).eq(0);
+          }
+
+          options.prependToElement.prepend(view.$el);
+        }
         else if (options.appendBeforeElement && view.$el) {
           if (_.isString(options.appendBeforeElement)) {
             options.appendBeforeElement = this.$(options.appendBeforeElement).eq(0);

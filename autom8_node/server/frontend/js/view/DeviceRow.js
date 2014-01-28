@@ -27,7 +27,6 @@
     onCreate: function(options) {
       this.model = options.model;
       this.index = options.index;
-      this.render();
       this.el.dataset.index = this.index;
       this.model.on('change', this.render, this);
       this.$el.attr('tabindex', '1');
@@ -39,8 +38,17 @@
         this.$el.on('keyup', this.onKeyup.bind(this));
       }
 
+      /* similar to the above, our default templates can be overridden
+      for customization purposes */
+      var templateOverrides = options.templateOverrides || { };
+      this.template = templateOverrides.template || this.template;
+      this.editTemplate = templateOverrides.editTemplate || this.editTemplate;
+
       if (options.initialMode === 'edit') {
         this.edit();
+      }
+      else {
+        this.render();
       }
     },
 

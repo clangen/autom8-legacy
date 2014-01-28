@@ -49,6 +49,12 @@
         if (!running(this)) {
           this.trigger('create:clicked');
         }
+      },
+
+      'touch .add-device': function(e) {
+        if (!running(this)) {
+          this.trigger('create:clicked');
+        }
       }
     },
 

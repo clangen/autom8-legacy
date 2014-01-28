@@ -5,7 +5,10 @@
     var deviceRowView = new autom8.view.DeviceRow({
       model: device,
       disableKeyboardHandler: true,
-      initialMode: 'edit'
+      initialMode: 'edit',
+      templateOverrides: {
+        editTemplate: 'autom8-View-AddDeviceRow'
+      }
     });
 
     var device; /* populated during validation */

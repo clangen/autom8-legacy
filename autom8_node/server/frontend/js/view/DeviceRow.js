@@ -35,7 +35,7 @@
       /* sometimes DeviceRow is re-used (e.g. when embedded in the
       add dialog). in these cases, we may not want to allow the view
       owner to handle key events */
-      if (options.disableKeyboardHandler) {
+      if (!options.disableKeyboardHandler) {
         this.$el.on('keyup', this.onKeyup.bind(this));
       }
 

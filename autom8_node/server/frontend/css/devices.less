@@ -126,13 +126,17 @@
 
             background-color: #444;
 
-
             & input, & select {
                 border: none;
                 border-radius: 0;
                 padding: 0;
                 padding-left: 4px;
                 height: 18px;
+                font-size: 80%;
+            }
+
+            .value, .value.name {
+                font-size: 80%;
             }
         }
 
@@ -152,6 +156,10 @@
         }
 
         .value.name {
+            right: 90px;
+            position: absolute;
+            left: 0;
+            width: auto;
             font-size: 110%;
             text-shadow: 0 0 6px #222;
             color: #eee;

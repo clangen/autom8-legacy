@@ -33,7 +33,7 @@ namespace("autom8.controller").DeviceListController = (function() {
   }
 
   function addDevice() {
-    autom8.view.EditDeviceView.show();
+    autom8.view.AddDeviceDialog.show();
   }
 
   function editDevice(device) {

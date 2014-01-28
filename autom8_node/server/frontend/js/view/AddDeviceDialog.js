@@ -1,10 +1,5 @@
  (function() {
-  var View = autom8.mvc.View;
-
-  var EditDeviceView = View.extend({
-  });
-
-  EditDeviceView.show = function() {
+  var show = function() {
     var device = new autom8.model.Device();
 
     var deviceRowView = new autom8.view.DeviceRow({
@@ -51,5 +46,5 @@
     });
   };
 
-  namespace("autom8.view").EditDeviceView = EditDeviceView;
+  namespace("autom8.view").AddDeviceDialog = {show: show};
 }());

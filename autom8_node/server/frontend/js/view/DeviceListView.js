@@ -29,7 +29,7 @@
         }
       },
 
-      'touch .device-row .save': function (e) {
+      'touch .device-row .save': function(e) {
         if (!running(this)) {
           var view = this.findViewFromEvent(e);
 
@@ -39,7 +39,7 @@
         }
       },
 
-      'touch .device-row .edit': function (e) {
+      'touch .device-row .edit': function(e) {
         if (!running(this)) {
           var view = this.findViewFromEvent(e);
 
@@ -49,11 +49,34 @@
         }
       },
 
+      'touch .device-row .cancel': function(e) {
+        var view = this.findViewFromEvent(e);
+        if (view.editing()) {
+          view.render({reset: true});
+        }
+        else if (view.adding()) {
+          this.removeChild(view);
+        }
+      },
+
       'touch .header .create': function(e) {
         if (!running(this)) {
-          var row = new autom8.view.DeviceRow({ model: new autom8.model.Device(), index: -1});
-          row.add();
-          this.addChild(row, {prependToElement: this.$el.find('.list')});
+          var row = new autom8.view.DeviceRow({
+            model: new autom8.model.Device(),
+            initialMode: 'add',
+            index: -1,
+            templateOverrides: {
+              addTemplate: 'autom8-View-EditDeviceRow'
+            }
+          });
+
+          row.once('create:canceled', function() {
+            this.removeChild(row);
+          }.bind(this));
+
+          this.addChild(row, {
+            prependToElement: this.$el.find('.list')
+          });
         }
       },
 
@@ -110,7 +133,7 @@
         if (!d) {
           return view.el.dataset.index === '-1';
         }
-        
+
         return view.model.cid === d.cid;
       })[0];
     }

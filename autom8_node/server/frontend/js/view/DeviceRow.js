@@ -44,12 +44,12 @@
       var templateOverrides = options.templateOverrides || { };
       this.template = templateOverrides.template || this.template;
       this.editTemplate = templateOverrides.editTemplate || this.editTemplate;
+      this.addTemplate = templateOverrides.addTemplate || this.addTemplate;
 
-      if (options.initialMode === 'edit') {
-        this.edit();
-      }
-      else {
-        this.render();
+      switch (options.initialMode) {
+        case 'edit': this.edit(); break;
+        case 'add': this.add(); break;
+        default: this.render();
       }
     },
 
@@ -58,20 +58,30 @@
     },
 
     onKeyup: function(e) {
+      var editing = this.$el.hasClass('editing');
+      var adding = this.$el.hasClass('adding');
+
       if (e.keyCode === 27) {
-        if (this.$el.hasClass('editing')) {
+        if (editing) {
           this.$el.removeClass('editing adding');
           this.render();
         }
+        else if (adding) {
+          this.trigger('create:canceled', this);
+        }
       }
       else if (e.keyCode === 13) {
-        if (this.$el.hasClass('editing')) {
+        if (editing || adding) {
           this.save();
         }
       }
     },
 
-    render: function() {
+    render: function(options) {
+      if (options && options.reset) {
+        this.$el.removeClass('adding editing');
+      }
+
       var normalizedData = (this.model) && this.model.toNormalizedJSON({armed: this.attrs && this.attrs.armed});
       this.inflate(this.template, normalizedData);
     },
@@ -81,6 +91,14 @@
       this.inflate(this.editTemplate, normalizedData);
       this.$el.addClass('editing');
       return true;
+    },
+
+    editing: function() {
+      return this.$el.hasClass('editing');
+    },
+
+    adding: function() {
+      return this.$el.hasClass('adding');
     },
 
     add: function () {
@@ -113,7 +131,6 @@
         deferred.reject();
       };
 
-      // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
       if (!values) {
         rejectWithBadInput();
       }
@@ -141,7 +158,16 @@
         .then(function(result) {
           if (result.STATUS === autom8.client.rpc.STATUS.AUTOM8_OK) {
             var deviceList = autom8.model.SystemModel.get('deviceList');
-            deviceList.update(values, {address: command === 'add_device' ? values.address : oldAddress});
+
+            if (command === 'add_device') {
+              var newModel = new autom8.model.Device(values);
+              deviceList.add(newModel);
+              self.model = newModel;
+            }
+            else {
+              deviceList.update(values, {address: oldAddress});
+            }
+
             self.$el.removeClass('editing adding');
             self.render();
             deferred.resolve();

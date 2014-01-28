@@ -42,31 +42,6 @@
   <div class="device-row-attr"><div class="key">address:</div> <input class="value address" name="address" value="{{address}}"></input></div>
   <div class="crud-actions">
     <span class="crud-action save">save</span>
-    <span class="crud-action delete">delete</span>
-  </div>
-</script>
-
-<script id="autom8-View-AddDeviceRow" type="text/x-handlebars-template">
-  <div class="device-row-attr">
-    <div class="key">name:</div>
-    <input class="value name" name="label" value="{{label}}"></input>
-  </div>
-  <div class="device-row-attr">
-    <div class="key">areas:</div>
-    <input class="value groups" name="groups" value="{{groups}}"></input>
-  </div>
-  <div class="device-row-attr"><div class="key">type:</div>
-    <select class="type" name="type">
-      {{#select type}}
-        <option value="0">lamp</option>
-        <option value="1">appliance</option>
-        <option value="2">security sensor</option>
-      {{/select}}
-    </select>
-  </div>
-  <div class="device-row-attr"><div class="key">address:</div> <input class="value address" name="address" value="{{address}}"></input></div>
-  <div class="crud-actions">
-    <span class="crud-action save">save</span>
-    <span class="crud-action delete">delete</span>
+    <span class="crud-action cancel">cancel</span>
   </div>
 </script>

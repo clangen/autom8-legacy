@@ -114,10 +114,12 @@
             margin-bottom: 7px;
         }
 
+        &.adding .device-row-attr,
         &.editing .device-row-attr {
             margin-bottom: 4px;
         }
 
+        &.adding,
         &.editing {
             .device-row-attr:first-child {
                 padding-left: 0;
@@ -139,12 +141,13 @@
 
             .value.name {
                 /* fudge because input fields are funky */
-                right: 96px;
+                right: 100px;
                 margin-top: 4px;
                 width: auto;
             }
         }
 
+        &.adding:hover,
         &.editing:hover {
             background-color: #444;
         }
@@ -180,6 +183,7 @@
             width: 150px;
         }
 
+        &.adding select,
         &.editing select {
             width: 100%;
         }

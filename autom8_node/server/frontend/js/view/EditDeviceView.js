@@ -1,85 +1,39 @@
  (function() {
   var View = autom8.mvc.View;
 
-  var COMMANDS = {
-    ADD: 'add_device',
-    EDIT: 'edit_device'
-  };
-
   var EditDeviceView = View.extend({
-    template: 'autom8-View-EditDevice',
-    tagName: 'div',
-
-    events: {
-    },
-
-    onCreate: function(options) {
-      if (options.device) {
-        var normalized = options.device.toJSON();
-        normalized.areas = normalized.groups.join(', ');
-        this.inflate(this.template, normalized);
-      }
-    },
-
-    onDestroy: function() {
-    },
-
-    render: function() {
-
-    }
   });
 
-  EditDeviceView.show = function(device) {
-    var title = '';
-    var options;
-    var operation;
+  EditDeviceView.show = function() {
+    var device = new autom8.model.Device();
 
-    if (!device) {
-      title = 'add new device';
-      operation = COMMANDS.ADD;
-    } else {
-      title = 'edit device';
-      operation = COMMANDS.EDIT;
-    }
+    var deviceRowView = new autom8.view.DeviceRow({
+      model: device,
+      disableKeyboardHandler: true,
+      initialMode: 'edit'
+    });
+
+    var device; /* populated during validation */
 
     autom8.util.Dialog.show({
-      title: title,
-      view: new EditDeviceView({device: device}),
+      title: 'add new device',
+      view: deviceRowView,
+      viewContainerClass: 'devices',
+
+      validateCallback: function() {
+        device = deviceRowView.validate();
+        return device;
+      },
+
       buttons: [
         {
           caption: "ok",
           positive: true,
-          callback: function(results) {
-            if (!results) {
-              return;
-            }
-
-            var device = {};
-            var options;
-
-            for (var i = 0; i < results.length; i++) {
-              var key = results[i].name;
-              var val = results[i].value;
-              device[key] = val;
-            }
-
-            device.groups = device.groups.split(', ');
-            device.type = parseInt(device.type, 10);
-
-            if (operation === COMMANDS.ADD) {
-              options = device;
-            }
-            else {
-              options = {
-                address: device.address,
-                device: device
-              };
-            }
-
+          callback: function() {
             autom8.client.rpc.send({
               component: "system",
-              command: operation,
-              options: options
+              command: "add_device",
+              options: device
             })
 
             .then(function() {

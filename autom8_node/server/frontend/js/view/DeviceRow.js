@@ -31,7 +31,17 @@
       this.el.dataset.index = this.index;
       this.model.on('change', this.render, this);
       this.$el.attr('tabindex', '1');
-      this.$el.on('keyup', this.onKeyup.bind(this));
+
+      /* sometimes DeviceRow is re-used (e.g. when embedded in the
+      add dialog). in these cases, we may not want to allow the view
+      owner to handle key events */
+      if (options.disableKeyboardHandler) {
+        this.$el.on('keyup', this.onKeyup.bind(this));
+      }
+
+      if (options.initialMode === 'edit') {
+        this.edit();
+      }
     },
 
     onDestroy: function() {
@@ -68,13 +78,25 @@
       this.$el.addClass('adding');
     },
 
+    validate: function() {
+      var values = {
+        label: this.$('.name').val(),
+        type: parseInt(this.$('.type').val(), 10),
+        groups: this.$('.groups').val().split(', ') || 'none',
+        address: this.$('.address').val()
+      };
+
+      if (values.groups.length === 0 || !values.label || !_.isNumber(values.type) || !values.address) {
+        return false;
+      }
+
+      return values;
+    },
+
     save: function () {
       var deferred = Q.defer();
 
-      var name = this.$('.name').val();
-      var type = parseInt(this.$('.type').val(), 10);
-      var groups = this.$('.groups').val().split(', ');
-      var newAddress = this.$('.address').val();
+      var values = this.validate();
 
       var rejectWithBadInput = function() {
         showBadInputDialog();
@@ -82,19 +104,12 @@
       };
 
       // Need to flesh out the validation logic to show a proper error and highlight the invalid fields.
-      if (groups.length === 0 || !name || !_.isNumber(type) || !newAddress) {
+      if (!values) {
         showBadInputDialog();
         deferred.reject();
       }
       else {
         var oldAddress = this.model.get('address');
-
-        var device = {
-          address: newAddress,
-          label: name,
-          groups: groups,
-          type: type
-        };
 
         var self = this;
 
@@ -103,7 +118,7 @@
           command: 'edit_device',
           options: {
             address: oldAddress,
-            device: device
+            device: values
           }
         })
 

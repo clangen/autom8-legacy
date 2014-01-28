@@ -16,7 +16,7 @@ namespace("autom8.util").Dialog = (function() {
       var $dialog = autom8.mvc.View.elementFromTemplate(dialogTemplate, params);
       var $customViewContainer = $dialog.find('.dialog-custom-view').eq(0);
       var $buttonContainer = $dialog.find('.dialog-buttons');
-      var negativeCallback, positiveCallback, cancelCallback;
+      var negativeCallback, positiveCallback, cancelCallback, validateCallback;
       var results;
 
       function prepareDialog() {
@@ -34,10 +34,13 @@ namespace("autom8.util").Dialog = (function() {
 
           params.view.parent = this;
           $customViewContainer.append(params.view.$el);
+          $customViewContainer.addClass(params.viewContainerClass || '');
         }
         else {
           $customViewContainer.hide();
         }
+
+        validateCallback = params.validateCallback || function() { return true; };
 
         /* wire up the cancel, positive, and negative callbacks while
         adding the button widgets to the dialog */
@@ -161,9 +164,11 @@ namespace("autom8.util").Dialog = (function() {
 
         /* return/enter */
         if (event.keyCode === 13 && positiveCallback) {
-          closeDialog(function() {
-            positiveCallback(results);
-          });
+          if (validateCallback()) {
+            closeDialog(function() {
+              positiveCallback(results);
+            });
+          }
         }
         /* esc */
         else if ((event.keyCode === 27) && (params.cancelable !== false)) {
@@ -192,10 +197,18 @@ namespace("autom8.util").Dialog = (function() {
       }
 
       function buttonHandler(event) {
-        closeDialog(function() {
-          var id = parseInt($(event.target).attr('data-id'), 10);
-          var callback = params.buttons[id].callback;
+        var id = parseInt($(event.target).attr('data-id'), 10);
+        var callback = params.buttons[id].callback;
 
+        /* if we're accepting, don't close the unless the validation
+        method passes */
+        if (callback === positiveCallback) {
+          if (!validateCallback()) {
+            return;
+          }
+        }
+
+        closeDialog(function() {
           if (callback) {
             callback.apply(this, arguments);
           }

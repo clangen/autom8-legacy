@@ -138,6 +138,13 @@
             .value, .value.name {
                 font-size: 80%;
             }
+
+            .value.name {
+                /* fudge because input fields are funky */
+                right: 96px;
+                margin-top: 4px;
+                width: auto;
+            }
         }
 
         &.editing:hover {
@@ -164,6 +171,7 @@
             text-shadow: 0 0 6px #222;
             color: #eee;
             padding-left: 10px;
+            margin-top: 4px;
         }
 
         input.value.name {

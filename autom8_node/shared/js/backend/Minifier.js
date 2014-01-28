@@ -21,6 +21,34 @@
 
   var root = process.cwd() + '/frontend';
   var shared = process.cwd() + '/../shared';
+  var cache = process.cwd() + '/minifier.cache';
+
+  function writeCacheFile() {
+    try {
+      fs.writeFileSync(cache, JSON.stringify(cached));
+    }
+    catch (e) {
+      log.error(JS, 'failed to write', cache);
+    }
+  }
+
+  function readCacheFile() {
+    var parsed = { };
+
+    try {
+      parsed = JSON.parse(fs.readFileSync(cache));
+    }
+    catch (e) {
+      log.error(JS, 'failed to read', cache);
+    }
+
+    cached = {
+      styles: parsed.styles || '',
+      scripts: parsed.scripts || ''
+    };
+  }
+
+  readCacheFile();
 
   function createLessParser(filename, paths) {
       filename = filename || "";
@@ -135,6 +163,7 @@
         if (callback) {
           cached.styles = doc;
           callback(doc);
+          writeCacheFile();
           // console.log(CSS, "minification finished");
         }
       };
@@ -311,6 +340,8 @@
 
       if (callback) {
         cached.scripts = doc;
+        writeCacheFile();
+
         // callback(doc);
         // console.log(JS, "returning document");
       }

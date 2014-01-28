@@ -29,6 +29,7 @@ var nextId = 0;
 
 var tagColors = { };
 var allColors = ['red', 'yellow', 'green', 'blue', 'magenta'];
+var rotateColors = 0;
 
 var handlers = { };
 
@@ -82,8 +83,7 @@ var initLogging = function() {
     var localLogCallback = function(level, tag, message) {
         var color = tagColors[tag];
         if (!color) {
-            var random = Math.round(Math.random() * (allColors.length - 1));
-            color = tagColors[tag] = allColors[random];
+            color = tagColors[tag] = allColors[++rotateColors % allColors.length];
         }
 
         tag = "[" + tag + "]";

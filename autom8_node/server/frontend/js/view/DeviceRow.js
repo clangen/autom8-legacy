@@ -125,7 +125,7 @@
         .then(function(result) {
           if (result.STATUS === autom8.client.rpc.STATUS.AUTOM8_OK) {
             var deviceList = autom8.model.SystemModel.get('deviceList');
-            deviceList.update(device, {address: oldAddress});
+            deviceList.update(values, {address: oldAddress});
             self.$el.removeClass('editing adding');
             self.render();
             deferred.resolve();

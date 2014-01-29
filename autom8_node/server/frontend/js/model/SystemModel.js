@@ -31,6 +31,8 @@ namespace("autom8.model").SystemModel = (function() {
       ])
 
       .spread(function(status, devices, systems) {
+        self.set('initialized', true);
+
         devices = devices.devices || [];
 
         var i;

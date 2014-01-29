@@ -58,6 +58,13 @@
     },
 
     onKeyup: function(e) {
+      if ($(e.target).hasClass('type')) {
+        /* the dropdown doesn't swallow return or esc, so
+        don't allow it to cancel editing. kinda heavy handed,
+        but probably fine */
+        return;
+      }
+
       var editing = this.$el.hasClass('editing');
       var adding = this.$el.hasClass('adding');
 

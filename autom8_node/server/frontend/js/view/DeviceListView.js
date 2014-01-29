@@ -56,48 +56,16 @@
         }
         else if (view.adding()) {
           this.removeChild(view);
+          this.onAddEnded();
         }
       },
 
       'touch .header .add': function(e) {
-        if (!running(this)) {
-          var row = new autom8.view.DeviceRow({
-            model: new autom8.model.Device(),
-            initialMode: 'add',
-            index: -1,
-            templateOverrides: {
-              addTemplate: 'autom8-View-EditDeviceRow'
-            }
-          });
-
-          row.once('add:canceled', function() {
-            this.removeChild(row);
-          }.bind(this));
-
-          row.once('add:completed', function(rowView, deviceModel) {
-            var deviceList = this.systemModel.get('deviceList');
-
-            /* after the device has been added we need to make sure it's
-            data-index property has the right model index, otherwise delete
-            and edit operations will not work */
-            for (var i = 0; i < deviceList.length; i++) {
-              if (deviceList.at(i).get('address') === deviceModel.get('address')) {
-                rowView.el.dataset.index = i;
-                break;
-              }
-            }
-          }.bind(this));
-
-          this.addChild(row, {
-            prependToElement: this.$el.find('.list')
-          });
-        }
+        this.startAdd(e);
       },
 
       'touch .add-device': function(e) {
-        if (!running(this)) {
-          this.trigger('add:clicked');
-        }
+        this.startAdd(e);
       }
     },
 
@@ -111,6 +79,56 @@
       this.systemModel.off('change', this.redraw, this);
     },
 
+    startAdd: function(e) {
+      if (!running(this)) {
+        var row = new autom8.view.DeviceRow({
+          model: new autom8.model.Device(),
+          initialMode: 'add',
+          index: -1,
+          templateOverrides: {
+            addTemplate: 'autom8-View-EditDeviceRow'
+          }
+        });
+
+        row.once('add:canceled', function() {
+          this.removeChild(row);
+          this.onAddEnded();
+        }.bind(this));
+
+        row.once('add:completed', function(rowView, deviceModel) {
+          var deviceList = this.systemModel.get('deviceList');
+
+          /* after the device has been added we need to make sure it's
+          data-index property has the right model index, otherwise delete
+          and edit operations will not work */
+          for (var i = 0; i < deviceList.length; i++) {
+            if (deviceList.at(i).get('address') === deviceModel.get('address')) {
+              rowView.el.dataset.index = i;
+              break;
+            }
+          }
+
+          this.onAddEnded();
+        }.bind(this));
+
+        this.onAddStarted();
+
+        this.addChild(row, {
+          prependToElement: this.$el.find('.list')
+        });
+      }
+    },
+
+    onAddStarted: function() {
+        this.$('.add-device').removeClass('visible');
+    },
+
+    onAddEnded: function() {
+      if (this.systemModel.get('deviceList').length === 0) {
+        this.$('.add-device').addClass('visible');
+      }
+    },
+
     redraw: function() {
       this.enable(!this.systemModel.get('running'));
 
@@ -122,7 +140,13 @@
       $list.empty();
 
       if (!deviceList || !deviceList.length) {
-        $add.addClass('visible');
+        /* the first time we redraw the model may not be completely
+        initialized yet. if that's the case, don't flash the "add new
+        device..." pseudo-row */
+        if (this.systemModel.get('initialized')) {
+          $add.addClass('visible');
+        }
+
         return;
       }
 

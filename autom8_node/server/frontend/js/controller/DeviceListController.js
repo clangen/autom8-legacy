@@ -4,7 +4,7 @@ namespace("autom8.controller").DeviceListController = (function() {
       autom8.util.Dialog.show({
         title: "confirm delete",
         message: 'are you sure you want to delete the device "' +
-          device.get('label') + '" at address "' + device.get('address') + '"?',
+          device.get('label') + '" at address ' + device.get('address') + '?',
         buttons: [
           {
             caption: "yes",

@@ -59,7 +59,7 @@
         }
       },
 
-      'touch .header .create': function(e) {
+      'touch .header .add': function(e) {
         if (!running(this)) {
           var row = new autom8.view.DeviceRow({
             model: new autom8.model.Device(),
@@ -70,8 +70,22 @@
             }
           });
 
-          row.once('create:canceled', function() {
+          row.once('add:canceled', function() {
             this.removeChild(row);
+          }.bind(this));
+
+          row.once('add:completed', function(rowView, deviceModel) {
+            var deviceList = this.systemModel.get('deviceList');
+
+            /* after the device has been added we need to make sure it's
+            data-index property has the right model index, otherwise delete
+            and edit operations will not work */
+            for (var i = 0; i < deviceList.length; i++) {
+              if (deviceList.at(i).get('address') === deviceModel.get('address')) {
+                rowView.el.dataset.index = i;
+                break;
+              }
+            }
           }.bind(this));
 
           this.addChild(row, {
@@ -82,7 +96,7 @@
 
       'touch .add-device': function(e) {
         if (!running(this)) {
-          this.trigger('create:clicked');
+          this.trigger('add:clicked');
         }
       }
     },

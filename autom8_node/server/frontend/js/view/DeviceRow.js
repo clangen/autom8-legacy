@@ -67,7 +67,7 @@
           this.render();
         }
         else if (adding) {
-          this.trigger('create:canceled', this);
+          this.trigger('add:canceled', this);
         }
       }
       else if (e.keyCode === 13) {
@@ -90,6 +90,11 @@
       var normalizedData = (this.model) && this.model.toNormalizedJSON({editing: true});
       this.inflate(this.editTemplate, normalizedData);
       this.$el.addClass('editing');
+
+      setTimeout(function() {
+        this.$('.value.name').focus();
+      }.bind(this), 250);
+
       return true;
     },
 
@@ -102,8 +107,12 @@
     },
 
     add: function () {
-      this.inflate(this.addTemplate);
+      this.inflate(this.addTemplate, {label: 'unnamed'});
       this.$el.addClass('adding');
+
+      setTimeout(function() {
+        this.$('.value.name').focus();
+      }.bind(this), 250);
     },
 
     validate: function() {
@@ -163,6 +172,7 @@
               var newModel = new autom8.model.Device(values);
               deviceList.add(newModel);
               self.model = newModel;
+              self.trigger('add:completed', self, newModel);
             }
             else {
               deviceList.update(values, {address: oldAddress});

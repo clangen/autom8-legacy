@@ -20,7 +20,6 @@
     editTemplate: 'autom8-View-EditDeviceRow',
     addTemplate: 'autom8-View-AddDeviceRow',
     tagName: 'li',
-    className: 'device-row',
 
     events: {
     },
@@ -65,12 +64,12 @@
         return;
       }
 
-      var editing = this.$el.hasClass('editing');
-      var adding = this.$el.hasClass('adding');
+      var editing = this.$row.hasClass('editing');
+      var adding = this.$row.hasClass('adding');
 
       if (e.keyCode === 27) {
         if (editing) {
-          this.$el.removeClass('editing adding');
+          this.$row.removeClass('editing adding');
           this.render();
         }
         else if (adding) {
@@ -86,17 +85,20 @@
 
     render: function(options) {
       if (options && options.reset) {
-        this.$el.removeClass('adding editing');
+        this.$row.removeClass('adding editing');
       }
 
       var normalizedData = (this.model) && this.model.toNormalizedJSON({armed: this.attrs && this.attrs.armed});
       this.inflate(this.template, normalizedData);
+      this.$row = this.$('.device-row');
     },
 
     edit: function () {
       var normalizedData = (this.model) && this.model.toNormalizedJSON({editing: true});
       this.inflate(this.editTemplate, normalizedData);
-      this.$el.addClass('editing');
+
+      this.$row = this.$('.device-row');
+      this.$row.addClass('editing');
 
       setTimeout(function() {
         this.$('.value.name').focus();
@@ -106,16 +108,18 @@
     },
 
     editing: function() {
-      return this.$el.hasClass('editing');
+      return this.$row.hasClass('editing');
     },
 
     adding: function() {
-      return this.$el.hasClass('adding');
+      return this.$row.hasClass('adding');
     },
 
     add: function () {
       this.inflate(this.addTemplate, {label: 'unnamed'});
-      this.$el.addClass('adding');
+
+      this.$row = this.$('.device-row');
+      this.$row.addClass('adding');
 
       setTimeout(function() {
         this.$('.value.name').focus();

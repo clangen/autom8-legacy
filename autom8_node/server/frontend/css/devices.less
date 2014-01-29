@@ -39,21 +39,22 @@
         color: #777;
     }
 
+    li {
+        vertical-align: top;
+        display: inline-block;
+        width: 50%;
+    }
+
     .device-row {
         padding: 6px;
         padding-left: 0;
         background-color: #666;
         margin-left: 8px;
         margin-bottom: 8px;
-        vertical-align: top;
         padding-bottom: 8px;
         position: relative;
-        box-sizing: border-box;
         height: 120px;
         -webkit-transition: background 0.20s ease-in;
-
-        display: inline-block;
-        width: 48%;
 
         .crud-actions {
             position: absolute;
@@ -207,8 +208,7 @@
 
 @media only screen and (max-width: 420px) {
     .devices {
-        .device-row {
-            margin-left: 0;
+        li {
             width: 100%;
         }
 

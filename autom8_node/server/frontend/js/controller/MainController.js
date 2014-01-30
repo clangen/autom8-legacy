@@ -1,9 +1,32 @@
 namespace("autom8.controller").MainController = (function() {
+  function showDisconnectedDialog() {
+    if (!this.disconnectedDialog) {
+      var self = this;
+
+      this.disconnectedDialog = autom8.util.Dialog.show({
+        title: "disconnected",
+        message: "lost connection to the autom8 server. make sure the server is " +
+          "running and you're connected to the network.",
+        buttons: [{
+            caption: "reconnect",
+            positive: true,
+            negative: true,
+            callback: function() {
+              reconnect.call(self);
+            }
+        }],
+        onClosed: function() {
+          self.disconnectedDialog = null;
+        }
+      });
+    }
+  }
+
   function refreshStatus() {
     autom8.model.SystemModel.fetch();
   }
 
-  function reconnect(options) {
+  function reconnect() {
     var c = autom8.client;
     var s = autom8.client.getState();
     if (!c.connected && !c.connecting && s !== "authenticating") {
@@ -71,9 +94,20 @@ namespace("autom8.controller").MainController = (function() {
 
     onConnected: function() {
       refreshStatus();
+
+      if (this.disconnectedDialog) {
+        this.disconnectedDialog.close();
+      }
+
+      if (this.reconnectTimeout) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
+      }
     },
 
     onDisconnected: function() {
+      showDisconnectedDialog.call(this);
+
       if (!this.reconnectTimeout) {
         this.reconnectTimeout = setTimeout(function() {
           this.reconnectTimeout = null;

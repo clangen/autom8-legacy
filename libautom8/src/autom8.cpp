@@ -44,7 +44,7 @@ static int system_select(const std::string& system);
 rpc_callback rpc_callback_ = no_op;
 
 /* constants */
-#define VERSION "0.5"
+#define VERSION "0.6.1"
 #define DEFAULT_PORT 7901
 #define TAG "c_api"
 #define RPC_TAG "rpc_queue"

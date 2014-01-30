@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html manifest="{{manifest}}">
   <head>
-    <title>autom8</title>
+    <title>autom8 client</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -23,7 +23,7 @@
         {{minified_scripts}}
 
     <script>
-      namespace("autom8").version = "0.6.0 ({{version}})";
+      namespace("autom8").version = "0.6.1 ({{version}})";
 
       $(document).ready(function() {
         controller = new autom8.controller.MainController();

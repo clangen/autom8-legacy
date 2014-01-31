@@ -5,6 +5,12 @@
 @textColor: #ccc;
 @textSize: 15px;
 
+div {
+    /* by default, at least on iOS, divs very briefly flicker
+    when you touch them. but only sometimes. this fixes that. */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 html {
     height: 100%;
     width: 100%;

@@ -1,32 +1,45 @@
 @import "../../../shared/css/mixins.less";
 @import "../../../shared/css/buttons.less";
 
-.system-info {
+#application .system-info {
     padding: 10px;
 
     .content {
         overflow: hidden;
     }
 
-    table {
+    .header {
+        margin-bottom: 0;
+    }
+
+    .system-info-table {
         margin-left: 10px;
     }
 
-    td {
-        padding: 8px 2px;
-    }
+    .system-info-attr {
+        display: block;
+        line-height: 32px;
+        white-space: nowrap;
+        overflow: hidden;
 
-    td:first-child {
-        padding-top: 0px;
-    }
+        .label {
+            display: inline-block;
+            text-align: right;
+            padding-right: 8px;
+            width: 120px;
+        }
 
-    td.label {
-        text-align: right;
-        padding-right: 8px;
-    }
+        .value {
+            display: inline-block;
+            font-weight: bold;
+        }
 
-    td.value {
-        font-weight: bold;
+        input {
+            border: none;
+            padding: 0 7px;
+            border-radius: 10px;
+            height: 19px;
+        }
     }
 
     .content.disabled input {
@@ -39,6 +52,10 @@
         text-decoration: underline;
     }
 
+    .dropdown.dropdown-tip {
+        margin-top: 0;
+    }
+
     .select-controller {
         cursor: pointer;
 
@@ -46,7 +63,7 @@
             display: inline-block;
             width: 0;
             height: 0;
-            margin-top: 6px;
+            margin-top: 14px;
             vertical-align: top;
             border-top: 4px solid #eee;
             border-right: 4px solid transparent;

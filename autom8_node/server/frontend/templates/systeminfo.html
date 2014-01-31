@@ -11,32 +11,32 @@
 </script>
 
 <script id="autom8-View-SystemInfoTable" type="text/x-handlebars-template">
-  <table>
-    <tr>
-      <td class="label">version:</td>
-      <td class="value">{{version}}</td>
-    </tr>
-    <tr>
-      <td class="label">controller:</td>
-      <td class="value">
+  <div class="system-info-table">
+    <div class="system-info-attr">
+      <div class="label">version:</div> <!-- 116 -->
+      <div class="value">{{version}}</div>
+    </div>
+    <div class="system-info-attr">
+      <div class="label">controller:</div>
+      <div class="value">
         <div class="select-controller" data-dropdown="#system-selection-dropdown">
           {{controller}} <span class="caret"></span>
         </div>
-      </td>
-    </tr>
-    <tr>
-      <td class="label">fingerprint:</td>
-      <td class="value">{{fingerprint}}</td>
-    </tr>
-    <tr>
-      <td class="label">client port:</td>
-      <td class="value"><input class="port-input" value="{{port}}"></input></td>
-    </tr>
-    <tr>
-      <td class="label">client password:</td>
-      <td class="value"><input class="password-input" value="********"></input></td>
-    </tr>
-  </table>
+      </div>
+    </div>
+    <div class="system-info-attr">
+      <div class="label">fingerprint:</div>
+      <div class="value">{{fingerprint}}</div>
+    </div>
+    <div class="system-info-attr">
+      <div class="label">client port:</div>
+      <div class="value"><input class="port-input" value="{{port}}"></input></div>
+    </div>
+    <div class="system-info-attr">
+      <div class="label">client password:</div>
+      <div class="value"><input class="password-input" value="********"></input></div>
+    </div>
+  </div>
 
   <div id="system-selection-dropdown" class="dropdown dropdown-relative dropdown-tip"></div>
 </script>

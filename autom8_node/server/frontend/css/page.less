@@ -70,6 +70,7 @@
     left: 660px;
     top: 0;
     bottom: 60px;
+    -webkit-transition: -webkit-transform 0.35s ease-out;
 }
 
 .connection {
@@ -81,7 +82,7 @@
     height: 13px;
     border: 1px solid #222;
     float: right;
-    -webkit-transition: background-color 0.75s ease-out;
+    -webkit-transition: background-color 0.55s ease-in-out;
 }
 
 .connection.connected {
@@ -107,7 +108,8 @@ input, select {
 
 @media only screen and (max-width: 860px) {
     .main-content-right {
-        display: none;
+        // display: none;
+        -webkit-transform: translateY(-110%);
     }
 
     .main-content-left {

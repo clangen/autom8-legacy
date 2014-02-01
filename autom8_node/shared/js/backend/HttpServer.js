@@ -18,6 +18,11 @@
 
   var root = process.cwd() + '/frontend';
 
+  var STATIC_PAGES = {
+    'compiling': fs.readFileSync(__dirname + '/static/compiling.html').toString(),
+    'blacklisted': fs.readFileSync(__dirname + '/static/blacklisted.html').toString()
+  };
+
   function fileRequest(req, res) {
     var fn = url.parse(req.url).pathname;
 
@@ -171,7 +176,17 @@
         }
         else {
           data = minifier.renderMinifiedStyles(data, function(withStyles) {
+            if (withStyles instanceof Error) {
+              writeResponse(fn, STATIC_PAGES.compiling);
+              return;
+            }
+
             data = minifier.renderMinifiedScripts(withStyles, function(withScripts) {
+              if (withScripts instanceof Error) {
+                writeResponse(fn, STATIC_PAGES.compiling);
+                return;
+              }
+
               writeResponse(fn, withScripts);
             });
           });
@@ -198,7 +213,7 @@
     app.use(function(req, res, next) {
       if (!blacklist.allowConnection(req)) {
         res.writeHead(401);
-        res.end("you're blacklisted. go away.");
+        res.end(STATIC_PAGES.blacklisted);
       }
       else {
         next();

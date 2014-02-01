@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>autom8</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="shortcut icon" href="client.ico" type="image/x-icon">
+    <link rel="apple-touch-icon-precomposed" href="client.png"/>
+
+    <style>
+        div {
+            /* by default, at least on iOS, divs very briefly flicker
+            when you touch them. but only sometimes. this fixes that. */
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        html {
+            height: 100%;
+            width: 100%;
+            background-color: #333;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: arial;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            color: #ccc;
+            font-size: 15px;
+            cursor: default;
+        }
+
+        .main-content {
+            padding: 16px 8px;
+            text-align: center;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #application {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        @media only screen and (min-width: 400px) {
+            body {
+                background-color: #444;
+            }
+
+            #application {
+                background-color: #333;
+                position: absolute;
+                max-width: 400px;
+                min-width: 400px;
+                top: 0;
+                bottom: 0;
+                box-shadow: 0px 0px 64px #111;
+                border-left: 1px solid #222;
+                border-right: 1px solid #222;
+                left: 50%;
+                margin-left: -200px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div id="application">
+      <div class="main-content">
+        <div class="error">you have been temporarily banned</div>
+        <br/>
+        please try back later when you remember your password.
+      </div>
+    </div>
+  </body>
+</html>

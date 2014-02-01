@@ -16,6 +16,8 @@
   var JS = "[minifier]".blue;
   var LESS = "[minifier]".blue;
 
+  var COMPILING = new Error({message: 'compiling, try again in a few'});
+
   var closureCompileRunning = false;
   var cached = {styles: '', scripts: ''};
 
@@ -262,7 +264,7 @@
   function renderMinifiedScripts(doc, callback) {
     if (closureCompileRunning) {
       log.warn(JS, "closure compiler already running, bailing".yellow);
-      callback('compiling, try again in a few');
+      callback(COMPILING);
       return;
     }
 
@@ -355,7 +357,7 @@
       log.info(JS, "starting closurecompiler", '(' + scriptFilenames.length + ' files)');
       closurecompiler.compile(scriptFilenames, { }, minificationCompleteHandler);
       closureCompileRunning = true;
-      callback("starting up, please try back in a second");
+      callback(COMPILING);
     }
   }
 

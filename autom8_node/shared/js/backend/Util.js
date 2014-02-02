@@ -51,6 +51,7 @@
       ".less": "text/css",
       ".css": "text/css",
       ".js": "application/javascript",
+      ".png": "image/png",
       ".ico": "image/x-icon",
       ".appcache": "text/cache-manifest"
     };

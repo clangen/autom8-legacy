@@ -25,13 +25,22 @@
         .label {
             display: inline-block;
             text-align: right;
-            padding-right: 8px;
             width: 120px;
         }
 
         .value {
             display: inline-block;
             font-weight: bold;
+            position: absolute;
+            left: 138px;
+            right: 0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .value.dropdown {
+            // position: static;
         }
 
         input {
@@ -53,7 +62,9 @@
     }
 
     .dropdown.dropdown-tip {
-        margin-top: 0;
+        /* bleh. why? */
+        margin-top: -42px;
+        margin-left: -12px;
     }
 
     .select-controller {

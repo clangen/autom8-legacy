@@ -32,7 +32,9 @@ namespace("autom8.view").SignInView = (function() {
     },
 
     onCreate: function(options) {
-      this.passwordRow = this.addChild(new View({el: View.elementFromTemplateId('autom8-View-PasswordRow')}));
+      this.passwordRow = this.addChild(new View({
+        el: View.elementFromTemplateId('autom8-View-PasswordRow')
+      }));
 
       this.spinnerRow = this.addChild(new autom8.view.SpinnerView({
         template: '#autom8-View-LoadingRow',

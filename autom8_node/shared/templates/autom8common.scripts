@@ -8,3 +8,6 @@
 <script src="shared/js/frontend/model/DeviceModel.js" type="text/javascript"></script>
 <script src="shared/js/frontend/model/DeviceList.js" type="text/javascript"></script>
 <script src="shared/js/frontend/model/DeviceGroup.js" type="text/javascript"></script>
+<script src="shared/js/frontend/view/SignInView.js" type="text/javascript"></script>
+<script src="shared/js/frontend/controller/SignInController.js" type="text/javascript"></script>
+<script src="shared/js/frontend/view/SpinnerView.js" type="text/javascript"></script>

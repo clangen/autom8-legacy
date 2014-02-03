@@ -105,7 +105,7 @@ namespace("autom8.view").HeaderView = (function() {
     }
   });
 
-  HeaderView.staticEvents = _.extend({ }, Backbone.Events);
+  // HeaderView.staticEvents = _.extend({ }, Backbone.Events);
 
   return HeaderView;
 }());

@@ -1,17 +1,20 @@
 namespace("autom8.controller").SignInController = (function() {
   return autom8.mvc.Controller.extend({
     onCreate: function(options) {
-      this.view = new autom8.view.SignInView();
+      options = options || { };
+
+      this.view = new autom8.view.SignInView({
+        el: options.el
+      });
+
       this.view.on("return:pressed", this.signIn, this);
     },
 
     onResume: function() {
-      autom8.view.HeaderView.staticEvents.on("signin:clicked", this.signIn, this);
       autom8.client.on('state:changed', this.onStateChanged, this);
     },
 
     onPause: function() {
-      autom8.view.HeaderView.staticEvents.off("signin:clicked", this.signIn, this);
       autom8.client.off('state:changed', this.onStateChanged, this);
     },
 

@@ -22,6 +22,13 @@ namespace("autom8.controller").MainController = (function() {
     }
   }
 
+  function closeDisconnectedDialog() {
+    if (this.disconnectedDialog) {
+     this.disconnectedDialog.close();
+     this.disconnectedDialog = null;
+    }
+  }
+
   function refreshStatus() {
     autom8.model.SystemModel.fetch();
   }
@@ -30,9 +37,9 @@ namespace("autom8.controller").MainController = (function() {
     var c = autom8.client;
     var s = autom8.client.getState();
     if (!c.connected && !c.connecting && s !== "authenticating") {
-      autom8.client.authenticate("empty").fail(function() {
+      if (autom8.client.getState() !== "expired") {
         autom8.client.connect();
-      });
+      }
     }
   }
 
@@ -72,11 +79,14 @@ namespace("autom8.controller").MainController = (function() {
         })
       );
 
-      // this.signInController = this.addChild(
-      //   new autom8.controller.SignInController({
-      //     el: $('.sign-in')
-      //   })
-      // );
+      this.signInController = this.addChild(
+        new autom8.controller.SignInController({
+          el: $('.sign-in'),
+        }),
+        {
+          resume: false
+        }
+      );
 
       this.systemInfoController = this.addChild(
         new autom8.controller.SystemInfoController()
@@ -97,6 +107,16 @@ namespace("autom8.controller").MainController = (function() {
       reconnect();
     },
 
+    showSignIn: function() {
+      this.view.$el.addClass('show-sign-in');
+      this.signInController.resume();
+    },
+
+    showDevices: function() {
+      this.view.$el.removeClass('show-sign-in');
+      this.signInController.pause();
+    },
+
     onDestroy: function() {
       autom8.client.off('connected', this.onConnected, this);
       autom8.client.off('disconnected', this.onDisconnected, this);
@@ -105,11 +125,10 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onConnected: function() {
+      this.showDevices();
       refreshStatus();
 
-      if (this.disconnectedDialog) {
-        this.disconnectedDialog.close();
-      }
+      closeDisconnectedDialog.call(this);
 
       if (this.reconnectTimeout) {
         clearTimeout(this.reconnectTimeout);
@@ -118,13 +137,19 @@ namespace("autom8.controller").MainController = (function() {
     },
 
     onDisconnected: function() {
-      showDisconnectedDialog.call(this);
+      if (autom8.client.getState() === "expired") {
+        closeDisconnectedDialog.call(this);
+        this.showSignIn();
+      }
+      else {
+        showDisconnectedDialog.call(this);
 
-      if (!this.reconnectTimeout) {
-        this.reconnectTimeout = setTimeout(function() {
-          this.reconnectTimeout = null;
-          reconnect();
-        }.bind(this), 5000);
+        if (!this.reconnectTimeout) {
+          this.reconnectTimeout = setTimeout(function() {
+            this.reconnectTimeout = null;
+            reconnect();
+          }.bind(this), 5000);
+        }
       }
     },
 

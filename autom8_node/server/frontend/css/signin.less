@@ -1,0 +1,19 @@
+@import "../../../shared/css/dimens.less";
+
+.main-content-left {
+    .sign-in {
+        top: @headerHeight;
+        min-height: 0;
+        display: none;
+    }
+
+    &.show-sign-in { /* kinda dirty */
+        .system-info, .server-control, .devices {
+            display: none;
+        }
+
+        .sign-in {
+            display: block;
+        }
+    }
+}

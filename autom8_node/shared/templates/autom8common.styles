@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="shared/css/header.less"></link>
 <link rel="stylesheet" href="shared/css/dialog-about.less"></link>
 <link rel="stylesheet" href="shared/css/fixed-header.less"></link>
+<link rel="stylesheet" href="shared/css/loading-row.less"></link>
 <link rel="stylesheet" href="shared/css/scrollbar.less"></link>
 <link rel="stylesheet" href="shared/css/dialog.less"></link>
 <link rel="stylesheet" href="shared/css/signin.less"></link>

@@ -1,6 +1,8 @@
 namespace("autom8.controller").HeaderController = (function() {
   return autom8.mvc.Controller.extend({
     onCreate: function(options) {
+      options = options || { };
+
       this.view = new autom8.view.HeaderView({
         el: options.el || $('.header')
       });

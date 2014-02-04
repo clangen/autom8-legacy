@@ -214,7 +214,13 @@ namespace("autom8").client = (function () {
           deferred.resolve();
         },
         error: function (xhr, status, error) {
-          setState(self, 'disconnected', {errorCode: -99});
+          if (xhr.status === 400 || xhr.status === 401) {
+            setState(self, 'expired');
+          }
+          else {
+            setState(self, 'disconnected', {errorCode: -99});
+          }
+
           deferred.reject();
         }
       });

@@ -8,6 +8,5 @@
 <link rel="stylesheet" href="css/devicerow-appliance.less"></link>
 <link rel="stylesheet" href="css/devicerow-lamp.less"></link>
 <link rel="stylesheet" href="css/devicerow-sensor.less"></link>
-<link rel="stylesheet" href="css/devicerow-loading.less"></link>
 <link rel="stylesheet" href="css/fixed-header.less"></link>
 <link rel="stylesheet" href="css/desktop.less"></link>

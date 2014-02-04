@@ -66,6 +66,12 @@ namespace("autom8.controller").MainController = (function() {
     onCreate: function(options) {
       this.view = new autom8.view.MainView({ el: $('.main-content-left') });
 
+      this.headerController = this.addChild(
+        new autom8.controller.HeaderController({
+          el: $('.main-header')
+        })
+      );
+
       // this.signInController = this.addChild(
       //   new autom8.controller.SignInController({
       //     el: $('.sign-in')

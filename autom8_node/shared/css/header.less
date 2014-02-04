@@ -1,7 +1,6 @@
-@import "../../../shared/css/mixins.less";
-@import "../../../shared/css/buttons.less";
+@import "mixins.less";
+@import "buttons.less";
 @import "dimens.less";
-@import "switcher.less";
 
 @backgroundColor: #262626;
 @borderColor: #1f1f1f;
@@ -17,7 +16,8 @@
     top: @headerHeight;
 }
 
-.header {
+.main-header,   /* server */
+.header {       /* client */
     background-color: @backgroundColor;
     color: @textColor;
     min-height: @headerHeight;

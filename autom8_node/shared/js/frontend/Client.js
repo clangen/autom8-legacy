@@ -197,6 +197,11 @@ namespace("autom8").client = (function () {
       setState(this, 'authenticating');
       var deferred = Q.defer();
 
+      if (this.state === "connected" || this.state === "authenticated") {
+        deferred.resolve();
+        return deferred.promise();
+      }
+
       var self = this;
       $.ajax({
         url: 'signin.action',

@@ -11,3 +11,6 @@
 <script src="shared/js/frontend/view/SignInView.js" type="text/javascript"></script>
 <script src="shared/js/frontend/controller/SignInController.js" type="text/javascript"></script>
 <script src="shared/js/frontend/view/SpinnerView.js" type="text/javascript"></script>
+<script src="shared/js/frontend/view/AboutView.js" type="text/javascript"></script>
+<script src="shared/js/frontend/view/HeaderView.js" type="text/javascript"></script>
+<script src="shared/js/frontend/controller/HeaderController.js" type="text/javascript"></script>

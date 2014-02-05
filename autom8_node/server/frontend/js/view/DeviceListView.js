@@ -60,7 +60,7 @@
         }
       },
 
-      'touch .header .add': function(e) {
+      'touch .section-header .add': function(e) {
         this.startAdd(e);
       },
 
@@ -162,7 +162,7 @@
     enable: function(enabled) {
       enabled = enabled || (enabled === undefined);
       this.$('.content').toggleClass('disabled', !enabled);
-      this.$('.header').toggleClass('disabled', !enabled);
+      this.$('.section-header').toggleClass('disabled', !enabled);
     },
 
     findViewFromEvent: function (e) {

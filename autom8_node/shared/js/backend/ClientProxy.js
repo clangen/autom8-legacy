@@ -194,7 +194,11 @@
       }
 
       if (config.debug) {
-        console.log(TAG, "server said: " + JSON.stringify(message));
+        if (message.uri !== "autom8://response/pong" &&
+            message.uri !== "autom8://request/ping")
+        {
+          console.log(TAG, "server said: " + JSON.stringify(message));
+        }
       }
 
       return message;

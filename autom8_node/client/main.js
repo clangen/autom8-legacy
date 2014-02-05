@@ -11,8 +11,7 @@
   var httpServer = require(shared + 'HttpServer.js');
   var util = require(shared + 'Util.js');
   var sessions = require(shared + 'Sessions.js');
-
-  var clientProxy = require('./backend/ClientProxy.js');
+  var clientProxy = require(shared + 'ClientProxy.js');
 
   prompt.message = "autom8";
   prompt.start();

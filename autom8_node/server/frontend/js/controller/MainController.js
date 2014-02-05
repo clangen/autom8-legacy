@@ -1,34 +1,4 @@
 namespace("autom8.controller").MainController = (function() {
-  function showDisconnectedDialog() {
-    if (!this.disconnectedDialog) {
-      var self = this;
-
-      this.disconnectedDialog = autom8.util.Dialog.show({
-        title: "disconnected",
-        message: "lost connection to the autom8 server. make sure the server is " +
-          "running and you're connected to the network.",
-        buttons: [{
-            caption: "reconnect",
-            positive: true,
-            negative: true,
-            callback: function() {
-              reconnect.call(self);
-            }
-        }],
-        onClosed: function() {
-          self.disconnectedDialog = null;
-        }
-      });
-    }
-  }
-
-  function closeDisconnectedDialog() {
-    if (this.disconnectedDialog) {
-     this.disconnectedDialog.close();
-     this.disconnectedDialog = null;
-    }
-  }
-
   function refreshStatus() {
     autom8.model.SystemModel.fetch();
   }
@@ -38,7 +8,7 @@ namespace("autom8.controller").MainController = (function() {
     var s = autom8.client.getState();
     if (!c.connected && !c.connecting && s !== "authenticating") {
       if (autom8.client.getState() !== "expired") {
-        autom8.client.connect();
+        autom8.client.connect({silent: true});
       }
     }
   }
@@ -72,6 +42,10 @@ namespace("autom8.controller").MainController = (function() {
 
     onCreate: function(options) {
       this.view = new autom8.view.MainView({ el: $('.main-content-left') });
+
+      this.messagingController = this.addChild(
+        new autom8.controller.ConnectionMessagingController()
+      );
 
       this.headerController = this.addChild(
         new autom8.controller.HeaderController({
@@ -127,29 +101,12 @@ namespace("autom8.controller").MainController = (function() {
     onConnected: function() {
       this.showDevices();
       refreshStatus();
-
-      closeDisconnectedDialog.call(this);
-
-      if (this.reconnectTimeout) {
-        clearTimeout(this.reconnectTimeout);
-        this.reconnectTimeout = null;
-      }
     },
 
     onDisconnected: function() {
       if (autom8.client.getState() === "expired") {
-        closeDisconnectedDialog.call(this);
+        this.messagingController.closeDisconnectedDialog();
         this.showSignIn();
-      }
-      else {
-        showDisconnectedDialog.call(this);
-
-        if (!this.reconnectTimeout) {
-          this.reconnectTimeout = setTimeout(function() {
-            this.reconnectTimeout = null;
-            reconnect();
-          }.bind(this), 5000);
-        }
       }
     },
 

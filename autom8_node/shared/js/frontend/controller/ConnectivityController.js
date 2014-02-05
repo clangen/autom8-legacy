@@ -1,15 +1,16 @@
 namespace("autom8.controller").ConnectionMessagingController = (function() {
   function getDisconnectMessage(reason) {
     switch(reason) {
-      case 1: return "Could not connect to server.";
-      case 2: return "SSL handshake failed.";
-      case 3: return "Invalid username or password.";
-      case 4: return "Server sent an invalid message.";
-      case 5: return "Read failed.";
-      case 6: return "Write failed.";
-      case -1: return "Session expired, please sign in again.";
-      case -99: return "Failed to sign in. Please check your password and try again.";
-      default: return "Connection timeout.";
+      case 1: return "could not connect to server.";
+      case 2: return "ssl handshake failed.";
+      case 3: return "invalid username or password.";
+      case 4: return "server sent an invalid message.";
+      case 5: return "read failed.";
+      case 6: return "write failed.";
+      case -1: return "wession expired, please sign in again.";
+      case -99: return "failed to sign in. please check your password and try again.";
+      default: return "lost connection to the autom8 server. make sure the server is " +
+        "running and you're connected to the network.";
     }
   }
 
@@ -76,13 +77,18 @@ namespace("autom8.controller").ConnectionMessagingController = (function() {
       }
     },
 
-    showDisconnectedDialog: function(options) {
+    closeDisconnectedDialog: function() {
       if (this.errorDialog) {
         this.errorDialog.close();
+        this.errorDialog = null;
       }
+    },
+
+    showDisconnectedDialog: function(options) {
+      this.closeDisconnectedDialog();
 
       var invalidPassword = (options.errorCode === -99);
-      var title = invalidPassword ? "Sign in failed" : "Disconnected";
+      var title = invalidPassword ? "sign in failed" : "disconnected";
       var event = invalidPassword ? "signin:clicked" : "reconnect:clicked";
       var button = invalidPassword ? "ok" : "reconnect";
 

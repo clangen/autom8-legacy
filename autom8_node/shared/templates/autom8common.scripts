@@ -14,3 +14,4 @@
 <script src="shared/js/frontend/view/AboutView.js" type="text/javascript"></script>
 <script src="shared/js/frontend/view/HeaderView.js" type="text/javascript"></script>
 <script src="shared/js/frontend/controller/HeaderController.js" type="text/javascript"></script>
+<script src="shared/js/frontend/controller/ConnectivityController.js" type="text/javascript"></script>

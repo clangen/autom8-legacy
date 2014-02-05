@@ -1,5 +1,4 @@
 <script src="js/util/AppCache.js" type="text/javascript"></script>
-
 <script src="js/view/SwitcherView.js" type="text/javascript"></script>
 <script src="js/view/DeviceListView.js" type="text/javascript"></script>
 <script src="js/view/GroupedDeviceListView.js" type="text/javascript"></script>
@@ -11,7 +10,5 @@
 <script src="js/view/DeviceRowFactory.js" type="text/javascript"></script>
 <script src="js/view/DeviceHomeView.js" type="text/javascript"></script>
 <script src="js/view/BrightnessView.js" type="text/javascript"></script>
-
-<script src="js/controller/ConnectivityController.js" type="text/javascript"></script>
 <script src="js/controller/DeviceHomeController.js" type="text/javascript"></script>
 <script src="js/controller/MainController.js" type="text/javascript"></script>

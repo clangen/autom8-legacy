@@ -12,10 +12,12 @@ namespace("autom8.controller").SignInController = (function() {
 
     onResume: function() {
       autom8.client.on('state:changed', this.onStateChanged, this);
+      this.view.focusPasswordInput(true);
     },
 
     onPause: function() {
       autom8.client.off('state:changed', this.onStateChanged, this);
+      this.view.focusPasswordInput(false);
     },
 
     onStateChanged: function(state, options) {
@@ -29,6 +31,7 @@ namespace("autom8.controller").SignInController = (function() {
 
     signIn: function() {
       this.view.setState("loading");
+      this.view.focusPasswordInput(false);
       autom8.client.authenticate(this.view.$('#password').val());
     }
   });

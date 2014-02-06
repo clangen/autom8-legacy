@@ -98,7 +98,7 @@
 
       $('.main-content-left').on('scroll', function() {
         this.$('#system-selection-dropdown').dropdown('hide');
-      });
+      }.bind(this));
 
       this.render();
     },

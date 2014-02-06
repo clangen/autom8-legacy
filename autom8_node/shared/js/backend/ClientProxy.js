@@ -28,7 +28,7 @@ function ClientProxy() {
   }());
 }
 
-ClientProxy.prototype.reconnect = function(err) {
+ClientProxy.prototype.reconnect = function(options) {
   if (this.connecting) {
     console.log(TAG, "reconnect() called but already connecting.");
     return;
@@ -37,11 +37,13 @@ ClientProxy.prototype.reconnect = function(err) {
   console.log(TAG, "attempting to reconnect...");
   this.disconnect();
 
+  var delay = (options && options.delay) || 5000;
+
   setTimeout(function() {
     if (!this.connected) {
       this.connect();
     }
-  }.bind(this), 5000);
+  }.bind(this), delay);
 };
 
 ClientProxy.prototype.connect = function() {
@@ -92,11 +94,14 @@ ClientProxy.prototype.disconnect = function(stream) {
     stream.removeAllListeners('data');
 
     try {
+      stream.end();
       stream.destroy();
     }
     catch (e) {
       console.log(TAG, 'socket.destroy() threw');
     }
+
+    console.log(TAG, 'ssl socket destroyed');
   }
 
   this.lastBuffer = null;

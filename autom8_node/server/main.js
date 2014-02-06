@@ -147,8 +147,7 @@
                     clientProxy.disconnect();
                   }
                   else if (parts.command === "start") {
-                    clientProxy.disconnect();
-                    clientProxy.connect();
+                    clientProxy.reconnect({delay: 1000});
                   }
               }
 

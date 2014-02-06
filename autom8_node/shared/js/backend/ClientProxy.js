@@ -202,7 +202,7 @@ ClientProxy.prototype.parseMessage = function(data) {
       this.reconnect();
     }
 
-    if (config.debug) {
+    if (config.debug && message) {
       if (message.uri !== "autom8://response/pong" &&
           message.uri !== "autom8://request/ping")
       {

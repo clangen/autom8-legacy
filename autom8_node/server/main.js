@@ -133,14 +133,19 @@
               we want to update our internal config upon success so the client can
               automatically reconnect when the server is restarted */
               if (parts.component === "server" &&
-                  parts.command === "set_preference" &&
                   result.status === 1 /* AUTOM8_OK */)
               {
-                  if (parts.options.key === "password") {
-                    config.get().client.password = parts.options.value;
+                  if (parts.command === "set_preference") {
+                    if (parts.options.key === "password") {
+                      config.get().client.password = parts.options.value;
+                    }
+                    else if (parts.options.key === "port") {
+                      config.get().client.port = parseInt(parts.options.value, 10);
+                    }
                   }
-                  else if (parts.options.key === "port") {
-                    config.get().client.port = parseInt(parts.options.value, 10);
+                  else if (parts.command === "start") {
+                    clientProxy.disconnect();
+                    clientProxy.connect();
                   }
               }
 

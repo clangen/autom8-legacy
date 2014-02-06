@@ -45,11 +45,11 @@ namespace("autom8.model").Device = Backbone.Model.extend({
     };
 
     if (this.get('type') === 2) { /* security sensor */
-      if (this.get('status') === 3) { /* tripped */
+      if (this.isTripped()) { /* tripped */
         normalized.status = "ALERT!";
       }
       else {
-        normalized.status = (options.armed) ? "armed" : "disarmed";
+        normalized.status = this.isArmed() ? "armed" : "disarmed";
       }
     }
 

@@ -2,18 +2,20 @@
 // node.exe main.js --listen 7903 --creds ../shared/conf/autom8.pem --debug
 
 (function() {
-  var path = require('path');
-
-  var program = require('commander');
-  require('colors');
-
   var shared = "./../shared/js/backend/";
+
+  require('colors');
+  require(shared + 'colors-html.js');
+
+  var Q = require('q');
+  var path = require('path');
+  var program = require('commander');
   var config = require(shared + 'Config.js');
   var httpServer = require(shared + 'HttpServer.js');
   var util = require(shared + 'Util.js');
-  var sessions = require(shared + 'Sessions.js').create();
+  var clientProxy = require(shared + 'ClientProxy.js').create();
+  var sessions = clientProxy.sessions;
   var log = require(shared + 'Logger.js');
-  require(shared + 'colors-html.js');
 
   var LIBRARY_PATH = path.resolve(__dirname + '/../../');
   var DEFAULT_PASSWORD = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* "empty" */
@@ -49,26 +51,39 @@
       if (msg && msg.devices && msg.devices.length) {
         autom8.rpc("server", "start", { });
       }
+    })
+
+    .then(function() {
+      clientProxy.connect();
     });
   }
 
   function start() {
     config.init(program);
     config.get().client.password = DEFAULT_PASSWORD;
+    config.get().client.host = "localhost";
+    config.get().client.port = 7901;
 
     /* establish binding with native layer before starting
     the http server... */
     autom8.init()
 
     /* set current password. note that the user can use the server
-    to change the password while it's running -- see below for the
-    special case where it's recached */
+    to change the password or port while it's running -- see below
+    for the special case where it's recached */
     .then(function() {
-      autom8.rpc("server", "get_preference", {key: "password"})
+      Q.all([
+        autom8.rpc("server", "get_preference", {key: "password"}),
+        autom8.rpc("server", "get_preference", {key: "port"})
+      ])
 
-      .then(function(result) {
-        if (result && result.status === 1 && result.message && result.message.value) {
-          config.get().client.password = result.message.value;
+      .spread(function(pw, port) {
+        if (pw && pw.status === 1 && pw.message && pw.message.value) {
+          config.get().client.password = pw.message.value;
+        }
+
+        if (port && port.status === 1 && port.message && port.message.value) {
+          config.get().client.port = parseInt(port.message.value, 10);
         }
       });
     })
@@ -109,14 +124,19 @@
               result.id = parts.id;
               console.log(result);
 
-              /* annoying special case: if the user is setting the password, we
-              want to update our internal password upon success */
+              /* annoying special case: if the user is setting the password or port,
+              we want to update our internal config upon success so the client can
+              automatically reconnect when the server is restarted */
               if (parts.component === "server" &&
                   parts.command === "set_preference" &&
-                  parts.options.key === "password" &&
                   result.status === 1 /* AUTOM8_OK */)
               {
-                  config.get().client.password = parts.options.value;
+                  if (parts.options.key === "password") {
+                    config.get().client.password = parts.options.value;
+                  }
+                  else if (parts.options.key === "port") {
+                    config.get().client.port = parseInt(parts.options.value, 10);
+                  }
               }
 
               socket.emit('recvMessage', {
@@ -132,7 +152,7 @@
     })
 
     .fail(function(ex) {
-      console.log('*** FATAL ***', ex, ex.stack);
+      console.log('*** FATAL ***'.red, ex, ex.stack);
     });
   }
 
@@ -146,5 +166,3 @@
 
   start();
 }());
-
-

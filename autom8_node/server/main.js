@@ -16,6 +16,7 @@
   require(shared + 'colors-html.js');
 
   var LIBRARY_PATH = path.resolve(__dirname + '/../../');
+  var DEFAULT_PASSWORD = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* "empty" */
 
   var autom8 = require('./backend/NativeBridge.js');
 
@@ -53,11 +54,24 @@
 
   function start() {
     config.init(program);
-    config.get().client.password = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* TODO FIX ME */
+    config.get().client.password = DEFAULT_PASSWORD;
 
     /* establish binding with native layer before starting
-    the http server */
+    the http server... */
     autom8.init()
+
+    /* set current password. note that the user can use the server
+    to change the password while it's running -- see below for the
+    special case where it's recached */
+    .then(function() {
+      autom8.rpc("server", "get_preference", {key: "password"})
+
+      .then(function(result) {
+        if (result && result.status === 1 && result.message && result.message.value) {
+          config.get().client.password = result.message.value;
+        }
+      });
+    })
 
     .then(function() {
       startServerIfDevicesConnected();
@@ -95,6 +109,16 @@
               result.id = parts.id;
               console.log(result);
 
+              /* annoying special case: if the user is setting the password, we
+              want to update our internal password upon success */
+              if (parts.component === "server" &&
+                  parts.command === "set_preference" &&
+                  parts.options.key === "password" &&
+                  result.status === 1 /* AUTOM8_OK */)
+              {
+                  config.get().client.password = parts.options.value;
+              }
+
               socket.emit('recvMessage', {
                 uri: 'autom8://response/libautom8/rpc',
                 body: result
@@ -113,7 +137,7 @@
   }
 
   program
-    .version("0.6.0")
+    .version("0.6.1")
     .usage('params:')
     .option('--listen <port>', 'port we will listen on', Number, 7903)
     .option('--creds <pem>', 'pem file containing both cert and private key', String, "../shared/conf/autom8.pem")

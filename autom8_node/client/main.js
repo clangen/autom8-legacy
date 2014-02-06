@@ -31,7 +31,7 @@
   }
 
   program
-    .version("0.3.2")
+    .version("0.6.1")
     .usage('params:')
     .option('--listen <port>', 'port we will listen on', Number, 7902)
     .option('--creds <pem>', 'pem file containing both cert and private key', String, "../shared/conf/autom8.pem")

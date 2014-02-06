@@ -134,7 +134,13 @@ ClientProxy.prototype.dispatchReceivedMessage = function(data) {
      */
     if (message.uri === constants.responses.authenticate_failed) {
       console.log(TAG, "connection failed: password rejected.");
-      process.exit(-99);
+
+      if (this.invalidPasswordCallback) {
+        this.invalidPasswordCallback();
+      }
+      else {
+        process.exit(-99);
+      }
     }
     /*
      * If we just connected, send a get_device_list, this is a cheap way
@@ -146,6 +152,10 @@ ClientProxy.prototype.dispatchReceivedMessage = function(data) {
 
     this.sessions.broadcast('recvMessage', message);
   }
+};
+
+ClientProxy.prototype.setInvalidPasswordCallback = function(cb) {
+  this.invalidPasswordCallback = cb;
 };
 
 ClientProxy.prototype.parseMessage = function(data) {

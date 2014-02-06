@@ -7,6 +7,26 @@ namespace("autom8.model").SystemModel = (function() {
         deviceList: new autom8.model.DeviceList(),
         systemList: new Backbone.Collection()
       });
+
+      autom8.client.on('responseReceived', function(uri, body) {
+        if (uri === 'autom8://response/device_status_updated' ||
+            uri === 'autom8://response/sensor_status_changed')
+        {
+          body = JSON.parse(body);
+          body.attrs = body.attributes;
+          delete body.attributes;
+
+          var deviceModel = this.get('deviceList').find(function(device) {
+            if (device.get('address') === body.address) {
+              return device;
+            }
+          });
+
+          if (deviceModel) {
+            deviceModel.set(body);
+          }
+        }
+      }.bind(this));
     },
 
     fetch: function() {

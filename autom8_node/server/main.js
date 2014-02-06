@@ -45,6 +45,11 @@
     return result;
   }
 
+  clientProxy.setInvalidPasswordCallback(function() {
+    /* do nothing! by default ClientProxy will terminate the application,
+    but we don't want that to happen in this case */
+  });
+
   function startServerIfDevicesConnected() {
     autom8.rpc("system", "list_devices", { }).then(function(result) {
       var msg = result && result.message;

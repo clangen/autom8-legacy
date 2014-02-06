@@ -11,7 +11,7 @@
   var config = require(shared + 'Config.js');
   var httpServer = require(shared + 'HttpServer.js');
   var util = require(shared + 'Util.js');
-  var sessions = require(shared + 'Sessions.js');
+  var sessions = require(shared + 'Sessions.js').create();
   var log = require(shared + 'Logger.js');
   require(shared + 'colors-html.js');
 
@@ -76,6 +76,10 @@
     .then(function() {
       startServerIfDevicesConnected();
 
+      app = httpServer.create();
+
+      sessions.init(app); /* accept socket sessions */
+
       /* for new log entries, broadcast them individually */
       log.on('log', function(args) {
         sessions.broadcast('recvMessage', {
@@ -83,10 +87,6 @@
           body: {html: encodeLog(args)}
         });
       });
-
-      app = httpServer.create();
-
-      sessions.init(app); /* accept socket sessions */
 
       sessions.events.on('connection', function(socket) {
         /* when a new session is connected, send the most recent
@@ -132,7 +132,7 @@
     })
 
     .fail(function(ex) {
-      console.log('*** FATAL ***', ex);
+      console.log('*** FATAL ***', ex, ex.stack);
     });
   }
 

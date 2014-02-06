@@ -143,6 +143,9 @@
                       config.get().client.port = parseInt(parts.options.value, 10);
                     }
                   }
+                  else if (parts.command === "stop") {
+                    clientProxy.disconnect();
+                  }
                   else if (parts.command === "start") {
                     clientProxy.disconnect();
                     clientProxy.connect();

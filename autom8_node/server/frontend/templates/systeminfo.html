@@ -18,9 +18,10 @@
     </div>
     <div class="system-info-attr">
       <div class="label">controller:</div>
-      <div class="value">
-        <div class="select-controller" data-dropdown="#system-selection-dropdown">
-          {{controller}} <span class="caret"></span>
+      <div class="value select-controller" data-dropdown="#system-selection-dropdown">
+        <div>
+          <span>{{controller}}</span>
+          <span class="caret"></span>
         </div>
       </div>
     </div>
@@ -38,5 +39,5 @@
     </div>
   </div>
 
-  <div id="system-selection-dropdown" class="dropdown dropdown-tip"></div>
+  <div id="system-selection-dropdown" class="dropdown dropdown-relative dropdown-tip"></div>
 </script>

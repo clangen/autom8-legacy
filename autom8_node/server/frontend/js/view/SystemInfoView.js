@@ -29,7 +29,7 @@
 
     var systemList = this.systemModel.get('systemList');
     var selectedSystem = this.systemModel.get('system_id');
-    this.$('#system-selection-dropdown').empty().append(
+    $('#system-selection-dropdown').empty().append(
       createDropdown.call(this, systemList, selectedSystem)
     );
   };
@@ -95,6 +95,11 @@
     onCreate: function(options) {
       this.systemModel = autom8.model.SystemModel;
       this.systemModel.on('change', redraw, this);
+
+      $('.main-content-left').on('scroll', function() {
+        this.$('#system-selection-dropdown').dropdown('hide');
+      });
+
       this.render();
     },
 

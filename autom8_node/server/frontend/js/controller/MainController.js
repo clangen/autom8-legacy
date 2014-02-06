@@ -55,7 +55,7 @@ namespace("autom8.controller").MainController = (function() {
 
       this.signInController = this.addChild(
         new autom8.controller.SignInController({
-          el: $('.sign-in'),
+          el: $('.sign-in')
         }),
         {
           resume: false

@@ -142,3 +142,15 @@ an arbitrary parent */
     height: 56px;
     padding-right: 28px;
 }
+
+/* for all devices, hide the expander if we're spinning.
+note the specifity required here is a bit annoying... */
+.device-row,
+.device-row.has-extras,
+.device-row.group.has-expander {
+    .right.spinning {
+        .expander, .extras {
+            display: none;
+        }
+    }
+}

@@ -334,10 +334,11 @@ json_value_ref server_get_preference(json_value& options) {
 json_value_ref server_status() {
     json_value_ref result(new json_value());
 
-    std::string system = "null", fingerprint = "unknown", port = "7901";
+    std::string system = "null", fingerprint = "unknown", port = "7901", webClientPort = "7902";
     utility::prefs().get("system.selected", system);
     utility::prefs().get("fingerprint", fingerprint);
     utility::prefs().get("port", port);
+    utility::prefs().get("webClientPort", webClientPort);
 
     std::string description;
     if (device_system::instance()) {
@@ -350,6 +351,7 @@ json_value_ref server_status() {
     (*result)["running"] = server::is_running();
     (*result)["version"] = std::string(VERSION);
     (*result)["port"] = port;
+    (*result)["webClientPort"] = webClientPort;
 
     return result;
 }

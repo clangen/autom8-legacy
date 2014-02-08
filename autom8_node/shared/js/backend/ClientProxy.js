@@ -6,6 +6,7 @@
 */
 var TAG = "[client proxy]".magenta;
 
+var Q = require('q');
 var tls = require('tls');
 var config = require('./Config.js').get();
 var constants = require('./Constants.js');
@@ -42,22 +43,23 @@ ClientProxy.prototype.reconnect = function(options) {
 
   setTimeout(function() {
     if (!this.connected) {
-      this.connect();
+      this.connect(options);
     }
   }.bind(this), delay);
 };
 
-ClientProxy.prototype.connect = function() {
+ClientProxy.prototype.connect = function(options) {
   if (this.connected) {
     log.warn(TAG, 'connect() called, but already connected. bailing...');
     return;
   }
 
+  options = options || { };
   var cfg = config.client;
 
   var connectOptions = {
-    host: cfg.host,
-    port: cfg.port,
+    host: options.host || cfg.host,
+    port: options.port || cfg.port,
     rejectUnauthorized: !config.allowSelfSignedCerts
   };
 
@@ -85,6 +87,8 @@ ClientProxy.prototype.connect = function() {
 };
 
 ClientProxy.prototype.disconnect = function(stream) {
+  var deferred = Q.defer();
+
   log.info(TAG, 'disconnecting...');
 
   stream = stream || this.socketStream;
@@ -112,6 +116,9 @@ ClientProxy.prototype.disconnect = function(stream) {
   }
 
   log.info(TAG, 'disconnected.');
+
+  deferred.resolve();
+  return deferred.promise;
 };
 
 ClientProxy.prototype.send = function(uri, body) {

@@ -1,4 +1,8 @@
 namespace("autom8.controller").SystemInfoController = (function() {
+  function isValidPort(port) {
+    return _.isNumber(port) && !_.isNaN(port) && port > 0;
+  }
+
   function saveSystemInfo() {
     var deferred = Q.defer();
     var self = this;
@@ -22,9 +26,10 @@ namespace("autom8.controller").SystemInfoController = (function() {
     var view = this.view;
     if (view.dirty()) {
       var port = parseInt(view.$('.port-input').val(), 10);
+      var webClientPort = parseInt(view.$('.web-client-port-input').val(), 10);
       var pw = view.$('.password-input').val();
 
-      if (!_.isNumber(port) || _.isNaN(port) || port <= 0 || !pw) {
+      if (!isValidPort(port) || !isValidPort(webClientPort) || port === webClientPort || !pw) {
         onFailed();
       }
       else {
@@ -44,6 +49,15 @@ namespace("autom8.controller").SystemInfoController = (function() {
             component: "server", command: "set_preference", options: {
               key: "port",
               value: port.toString()
+            }
+          }));
+        }
+
+        if (view.webClientPortChanged) {
+          promises.push(autom8.client.rpc.send({
+            component: "server", command: "set_preference", options: {
+              key: "webClientPort",
+              value: webClientPort.toString()
             }
           }));
         }

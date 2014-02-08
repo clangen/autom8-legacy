@@ -51,62 +51,100 @@
     but we don't want that to happen in this case */
   });
 
-  function startServerIfDevicesConnected() {
-    autom8.rpc("system", "list_devices", { }).then(function(result) {
-      var msg = result && result.message;
-      if (msg && msg.devices && msg.devices.length) {
-        autom8.rpc("server", "start", { });
-      }
+  function startAllServers() {
+    var deferred = Q.defer();
+
+    stopAllServers().then(reloadPreferences)
+    .then(function() {
+      return autom8.rpc("server", "start", { })
+
+      .then(function() {
+        clientProxy.reconnect({
+          delay: 1000,
+          port: config.get().client.webClientPort
+        });
+
+        clientServerWrapper.restart();
+
+        deferred.resolve();
+      });
     })
 
+    .fail(function(ex) {
+      deferred.reject(ex);
+    });
+
+    return deferred.promise;
+  }
+
+  function stopAllServers() {
+    return autom8.rpc("server", "stop", { })
+
+    .then(Q.all([
+      clientProxy.disconnect(),
+      clientServerWrapper.kill()
+    ]));
+  }
+
+  function startAllServersIfDevicesConnected() {
+    return stopAllServers()
+
     .then(function() {
-      clientProxy.connect();
-      clientServerWrapper.restart();
+      return autom8.rpc("system", "list_devices", { })
+
+      .then(function(result) {
+        var msg = result && result.message;
+        if (msg && msg.devices && msg.devices.length) {
+          return startAllServers();
+        }
+      });
+    });
+  }
+
+  function reloadPreferences() {
+    return Q.all([
+      autom8.rpc("server", "get_preference", {key: "password"}),
+      autom8.rpc("server", "get_preference", {key: "port"}),
+      autom8.rpc("server", "get_preference", {key: "webClientPort"})
+    ])
+
+    .spread(function(pw, port, webClientPort) {
+      config.get().client.password = DEFAULT_PASSWORD;
+      config.get().client.host = "localhost";
+      config.get().client.port = 7901;
+      config.get().client.webClientPort = 7902;
+
+      if (pw && pw.status === 1 && pw.message && pw.message.value) {
+        config.get().client.password = pw.message.value;
+      }
+
+      if (port && port.status === 1 && port.message && port.message.value) {
+        config.get().client.port = parseInt(port.message.value, 10);
+      }
+
+      if (webClientPort && webClientPort.status === 1 && webClientPort.message && webClientPort.message.value) {
+        config.get().client.webClientPort = parseInt(webClientPort.message.value, 10);
+      }
     });
   }
 
   function start() {
     config.init(program);
-    config.get().client.password = DEFAULT_PASSWORD;
-    config.get().client.host = "localhost";
-    config.get().client.port = 7901;
-    config.get().client.webClientPort = 7902;
 
-    /* establish binding with native layer before starting
-    the http server... */
+    /* bootstrap by initializing the native layer, reloading preferences,
+    and starting up the client servers if any devices are connected
+    to the selected system. note: it's safe to do all of this before the
+    server http server is started */
     autom8.init()
-
-    /* set current password. note that the user can use the server
-    to change the password or port while it's running -- see below
-    for the special case where it's recached */
-    .then(function() {
-      return Q.all([
-        autom8.rpc("server", "get_preference", {key: "password"}),
-        autom8.rpc("server", "get_preference", {key: "port"}),
-        autom8.rpc("server", "get_preference", {key: "webClientPort"})
-      ])
-
-      .spread(function(pw, port, webClientPort) {
-        if (pw && pw.status === 1 && pw.message && pw.message.value) {
-          config.get().client.password = pw.message.value;
-        }
-
-        if (port && port.status === 1 && port.message && port.message.value) {
-          config.get().client.port = parseInt(port.message.value, 10);
-        }
-
-        if (webClientPort && webClientPort.status === 1 && webClientPort.message && webClientPort.message.value) {
-          config.get().client.webClientPort = parseInt(port.message.value, 10);
-        }
-      });
-    })
+    .then(reloadPreferences())
+    .then(startAllServersIfDevicesConnected())
 
     .then(function() {
-      startServerIfDevicesConnected();
-
       app = httpServer.create();
 
-      sessions.init(app); /* accept socket sessions */
+      /* accept web socket connections so we can transmit logs to the
+      server ui in real time */
+      sessions.init(app);
 
       /* for new log entries, broadcast them individually */
       log.on('log', function(args) {
@@ -152,12 +190,10 @@
                     }
                   }
                   else if (parts.command === "stop") {
-                    clientProxy.disconnect();
-                    clientServerWrapper.kill();
+                    stopAllServers();
                   }
                   else if (parts.command === "start") {
-                    clientProxy.reconnect({delay: 1000});
-                    clientServerWrapper.restart();
+                    startAllServers();
                   }
               }
 

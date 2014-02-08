@@ -1,5 +1,6 @@
 var shared = "./../../shared/js/backend/";
 
+var Q = require('q');
 var path = require('path');
 var child_process = require('child_process');
 var stripcolors = require('stripcolorcodes');
@@ -19,6 +20,8 @@ var killing = false;
 var reconnecting = false;
 
 function kill(callback) {
+    var deferred = Q.defer();
+
     callback = callback || function() { };
 
     if (child && !child.dead) {
@@ -28,6 +31,7 @@ function kill(callback) {
             killing = false;
             reconnecting = false;
             callback();
+            deferred.resolve();
         });
 
         log.info(TAG, "stopping...");
@@ -35,13 +39,18 @@ function kill(callback) {
         child.kill('SIGTERM');
     }
     else {
+        deferred.resolve();
         callback();
     }
+
+    return deferred.promise;
 }
 
 function restart() {
+    var deferred = Q.defer();
+
     if (killing || reconnecting) {
-        console.log("please kill me".rainbow);
+        deferred.reject({message: 'already restarting'});
         return;
     }
 
@@ -106,9 +115,13 @@ function restart() {
         });
 
         child.on('error', function(err) {
-            console.log(TAG, err);
+            log.error(TAG, "child process generated an error", err);
         });
+
+        deferred.resolve();
     });
+
+    return deferred.promise;
 }
 
 exports.kill = kill;

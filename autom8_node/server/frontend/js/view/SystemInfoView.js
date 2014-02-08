@@ -12,6 +12,7 @@
         controller: model.get('system_description') || model.get('system_id'),
         fingerprint: model.get('fingerprint'),
         port: model.get('port'),
+        webClientPort: model.get('webClientPort'),
         version: model.get('version')
       }
     );
@@ -83,6 +84,10 @@
         this.portChanged = true;
       },
 
+      'change .web-client-port-input': function(event) {
+        this.webClientPortChanged = true;
+      },
+
       'touch .system': function(event) {
         this.$('#system-selection-dropdown').dropdown('hide');
         var system = $(event.currentTarget).attr('data-system-id');
@@ -126,12 +131,12 @@
     },
 
     dirty: function() {
-      return this.passwordChanged || this.portChanged;
+      return this.passwordChanged || this.webClientPortChanged || this.portChanged;
     },
 
     resetDirtyState: function() {
       this.$('.password-input').val(EMPTY_PASSWORD);
-      this.passwordChanged = this.portChanged = false;
+      this.passwordChanged = this.portChanged = this.webClientPortChanged = false;
     }
   });
 

@@ -54,7 +54,7 @@ namespace("autom8").Config = (function() {
     }
 
     if (isIOS7) {
-        config.connection.transports = ['xhr-polling'];
+        config.connection.transports = ['htmlfile'];
     }
 
     config.display.classes.body = 'iphone fixed-header';

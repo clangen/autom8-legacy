@@ -37,7 +37,7 @@
     .option('--clienthost <hostname>', 'autom8 server to connect to', String, "127.0.0.1")
     .option('--clientport <port>', 'port the autom8 server is listening on', Number, 7901)
     .option('--clientpw <password hash>', 'password for the autom8 server')
-    .option('--headless', 'password supplied via stdin is already hashed', Number, 0)
+    .option('--headless', 'password supplied via stdin is already hashed', Boolean, false)
     .option('--debug', 'enable verbose debug output', Boolean, false)
     .parse(process.argv);
 

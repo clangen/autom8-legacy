@@ -56,20 +56,25 @@ function restart() {
 
     exports.kill(function() {
         log.info(TAG, "connecting...");
-        child = child_process.spawn(
-            'node',
-            [
-                'main.js',
-                '--headless', 1,
-                '--listen', config.get().client.webClientPort,
-                '--clienthost', '127.0.0.1',
-                '--clientport', config.get().client.port
-            ],
-            {
-                cwd: SERVER_DIR,
-                env: process.env
-            }
-        );
+
+        var options = {
+            cwd: SERVER_DIR,
+            env: process.env
+        };
+
+        var args = [
+            'main.js',
+            '--headless',
+            '--listen', config.get().client.webClientPort,
+            '--clienthost', '127.0.0.1',
+            '--clientport', config.get().client.port
+        ];
+
+        if (config.get().debug) {
+            args.push('--debug');
+        }
+
+        child = child_process.spawn('node', args, options);
 
         child.stdout.on('data', function (data) {
             data = data.toString();

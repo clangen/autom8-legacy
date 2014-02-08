@@ -19,10 +19,17 @@ function timestamp() {
         ']';
 }
 
-function log(level, args) {
+function log(level, args, options) {
     args = Array.prototype.slice.apply(args);
-    args.unshift(level);
-    args.unshift(timestamp());
+
+    if (level) {
+        args.unshift(level);
+    }
+
+    if (!options || !options.noTimestamp) {
+        args.unshift(timestamp());
+    }
+
     console.log(args.join(' '));
     module.exports.emit('log', args);
 }
@@ -39,4 +46,8 @@ module.exports.warn = function() {
 
 module.exports.error = function() {
     log(LEVELS.ERROR, arguments);
+};
+
+module.exports.dump = function() {
+    log(null, arguments, {noTimestamp: true});
 };

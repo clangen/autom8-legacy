@@ -21,6 +21,7 @@
   var DEFAULT_PASSWORD = "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d"; /* "empty" */
 
   var autom8 = require('./backend/NativeBridge.js');
+  var clientServerWrapper = require('./backend/ClientServerWrapper.js');
 
   var app;
 
@@ -60,6 +61,7 @@
 
     .then(function() {
       clientProxy.connect();
+      clientServerWrapper.restart();
     });
   }
 
@@ -68,6 +70,7 @@
     config.get().client.password = DEFAULT_PASSWORD;
     config.get().client.host = "localhost";
     config.get().client.port = 7901;
+    config.get().client.webClientPort = 7902;
 
     /* establish binding with native layer before starting
     the http server... */
@@ -77,18 +80,23 @@
     to change the password or port while it's running -- see below
     for the special case where it's recached */
     .then(function() {
-      Q.all([
+      return Q.all([
         autom8.rpc("server", "get_preference", {key: "password"}),
-        autom8.rpc("server", "get_preference", {key: "port"})
+        autom8.rpc("server", "get_preference", {key: "port"}),
+        autom8.rpc("server", "get_preference", {key: "webClientPort"})
       ])
 
-      .spread(function(pw, port) {
+      .spread(function(pw, port, webClientPort) {
         if (pw && pw.status === 1 && pw.message && pw.message.value) {
           config.get().client.password = pw.message.value;
         }
 
         if (port && port.status === 1 && port.message && port.message.value) {
           config.get().client.port = parseInt(port.message.value, 10);
+        }
+
+        if (webClientPort && webClientPort.status === 1 && webClientPort.message && webClientPort.message.value) {
+          config.get().client.webClientPort = parseInt(port.message.value, 10);
         }
       });
     })
@@ -145,9 +153,11 @@
                   }
                   else if (parts.command === "stop") {
                     clientProxy.disconnect();
+                    clientServerWrapper.kill();
                   }
                   else if (parts.command === "start") {
                     clientProxy.reconnect({delay: 1000});
+                    clientServerWrapper.restart();
                   }
               }
 
@@ -155,6 +165,10 @@
                 uri: 'autom8://response/libautom8/rpc',
                 body: result
               });
+            })
+
+            .fail(function(ex) {
+              console.log('*** RPC call failed ***'.red, ex, ex.stack);
             });
           }
         }
@@ -167,6 +181,14 @@
       console.log('*** FATAL ***'.red, ex, ex.stack);
     });
   }
+
+  process.on('exit', function() {
+    clientServerWrapper.kill();
+  });
+
+  process.on('uncaughtException', function() {
+    process.exit(256);
+  });
 
   program
     .version("0.6.1")

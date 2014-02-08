@@ -1,5 +1,5 @@
 (function() {
-  var TAG = "[auth]".yellow;
+  var TAG = "[web socket auth]".yellow;
 
   var config = require("./Config.js").get();
   var blacklist = require('./Blacklist.js');

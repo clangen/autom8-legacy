@@ -37,6 +37,7 @@
     .option('--clienthost <hostname>', 'autom8 server to connect to', String, "127.0.0.1")
     .option('--clientport <port>', 'port the autom8 server is listening on', Number, 7901)
     .option('--clientpw <password hash>', 'password for the autom8 server')
+    .option('--headless', 'password supplied via stdin is already hashed', Number, 0)
     .option('--debug', 'enable verbose debug output', Boolean, false)
     .parse(process.argv);
 
@@ -47,7 +48,12 @@
 
     var promptOptions = { name: 'password', hidden: true };
     prompt.get(promptOptions, function(error, result) {
-      program.clientpw = util.sha256(result.password);
+      program.clientpw = result.password;
+
+      if (!program.headless) {
+        program.clientpw = util.sha256(result.password);
+      }
+
       start();
     });
   }

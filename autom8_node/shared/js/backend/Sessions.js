@@ -1,4 +1,4 @@
-var TAG = "[sessions]".yellow;
+var TAG = "[web socket sessions]".yellow;
 
 var io = require('socket.io');
 var util = require('./Util.js');

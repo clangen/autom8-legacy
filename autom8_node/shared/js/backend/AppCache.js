@@ -1,6 +1,6 @@
 (function() {
   var log = require('./Logger.js');
-  var TAG = "[appcache]".yellow;
+  var TAG = "[app cache generator]".yellow;
 
   var config = require("./Config.js").get();
 

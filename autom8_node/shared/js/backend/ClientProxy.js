@@ -9,6 +9,7 @@ var TAG = "[client proxy]".magenta;
 var tls = require('tls');
 var config = require('./Config.js').get();
 var constants = require('./Constants.js');
+var log = require('./Logger.js');
 var Sessions = require('./Sessions.js');
 
 function ClientProxy() {
@@ -30,11 +31,11 @@ function ClientProxy() {
 
 ClientProxy.prototype.reconnect = function(options) {
   if (this.connecting) {
-    console.log(TAG, "reconnect() called but already connecting.");
+    log.warn(TAG, "reconnect() called but already connecting.");
     return;
   }
 
-  console.log(TAG, "attempting to reconnect...");
+  log.info(TAG, "attempting to reconnect...");
   this.disconnect();
 
   var delay = (options && options.delay) || 5000;
@@ -48,7 +49,7 @@ ClientProxy.prototype.reconnect = function(options) {
 
 ClientProxy.prototype.connect = function() {
   if (this.connected) {
-    console.log(TAG, 'connect() called, but already connected. bailing...');
+    log.warn(TAG, 'connect() called, but already connected. bailing...');
     return;
   }
 
@@ -67,7 +68,7 @@ ClientProxy.prototype.connect = function() {
     }
     else {
       /* successful connection, authenticate */
-      console.log(TAG, 'connected to autom8 server');
+      log.info(TAG, 'connected to autom8 server');
       this.connecting = false;
       this.connected = true;
       this.socketStream = socketStream;
@@ -84,7 +85,7 @@ ClientProxy.prototype.connect = function() {
 };
 
 ClientProxy.prototype.disconnect = function(stream) {
-  console.log(TAG, 'disconnecting...');
+  log.info(TAG, 'disconnecting...');
 
   stream = stream || this.socketStream;
 
@@ -98,10 +99,10 @@ ClientProxy.prototype.disconnect = function(stream) {
       stream.destroy();
     }
     catch (e) {
-      console.log(TAG, 'socket.destroy() threw');
+      log.error(TAG, 'socket.destroy() threw');
     }
 
-    console.log(TAG, 'ssl socket destroyed');
+    log.info(TAG, 'ssl socket destroyed');
   }
 
   this.lastBuffer = null;
@@ -110,7 +111,7 @@ ClientProxy.prototype.disconnect = function(stream) {
     this.socketStream = null;
   }
 
-  console.log(TAG, 'disconnected.');
+  log.info(TAG, 'disconnected.');
 };
 
 ClientProxy.prototype.send = function(uri, body) {
@@ -138,13 +139,13 @@ ClientProxy.prototype.dispatchReceivedMessage = function(data) {
      * of error is retried until the the user exists the process.
      */
     if (message.uri === constants.responses.authenticate_failed) {
-      console.log(TAG, "connection failed: password rejected.");
+      log.error(TAG, "connection failed: password rejected.");
 
       if (this.invalidPasswordCallback) {
         this.invalidPasswordCallback();
       }
       else {
-        process.exit(-99);
+        process.exit(99);
       }
     }
     /*
@@ -203,7 +204,7 @@ ClientProxy.prototype.parseMessage = function(data) {
       };
     }
     catch (parseError) {
-      console.log(TAG, "ERROR: message parsed failed, reconnecting...");
+      log.error(TAG, "ERROR: message parsed failed, reconnecting...");
       this.reconnect();
     }
 
@@ -218,7 +219,7 @@ ClientProxy.prototype.parseMessage = function(data) {
     return message;
   }
 
-  console.log(TAG, "unable to parse message");
+  log.error(TAG, "unable to parse message");
   return null;
 };
 

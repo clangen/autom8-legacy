@@ -8,6 +8,11 @@
     this.$(running ? '.start' : '.stop').addClass('disabled');
     this.$('.stop-message').toggleClass('disabled', !running);
     this.$('.connection').toggleClass('connected', running);
+    this.$el.removeClass('updating');
+  };
+
+  var updating = function(c) {
+    return c.$el.hasClass('updating');
   };
 
   var ServerControlView = View.extend({
@@ -15,13 +20,13 @@
 
     events: {
       'touch .button.start': function(e) {
-        if (!this.systemModel.get('running')) {
+        if (!updating(this) && !this.systemModel.get('running')) {
           this.trigger('start:clicked');
         }
       },
 
       'touch .button.stop': function(e) {
-        if (this.systemModel.get('running')) {
+        if (!updating(this) && this.systemModel.get('running')) {
           this.trigger('stop:clicked');
         }
       }

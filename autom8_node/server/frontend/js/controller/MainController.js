@@ -14,9 +14,9 @@ namespace("autom8.controller").MainController = (function() {
   }
 
   function onStartClicked() {
-    var self = this;
+    this.view.serverControlView.$el.addClass('updating');
 
-    self.systemInfoController.save()
+    this.systemInfoController.save()
 
     .then(function() {
       return autom8.client.rpc.send({
@@ -24,15 +24,17 @@ namespace("autom8.controller").MainController = (function() {
       });
     })
 
-    .then(refreshStatus);
+    .done(refreshStatus);
   }
 
   function onStopClicked() {
+    this.view.serverControlView.$el.addClass('updating');
+
     autom8.client.rpc.send({
       component: "server", command: "stop", options: { }
     })
 
-    .then(refreshStatus);
+    .done(refreshStatus);
   }
 
   return autom8.mvc.Controller.extend({

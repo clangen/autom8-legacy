@@ -75,7 +75,7 @@ static void handle_rpc_request(std::string input) {
         process_rpc_request(input);
     }
     catch (...) {
-        debug::log(debug::error, RPC_TAG, "request processing threw!");
+        debug::log(debug::error, RPC_TAG, "request processing threw for input: " + input);
     }
 }
 

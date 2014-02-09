@@ -30,7 +30,7 @@ Sessions.prototype.createSocketServer = function(app) {
     /* session id will be in the header cookies */
     var cookieString = data.headers.cookie || "";
     var cookies = util.parseCookie(cookieString);
-    var sessionId = cookies['connect.sid'];
+    var sessionId = cookies[app.authCookieName];
 
     /* no session id at all is an instant rejection */
     if (!sessionId) {

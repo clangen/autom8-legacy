@@ -95,7 +95,7 @@ function restart() {
                     log.dump(match[1], TAG, match[2]);
                 }
                 else {
-                    log.dump(TAG, data);
+                    console.log(TAG, data);
                 }
             }
         });

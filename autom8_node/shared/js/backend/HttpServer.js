@@ -223,6 +223,7 @@
     /* magic middleware */
     app.use(express.cookieParser(config.server.cookieSecret));
     app.use(express.bodyParser());
+    app.authCookieName = 'connect.sid-' + config.server.port;
 
     /* maps browser sessions to socket connections. doing this allows us
     to correlate browser sessions with web sockets. note: this must come
@@ -231,7 +232,7 @@
     app.use(express.session({
       store: sessionStore,
       secret: config.server.cookieSecret,
-      key: 'connect.sid'
+      key: app.authCookieName
     }));
 
     /* start the http server */

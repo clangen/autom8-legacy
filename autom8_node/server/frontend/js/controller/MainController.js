@@ -19,7 +19,7 @@ namespace("autom8.controller").MainController = (function() {
     self.systemInfoController.save()
 
     .then(function() {
-      autom8.client.rpc.send({
+      return autom8.client.rpc.send({
         component: "server", command: "start", options: { }
       });
     })

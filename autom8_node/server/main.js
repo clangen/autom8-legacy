@@ -54,11 +54,12 @@
   function startAllServers() {
     var deferred = Q.defer();
 
-    stopAllServers().then(reloadPreferences)
-    .then(function() {
-      return autom8.rpc("server", "start", { })
+    stopAllServers().then(reloadPreferences())
 
-      .then(function() {
+    .then(function() {
+      autom8.rpc("server", "start", { })
+
+      .then(function(result) {
         clientProxy.reconnect({
           delay: 1000,
           port: config.get().client.webClientPort
@@ -66,7 +67,7 @@
 
         clientServerWrapper.restart();
 
-        deferred.resolve();
+        deferred.resolve(result);
       });
     })
 
@@ -78,12 +79,14 @@
   }
 
   function stopAllServers() {
-    return autom8.rpc("server", "stop", { })
-
-    .then(Q.all([
+    return Q.all([
       clientProxy.disconnect(),
       clientServerWrapper.kill()
-    ]));
+    ])
+
+    .spread(function() {
+      return autom8.rpc("server", "stop", { });
+    });
   }
 
   function startAllServersIfDevicesConnected() {
@@ -169,11 +172,29 @@
           var parts = message.body;
 
           if (parts.id && parts.component && parts.command) {
-            autom8.rpc(parts.component, parts.command, parts.options || { })
+            var promise;
 
-            .then(function(result) {
+            /* we intercept and handle the stop and start commands ourselves, because
+            there are other servers we need to start/stop as well */
+            if (parts.component === "server" &&
+                (parts.command === "stop") || (parts.command === "start"))
+            {
+              if (parts.command === "stop") {
+                promise = stopAllServers();
+              }
+              else if (parts.command === "start") {
+                promise = startAllServers();
+              }
+            }
+            /* other than start and stop, we allow all other commands to be sent to the
+            rpc engine so it can be processed by the native library. below, in a couple
+            cases, we will do a bit of post-processing, mainly to refresh local pref vars */
+            else {
+              promise = autom8.rpc(parts.component, parts.command, parts.options || { });
+            }
+
+            promise.then(function(result) {
               result.id = parts.id;
-              console.log(result);
 
               /* annoying special case: if the user is setting the password or port,
               we want to update our internal config upon success so the client can
@@ -189,14 +210,10 @@
                       config.get().client.port = parseInt(parts.options.value, 10);
                     }
                   }
-                  else if (parts.command === "stop") {
-                    stopAllServers();
-                  }
-                  else if (parts.command === "start") {
-                    startAllServers();
-                  }
               }
 
+              /* after post-processing has completed, relay the message back to the
+              server ui */
               socket.emit('recvMessage', {
                 uri: 'autom8://response/libautom8/rpc',
                 body: result

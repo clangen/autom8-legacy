@@ -17,6 +17,8 @@ var NATIVE_LOG = "[libautom8]".grey;
 var RPC_SEND = "[rpc send]".yellow;
 var RPC_RECV = "[rpc recv]".green;
 
+var DEBUG_RPC = false;
+
 var LOG_LEVELS = {
     '0': log.info,
     '1': log.warn,
@@ -68,14 +70,19 @@ var makeRpcCall = function(component, command, options, promise) {
 
     /* this is the code that gets run when ffi invokes the callback */
     handlers[id] = function(result) {
-        console.log(RPC_RECV, logId, JSON.stringify(result));
+        if (DEBUG_RPC) {
+            console.log(RPC_RECV, logId, JSON.stringify(result));
+        }
 
         setImmediate(function() {
             promise.resolve(result);
         });
     };
 
-    console.log(RPC_SEND, logId, payload);
+    if (DEBUG_RPC) {
+        console.log(RPC_SEND, logId, payload);
+    }
+
     dll.autom8_rpc(payload);
 };
 

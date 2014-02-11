@@ -41,19 +41,46 @@
     .option('--debug', 'enable verbose debug output', Boolean, false)
     .parse(process.argv);
 
+  /* in headless mode we run as a fork'd node node process so we have
+  a special communication channel. this channel is used for password
+  communication and keep-alive heartbeats */
+  if (program.headless) {
+    var dieAfterMillis = 7000;
+    var heartbeatTimeout = null;
+
+    var dieIfNoHeartbeat = function() {
+      console.log("*** FATAL *** controlling program unresponsive, exiting...".red);
+      process.exit(101);
+    };
+
+    heartbeatTimeout = setTimeout(dieIfNoHeartbeat, dieAfterMillis);
+
+    process.on('message', function(m) {
+      switch (m.name) {
+        case "password":
+          program.clientpw = m.options.value;
+          start();
+          break;
+
+        case "heartbeat":
+          clearTimeout(heartbeatTimeout);
+          heartbeatTimeout = setTimeout(dieIfNoHeartbeat, dieAfterMillis);
+          break;
+
+        case "die":
+          process.exit(102);
+          break;
+      }
+    });
+  }
   /* If a password hash wasn't supplied via command-line, read one
   from stdin now, hash it, and cache it. */
-  if (!program.clientpw) {
+  else if (!program.clientpw) {
     var host = program.clienthost;
 
     var promptOptions = { name: 'password', hidden: true };
     prompt.get(promptOptions, function(error, result) {
       program.clientpw = result.password;
-
-      if (!program.headless) {
-        program.clientpw = util.sha256(result.password);
-      }
-
       start();
     });
   }

@@ -81,7 +81,7 @@
   function stopAllServers() {
     return Q.all([
       clientProxy.disconnect(),
-      clientServerWrapper.kill()
+      clientServerWrapper.stop()
     ])
 
     .spread(function() {
@@ -139,7 +139,6 @@
     to the selected system. note: it's safe to do all of this before the
     server http server is started */
     autom8.init()
-    .then(clientServerWrapper.init())
     .then(reloadPreferences())
     .then(startAllServersIfDevicesConnected())
 
@@ -237,10 +236,11 @@
   }
 
   process.on('exit', function() {
-    clientServerWrapper.kill();
+    clientServerWrapper.stop();
   });
 
-  process.on('uncaughtException', function() {
+  process.on('uncaughtException', function(ex) {
+    console.log(ex);
     process.exit(256);
   });
 

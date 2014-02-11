@@ -19,6 +19,7 @@ autom8_client_qt/Release/
 autom8_node/client/minifier.cache
 autom8_node/node_modules
 autom8_node/server/minifier.cache
+autom8_node/server/pid
 autom8_server_node/node_modules/
 autom8_server_qt/GeneratedFiles/
 debug/

@@ -2,6 +2,7 @@ var shared = "./../../shared/js/backend/";
 
 var Q = require('q');
 var path = require('path');
+var fs = require('fs');
 var child_process = require('child_process');
 var stripcolors = require('stripcolorcodes');
 var config = require(shared + 'Config.js');
@@ -10,6 +11,7 @@ var log = require(shared + 'Logger.js');
 var TAG = "[client-server]".yellow;
 var SERVER_DIR = path.resolve(__dirname + "/../../client/");
 var SERVER_EXE = path.resolve(SERVER_DIR + "/main.js");
+var PID_FILE = path.resolve("./pid");
 var PASSWORD_REJECTED = 99;
 
 /* [hh:mm:ss MM/DD/YYYY] */
@@ -18,6 +20,57 @@ var CHILD_LOG_REGEX = /(\[\d{2}:\d{2}:\d{2} \d{2}\/\d{2}\/\d{4}\]) (.*)/;
 var child = null;
 var killing = false;
 var reconnecting = false;
+
+function writePidFile() {
+    if (child && !child.dead && child.pid) {
+        fs.writeFileSync(PID_FILE, [child.pid, process.pid].join(" "));
+    }
+}
+
+function killPreviousInstance() {
+    var deferred = Q.defer();
+
+    /* alright, see if the last time we ran we left a file behind that
+    noted the child's PID */
+    if (fs.existsSync(PID_FILE)) {
+        /* great, it's there. it should be a file with two numbers separated
+        by a space: pid (child pid) and ppid (previous server process id) */
+        var contents = fs.readFileSync(PID_FILE).toString().split(" ");
+        var pid = contents[0], ppid = contents[1];
+
+        if (pid && ppid) {
+            /* kill extraneous whitespace (including trailing newline) */
+            pid = pid.trim();
+            ppid = ppid.trim();
+
+            /* if the client-server process is still running (i.e. the there
+            is a pid with the corresponding ppid)... */
+            child_process.exec("ps -j -p" + pid, function(err, stdout, stderr) {
+                if (!err && stdout.toString().indexOf(ppid) !== -1) {
+                    /* try to kill it... this is the best we can do... */
+                    child_process.exec("kill -9 " + pid, function() {
+                        log.info(TAG, "killed orphaned process");
+                        deferred.resolve();
+                    });
+                }
+                else {
+                    log.info(TAG, "previous instance not running");
+                    deferred.resolve();
+                }
+            });
+        }
+        else {
+            log.info(TAG, "pid file has invalid format");
+            deferred.resolve();
+        }
+    }
+    else {
+        log.info(TAG, "no pid file to cleanup");
+        deferred.resolve();
+    }
+
+    return deferred.promise;
+}
 
 function kill(callback) {
     var deferred = Q.defer();
@@ -75,6 +128,7 @@ function restart() {
         }
 
         child = child_process.spawn('node', args, options);
+        writePidFile();
 
         child.stdout.on('data', function (data) {
             data = data.toString();
@@ -129,5 +183,6 @@ function restart() {
     return deferred.promise;
 }
 
+exports.init = killPreviousInstance;
 exports.kill = kill;
 exports.restart = restart;

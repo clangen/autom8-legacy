@@ -84,7 +84,7 @@
       start();
     });
   }
-  /* start it up */
+  /* not headless, password already supplied. we're ready to go! */
   else {
     start();
   }

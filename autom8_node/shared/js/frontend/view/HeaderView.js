@@ -93,8 +93,12 @@ namespace("autom8.view").HeaderView = (function() {
           break;
 
         case "connected":
-          this.$('#header-button').html('sign out')
-          this.$('.header-host-separator').html('controlling');
+          this.$('#header-button').html('sign out');
+
+          /* bleh. didn't want to over-engineer... */
+          this.$('.header-host-separator').html(
+            autom8.app === 'client' ? 'controlling' : 'administrating'
+          );
           break;
 
         case "disconnected":
@@ -104,8 +108,6 @@ namespace("autom8.view").HeaderView = (function() {
       }
     }
   });
-
-  // HeaderView.staticEvents = _.extend({ }, Backbone.Events);
 
   return HeaderView;
 }());

@@ -1,0 +1,34 @@
+#!/bin/sh
+
+cd /opt/autom8/autom8_node/server
+
+start() {
+    echo "[autom8] shutting down old instances"
+    screen -ls | grep autom8tty | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null
+    echo "[autom8] creating 'autom8tty' screen session"
+    screen -S autom8tty -d -m sh -c "cd /opt/autom8/autom8_node/server; node main.js --debug"
+    echo "[atuom8] started"
+}
+
+stop() {
+    echo "[autom8] shutting down old instances"
+    screen -ls | grep autom8tty | cut -d. -f1 | awk '{print $1}' | xargs kill
+    echo "[atuom8] stopped"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        start
+        ;;
+    *)
+        echo "Usage:  {start|stop|restart}"
+        exit 1
+        ;;
+esac
+exit $?

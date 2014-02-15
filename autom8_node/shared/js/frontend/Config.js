@@ -54,7 +54,7 @@ namespace("autom8").Config = (function() {
     }
 
     if (isIOS7) {
-        config.connection.transports = ['htmlfile'];
+        config.connection.transports = ['jsonp-polling', 'htmlfile'];
     }
 
     config.display.classes.body = 'iphone fixed-header';

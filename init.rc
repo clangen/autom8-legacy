@@ -1,19 +1,35 @@
 #!/bin/sh
 
-cd /opt/autom8/autom8_node/server
+### BEGIN INIT INFO
+# Provides: autom8
+# Required-Start: $all
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop autom8
+# Description: autom8
+### END INIT INFO
+
+NODE=/opt/node/bin/node
+SERVER=/opt/autom8/autom8_node/server
+EXE=main.js
+PARAMS="--debug"
+TTY=autom8tty
 
 start() {
     echo "[autom8] shutting down old instances"
-    screen -ls | grep autom8tty | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null
-    echo "[autom8] creating 'autom8tty' screen session"
-    screen -S autom8tty -d -m sh -c "cd /opt/autom8/autom8_node/server; node main.js --debug"
+    su pi -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null"
+    echo "[autom8] creating '$TTY' screen session"
+    su pi -c "screen -S $TTY -d -m sh -c \"cd $SERVER; $NODE $EXE $PARAMS\""
     echo "[atuom8] started"
 }
 
 stop() {
     echo "[autom8] shutting down old instances"
-    screen -ls | grep autom8tty | cut -d. -f1 | awk '{print $1}' | xargs kill
-    echo "[atuom8] stopped"
+    su pi -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill"
+    echo "[autom8] stopped"
 }
 
 case "$1" in

@@ -26,7 +26,7 @@ public:
         const std::string& uri,
         const json_value_ref body)
     {
-		return response_ptr(new generic_response(uri, body, response::requester_only));
+        return response_ptr(new generic_response(uri, body, response::requester_only));
     }
 
     virtual std::string uri() { return uri_; }
@@ -40,5 +40,5 @@ private:
 };
 
 response_ptr response::create(const std::string& uri, json_value_ref body, response_target target) {
-	return response_ptr(new generic_response(uri, body, target));
+    return response_ptr(new generic_response(uri, body, target));
 }

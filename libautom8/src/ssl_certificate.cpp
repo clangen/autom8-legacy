@@ -62,7 +62,7 @@ namespace autom8 {
             size_t pubkey_size = strlen(pubkey_bytes);
 
             if ( ! pubkey_size) {
-				debug::log(debug::error, TAG, "*** fatal: rsa key size mismatch??");
+                debug::log(debug::error, TAG, "*** fatal: rsa key size mismatch??");
                 throw std::exception();
             }
 
@@ -90,7 +90,7 @@ namespace autom8 {
             std::string result;
             utility::prefs().get("fingerprint", result);
 
-            if ( ! result.size()) { 
+            if ( ! result.size()) {
                 return "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00";
             }
 
@@ -108,7 +108,7 @@ namespace autom8 {
             EVP_PKEY* key = EVP_PKEY_new();
             RSA *rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL);
 
-            // store 
+            // store
             if ( ! rsa->n) {
                 debug::log(debug::error, TAG, "*** fatal: rsa key has no public modulus??");
                 throw std::exception();

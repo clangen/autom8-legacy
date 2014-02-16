@@ -7,13 +7,13 @@
 #include <boost/shared_ptr.hpp>
 
 namespace autom8 {
-	class request;
-	typedef boost::shared_ptr<request> request_ptr;
+    class request;
+    typedef boost::shared_ptr<request> request_ptr;
 
-	class request {
+    class request {
     public:
-		static request_ptr create(const std::string& uri, json_value_ref body);
-		virtual std::string uri() = 0;
+        static request_ptr create(const std::string& uri, json_value_ref body);
+        virtual std::string uri() = 0;
         virtual json_value_ref body() = 0;
     };
 

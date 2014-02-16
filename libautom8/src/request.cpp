@@ -12,7 +12,7 @@ public:
         body_ = body;
     }
 
-	virtual std::string uri() { return uri_; }
+    virtual std::string uri() { return uri_; }
     virtual json_value_ref body() { return body_; }
 
 private:
@@ -21,5 +21,5 @@ private:
 };
 
 request_ptr request::create(const std::string& uri, json_value_ref body) {
-	return request_ptr(new generic_request(uri, body));
+    return request_ptr(new generic_request(uri, body));
 }

@@ -10,15 +10,15 @@ LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_d
 LD_FLAGS := -shared -o libautom8.so
 
 # cross compile
-C := arm-linux-gnueabihf-gcc
-CXX := arm-linux-gnueabihf-g++
-DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
-DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
-LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src -g
-CFLAGS := $(LOCAL_INCLUDES) $(DEFAULT_INCLUDES)  -Wno-extra-tokens -fPIC
-CXXFLAGS := $(CFLAGS) -fexceptions
-LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
-LD_FLAGS := -shared -o libautom8.so
+#C := arm-linux-gnueabihf-gcc
+#CXX := arm-linux-gnueabihf-g++
+#DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
+#DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src -g
+#CFLAGS := $(LOCAL_INCLUDES) $(DEFAULT_INCLUDES)  -Wno-extra-tokens -fPIC
+#CXXFLAGS := $(CFLAGS) -fexceptions
+#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+#LD_FLAGS := -shared -o libautom8.so
 
 # linux
 #C := gcc
@@ -102,6 +102,25 @@ push: all
 #	scp autom8_cli/autom8_cli pi@autom8:/home/pi/src/autom8/autom8_cli
 #	scp -r autom8_node/server/frontend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/frontend
 #	scp -r autom8_node/server/backend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/backend
+
+stage:
+	rm -rf build/stage/
+	mkdir -p build/stage/etc/autom8
+	mkdir -p build/stage/bin
+	mkdir -p build/stage/lib/autom8
+	cp -rfp autom8_node/client build/stage/lib/autom8
+	cp -rfp autom8_node/server build/stage/lib/autom8
+	cp -rfp autom8_node/shared build/stage/lib/autom8
+	mv build/stage/lib/autom8/shared/conf/* build/stage/etc/autom8
+	rmdir build/stage/lib/autom8/shared/conf
+	rm -rf build/stage/lib/autom8/client/frontend
+	rm -rf build/stage/lib/autom8/server/frontend
+	rm -rf build/stage/lib/autom8/shared/css
+	rm -rf build/stage/lib/autom8/shared/templates
+	rm -rf build/stage/lib/autom8/shared/js/3rdparty
+	rm -rf build/stage/lib/autom8/shared/js/frontend
+	-cp libautom8.so build/stage/lib/ 2> /dev/null
+	-cp libautom8.dylib build/stage/lib/ 2> /dev/null
 
 clean:
 	-rm -f $(CXX_OBJECTS) $(C_OBJECTS) *~

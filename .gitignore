@@ -33,3 +33,4 @@ libautom8/src/Debug/
 libautom8/src/Release/
 libautom8/src/libautom8.vcxproj.user
 release/
+build/

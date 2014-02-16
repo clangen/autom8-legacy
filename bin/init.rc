@@ -17,18 +17,19 @@ SERVER=/opt/autom8/autom8_node/server
 EXE=main.js
 PARAMS="--debug"
 TTY=autom8tty
+USER=pi
 
 start() {
     echo "[autom8] shutting down old instances"
-    su pi -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null"
+    su $USER -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null"
     echo "[autom8] creating '$TTY' screen session"
-    su pi -c "screen -S $TTY -d -m sh -c \"cd $SERVER; $NODE $EXE $PARAMS\""
+    su $USER -c "screen -S $TTY -d -m sh -c \"cd $SERVER; $NODE $EXE $PARAMS\""
     echo "[atuom8] started"
 }
 
 stop() {
     echo "[autom8] shutting down old instances"
-    su pi -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill"
+    su $USER -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill"
     echo "[autom8] stopped"
 }
 

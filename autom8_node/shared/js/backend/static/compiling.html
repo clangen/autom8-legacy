@@ -38,6 +38,54 @@
             text-align: center;
         }
 
+        .header {
+            background-color: #262626;
+            color: #ccc;
+            min-height: 54px;
+            text-align: center;
+            box-sizing: border-box;
+            border-bottom: 1px solid #1f1f1f;
+            box-shadow: 0 0 32px #222;
+        }
+
+        .header .header-top {
+            padding-top: 4px;
+            margin: 0 auto;
+        }
+
+        .header .header-top .header-logo {
+            display: inline-block;
+            font-size: 120%;
+            font-weight: bold;
+            position: relative;
+            top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .header .header-bottom {
+            display: inline-block;
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
+
+        .header .header-bottom .header-host-separator {
+            display: inline-block;
+            font-size: 70%;
+            color: #999;
+            text-shadow: 1px 1px 1px #000;
+        }
+
+        .header .header-bottom .header-host-text {
+            display: inline-block;
+            font-weight: bold;
+            padding: 0;
+            margin-left: -1px; /* bleh */
+            font-size: 70%;
+            text-shadow: 1px 1px 1px #000;
+            font-size: 76%;
+        }
+
         #application {
             position: absolute;
             top: 0;
@@ -68,6 +116,10 @@
     </style>
 
     <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.header-host-text')[0].innerText = window.location.hostname;
+        });
+
         setTimeout(function() {
             window.location.reload();
         }, 5000);
@@ -75,8 +127,17 @@
   </head>
   <body>
     <div id="application">
+      <div class="header">
+        <div class="header-top">
+          <div class="header-logo">autom8</div>
+        </div>
+        <div class="header-bottom">
+          <div class="header-host-separator">waiting for</div>
+          <div class="header-host-text" id="hostname"></div>
+        </div>
+      </div>
       <div class="main-content">
-        autom8 is warming up, please stand by...
+        warming up, please stand by...
       </div>
     </div>
   </body>

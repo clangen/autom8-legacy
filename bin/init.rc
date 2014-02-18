@@ -24,7 +24,7 @@ start() {
     su $USER -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null"
     echo "[autom8] creating '$TTY' screen session"
     su $USER -c "screen -S $TTY -d -m sh -c \"cd $SERVER; $NODE $EXE $PARAMS\""
-    echo "[atuom8] started"
+    echo "[autom8] started"
 }
 
 stop() {

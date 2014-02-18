@@ -139,7 +139,9 @@
   function renderMinifiedStyles(doc, callback) {
     if (cached.styles) {
       log.info(CSS, "rendered styles cache hit".green);
-      callback(cached.styles);
+      doc = doc.replace("{{minified_styles}}", "<style>" + cached.styles + "</style>");
+      doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
+      callback(doc);
       return;
     }
 
@@ -158,15 +160,13 @@
       var remaining = cssFiles.length;
 
       var finalize = function(minified) {
-        // console.log(CSS, "minification finalizing");
         doc = doc.replace("{{minified_styles}}", "<style>" + minified + "</style>");
         doc = doc.replace(/\{\{.*\.styles\}\}/g, "");
 
         if (callback) {
-          cached.styles = doc;
+          cached.styles = minified;
           callback(doc);
           writeCacheFile();
-          // console.log(CSS, "minification finished");
         }
       };
 
@@ -270,7 +270,9 @@
 
     if (cached.scripts) {
       log.info(JS, "closure compiler cache hit".green);
-      callback(cached.scripts);
+      doc = doc.replace("{{minified_scripts}}", cached.scripts);
+      doc = doc.replace(/\{\{.*\.scripts\}\}/g, "");
+      callback(doc);
       return;
     }
 
@@ -293,7 +295,6 @@
 
     /* run through each line, seeing if it's a <script> file. if it is,
     add it to the scriptFilenames[] array. */
-    //console.log(JS, "minification discovering files");
     for (var i = 0; i < lines.length; i++) {
       match = lines[i].match(scriptRegex);
       if (match && match.length === 2) {
@@ -323,7 +324,6 @@
       closureCompileRunning = false;
       log.info(JS, "closure compiler finished");
 
-      // console.log(JS, "minification finalizing");
       if (error) {
         log.warn(JS, 'closure compiler warnings and errors', error);
       }
@@ -341,11 +341,8 @@
       doc = doc.replace(/\{\{.*\.scripts\}\}/g, "");
 
       if (callback) {
-        cached.scripts = doc;
+        cached.scripts = minified;
         writeCacheFile();
-
-        // callback(doc);
-        // console.log(JS, "returning document");
       }
     };
 
@@ -369,7 +366,6 @@
     log.info(LESS, "processing file", fn.grey);
     parser.parse(data.toString(), function (err, tree) {
         if (!err) {
-          // console.log(LESS, "finished processing", fn.grey);
           data = tree.toCSS();
           callback(false, data);
         }

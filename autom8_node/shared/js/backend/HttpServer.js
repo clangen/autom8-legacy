@@ -44,20 +44,15 @@
       fn = "index.html";
     }
     else if (/.*debug.html$/.test(req.headers.referer)) {
-      debug = config.debug && true;
+      debug = config.debug;
     }
 
     if (fn === "reset.html") { /* ehh */
       minifier.clearCache();
+      config.appCache.version = 0;
       res.writeHead(200);
       res.end('minifier cache reset ' + Math.random());
       return;
-    }
-
-    /* if we're hitting the debug endpoint then invalidate the
-    appcache manifest */
-    if (debug) {
-      config.appCache.version = new Date();
     }
 
     if (fn === "" || fn.indexOf("..") > -1) {
@@ -68,12 +63,6 @@
     so look for it there. */
     if (fn.indexOf("shared/") > -1) {
       fn = "../../" + fn;
-    }
-
-    var appcache = (config.appCache.enabled && !debug);
-    if (!debug && !appcache && fn === "index.html") {
-      var params = util.parseQuery(url.parse(req.url).query);
-      appcache = (params.appcache === "1");
     }
 
     /* determine the MIME type we'll write in the response */
@@ -165,8 +154,17 @@
       }
       else if (fn.match(/.*\.html$/)) {
         data = data.toString();
-        data = data.replace("{{manifest}}", appcache ? 'autom8.appcache' : '');
-        data = data.replace("{{version}}", config.appCache.version.getTime());
+
+        /* appcache only included in document if we're not hitting a debug
+        url and there's an appcache version. if there's no appcache version,
+        that means the cache hasn't finished generating yet, so we'll serve
+        up a regular document; in most of these cases this will be a 'warming
+        up' message. */
+        var appCacheEnabled = (config.appCache.enabled);
+        var appCacheVersion = config.appCache.version ? config.appCache.version.getTime() : 0;
+        data = data.replace("{{manifest}}", (!debug && appCacheEnabled && appCacheVersion) ? 'autom8.appcache' : '');
+        data = data.replace("{{version}}", appCacheVersion);
+
         data = minifier.renderTemplates(data);
 
         if (debug) {
@@ -185,6 +183,10 @@
               if (withScripts instanceof Error) {
                 writeResponse(fn, STATIC_PAGES.compiling);
                 return;
+              }
+
+              if (!config.appCache.version) {
+                config.appCache.version = new Date();
               }
 
               writeResponse(fn, withScripts);

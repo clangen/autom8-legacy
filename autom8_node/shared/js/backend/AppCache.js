@@ -5,16 +5,19 @@
   var config = require("./Config.js").get();
 
   function renderAppcacheManifest(req, res) {
-    log.info(TAG, 'rendering appcache (' + config.appCache.version.getTime() + ')...');
+    var version = (config.appCache.version ? config.appCache.version.getTime() : 0);
+    log.info(TAG, 'rendering appcache (' + version + ')...');
 
     var manifest = "CACHE MANIFEST\n";
-    manifest += "# VERSION: " + config.appCache.version.getTime() + "\n\n";
+    manifest += "# VERSION: " + version + "\n\n";
 
     manifest += "CACHE:\n\n";
     manifest += "/socket.io/socket.io.js\n";
-    manifest += "/icon.png\n\n";
+    manifest += "/icon.png\n";
+    manifest += "/favicon.ico\n\n";
 
     manifest += "NETWORK:\n";
+    manifest += "debug.html\n";
     manifest += "*\n\n";
 
     res.writeHead(200, {

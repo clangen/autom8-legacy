@@ -8,7 +8,7 @@
     config.allowSelfSignedCerts = true;
 
     config.appCache = {
-      enabled: false, /* opt in via ?appcache=1 only */
+      enabled: true,
       version: new Date()
     };
 

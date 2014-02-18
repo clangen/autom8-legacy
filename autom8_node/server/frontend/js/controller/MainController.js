@@ -80,6 +80,7 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.on('expired', this.onDisconnected, this);
       autom8.client.on('state:changed', this.onClientStateChanged, this);
 
+      this.showSignIn();
       reconnect();
     },
 

@@ -32,6 +32,10 @@
     catch (e) {
       log.error(JS, 'failed to write', cache);
     }
+
+    if (cached.styles && cached.scripts) {
+      config.appCache.version = new Date();
+    }
   }
 
   function readCacheFile() {
@@ -48,9 +52,11 @@
       styles: parsed.styles || '',
       scripts: parsed.scripts || ''
     };
-  }
 
-  readCacheFile();
+    if (cached.styles && cached.scripts) {
+      config.appCache.version = new Date();
+    }
+  }
 
   function createLessParser(filename, paths) {
       filename = filename || "";
@@ -165,8 +171,8 @@
 
         if (callback) {
           cached.styles = minified;
-          callback(doc);
           writeCacheFile();
+          callback(doc);
         }
       };
 
@@ -381,7 +387,12 @@
     cached = {styles: '', scripts: ''};
   }
 
+  function init() {
+    readCacheFile();
+  }
+
   module.exports = exports = {
+    init: init,
     createLessParser: createLessParser,
     minifyLessData: minifyLessData,
     renderTemplates: renderTemplates,

@@ -185,10 +185,6 @@
                 return;
               }
 
-              if (!config.appCache.version) {
-                config.appCache.version = new Date();
-              }
-
               writeResponse(fn, withScripts);
             });
           });
@@ -250,6 +246,8 @@
     we do this so other parts of the code can do things like attach event
     handlers before starting */
     app.start = function() {
+      minifier.init();
+
       /* standard request handlers for various bits of shared functionality */
       require('./Auth.js').add(app);
       require('./AppCache.js').add(app);

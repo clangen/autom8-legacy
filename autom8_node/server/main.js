@@ -25,6 +25,14 @@
 
   var app;
 
+  /* set of rpc commands that should trigger client resyncs */
+  var RESYNC_ON = {
+    'server.start': true,
+    'server.stop': true,
+    'system.select': true,
+    'system.set_preference': true
+  };
+
   /* we'll replay the last 100 logs for every connected
   client so they can see what's going on */
   var MAX_LOGS = 100;
@@ -218,6 +226,20 @@
                 uri: 'autom8://response/libautom8/rpc',
                 body: result
               });
+
+              /* let other connected clients know that someone has been mucking around
+              with the server settings, so they should schedule a redraw */
+              if (RESYNC_ON[parts.component + '.' + parts.command]) {
+                var message = {
+                  uri: 'autom8://response/libautom8/resync',
+                  body: JSON.stringify({
+                    component: parts.component,
+                    command: parts.command
+                  })
+                };
+
+                sessions.broadcast('recvMessage', message, {exclude: socket.id});
+              }
             })
 
             .fail(function(ex) {

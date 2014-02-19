@@ -66,7 +66,7 @@
         if (uri === "autom8://response/libautom8/log") {
           autom8.client.trigger('log', body.html);
         }
-        if (uri === "autom8://response/libautom8/rpc") {
+        else if (uri === "autom8://response/libautom8/rpc") {
           var deferred = pending[body.id];
           delete pending[body.id];
           if (deferred) {
@@ -83,6 +83,9 @@
 
             deferred.resolve(body.message);
           }
+        }
+        else if (uri === "autom8://response/libautom8/resync") {
+          autom8.client.trigger('resync', body);
         }
       },
 

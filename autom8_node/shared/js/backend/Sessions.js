@@ -16,6 +16,16 @@ Sessions.prototype.createSocketServer = function(app) {
   this.httpServer = app.httpServer;
   this.sessionStore = app.sessionStore;
 
+  this.connections = { };
+
+  this.connections.each = function(callback) {
+    for (var key in this) {
+      if (this.hasOwnProperty(key) && key !== 'each') {
+        callback(key, this[key]);
+      }
+    }
+  };
+
   var socketServer = io.listen(this.httpServer);
 
   /* disable verbose logging in non-debug mode */
@@ -83,7 +93,12 @@ Sessions.prototype.createSocketServer = function(app) {
     var addr = socket.handshake.address;
     log.info(TAG, "client connected (" + addr.address + ":" + addr.port + ")");
 
+    this.connections[socket.id] = socket;
     this.events.emit('connection', socket);
+
+    socket.on('disconnect', function() {
+      delete this.connections[socket.id];
+    }.bind(this));
 
     /* makes sure the socket that generated the message is
     the second param of callback */
@@ -113,8 +128,19 @@ Sessions.prototype.init = function(app) {
   this.webSocketServer = this.createSocketServer(app);
 };
 
-Sessions.prototype.broadcast = function(message, options) {
-  this.webSocketServer.sockets.emit(message, options);
+Sessions.prototype.broadcast = function(message, contents, options) {
+  options = options || { };
+
+  if (!options.exclude) {
+    this.webSocketServer.sockets.emit(message, contents);
+  }
+  else {
+    this.connections.each(function(key, value) {
+      if (value && value.id && value.id !== options.exclude && value.emit) {
+        value.emit(message, contents);
+      }
+    });
+  }
 };
 
 Sessions.prototype.on = function(message, handler) {

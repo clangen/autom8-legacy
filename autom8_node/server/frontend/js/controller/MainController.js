@@ -79,6 +79,7 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.on('disconnected', this.onDisconnected, this);
       autom8.client.on('expired', this.onDisconnected, this);
       autom8.client.on('state:changed', this.onClientStateChanged, this);
+      autom8.client.on('resync', this.onResync, this);
 
       this.showSignIn();
       reconnect();
@@ -99,6 +100,7 @@ namespace("autom8.controller").MainController = (function() {
       autom8.client.off('disconnected', this.onDisconnected, this);
       autom8.client.off('expired', this.onDisconnected, this);
       autom8.client.off('state:changed', this.onClientStateChanged, this);
+      autom8.client.off('resync', this.onResync, this);
     },
 
     onConnected: function() {
@@ -117,6 +119,10 @@ namespace("autom8.controller").MainController = (function() {
       if (state === "authenticated") {
         autom8.client.connect();
       }
+    },
+
+    onResync: function() {
+      refreshStatus();
     }
   });
 }());

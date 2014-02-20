@@ -9,6 +9,9 @@ require('colors');
 
 var shared = "./../../shared/js/backend/";
 var log = require(shared + 'Logger.js');
+var resource = require(shared + 'Resource.js');
+
+var LIBAUTOM8_DIR = path.resolve(__dirname + '/../../../');
 
 var RPC_MODE_SYNC = 1;
 var RPC_MODE_ASYNC = 2;
@@ -44,17 +47,25 @@ process.on('exit', function() {
     pinned;
 });
 
-var loadLibrary = function(dllDir) {
-    dllDir = dllDir || ".";
+var loadLibrary = function() {
+    var dllFilename =
+        resource.resolve('lib', 'libautom8.so', [LIBAUTOM8_DIR])  ||
+        resource.resolve('lib', 'libautom8.dll', [LIBAUTOM8_DIR]) ||
+        resource.resolve('lib', 'libautom8.dylib', [LIBAUTOM8_DIR])
 
-    return ffi.Library(dllDir + "/libautom8", {
-        "autom8_version": ['string', []],
-        "autom8_init": ['int', ['int']],
-        "autom8_deinit": ['int', []],
-        "autom8_set_logger": ['int', ['pointer']],
-        "autom8_set_rpc_callback": ['int', ['pointer']],
-        "autom8_rpc": ['void', ['string']],
-    });
+    if (dllFilename) {
+        var dllDir = path.dirname(dllFilename);
+        log.info(NATIVE_LOG, "loading libautom8 from", dllDir);
+
+        return ffi.Library(dllDir + "/libautom8", {
+            "autom8_version": ['string', []],
+            "autom8_init": ['int', ['int']],
+            "autom8_deinit": ['int', []],
+            "autom8_set_logger": ['int', ['pointer']],
+            "autom8_set_rpc_callback": ['int', ['pointer']],
+            "autom8_rpc": ['void', ['string']],
+        });
+    }
 };
 
 var makeRpcCall = function(component, command, options, promise) {
@@ -139,10 +150,15 @@ EXPORTS.init = function(options) {
     var directory = options.directory;
 
     if (!dll) {
-        directory = directory || path.resolve(__dirname + '/../../../');
-        log.info(NATIVE_LOG, "loading libautom8 from", directory);
-        dll = loadLibrary(directory);
-        log.info(NATIVE_LOG, "loaded libautom8");
+        dll = loadLibrary();
+
+        if (dll) {
+            log.info(NATIVE_LOG, "loaded libautom8");
+        }
+        else {
+            log.error(NATIVE_LOG, "unable to load libautom8".red);
+            process.exit(1);
+        }
     }
 
     if (!initialized) {

@@ -1,3 +1,5 @@
+# npm install colors ffi prompt ref socket.io-client commander express lodash q socket.io stripcolorcodes
+
 # my ubuntu. ugh.
 C := clang
 CXX := clang++

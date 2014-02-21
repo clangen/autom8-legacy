@@ -70,7 +70,7 @@
       .then(function(result) {
         clientProxy.reconnect({
           delay: 1000,
-          port: config.get().client.webClientPort
+          port: config.get().clientProxy.webClientPort
         });
 
         clientServerWrapper.restart();
@@ -120,21 +120,21 @@
     ])
 
     .spread(function(pw, port, webClientPort) {
-      config.get().client.password = DEFAULT_PASSWORD;
-      config.get().client.host = "localhost";
-      config.get().client.port = 7901;
-      config.get().client.webClientPort = 7902;
+      config.get().clientProxy.password = DEFAULT_PASSWORD;
+      config.get().clientProxy.host = "localhost";
+      config.get().clientProxy.port = 7901;
+      config.get().clientProxy.webClientPort = 7902;
 
       if (pw && pw.status === 1 && pw.message && pw.message.value) {
-        config.get().client.password = pw.message.value;
+        config.get().clientProxy.password = pw.message.value;
       }
 
       if (port && port.status === 1 && port.message && port.message.value) {
-        config.get().client.port = parseInt(port.message.value, 10);
+        config.get().clientProxy.port = parseInt(port.message.value, 10);
       }
 
       if (webClientPort && webClientPort.status === 1 && webClientPort.message && webClientPort.message.value) {
-        config.get().client.webClientPort = parseInt(webClientPort.message.value, 10);
+        config.get().clientProxy.webClientPort = parseInt(webClientPort.message.value, 10);
       }
     });
   }
@@ -212,10 +212,10 @@
               {
                   if (parts.command === "set_preference") {
                     if (parts.options.key === "password") {
-                      config.get().client.password = parts.options.value;
+                      config.get().clientProxy.password = parts.options.value;
                     }
                     else if (parts.options.key === "port") {
-                      config.get().client.port = parseInt(parts.options.value, 10);
+                      config.get().clientProxy.port = parseInt(parts.options.value, 10);
                     }
                   }
               }
@@ -270,7 +270,8 @@
     .version("0.6.1")
     .usage('params:')
     .option('--listen <port>', 'port we will listen on', Number, 7903)
-    .option('--creds <pem>', 'pem file containing both cert and private key', String, "../shared/conf/autom8.pem")
+    .option('--key <pem>', 'pem file containing the private key used for the https server', String, "../shared/conf/autom8.pem")
+    .option('--cert <pem>', 'pem file containing the cert to use for the https server', String, "../shared/conf/autom8.pem")
     .option('--debug', 'enable verbose debug output', Boolean, false)
     .parse(process.argv);
 

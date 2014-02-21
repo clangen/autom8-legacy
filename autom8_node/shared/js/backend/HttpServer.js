@@ -18,6 +18,8 @@
 
   var root = process.cwd() + '/frontend';
 
+  var COOKIE_SECRET = "autom84Lyfe";
+
   var STATIC_PAGES = {
     'compiling': fs.readFileSync(__dirname + '/static/compiling.html').toString(),
     'blacklisted': fs.readFileSync(__dirname + '/static/blacklisted.html').toString()
@@ -49,7 +51,6 @@
 
     if (fn === "reset.html") { /* ehh */
       minifier.clearCache();
-      config.appCache.version = 0;
       res.writeHead(200);
       res.end('minifier cache reset ' + Math.random());
       return;
@@ -160,8 +161,8 @@
         that means the cache hasn't finished generating yet, so we'll serve
         up a regular document; in most of these cases this will be a 'warming
         up' message. */
-        var appCacheEnabled = (config.appCache.enabled);
-        var appCacheVersion = config.appCache.version ? config.appCache.version.getTime() : 0;
+        var appCacheEnabled = (config.server.enableHtml5AppCache);
+        var appCacheVersion = minifier.getCacheVersion();
         data = data.replace("{{manifest}}", (!debug && appCacheEnabled && appCacheVersion) ? 'autom8.appcache' : '');
         data = data.replace("{{version}}", appCacheVersion);
 
@@ -219,7 +220,7 @@
     });
 
     /* magic middleware */
-    app.use(express.cookieParser(config.server.cookieSecret));
+    app.use(express.cookieParser(COOKIE_SECRET));
     app.use(express.bodyParser());
     app.authCookieName = 'connect.sid-' + config.server.port;
 
@@ -229,14 +230,14 @@
     var sessionStore = new express.session.MemoryStore();
     app.use(express.session({
       store: sessionStore,
-      secret: config.server.cookieSecret,
+      secret: COOKIE_SECRET,
       key: app.authCookieName
     }));
 
     /* start the http server */
     var serverOptions = {
-      key: fs.readFileSync(config.server.pem),
-      cert: fs.readFileSync(config.server.pem)
+      key: fs.readFileSync(config.server.key),
+      cert: fs.readFileSync(config.server.cert)
     };
 
     app.httpServer = require('https').createServer(serverOptions, app);

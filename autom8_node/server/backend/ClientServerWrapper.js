@@ -81,9 +81,9 @@ function restart() {
 
         var args = [
             '--headless',
-            '--listen', config.get().client.webClientPort,
+            '--listen', config.get().clientProxy.webClientPort,
             '--clienthost', '127.0.0.1',
-            '--clientport', config.get().client.port
+            '--clientport', config.get().clientProxy.port
         ];
 
         if (config.get().debug) {
@@ -94,7 +94,7 @@ function restart() {
 
         child.send({
             name: 'password',
-            options: { value: config.get().client.password }
+            options: { value: config.get().clientProxy.password }
         });
 
         child.stdout.on('data', function (data) {

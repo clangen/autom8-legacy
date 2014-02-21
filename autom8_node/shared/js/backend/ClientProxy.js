@@ -55,12 +55,11 @@ ClientProxy.prototype.connect = function(options) {
   }
 
   options = options || { };
-  var cfg = config.client;
 
   var connectOptions = {
-    host: options.host || cfg.host,
-    port: options.port || cfg.port,
-    rejectUnauthorized: !config.allowSelfSignedCerts
+    host: options.host || config.clientProxy.host,
+    port: options.port || config.clientProxy.port,
+    rejectUnauthorized: !config.clientProxy.allowSelfSignedCerts
   };
 
   var socketStream = tls.connect(connectOptions, function() {
@@ -76,7 +75,7 @@ ClientProxy.prototype.connect = function(options) {
       this.socketStream = socketStream;
 
       this.send(constants.requests.authenticate, {
-          password: cfg.password
+          password: config.clientProxy.password
       });
     }
   }.bind(this));

@@ -5,9 +5,9 @@
   var blacklist = require('./Blacklist.js');
 
   function signIn(req, res) {
-    if (req.body.password === config.client.password) {
+    if (req.body.password === config.clientProxy.password) {
       req.session.authenticated = true;
-      req.session.cookie.maxAge = config.sessionTimeout;
+      req.session.cookie.maxAge = config.server.sessionTimeout;
       res.writeHead(200);
     }
     else {

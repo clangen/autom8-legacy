@@ -1,23 +1,27 @@
 var fs = require('fs');
 var path = require('path');
+var log = require('./Logger.js');
+
+var TAG = "[resource loader]".green;
 
 var TYPE_TO_PATH_LIST = {
     'bin': [
-        '{{PREFIX}}/bin/',
-        '/usr/bin/',
+        '{{PREFIX}}/bin',
+        '/usr/bin',
         '/usr/local/bin'
     ],
 
     'lib': [
-        './',
-        '{{PREFIX}}/lib/',
-        '/usr/lib/',
+        '.',
+        '{{PREFIX}}/lib',
+        '/usr/lib',
         '/usr/local/lib'
     ],
 
     'conf': [
-        '/etc/autom8/',
-        '{{PREFIX}}/share/autom8/conf/'
+        '/etc/autom8',
+        '{{PREFIX}}/share/autom8',
+        '{{PREFIX}}/share/autom8'
     ]
 };
 
@@ -34,15 +38,18 @@ function resolve(type, name, paths) {
     var defaultPaths = TYPE_TO_PATH_LIST[type] || [];
     paths = (paths || []).slice(0).concat(defaultPaths);
 
-    var fn;
+    // log.info(JSON.stringify(paths).blue);
+
+    var fullName;
     for (var i = 0; i < paths.length; i++) {
-        /* if we're not installed then the PREFIX won't be set,
-        so skip over it */
-        if (paths[i].indexOf('{{PREFIX}}') !== 0) {
-            fn = path.resolve(paths[i] + '/' + name);
-            if (fs.existsSync(fn)) {
-                return fn;
-            }
+        fullName = path.resolve(paths[i] + '/' + name);
+
+        if (fs.existsSync(fullName)) {
+            log.info(TAG, "found".grey, fullName);
+            return fullName;
+        }
+        else {
+            // log.info(TAG, "testing:".grey, fullName.grey);
         }
     }
 

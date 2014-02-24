@@ -1,5 +1,4 @@
 // npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt
-// node.exe main.js --listen 7902 --creds ../shared/conf/autom8.pem --clienthost 127.0.0.1 --clientport 7901 --debug
 
 (function() {
   var program = require('commander');
@@ -33,8 +32,8 @@
     .version("0.6.1")
     .usage('params:')
     .option('--listen <port>', 'port we will listen on', Number, 7902)
-    .option('--key <pem>', 'pem file containing the private key used for the https server', String, "../shared/conf/autom8.pem")
-    .option('--cert <pem>', 'pem file containing the cert to use for the https server', String, "../shared/conf/autom8.pem")
+    .option('--key <pem>', 'pem file containing the private key used for the https server', String)
+    .option('--cert <pem>', 'pem file containing the cert to use for the https server', String)
     .option('--clienthost <hostname>', 'autom8 server to connect to', String, "127.0.0.1")
     .option('--clientport <port>', 'port the autom8 server is listening on', Number, 7901)
     .option('--clientpw <password hash>', 'password for the autom8 server')

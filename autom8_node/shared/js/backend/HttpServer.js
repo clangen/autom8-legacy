@@ -279,6 +279,7 @@
       end: noOp
     };
 
+    minifier.init();
     fileRequest(request, response);
   };
 

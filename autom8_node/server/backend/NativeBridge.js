@@ -165,7 +165,7 @@ EXPORTS.init = function(options) {
         initLogging();
         initRpcCallback();
         log.info(NATIVE_LOG, "autom8_version:", dll.autom8_version());
-        log.info(NATIVE_LOG, "autom8_version:", dll.autom8_init(rpcMode));
+        log.info(NATIVE_LOG, "autom8_init:", dll.autom8_init(rpcMode) === 1 ? "success".green : "failed".red);
         initialized = true;
     }
 

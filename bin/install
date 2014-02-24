@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# install debs
+
+# install npm modules
+pushd build/stage/lib/autom8
+npm install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes
+popd
+
+# create user
+
+# substitute prefix
+
+# copy to install dir
+
+# chmod/chown files

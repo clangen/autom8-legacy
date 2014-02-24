@@ -66,5 +66,9 @@ echo "[*] *** REPLACING {{PREFIX}} with $PWD"
 find . -type f -print0 | xargs -0 sed -i '' -e "s/{{PREFIX}}/$prefix/g"
 popd
 
-echo "[*] done"
+echo "[*] copying installation script, readme, and license"
+cp bin/install build/
+cp license.txt build/
+cp license.txt build/stage/share/autom8
 
+echo "[*] done"

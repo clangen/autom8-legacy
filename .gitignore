@@ -17,7 +17,6 @@ autom8_client_android/out/
 autom8_client_qt/GeneratedFiles/
 autom8_client_qt/Release/
 autom8_node/client/minifier.cache
-autom8_node/node_modules
 autom8_node/server/minifier.cache
 autom8_node/server/pid
 autom8_server_node/node_modules/
@@ -32,5 +31,6 @@ libautom8/contrib/cm15a_controller/cm15a_controller.vcxproj.user
 libautom8/src/Debug/
 libautom8/src/Release/
 libautom8/src/libautom8.vcxproj.user
+node_modules
 release/
 build/

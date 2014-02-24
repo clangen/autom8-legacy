@@ -1,10 +1,9 @@
 #!/bin/bash
 
-echo "building..."
+echo "[*] building libautom8"
 make
-echo "finished building"
 
-echo "copying files to staging area..."
+echo "[*] copying files to staging area"
 rm -rf build/stage/
 mkdir -p build/stage/etc/autom8
 mkdir -p build/stage/bin
@@ -23,12 +22,27 @@ rm -rf build/stage/lib/autom8/shared/js/frontend
 -cp libautom8.so build/stage/lib/ 2> /dev/null
 -cp libautom8.dylib build/stage/lib/ 2> /dev/null
 
-echo "compressing server-side js..."
+echo "[*] compressing server-side js"
 for js in $(find ./build/stage -name *.js)
 do
     ccjs $js > $js.min
     mv $js.min $js
 done
 
-echo "done."
+echo "[*] compiling server"
+pushd ./build/stage/lib/autom8/server
+node cache.js
+popd
+
+echo "[*] compiling client"
+pushd ./build/stage/lib/autom8/client
+node cache.js
+popd
+
+echo "[*] removing files that don't need to be distributed"
+rm ./build/stage/lib/autom8/server/cache.js
+rm ./build/stage/lib/autom8/server/backend/raw.js
+rm ./build/stage/lib/autom8/client/cache.js
+
+echo "[*] done"
 #find ./build/stage -type f -print0 | xargs -0 sed -i '' -e 's/{{PREFIX}}/FOOBAR/g'

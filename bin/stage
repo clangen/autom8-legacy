@@ -1,33 +1,28 @@
 #!/bin/bash
 
+echo "[*] deleting current staging area, if exists"
+rm -rf build/stage/
+
 echo "[*] building libautom8"
 make
 
-echo "[*] copying files to staging area"
-rm -rf build/stage/
-mkdir -p build/stage/etc/autom8
+echo "[*] copying files+libautom8 to staging area"
 mkdir -p build/stage/bin
 mkdir -p build/stage/lib/autom8
+mkdir -p build/stage/share
+
 cp -rfp autom8_node/client build/stage/lib/autom8
 cp -rfp autom8_node/server build/stage/lib/autom8
 cp -rfp autom8_node/shared build/stage/lib/autom8
-mv build/stage/lib/autom8/shared/conf/* build/stage/etc/autom8
-rmdir build/stage/lib/autom8/shared/conf
-rm -rf build/stage/lib/autom8/client/frontend
-rm -rf build/stage/lib/autom8/server/frontend
-rm -rf build/stage/lib/autom8/shared/css
-rm -rf build/stage/lib/autom8/shared/templates
-rm -rf build/stage/lib/autom8/shared/js/3rdparty
-rm -rf build/stage/lib/autom8/shared/js/frontend
--cp libautom8.so build/stage/lib/ 2> /dev/null
--cp libautom8.dylib build/stage/lib/ 2> /dev/null
 
-echo "[*] compressing server-side js"
-for js in $(find ./build/stage -name *.js)
-do
-    ccjs $js > $js.min
-    mv $js.min $js
-done
+# get the important files in place
+mv build/stage/lib/autom8/shared/conf/ build/stage/share/autom8
+cp libautom8.so build/stage/lib/ 2> /dev/null # dll
+cp libautom8.dylib build/stage/lib/ 2> /dev/null # dll
+
+# we'll build these fresh
+rm build/stage/lib/autom8/client/minifier.cache
+rm build/stage/lib/autom8/server/minifier.cache
 
 echo "[*] compiling server"
 pushd ./build/stage/lib/autom8/server
@@ -40,9 +35,30 @@ node cache.js
 popd
 
 echo "[*] removing files that don't need to be distributed"
+rm -rf build/stage/lib/autom8/client/frontend # remove client frontend js (already minified)
+rm -rf build/stage/lib/autom8/server/frontend # remove server frontend js (already minified)
+rm -rf build/stage/lib/autom8/shared/css # all css (already minified)
+rm build/stage/lib/autom8/shared/templates/*.scripts # (used to autogen js)
+rm build/stage/lib/autom8/shared/templates/*.styles # (used to autogen css)
+rm -rf build/stage/lib/autom8/shared/js/3rdparty # shared frontend js
+rm -rf build/stage/lib/autom8/shared/js/frontend # shared frontend js
 rm ./build/stage/lib/autom8/server/cache.js
 rm ./build/stage/lib/autom8/server/backend/raw.js
 rm ./build/stage/lib/autom8/client/cache.js
 
+echo "[*] compressing server-side js..."
+for js in $(find ./build/stage -name *.js)
+do
+    echo "      $js"
+    ccjs $js > $js.min
+    mv $js.min $js
+done
+
+pushd build/stage
+prefix=$(echo $PWD | sed 's_/_\\/_g') # cwd, with escaped slashes
+echo "[*] *** REPLACING {{PREFIX}} with $PWD"
+find . -type f -print0 | xargs -0 sed -i '' -e "s/{{PREFIX}}/$prefix/g"
+popd
+
 echo "[*] done"
-#find ./build/stage -type f -print0 | xargs -0 sed -i '' -e 's/{{PREFIX}}/FOOBAR/g'
+

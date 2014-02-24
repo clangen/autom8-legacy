@@ -269,10 +269,10 @@
   program
     .version("0.6.1")
     .usage('params:')
-    .option('--listen <port>', 'port we will listen on', Number, 7903)
-    .option('--key <pem>', 'pem file containing the private key used for the https server', String, "../shared/conf/autom8.pem")
-    .option('--cert <pem>', 'pem file containing the cert to use for the https server', String, "../shared/conf/autom8.pem")
-    .option('--debug', 'enable verbose debug output', Boolean, false)
+    .option('--listen <port>', 'port we will listen on (default 7903)', Number)
+    .option('--key <pem>', 'pem file containing the private key used for the https server', String)
+    .option('--cert <pem>', 'pem file containing the cert to use for the https server', String)
+    .option('--debug', 'enable verbose debug output', Boolean)
     .parse(process.argv);
 
   start();

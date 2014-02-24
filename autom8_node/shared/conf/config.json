@@ -1,0 +1,13 @@
+{
+    "server": {
+        // "port": 7903
+        // "key": null,
+        // "cert": null,
+        // "sessionTimeout": null,
+        // "enableHtml5AppCache": true
+    },
+
+    "clientProxy": {
+        // "allowSelfSignedCerts": true
+    }
+}

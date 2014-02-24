@@ -265,5 +265,23 @@
     return app;
   }
 
+  var cache = function() {
+    var noOp = function() { };
+
+    var request = {
+      url: 'index.html',
+      headers: { }
+    };
+
+    var response = {
+      write: noOp,
+      writeHead: noOp,
+      end: noOp
+    };
+
+    fileRequest(request, response);
+  };
+
   exports.create = create;
+  exports.cache = cache;
 }());

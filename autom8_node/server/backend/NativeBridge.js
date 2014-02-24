@@ -63,7 +63,7 @@ var loadLibrary = function() {
             "autom8_deinit": ['int', []],
             "autom8_set_logger": ['int', ['pointer']],
             "autom8_set_rpc_callback": ['int', ['pointer']],
-            "autom8_rpc": ['void', ['string']],
+            "autom8_rpc": ['void', ['string']]
         });
     }
 };

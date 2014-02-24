@@ -55,7 +55,7 @@ exports.init = function(argv) {
     server: {
       port: argv.listen,
       key: argv.key,
-      cert: argv.cert,
+      cert: argv.cert
     },
 
     clientProxy: {

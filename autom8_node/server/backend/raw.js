@@ -38,7 +38,7 @@ function testSystem() {
         libautom8.rpc("system", "selected").then(function(result) {
             console.log(INFO, "system::selected");
             console.log(INFO, '  result:', result);
-        }),
+        })
 
         // libautom8.rpc("system", "select", {system: "mochad"}).then(function(result) {
         //     console.log(INFO, "system::selected");

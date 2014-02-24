@@ -31,7 +31,7 @@ String.prototype.toHtml = (function() {
         "\u001b\\[3m":      "<i>",
         "\u001b\\[4m":      "<u>",
         "\u001b\\[7m":      "<span class=\"background-color-black color-white\">",
-        "\u001b\\[9m":      "<del>",
+        "\u001b\\[9m":      "<del>"
     };
 
     return function() {

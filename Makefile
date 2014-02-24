@@ -1,15 +1,15 @@
 # npm install colors ffi prompt ref socket.io-client commander express lodash q socket.io stripcolorcodes
 
 # my ubuntu. ugh.
-C := clang
-CXX := clang++
-LLVMCONFIG := /usr/bin/llvm-config-3.4
-DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
-LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
-CXXFLAGS := $(CFLAGS) -fexceptions
-LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
-LD_FLAGS := -shared -o libautom8.so
+#C := clang
+#CXX := clang++
+#LLVMCONFIG := /usr/bin/llvm-config-3.4
+#DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
+#CXXFLAGS := $(CFLAGS) -fexceptions
+#LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
+#LD_FLAGS := -shared -o libautom8.so
 
 # cross compile
 #C := arm-linux-gnueabihf-gcc
@@ -35,15 +35,15 @@ LD_FLAGS := -shared -o libautom8.so
 # mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems
 # when using node.js with ffi. specifically: memory allocation issues and random
 # segfaults. why? who knows...
-#C := clang
-#CXX := clang++
-#DEFAULT_INCLUDES :=
-#DEFAULT_LIBRARIES := -L/usr/local/lib
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
-#CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
-#CXXFLAGS := $(CFLAGS) -fexceptions
-#LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
-#LD_FLAGS := -dynamiclib -o libautom8.dylib
+C := clang
+CXX := clang++
+DEFAULT_INCLUDES :=
+DEFAULT_LIBRARIES := -L/usr/local/lib
+LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
+CXXFLAGS := $(CFLAGS) -fexceptions
+LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
+LD_FLAGS := -dynamiclib -o libautom8.dylib
 
 C_SOURCES = \
 	3rdparty/src/sqlite/sqlite3.c
@@ -104,25 +104,6 @@ push: all
 #	scp autom8_cli/autom8_cli pi@autom8:/home/pi/src/autom8/autom8_cli
 #	scp -r autom8_node/server/frontend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/frontend
 #	scp -r autom8_node/server/backend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/backend
-
-stage:
-	rm -rf build/stage/
-	mkdir -p build/stage/etc/autom8
-	mkdir -p build/stage/bin
-	mkdir -p build/stage/lib/autom8
-	cp -rfp autom8_node/client build/stage/lib/autom8
-	cp -rfp autom8_node/server build/stage/lib/autom8
-	cp -rfp autom8_node/shared build/stage/lib/autom8
-	mv build/stage/lib/autom8/shared/conf/* build/stage/etc/autom8
-	rmdir build/stage/lib/autom8/shared/conf
-	rm -rf build/stage/lib/autom8/client/frontend
-	rm -rf build/stage/lib/autom8/server/frontend
-	rm -rf build/stage/lib/autom8/shared/css
-	rm -rf build/stage/lib/autom8/shared/templates
-	rm -rf build/stage/lib/autom8/shared/js/3rdparty
-	rm -rf build/stage/lib/autom8/shared/js/frontend
-	-cp libautom8.so build/stage/lib/ 2> /dev/null
-	-cp libautom8.dylib build/stage/lib/ 2> /dev/null
 
 clean:
 	-rm -f $(CXX_OBJECTS) $(C_OBJECTS) *~

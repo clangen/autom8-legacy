@@ -9,7 +9,7 @@
         host: window.location,
         status: autom8.client.getState(),
         theme: autom8.Config.display.classes.body || "generic",
-        version: autom8.version
+        clientVersion: autom8.version
       };
 
       this.$el.append(View.elementFromTemplateId('autom8-View-AboutView', params));

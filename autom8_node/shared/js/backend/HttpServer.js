@@ -164,7 +164,7 @@
         var appCacheEnabled = (config.server.enableHtml5AppCache);
         var appCacheVersion = minifier.getCacheVersion();
         data = data.replace("{{manifest}}", (!debug && appCacheEnabled && appCacheVersion) ? 'autom8.appcache' : '');
-        data = data.replace("{{version}}", appCacheVersion);
+        data = data.replace("{{build}}", appCacheVersion);
 
         data = minifier.renderTemplates(data);
 

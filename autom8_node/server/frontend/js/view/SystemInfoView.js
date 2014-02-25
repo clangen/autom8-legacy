@@ -13,7 +13,7 @@
         fingerprint: model.get('fingerprint'),
         port: model.get('port'),
         webClientPort: model.get('webClientPort'),
-        version: model.get('version')
+        nativeVersion: model.get('version')
       }
     );
 

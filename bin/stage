@@ -1,7 +1,14 @@
 #!/bin/bash
 
+VERSION=0.7.2
+
 echo "[*] deleting current staging area, if exists"
 rm -rf build/stage/
+
+echo "[*] replacing version in autom8.cpp with $VERSION"
+pushd libautom8/src/
+sed -i '' -e "s/^#define VERSION \".*\"/#define VERSION \"$VERSION\"/g" autom8.cpp
+popd
 
 echo "[*] building libautom8"
 make
@@ -61,9 +68,14 @@ do
 done
 
 pushd build/stage
-prefix=$(echo $PWD | sed 's_/_\\/_g') # cwd, with escaped slashes
-echo "[*] *** REPLACING {{PREFIX}} with $PWD"
-find . -type f -print0 | xargs -0 sed -i '' -e "s/{{PREFIX}}/$prefix/g"
+PREFIX=$(echo $PWD | sed 's_/_\\/_g') # cwd, with escaped slashes
+echo "[*] replacing {{PREFIX}} with $PWD"
+find . -type f -print0 | xargs -0 sed -i '' -e "s/{{PREFIX}}/$PREFIX/g"
+popd
+
+echo "[*] setting client versions to $VERSION"
+pushd build/stage
+find . -type f -print0 | xargs -0 sed -i '' -e "s/{{version}}/$VERSION/g"
 popd
 
 echo "[*] copying installation script, readme, and license"

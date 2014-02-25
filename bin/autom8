@@ -1,0 +1,4 @@
+#!/bin/sh
+pushd {{PREFIX}}/lib/autom8/server
+node main.js
+popd

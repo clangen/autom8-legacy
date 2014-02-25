@@ -14,15 +14,18 @@ echo "[*] building libautom8"
 make
 
 echo "[*] copying files+libautom8 to staging area"
+
+# prepare stage directory structure
 mkdir -p build/stage/bin
 mkdir -p build/stage/lib/autom8
 mkdir -p build/stage/share
 
+# get the important files in place
 cp -rfp autom8_node/client build/stage/lib/autom8
 cp -rfp autom8_node/server build/stage/lib/autom8
 cp -rfp autom8_node/shared build/stage/lib/autom8
-
-# get the important files in place
+cp bin/init.rc build/stage/bin/autom8-init.rc
+cp bin/autom8 build/stage/bin/autom8
 mv build/stage/lib/autom8/shared/conf/ build/stage/share/autom8
 cp libautom8.so build/stage/lib/ 2> /dev/null
 cp libautom8.dylib build/stage/lib/ 2> /dev/null

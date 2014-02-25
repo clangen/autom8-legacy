@@ -13,7 +13,7 @@
 ### END INIT INFO
 
 NODE=/opt/node/bin/node
-SERVER=/opt/autom8/autom8_node/server
+SERVER={{PREFIX}}/lib/autom8/server
 EXE=main.js
 PARAMS="--debug"
 TTY=autom8tty

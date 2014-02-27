@@ -12,24 +12,23 @@ var LESS = "[minifier]".blue;
 
 var COMPILING = new Error({message: 'compiling, try again in a few'});
 
-var cacheVersion = 0;
 var closureCompileRunning = false;
-var cached = {styles: '', scripts: ''};
+var cached = {styles: '', scripts: '', version: 0};
 
 var root = process.cwd() + '/frontend';
 var shared = process.cwd() + '/../shared';
 var cache = process.cwd() + '/minifier.cache';
 
 function writeCacheFile() {
+  if (cached.styles && cached.scripts) {
+    cached.version = Date.now();
+  }
+
   try {
     fs.writeFileSync(cache, JSON.stringify(cached));
   }
   catch (e) {
     log.error(JS, 'failed to write', cache);
-  }
-
-  if (cached.styles && cached.scripts) {
-    cacheVersion = new Date();
   }
 }
 
@@ -45,12 +44,9 @@ function readCacheFile() {
 
   cached = {
     styles: parsed.styles || '',
-    scripts: parsed.scripts || ''
+    scripts: parsed.scripts || '',
+    version: parsed.version || 0
   };
-
-  if (cached.styles && cached.scripts) {
-    cacheVersion = new Date();
-  }
 }
 
 function createLessParser(filename, paths) {
@@ -379,8 +375,7 @@ function minifyLessData(data, fn, callback) {
 
 function clearCache() {
   log.info(CSS, "cleared cache".red);
-  cached = {styles: '', scripts: ''};
-  cacheVersion = 0;
+  cached = {styles: '', scripts: '', version: 0};
 }
 
 function init() {
@@ -388,7 +383,7 @@ function init() {
 }
 
 function getCacheVersion() {
-  return cacheVersion ? cacheVersion.getTime() : 0;
+  return cached.version;
 }
 
 module.exports = exports = {

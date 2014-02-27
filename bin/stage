@@ -83,7 +83,9 @@ popd
 
 echo "[*] copying installation script, readme, and license"
 cp bin/install build/
-cp license.txt build/
-cp license.txt build/stage/share/autom8
+cp LICENSE build/
+cp LICENSE.3rdparty build/
+cp LICENSE build/stage/share/autom8
+cp LICENSE.3rdparty build/stage/share/autom8
 
 echo "[*] done"

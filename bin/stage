@@ -14,8 +14,6 @@ echo "[*] building libautom8"
 make
 
 echo "[*] copying files+libautom8 to staging area"
-
-# prepare stage directory structure
 mkdir -p build/stage/bin
 mkdir -p build/stage/lib/autom8
 mkdir -p build/stage/share

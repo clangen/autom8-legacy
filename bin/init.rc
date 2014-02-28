@@ -12,7 +12,11 @@
 # Description: autom8
 ### END INIT INFO
 
-NODE=/opt/node/bin/node
+NODE={{PREFIX}}/lib/autom8/node/bin/node
+if [ ! -e $NODE ]; then
+    NODE=`which node`
+fi
+
 SERVER={{PREFIX}}/lib/autom8/server
 EXE=main.js
 PARAMS="--debug"

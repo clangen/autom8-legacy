@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ### BEGIN INIT INFO
 # Provides: autom8
@@ -21,7 +21,7 @@ SERVER={{PREFIX}}/lib/autom8/server
 EXE=main.js
 PARAMS="--debug"
 TTY=autom8tty
-USER=pi
+USER={{USER}}
 
 start() {
     echo "[autom8] shutting down old instances"

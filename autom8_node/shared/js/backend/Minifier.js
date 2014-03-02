@@ -2,7 +2,6 @@ var fs = require('fs');
 var io = require('socket.io');
 var less = require('less');
 var path = require('path');
-var closurecompiler = require('closurecompiler');
 var config = require('./Config.js').get();
 var log = require('./Logger.js');
 
@@ -349,6 +348,7 @@ function renderMinifiedScripts(doc, callback) {
   }
   else {
     log.info(JS, "starting closurecompiler", '(' + scriptFilenames.length + ' files)');
+    var closurecompiler = require('closurecompiler');
     closurecompiler.compile(scriptFilenames, { }, minificationCompleteHandler);
     closureCompileRunning = true;
     callback(COMPILING);

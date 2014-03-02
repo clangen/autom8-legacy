@@ -1,21 +1,23 @@
 #!/bin/bash
 
 NO_ARGS=0
-E_OPTERROR=85
 PREFIX=
+STAGE="autom8-stage-tmp"
+USER="autom8"
 
 # ugh, this giant block of code simply parses an input option and
 # ensures the specified path exists
 if [ $# -eq "$NO_ARGS" ]
 then
-  echo "usage: `basename $0` -p <prefix>"
-  exit $E_OPTERROR
+  echo "usage: `basename $0` -p <prefix> [-u <user> default=autom8]"
+  exit 128
 fi
 
-while getopts "p:" OPTION
+while getopts "p:u" OPTION
 do
   case $OPTION in
     p) PREFIX=$OPTARG;;
+    u) USER=$OPTARG;;
   esac
 done
 
@@ -25,23 +27,32 @@ then
     exit
 fi
 
+USER_EXISTS=$(cat /etc/passwd | grep $USER | sed -e 's/:.*//g')
+if [ -z $USER_EXISTS ]
+then
+  echo "[*] adding user $USER"
+  useradd --create-home $USER
+fi
+
 # copy to target directory
 echo "[*] copying stage..."
-cp -rfp stage $PREFIX
+cp -rfp stage $PREFIX/$STAGE
 cd $PREFIX
 
-# substitute {{PREFIX}}
+# substitute {{PREFIX}}, {{USER}}
 echo "[*] replacing {{PREFIX}} with $PREFIX"
-PREFIX=$(echo $PREFIX | sed 's_/_\\/_g') # cwd, with escaped slashes
-find ./stage/bin -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$PREFIX/g"
-find ./stage/share -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$PREFIX/g"
-find ./stage/lib/autom8/client -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$PREFIX/g"
-find ./stage/lib/autom8/server -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$PREFIX/g"
-find ./stage/lib/autom8/shared -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$PREFIX/g"
+ESCAPED_PREFIX=$(echo $PREFIX | sed 's_/_\\/_g') # cwd, with escaped slashes
+find ./$STAGE/bin -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/share -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/lib/autom8/client -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/lib/autom8/server -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/lib/autom8/shared -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/bin -type f -print0 | xargs -0 perl -p -i -e "s/{{USER}}/$USER/g"
 
 # install debs
 echo "[*] installing dependencies using apt-get"
 # sudo apt-get install \
+#     screen rsync \
 #     libsqlite3-0 libssl1.0.0 libboost-system1.54.0 \
 #     libboost-regex1.54.0 libboost-date-time1.54.0 \
 #     libboost-filesystem1.54.0 libboost-thread1.54.0
@@ -53,18 +64,31 @@ if [ ! -e $NPM ]; then
     NPM=`which npm`
 fi
 
-pushd ./stage/lib/autom8 > /dev/null
+pushd ./$STAGE/lib/autom8 > /dev/null
 $NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes less
 popd > /dev/null
 
-# done!!
-mv stage/* .
-rmdir stage
-
-# create user
-
-# copy to install dir
-
 # chmod/chown files
+echo "[*] setting permissions"
+sudo chown -R $USER $STAGE/*
+sudo chmod -R g-w $STAGE/*
+sudo chmod -R o-w $STAGE/*
+
+# done!!
+echo "[*] finalizing"
+mkdir -p bin
+mkdir -p lib
+mkdir -p share
+rsync -pr $STAGE/bin/* bin/
+rsync -pr $STAGE/lib/* lib/
+rsync -pr $STAGE/share/* share/
+rm -rf $STAGE
 
 # install init script
+echo "[*] installing init script"
+sudo rm /etc/init.d/autom8
+sudo cp $PREFIX/bin/autom8-init.rc /etc/init.d/autom8
+sudo chmod +x /etc/init.d/autom8
+sudo update-rc.d autom8 defaults
+
+echo "[*] done"

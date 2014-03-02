@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 NODE={{PREFIX}}/lib/autom8/node/bin/node
 if [ ! -e $NODE ]; then
     NODE=`which node`

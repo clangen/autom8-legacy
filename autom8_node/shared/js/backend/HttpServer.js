@@ -265,7 +265,7 @@
     return app;
   }
 
-  var cache = function() {
+  var compile = function() {
     var noOp = function() { };
 
     var request = {
@@ -280,9 +280,10 @@
     };
 
     minifier.init();
-    fileRequest(request, response);
+    fileRequest(request, response); /* a dummy file request will trigger the
+      initial compile, just make sure the minififer is ready first... */
   };
 
   exports.create = create;
-  exports.cache = cache;
+  exports.compile = compile;
 }());

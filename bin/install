@@ -4,8 +4,6 @@ NO_ARGS=0
 E_OPTERROR=85
 PREFIX=
 
-echo "[*] parsing command line"
-
 # ugh, this giant block of code simply parses an input option and
 # ensures the specified path exists
 if [ $# -eq "$NO_ARGS" ]
@@ -23,9 +21,14 @@ done
 
 if [ -z $PREFIX ]
 then
-    echo "no installation directory specified."
+    echo "[ERROR] no installation directory specified. use -p <prefix>"
     exit
 fi
+
+# copy to target directory
+echo "[*] copying stage..."
+cp -rfp stage $PREFIX
+cd $PREFIX
 
 # substitute {{PREFIX}}
 echo "[*] replacing {{PREFIX}} with $PREFIX"
@@ -38,10 +41,10 @@ find ./stage/lib/autom8/shared -type f -print0 | xargs -0 perl -p -i -e "s/{{PRE
 
 # install debs
 echo "[*] installing dependencies using apt-get"
-sudo apt-get install \
-    libsqlite3-0 libssl1.0.0 libboost-system1.54.0 \
-    libboost-regex1.54.0 libboost-date-time1.54.0 \
-    libboost-filesystem1.54.0 libboost-thread1.54.0
+# sudo apt-get install \
+#     libsqlite3-0 libssl1.0.0 libboost-system1.54.0 \
+#     libboost-regex1.54.0 libboost-date-time1.54.0 \
+#     libboost-filesystem1.54.0 libboost-thread1.54.0
 
 # install node modules
 echo "[*] installing npm modules"
@@ -50,9 +53,13 @@ if [ ! -e $NPM ]; then
     NPM=`which npm`
 fi
 
-pushd build/stage/lib/autom8 > /dev/null
-$NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes
+pushd ./stage/lib/autom8 > /dev/null
+$NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes less
 popd > /dev/null
+
+# done!!
+mv stage/* .
+rmdir stage
 
 # create user
 

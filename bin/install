@@ -30,6 +30,11 @@ PREFIX=$(echo $PREFIX | sed 's_/_\\/_g') # cwd, with escaped slashes
 find ./stage -type f -print0 | xargs -0 sed -i '' -e "s/{{PREFIX}}/$PREFIX/g"
 
 # install debs
+echo "[*] installing dependencies using apt-get"
+sudo apt-get install \
+    libsqlite3-0 libssl1.0.0 libboost-system1.54.0 \
+    libboost-regex1.54.0 libboost-date-time1.54.0 \
+    libboost-filesystem1.54.0 libboost-thread1.54.0
 
 # echo "[*] installing npm modules"
 # pushd build/stage/lib/autom8

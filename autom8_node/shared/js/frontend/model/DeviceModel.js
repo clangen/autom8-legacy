@@ -17,11 +17,11 @@ namespace("autom8.model").Device = Backbone.Model.extend({
   },
 
   isTripped: function() {
-    return this.get('attrs').tripped;
+    return (this.get('attrs') || { }).tripped;
   },
 
   isArmed: function() {
-    return this.get('attrs').armed;
+    return (this.get('attrs') || { }).armed;
   },
 
   address: function() {

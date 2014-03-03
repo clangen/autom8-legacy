@@ -4,7 +4,7 @@
 #  - npm install colors ffi prompt ref socket.io-client commander express lodash q socket.io stripcolorcodes jsonminify
 #  - apt-get install build-essential clang-3.4 make libsqlite3-dev libssl-dev libboost1.54-all-dev
 
-VERSION=0.7.3
+VERSION=0.7.4
 NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
 #NODE_TARBALL=node-v0.10.26-linux-x86
 

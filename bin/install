@@ -59,7 +59,7 @@ sudo apt-get install \
 
 # install node modules
 echo "[*] installing npm modules"
-NODE=$PREFIX/$STAGE/lib/autom8/node/bin/npm
+NODE=$PREFIX/$STAGE/lib/autom8/node/bin/node
 NPM=$PREFIX/$STAGE/lib/autom8/node/bin/npm
 if [ ! -e $NODE ]; then
     NODE=`which node`

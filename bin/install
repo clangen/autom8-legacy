@@ -13,7 +13,7 @@ then
   exit 128
 fi
 
-while getopts "p:u" OPTION
+while getopts "p:u:" OPTION
 do
   case $OPTION in
     p) PREFIX=$OPTARG;;
@@ -59,13 +59,15 @@ sudo apt-get install \
 
 # install node modules
 echo "[*] installing npm modules"
-NPM=$PREFIX/lib/autom8/node/bin/npm
-if [ ! -e $NPM ]; then
+NODE=$PREFIX/$STAGE/lib/autom8/node/bin/npm
+NPM=$PREFIX/$STAGE/lib/autom8/node/bin/npm
+if [ ! -e $NODE ]; then
+    NODE=`which node`
     NPM=`which npm`
 fi
 
 pushd ./$STAGE/lib/autom8 > /dev/null
-$NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes less
+$NODE $NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes less
 popd > /dev/null
 
 # chmod/chown files

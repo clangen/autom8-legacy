@@ -67,7 +67,7 @@ if [ ! -e $NODE ]; then
 fi
 
 pushd ./$STAGE/lib/autom8 > /dev/null
-$NODE $NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes less
+sudo $NODE $NPM install colors prompt commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes less
 popd > /dev/null
 
 # chmod/chown files

@@ -6,7 +6,7 @@
     #include <WinSock2.h>
     #include <windows.h>
 
-    #include <devices/x10/cm15a/cm15a_device_system.hpp>
+    #include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
 #endif // WIN32
 
 #include <QtGui>
@@ -20,11 +20,11 @@
 
 #include <boost/format.hpp>
 
-#include <devices/device_system.hpp>
-#include <server.hpp>
-#include <debug.hpp>
-#include <ssl_certificate.hpp>
-#include <preferences.hpp>
+#include <autom8/device/device_system.hpp>
+#include <autom8/net/server.hpp>
+#include <autom8/util/debug.hpp>
+#include <autom8/util/ssl_certificate.hpp>
+#include <autom8/util/preferences.hpp>
 
 #include <sigslot/sigslot.h>
 

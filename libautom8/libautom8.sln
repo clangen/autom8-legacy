@@ -1,14 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libautom8", "src\libautom8.vcproj", "{4602D866-D98D-4AC6-A501-A2463CD41355}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B2165720-B4B2-4F4B-8888-8C390C3CB4DB} = {B2165720-B4B2-4F4B-8888-8C390C3CB4DB}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libautom8", "src\libautom8.vcxproj", "{4602D866-D98D-4AC6-A501-A2463CD41355}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3rdparty", "..\3rdparty\3rdparty.vcproj", "{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3rdparty", "..\3rdparty\3rdparty.vcxproj", "{B2165720-B4B2-4F4B-8888-8C390C3CB4DB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cm15a_controller", "contrib\cm15a_controller\cm15a_controller.vcproj", "{310C912B-FFCB-4681-AB10-EE91C7DCF39E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cm15a_controller", "contrib\cm15a_controller\cm15a_controller.vcxproj", "{310C912B-FFCB-4681-AB10-EE91C7DCF39E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,7 +2,7 @@
 #include "MainWindow.h"
 
 #include <QtGui/QApplication>
-#include <devices/device_system.hpp>
+#include <autom8/device/device_system.hpp>
 #include <string>
 
 /*

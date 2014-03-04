@@ -3,16 +3,16 @@
 #include "EditDeviceDialog.h"
 
 #if defined(WIN32)
-    #include <devices/x10/cm15a/cm15a_device_system.hpp>
+    #include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
 #else
-    #include <devices/null_device_system.hpp>
+    #include <autom8/device/null_device_system.hpp>
 #endif
 
-#include <server.hpp>
-#include <ssl_certificate.hpp>
-#include <preferences.hpp>
-#include <utility.hpp>
-#include <debug.hpp>
+#include <autom8/net/server.hpp>
+#include <autom8/util/ssl_certificate.hpp>
+#include <autom8/util/preferences.hpp>
+#include <autom8/util/utility.hpp>
+#include <autom8/util/debug.hpp>
 
 using namespace autom8;
 

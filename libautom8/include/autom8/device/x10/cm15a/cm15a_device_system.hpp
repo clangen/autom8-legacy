@@ -3,10 +3,10 @@
 
 #include <windows.h>
 #include <boost/shared_ptr.hpp>
-#include <signal_handler.hpp>
-#include <autom8/device/x10/x10_device_system.hpp>
-#include <autom8/device/x10/devices/x10/x10_device.hpp>
+#include <autom8/util/signal_handler.hpp>
 #include <autom8/device/device_model.hpp>
+#include <autom8/device/x10/x10_device_system.hpp>
+#include <autom8/device/x10/x10_device.hpp>
 #include <autom8/device/x10/x10_device_controller.hpp>
 
 namespace autom8 {

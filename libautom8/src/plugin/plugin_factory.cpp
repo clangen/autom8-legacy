@@ -34,7 +34,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <autom8/util/plugin/plugin_factory.hpp>
+#include <autom8/plugin/plugin_factory.hpp>
 #include <boost/filesystem.hpp>
 
 using namespace autom8;

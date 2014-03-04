@@ -3,8 +3,8 @@
 
 #include <QMessageBox>
 
-#include <devices/device_system.hpp>
-#include <server.hpp>
+#include <autom8/device/device_system.hpp>
+#include <autom8/net/server.hpp>
 
 #define u2q(x) QString::fromUtf8(x.c_str())
 

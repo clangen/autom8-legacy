@@ -7,7 +7,7 @@
 #include <sigslot/sigslot.h>
 #include <sqlite3.h>
 #include <vector>
-#include <debug.hpp>
+#include <autom8/util/debug.hpp>
 
 #define TIME_COLUMN 0
 #define MESSAGE_COLUMN 1

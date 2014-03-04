@@ -34,3 +34,5 @@ libautom8/src/libautom8.vcxproj.user
 node_modules
 release/
 build/
+libautom8/libautom8.sdf
+libautom8/libautom8.suo

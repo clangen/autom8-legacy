@@ -4,9 +4,8 @@
 #include <QtGui/QMainWindow>
 #include <QSystemTrayIcon>
 #include <sigslot/sigslot.h>
-#include <devices/device_system.hpp>
-
-#include <client.hpp>
+#include <autom8/device/device_system.hpp>
+#include <autom8/net/client.hpp>
 
 #include "ui_autom8_server_qt.h"
 

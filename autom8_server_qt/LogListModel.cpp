@@ -5,8 +5,8 @@
 
 #include <boost/format.hpp>
 
-#include <utility.hpp>
-#include <debug.hpp>
+#include <autom8/util/utility.hpp>
+#include <autom8/util/debug.hpp>
 
 using namespace autom8;
 

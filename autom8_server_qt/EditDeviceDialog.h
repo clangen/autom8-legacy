@@ -4,7 +4,7 @@
 #include <QtGui/QMainWindow>
 #include <sigslot/sigslot.h>
 
-#include <devices/device_base.hpp>
+#include <autom8/device/device_base.hpp>
 
 #include "ui_autom8_server_edit_device.h"
 

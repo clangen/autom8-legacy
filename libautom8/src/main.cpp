@@ -1,21 +1,23 @@
 #include <iostream>
 
-#include "signal_handler.hpp"
-#include "constants.hpp"
+#include <autom8/util/signal_handler.hpp>
+#include <autom8/constants.h>
 
-#include "message.hpp"
-#include "response.hpp"
-#include "request_handler_factory.hpp"
-#include "request_handler_registrar.hpp"
+#include <autom8/message/message.hpp>
+#include <autom8/message/response.hpp>
+#include <autom8/message/request_handler_factory.hpp>
+#include <autom8/message/request_handler_registrar.hpp>
 
-#include "server.hpp"
-#include "session.hpp"
-#include "server.hpp"
-#include "debug.hpp"
-#include "utility.hpp"
+#include <autom8/net/server.hpp>
+#include <autom8/net/session.hpp>
+#include <autom8/net/server.hpp>
 
-#include "autom8.hpp"
-#include "devices/x10/cm15a/cm15a_device_system.hpp"
+#include <autom8/util/debug.hpp>
+#include <autom8/util/utility.hpp>
+
+#include <autom8/autom8.hpp>
+#include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
+
 #include <boost/date_time.hpp>
 
 class debug_logger: public autom8::signal_handler {

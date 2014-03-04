@@ -1,30 +1,29 @@
-#include "autom8.hpp"
+#include <autom8/autom8.h>
 
-#include <iostream>
+#include <autom8/util/signal_handler.hpp>
+#include <autom8/constants.h>
 
-#include "signal_handler.hpp"
-#include "constants.hpp"
+#include <autom8/message/message.hpp>
+#include <autom8/message/response.hpp>
+#include <autom8/message/request_handler_factory.hpp>
+#include <autom8/message/request_handler_registrar.hpp>
 
-#include "message.hpp"
-#include "response.hpp"
-#include "request_handler_factory.hpp"
-#include "request_handler_registrar.hpp"
+#include <autom8/net/server.hpp>
+#include <autom8/net/session.hpp>
 
-#include "server.hpp"
-#include "session.hpp"
-#include "server.hpp"
-#include "debug.hpp"
-#include "utility.hpp"
+#include <autom8/util/debug.hpp>
+#include <autom8/util/utility.hpp>
 
-#include "autom8.hpp"
-#include <devices/null_device_system.hpp>
-#include <devices/x10/mochad/mochad_device_system.hpp>
+#include <autom8/device/null_device_system.hpp>
+#include <autom8/device/x10/mochad/mochad_device_system.hpp>
+
 #include <boost/date_time.hpp>
 #include <boost/thread/thread.hpp>
 #include <sqlite3.h>
+#include <iostream>
 
 #ifdef WIN32
-#include <devices/x10/cm15a/cm15a_device_system.hpp>
+#include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
 #endif
 
 using namespace autom8;

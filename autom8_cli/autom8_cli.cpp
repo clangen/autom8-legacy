@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <autom8.hpp>
+#include <autom8/autom8.h>
 #include <boost/thread.hpp>
 
 #ifdef WIN32

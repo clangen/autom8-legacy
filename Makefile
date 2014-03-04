@@ -3,7 +3,7 @@
 #CXX := clang++
 #LLVMCONFIG := /usr/bin/llvm-config-3.4
 #DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include
 #CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
 #CXXFLAGS := $(CFLAGS) -fexceptions
 #LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
@@ -14,7 +14,7 @@
 #CXX := arm-linux-gnueabihf-g++
 #DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
 #DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src -g
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include -g
 #CFLAGS := $(LOCAL_INCLUDES) $(DEFAULT_INCLUDES)  -Wno-extra-tokens -fPIC
 #CXXFLAGS := $(CFLAGS) -fexceptions
 #LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
@@ -24,7 +24,7 @@
 #C := gcc
 #CXX := g++
 #DEFAULT_INCLUDES :=
-#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+#LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include
 #CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
 #CXXFLAGS := $(CFLAGS) -fexceptions
 #LIBRARY_FLAGS := -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
@@ -37,7 +37,7 @@ C := clang
 CXX := clang++
 DEFAULT_INCLUDES :=
 DEFAULT_LIBRARIES := -L/usr/local/lib
-LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/src
+LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include
 CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
 CXXFLAGS := $(CFLAGS) -fexceptions
 LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
@@ -51,36 +51,36 @@ CXX_SOURCES = \
 	3rdparty/src/lib_json/json_writer.cpp \
 	3rdparty/src/lib_json/json_value.cpp \
 	3rdparty/src/base64/base64.cpp \
-	libautom8/src/client.cpp \
-	libautom8/src/common_messages.cpp \
-	libautom8/src/db.cpp \
-	libautom8/src/debug.cpp \
-	libautom8/src/json.cpp \
-	libautom8/src/message.cpp \
-	libautom8/src/preferences.cpp \
-	libautom8/src/request.cpp \
-	libautom8/src/request_handler_factory.cpp \
-	libautom8/src/request_handler_registrar.cpp \
-	libautom8/src/response.cpp \
-	libautom8/src/server.cpp \
-	libautom8/src/session.cpp \
-	libautom8/src/ssl_certificate.cpp \
-	libautom8/src/utility.cpp \
-	libautom8/src/devices/device_base.cpp \
-	libautom8/src/devices/device_model.cpp \
-	libautom8/src/devices/device_system.cpp \
-	libautom8/src/devices/simple_device.cpp \
-	libautom8/src/devices/null_device_system.cpp \
-	libautom8/src/devices/x10/x10_appliance.cpp \
-	libautom8/src/devices/x10/x10_device.cpp \
-	libautom8/src/devices/x10/x10_device_factory.cpp \
-	libautom8/src/devices/x10/x10_lamp.cpp \
-	libautom8/src/devices/x10/x10_security_sensor.cpp \
-	libautom8/src/devices/x10/mochad/mochad_controller.cpp \
-	libautom8/src/devices/x10/mochad/mochad_device_system.cpp \
-	libautom8/src/requests/get_device_list.cpp \
-	libautom8/src/requests/get_security_alert_count.cpp \
-	libautom8/src/requests/send_device_command.cpp \
+	libautom8/src/util/utility.cpp \
+	libautom8/src/util/json.cpp \
+	libautom8/src/util/ssl_certificate.cpp \
+	libautom8/src/util/debug.cpp \
+	libautom8/src/util/preferences.cpp \
+	libautom8/src/db/db.cpp \
+	libautom8/src/message/common_messages.cpp \
+	libautom8/src/message/message.cpp \
+	libautom8/src/message/request.cpp \
+	libautom8/src/message/request_handler_factory.cpp \
+	libautom8/src/message/request_handler_registrar.cpp \
+	libautom8/src/message/response.cpp \
+	libautom8/src/message/requests/get_device_list.cpp \
+	libautom8/src/message/requests/get_security_alert_count.cpp \
+	libautom8/src/message/requests/send_device_command.cpp \
+	libautom8/src/net/client.cpp \
+	libautom8/src/net/server.cpp \
+	libautom8/src/net/session.cpp \
+	libautom8/src/device/device_base.cpp \
+	libautom8/src/device/device_model.cpp \
+	libautom8/src/device/device_system.cpp \
+	libautom8/src/device/simple_device.cpp \
+	libautom8/src/device/null_device_system.cpp \
+	libautom8/src/device/x10/x10_appliance.cpp \
+	libautom8/src/device/x10/x10_device.cpp \
+	libautom8/src/device/x10/x10_device_factory.cpp \
+	libautom8/src/device/x10/x10_lamp.cpp \
+	libautom8/src/device/x10/x10_security_sensor.cpp \
+	libautom8/src/device/x10/mochad/mochad_controller.cpp \
+	libautom8/src/device/x10/mochad/mochad_device_system.cpp \
 	libautom8/src/autom8.cpp \
 	autom8_cli/autom8_cli.cpp
 

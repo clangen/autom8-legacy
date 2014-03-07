@@ -16,6 +16,9 @@ using namespace autom8;
 
 typedef std::set<cm15a_device_system*> instance_list;
 
+/* magic constant we can use to get the path to the dll (libautom8.dll) */
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 /* we just let these leak; the cm15a_device_system instances are wrapped
  * in shared_ptrs(), which may be deleted after static variable destructors
  * have been called. */
@@ -32,15 +35,17 @@ void on_message_received(const char **argv, int argc) {
     }
 }
 
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 
 cm15a_device_system::cm15a_device_system()
 : is_functional_(false) {
-	wchar_t buffer[4096];
-	::GetModuleFileName((HMODULE)&__ImageBase, buffer, 4096);
-	boost::filesystem::path module_path(buffer);
-	::SetDllDirectory(module_path.parent_path().wstring().c_str());
-	MessageBox(NULL, NULL, module_path.parent_path().wstring().c_str(), MB_OK);
+    /* add path to libautom8.dll to library path. this ensures that the
+    cm15a_controller.dll (and other required dlls) can be loaded properly
+    at runtime */
+    wchar_t buffer[4096];
+    ::GetModuleFileName((HMODULE)&__ImageBase, buffer, 4096);
+    boost::filesystem::path module_path(buffer);
+    ::SetDllDirectory(module_path.parent_path().wstring().c_str());
 
     // create the factory and model
     factory_ = device_factory_ptr(new x10_device_factory(this));

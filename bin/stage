@@ -1,13 +1,31 @@
 #!/bin/bash
 
 # before you can stage you must have all build dependencies installed:
-#  - npm install colors ffi prompt ref socket.io-client commander express lodash q socket.io stripcolorcodes jsonminify
-#  - apt-get install build-essential clang-3.4 make libsqlite3-dev libssl-dev libboost1.54-all-dev
+#  - npm install -g closurecompiler
+#
+#  - npm install colors ffi prompt ref socket.io-client commander express
+#    lodash q socket.io stripcolorcodes jsonminify closurecompiler less
+#    clean-css csslint
+#
+#  - apt-get install build-essential clang-3.4 make libsqlite3-dev libssl-dev
+#    libboost1.54-all-dev
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    DARWIN=1
+    echo "[*] detected osx"
+elif [[ "$(uname)" == "Linux" ]]; then
+    LINUX=1
+    echo "[*] detected linux"
+elif [[ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]]; then
+    WINDOWS=1
+    echo "[*] detected windows"
+fi
 
 VERSION=0.7.5
-NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
+#NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
 #NODE_TARBALL=node-v0.10.26-linux-x86
 #NODE_TARBALL=node-v0.10.26-darwin-x64
+NODE_TARBALL=node-v0.10.26-win32
 
 echo "[*] deleting current staging area, if exists"
 rm -rf build/stage/
@@ -18,8 +36,10 @@ pushd libautom8/src/ > /dev/null
 perl -p -i -e "s/#define VERSION \".*\"/#define VERSION \"$VERSION\"/g" autom8.cpp
 popd > /dev/null
 
-echo "[*] building libautom8"
-make
+if [[ $WINDOWS != 1 ]]; then
+    echo "[*] building libautom8"
+    make
+fi
 
 echo "[*] copying files+libautom8 to staging area"
 mkdir -p build/stage/bin
@@ -30,11 +50,18 @@ mkdir -p build/stage/share
 cp -rfp autom8_node/client build/stage/lib/autom8
 cp -rfp autom8_node/server build/stage/lib/autom8
 cp -rfp autom8_node/shared build/stage/lib/autom8
-cp bin/init.rc build/stage/bin/autom8-init.rc
-cp bin/autom8 build/stage/bin/autom8
 mv build/stage/lib/autom8/shared/conf/ build/stage/share/autom8
-cp libautom8.so build/stage/lib/ 2> /dev/null
-cp libautom8.dylib build/stage/lib/ 2> /dev/null
+
+if [[ $LINUX == 1 ]]; then
+    cp libautom8.so build/stage/lib/ 2> /dev/null
+    cp bin/init.rc build/stage/bin/autom8-init.rc
+    cp bin/autom8 build/stage/bin/autom8
+elif [[ $DARWIN == 1 ]]; then
+    cp libautom8.dylib build/stage/lib/ 2> /dev/null
+    cp bin/autom8 build/stage/bin/autom8
+elif [[ $WINDOWS == 1 ]]; then
+    cp release/*.dll build/stage/lib/ 2> /dev/null
+fi
 
 # we'll build these fresh
 rm build/stage/lib/autom8/client/minifier.cache

@@ -1,6 +1,7 @@
 #include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
 
 #include <boost/thread.hpp>
+#include <boost/filesystem.hpp>
 
 #include <autom8/device/device_model.hpp>
 #include <autom8/device/x10/x10_device_factory.hpp>
@@ -31,8 +32,16 @@ void on_message_received(const char **argv, int argc) {
     }
 }
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 cm15a_device_system::cm15a_device_system()
 : is_functional_(false) {
+	wchar_t buffer[4096];
+	::GetModuleFileName((HMODULE)&__ImageBase, buffer, 4096);
+	boost::filesystem::path module_path(buffer);
+	::SetDllDirectory(module_path.parent_path().wstring().c_str());
+	MessageBox(NULL, NULL, module_path.parent_path().wstring().c_str(), MB_OK);
+
     // create the factory and model
     factory_ = device_factory_ptr(new x10_device_factory(this));
     model_ = device_model_ptr(new device_model(factory_));

@@ -33,7 +33,8 @@ rm build/*
 
 echo "[*] replacing version in autom8.cpp with $VERSION"
 pushd libautom8/src/ > /dev/null
-perl -p -i -e "s/#define VERSION \".*\"/#define VERSION \"$VERSION\"/g" autom8.cpp
+perl -p -i".delme" -e "s/#define VERSION \".*\"/#define VERSION \"$VERSION\"/g" autom8.cpp
+rm autom8.cpp.delme
 popd > /dev/null
 
 if [[ $WINDOWS != 1 ]]; then
@@ -103,15 +104,11 @@ do
     mv $js.min $js
 done
 
-# pushd build/stage > /dev/null
-# PREFIX=$(echo $PWD | sed 's_/_\\/_g') # cwd, with escaped slashes
-# echo "[*] replacing {{PREFIX}} with $PWD"
-# find . -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$PREFIX/g"
-# popd > /dev/null
-
 echo "[*] setting client versions to $VERSION"
 pushd build/stage > /dev/null
-find . -type f -print0 | xargs -0 perl -p -i -e "s/{{version}}/$VERSION/g"
+perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./build/stage/lib/autom8/server/frontend/index.html
+perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./build/stage/lib/autom8/client/frontend/index.html
+find ./$STAGE/ -name "*.delme" | xargs -0 rm
 popd > /dev/null
 
 echo "[*] creating local node installation"

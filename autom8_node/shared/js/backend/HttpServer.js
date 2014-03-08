@@ -15,6 +15,7 @@
   var blacklist = require('./Blacklist.js');
   var minifier = require('./Minifier.js');
   var fileCache = require('./FileCache.js');
+  var resource = require('./Resource.js');
 
   var root = process.cwd() + '/frontend';
 
@@ -24,6 +25,20 @@
     'compiling': fs.readFileSync(__dirname + '/static/compiling.html').toString(),
     'blacklisted': fs.readFileSync(__dirname + '/static/blacklisted.html').toString()
   };
+
+  function resolvePem(path) {
+    /* if the config value looks like {{RESOURCE:filename}} then
+    see if the resource loader can find it */
+    var match = path.match(/{{(RESOURCE:)(.*)}}/);
+    if (match && match.length === 3) {
+      var found = resource.resolve('conf', match[2]);
+      if (found) {
+        return found;
+      }
+    }
+
+    return path;
+  }
 
   function fileRequest(req, res) {
     var fn = url.parse(req.url).pathname;
@@ -236,8 +251,8 @@
 
     /* start the http server */
     var serverOptions = {
-      key: fs.readFileSync(config.server.key),
-      cert: fs.readFileSync(config.server.cert)
+      key: resolvePem(config.server.key),
+      cert: resolvePem(config.server.cert)
     };
 
     app.httpServer = require('https').createServer(serverOptions, app);

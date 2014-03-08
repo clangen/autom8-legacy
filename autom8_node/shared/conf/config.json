@@ -3,8 +3,8 @@
         // "port": 7903
         // "key": "/etc/autom8/autom8.pem",
         // "cert": "/etc/autom8/autom8.pem"
-        "key": "{{PREFIX}}/share/autom8/autom8.pem",
-        "cert": "{{PREFIX}}/share/autom8/autom8.pem"
+        "key": "{{RESOURCE:autom8.pem}}",
+        "cert": "{{RESOURCE:autom8.pem}}"
         // "sessionTimeout": null,
         // "enableHtml5AppCache": true
     },

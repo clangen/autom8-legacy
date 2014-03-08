@@ -4,9 +4,13 @@ var log = require('./Logger.js');
 
 var TAG = "[resource loader]".green;
 
+/* <root>/lib/autom8/shared/js/backend/Resource.js */
+var RELATIVE_ROOT = path.resolve(__dirname + "/../../../../../");
+
 var TYPE_TO_PATH_LIST = {
     'bin': [
         '{{PREFIX}}/bin',
+        RELATIVE_ROOT + "/bin/",
         '/usr/bin',
         '/usr/local/bin'
     ],
@@ -14,12 +18,14 @@ var TYPE_TO_PATH_LIST = {
     'lib': [
         '.',
         '{{PREFIX}}/lib',
+        RELATIVE_ROOT + "/bin",
         '/usr/lib',
         '/usr/local/lib'
     ],
 
     'conf': [
         '/etc/autom8',
+        RELATIVE_ROOT + "/share/autom8",
         '{{PREFIX}}/share/autom8',
         '{{PREFIX}}/share/autom8'
     ]
@@ -38,8 +44,6 @@ function resolve(type, name, paths) {
     var defaultPaths = TYPE_TO_PATH_LIST[type] || [];
     paths = (paths || []).slice(0).concat(defaultPaths);
 
-    // log.info(JSON.stringify(paths).blue);
-
     var fullName;
     for (var i = 0; i < paths.length; i++) {
         fullName = path.resolve(paths[i] + '/' + name);
@@ -49,7 +53,7 @@ function resolve(type, name, paths) {
             return fullName;
         }
         else {
-            // log.info(TAG, "testing:".grey, fullName.grey);
+            // log.info(TAG, "not found:".grey, fullName.grey);
         }
     }
 

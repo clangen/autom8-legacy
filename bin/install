@@ -42,12 +42,13 @@ cd $PREFIX
 # substitute {{PREFIX}}, {{USER}}
 echo "[*] replacing {{PREFIX}} with $PREFIX"
 ESCAPED_PREFIX=$(echo $PREFIX | sed 's_/_\\/_g') # cwd, with escaped slashes
-find ./$STAGE/bin -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
-find ./$STAGE/share -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
-find ./$STAGE/lib/autom8/client -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
-find ./$STAGE/lib/autom8/server -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
-find ./$STAGE/lib/autom8/shared -type f -print0 | xargs -0 perl -p -i -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
-find ./$STAGE/bin -type f -print0 | xargs -0 perl -p -i -e "s/{{USER}}/$USER/g"
+find ./$STAGE/bin -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/share -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/lib/autom8/client -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/lib/autom8/server -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/lib/autom8/shared -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{PREFIX}}/$ESCAPED_PREFIX/g"
+find ./$STAGE/bin -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{USER}}/$USER/g"
+find ./$STAGE/ -name "*.delme" | xargs -0 rm
 
 # install debs
 echo "[*] installing dependencies using apt-get"

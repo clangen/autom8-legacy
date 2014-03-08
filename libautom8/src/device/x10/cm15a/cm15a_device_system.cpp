@@ -35,8 +35,6 @@ void on_message_received(const char **argv, int argc) {
     }
 }
 
-
-
 cm15a_device_system::cm15a_device_system()
 : is_functional_(false) {
     /* add path to libautom8.dll to library path. this ensures that the

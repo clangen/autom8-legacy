@@ -251,8 +251,8 @@
 
     /* start the http server */
     var serverOptions = {
-      key: resolvePem(config.server.key),
-      cert: resolvePem(config.server.cert)
+      key: fs.readFileSync(resolvePem(config.server.key)),
+      cert: fs.readFileSync(resolvePem(config.server.cert))
     };
 
     app.httpServer = require('https').createServer(serverOptions, app);

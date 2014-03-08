@@ -98,8 +98,6 @@ cm15a_device_system::~cm15a_device_system() {
 
         if (instances_->size() == 0) {
             controller_.deinit();
-            delete instances_;
-            instances_ = NULL;
         }
     }
 

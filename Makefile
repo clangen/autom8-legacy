@@ -1,7 +1,7 @@
 # may be one of the following: drawin, linux, pi
-TARGET := darwin
+BUILD_TARGET := pi
 
-ifeq ($(TARGET), darwin)
+ifeq ($(BUILD_TARGET), darwin)
 	# mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems
 	# when using node.js with ffi. specifically: memory allocation issues and random
 	# segfaults. why? who knows...
@@ -14,7 +14,7 @@ ifeq ($(TARGET), darwin)
 	CXXFLAGS := $(CFLAGS) -fexceptions
 	LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -lpthread -lssl -lcrypto -lboost_system-mt -lboost_regex-mt -lboost_date_time-mt -lboost_filesystem-mt -lboost_thread-mt
 	LD_FLAGS := -dynamiclib -o libautom8.dylib
-else ifeq ($(TARGET), linux)
+else ifeq ($(BUILD_TARGET), linux)
 	C := clang
 	CXX := clang++
 	LLVMCONFIG := /usr/bin/llvm-config-3.4
@@ -24,7 +24,7 @@ else ifeq ($(TARGET), linux)
 	CXXFLAGS := $(CFLAGS) -fexceptions
 	LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 	LD_FLAGS := -shared -o libautom8.so
-else ifeq ($(TARGET), pi)
+else ifeq ($(BUILD_TARGET), pi)
 	C := arm-linux-gnueabihf-gcc
 	CXX := arm-linux-gnueabihf-g++
 	DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf

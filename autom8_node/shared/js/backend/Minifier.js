@@ -1,6 +1,5 @@
 var fs = require('fs');
 var io = require('socket.io');
-var less = require('less');
 var path = require('path');
 var config = require('./Config.js').get();
 var log = require('./Logger.js');
@@ -49,6 +48,8 @@ function readCacheFile() {
 }
 
 function createLessParser(filename, paths) {
+    var less = require('less');
+
     filename = filename || "";
     paths = paths || [];
     paths.push(path.dirname(filename));

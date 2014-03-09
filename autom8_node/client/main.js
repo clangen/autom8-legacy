@@ -2,7 +2,6 @@
 
 (function() {
   var program = require('commander');
-  var prompt = require('prompt');
   require('colors');
 
   var shared = "./../shared/js/backend/";
@@ -10,9 +9,6 @@
   var httpServer = require(shared + 'HttpServer.js');
   var util = require(shared + 'Util.js');
   var clientProxy = require(shared + 'ClientProxy.js').create();
-
-  prompt.message = "autom8";
-  prompt.start();
 
   function start() {
     config.init(program);
@@ -77,6 +73,10 @@
   from stdin now, hash it, and cache it. */
   else if (!program.clientpw) {
     var host = program.clienthost;
+
+    var prompt = require('prompt');
+    prompt.message = "autom8";
+    prompt.start();
 
     var promptOptions = { name: 'password', hidden: true };
     prompt.get(promptOptions, function(error, result) {

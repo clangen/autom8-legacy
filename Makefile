@@ -8,7 +8,7 @@ ifeq ($(BUILD_TARGET), darwin)
 	C := clang
 	CXX := clang++
 	DEFAULT_INCLUDES :=
-	DEFAULT_LIBRARIES := -L/usr/local/lib
+	DEFAULT_LIBRARIES := -L./bin/osx/lib -L/usr/local/lib
 	LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include
 	CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -g
 	CXXFLAGS := $(CFLAGS) -fexceptions
@@ -81,6 +81,7 @@ CXX_OBJECTS = $(CXX_SOURCES:%.cpp=%.o)
 C_OBJECTS = $(C_SOURCES:%.c=%.o)
 
 all: $(C_OBJECTS) $(CXX_OBJECTS)
+	sh bin/gather_static_libraries
 	#$(CXX) -o autom8_cli/autom8_cli $(C_OBJECTS) $(CXX_OBJECTS) $(LIBRARY_FLAGS)
 	$(CXX) $(LD_FLAGS) $(C_OBJECTS) $(CXX_OBJECTS) $(LIBRARY_FLAGS)
 

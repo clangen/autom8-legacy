@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    mkdir -p bin/osx/lib/
+    cp -H /usr/local/lib/libboost_system-mt.a bin/osx/lib
+    cp -H /usr/local/lib/libboost_date_time-mt.a bin/osx/lib
+    cp -H /usr/local/lib/libboost_filesystem-mt.a bin/osx/lib
+    cp -H /usr/local/lib/libboost_thread-mt.a bin/osx/lib
+    cp -H /usr/local/lib/libboost_regex-mt.a bin/osx/lib
+fi

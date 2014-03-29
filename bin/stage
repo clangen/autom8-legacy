@@ -22,9 +22,9 @@ elif [[ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]]; then
 fi
 
 VERSION=0.7.5
-NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
+#NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
 #NODE_TARBALL=node-v0.10.26-linux-x86
-#NODE_TARBALL=node-v0.10.26-darwin-x64
+NODE_TARBALL=node-v0.10.26-darwin-x64
 #NODE_TARBALL=node-v0.10.26-win32
 
 echo "[*] deleting current staging area, if exists"

@@ -54,6 +54,7 @@ fi
 
 # copy to target directory
 echo "[*] copying stage... to $PREFIX/$STAGE"
+mkdir -p $PREFIX
 cp -rfp stage $PREFIX/$STAGE
 cd $PREFIX
 
@@ -83,14 +84,19 @@ fi
 # install node modules
 echo "[*] installing npm modules"
 NODE=$PREFIX/$STAGE/lib/autom8/node/bin/node
-NPM=$PREFIX/$STAGE/lib/autom8/node/bin/npm
+NPM=$PREFIX/$STAGE/lib/autom8/node/lib/node_modules/npm/cli.js
 if [ ! -e $NODE ]; then
     NODE=`which node`
     NPM=`which npm`
 fi
 
 pushd ./$STAGE/lib/autom8 > /dev/null
-sudo $NODE $NPM install colors commander ffi ref express jsonminify lodash q socket.io socket.io-client stripcolorcodes
+
+sudo $NODE $NPM install \
+    colors@0.6.2 commander@2.1.0 ffi@1.2.6 ref@0.1.3 express@3.5.0 \
+    jsonminify@0.2.3 lodash@2.4.1 q@1.0.0 socket.io@0.9.16 \
+    socket.io-client@0.9.16 stripcolorcodes@0.1.0
+
 popd > /dev/null
 
 # chmod/chown files

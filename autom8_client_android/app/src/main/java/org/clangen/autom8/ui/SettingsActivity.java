@@ -40,9 +40,9 @@ public class SettingsActivity extends PreferenceActivity {
             showTranslucencyToggledDialog();
         }
         else if (p == getPeristencePreference()) {
-            final Intent i = new Intent(ClientService.ACTION_START_SERVICE);
-            i.setClass(this, ClientService.class);
-            startService(i);
+            final Intent intent = new Intent(this, ClientService.class);
+            intent.setAction(ClientService.ACTION_START_SERVICE);
+            startService(intent);
         }
         else if (p == getConnectionManagerPreference()) {
             ConnectionManagerActivity.start(this);

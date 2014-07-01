@@ -115,7 +115,10 @@ public class DevicesActivity extends Activity {
         super.onResume();
         mPaused = false;
 
-        startService(new Intent(ClientService.ACTION_INC_CLIENT_COUNT));
+        final Intent intent = new Intent(this, ClientService.class);
+        intent.setAction(ClientService.ACTION_INC_CLIENT_COUNT);
+        startService(intent);
+
         updateUiFromClientServiceState();
         checkFirstRun();
 
@@ -131,7 +134,9 @@ public class DevicesActivity extends Activity {
 
     @Override
     public void onPause() {
-        startService(new Intent(ClientService.ACTION_DEC_CLIENT_COUNT));
+        final Intent intent = new Intent(this, ClientService.class);
+        intent.setAction(ClientService.ACTION_DEC_CLIENT_COUNT);
+        startService(intent);
 
         mPaused = true;
         super.onPause();
@@ -251,7 +256,8 @@ public class DevicesActivity extends Activity {
     }
 
     private void bindService() {
-        Intent intent = new Intent(ClientService.ACTION_START_SERVICE);
+        Intent intent = new Intent(this, ClientService.class);
+        intent.setAction(ClientService.ACTION_START_SERVICE);
         startService(intent);
         bindService(intent, mServiceConnection, 0);
     }

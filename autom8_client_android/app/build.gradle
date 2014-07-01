@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 'android-L'
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "com.example.clangen.autom8"
+        minSdkVersion 'L'
+        targetSdkVersion 'L'
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            aidl.srcDirs = ['src/main/aidl']
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

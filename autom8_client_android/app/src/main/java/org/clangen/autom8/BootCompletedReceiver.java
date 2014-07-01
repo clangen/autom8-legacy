@@ -13,7 +13,9 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean(context.getString(R.string.pref_start_at_boot), false)) {
-            context.startService(new Intent(ClientService.ACTION_START_SERVICE));
+            intent = new Intent(context, ClientService.class);
+            intent.setAction(ClientService.ACTION_START_SERVICE);
+            context.startService(intent);
         }
     }
 }

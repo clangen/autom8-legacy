@@ -28,7 +28,7 @@
     <string name="setting_version_title">Version</string>
     <string name="setting_version_desc">v%1$s (build %2$d)</string>
 
-    <string name="running_notification_desc">Tap here to manage your devices</string>
+    <string name="running_notification_desc">Tap here to control your devices</string>
     <string name="security_notification_title">Security alert</string>
     <plurals name="security_notification_desc">
         <item quantity="one">There is %1$s uncleared security alert.</item>
@@ -39,8 +39,8 @@
     <string name="background_notification_desc">Tap here to control your devices</string>
 
     <string name="status_disconnected">disconnected</string>
-    <string name="status_tap_to_reconnect">(tap to reconnect)</string>
-    <string name="status_tap_to_setup">(tap to setup connection)</string>
+    <string name="status_tap_to_reconnect">(tap here to reconnect)</string>
+    <string name="status_tap_to_setup">(tap here to setup connection)</string>
     <string name="status_connecting">connecting...</string>
     <string name="status_authenticating">authenticating...</string>
     <string name="status_connected">connected</string>

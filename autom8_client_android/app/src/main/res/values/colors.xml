@@ -17,7 +17,6 @@
 
     <color name="notification_text">#000000</color>
 
-    <color name="connected_header_translucent">#33000000</color>
     <color name="connected_header_opaque">#202020</color>
 
     <color name="connection_item_button_text">#ffffff</color>

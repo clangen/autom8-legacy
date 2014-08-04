@@ -1,5 +1,6 @@
 package org.clangen.autom8.ui;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -71,6 +72,7 @@ public class DevicesActivity extends Activity {
     private boolean mTranslucent;
 
     private class ViewHolder {
+        public View mConnectionStatusView;
         public View mConnectingView;
         public View mConnectedView;
         public View mDisconnectedView;
@@ -216,20 +218,22 @@ public class DevicesActivity extends Activity {
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
         mDeviceModel = new DeviceModel(this,  mOnDeviceModelChanged);
 
-        mViews.mConnectingView = mDevicesView.findViewById(R.id.ConnectingView);
-        mViews.mConnectingTextView = (TextView) mDevicesView.findViewById(R.id.ConnectingText);
-        mViews.mConnectedView = mDevicesView.findViewById(R.id.ConnectedView);
-        mViews.mDisconnectedView = mDevicesView.findViewById(R.id.DisconnectedView);
-        mViews.mDisconnectedTextView = (TextView) mDevicesView.findViewById(R.id.DisconnectedTextView);
-        mViews.mConnectedHostName = (TextView) mDevicesView.findViewById(R.id.ConnectedHostNameView);
+        mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
+        final ActionBar ab = getActionBar();
+        ab.setCustomView(mViews.mConnectionStatusView);
+        ab.setDisplayShowCustomEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);
+
+        final View status = mViews.mConnectionStatusView;
+        mViews.mConnectingView = status.findViewById(R.id.ConnectingView);
+        mViews.mConnectingTextView = (TextView) status.findViewById(R.id.ConnectingText);
+        mViews.mConnectedView = status.findViewById(R.id.ConnectedView);
+        mViews.mDisconnectedView = status.findViewById(R.id.DisconnectedView);
+        mViews.mDisconnectedTextView = (TextView) status.findViewById(R.id.DisconnectedTextView);
+        mViews.mConnectedHostName = (TextView) status.findViewById(R.id.ConnectedHostNameView);
 
         mTranslucent = PreferenceManager.getDefaultSharedPreferences(this)
             .getBoolean(getString(R.string.pref_translucency_enabled), false);
-
-        if (mTranslucent) {
-            mViews.mConnectedView.setBackgroundColor(
-                getResources().getColor(R.color.connected_header_translucent));
-        }
 
         mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesListView);
         if (mViews.mListView == null) {
@@ -335,7 +339,6 @@ public class DevicesActivity extends Activity {
 
         case Client.STATE_DISCONNECTED:
             disconnectedState = View.VISIBLE;
-            mViews.mDisconnectedView.setBackgroundResource(android.R.drawable.list_selector_background);
             mViews.mDisconnectedView.setOnClickListener(mOnReconnectClicked);
             mListAdapter.notifyDataSetInvalidated();
 

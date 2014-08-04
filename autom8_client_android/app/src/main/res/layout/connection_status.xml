@@ -3,14 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:focusable="true" >
-
-    <View
-        android:background="@android:drawable/divider_horizontal_dark"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp" />
+    android:layout_height="48dp"
+    android:padding="3dp"
+    android:gravity="left"
+    android:layout_centerVertical="true" >
 
     <include
         layout="@layout/status_connecting"
@@ -20,16 +16,11 @@
     <include
         layout="@layout/status_connected"
         android:id="@+id/ConnectedView"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <include
         layout="@layout/status_disconnected"
         android:id="@+id/DisconnectedView"
         android:visibility="gone" />
-
-    <View
-        android:background="@android:drawable/divider_horizontal_dark"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp" />
 
 </LinearLayout>

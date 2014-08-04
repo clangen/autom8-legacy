@@ -6,11 +6,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <include
-        layout="@layout/connection_status"
-        android:id="@+id/ConnectionStatusView"
-        android:layout_alignParentTop="true" />
-
     <GridView
         android:id="@+id/DevicesGridView"
         android:divider="@android:drawable/divider_horizontal_dark"

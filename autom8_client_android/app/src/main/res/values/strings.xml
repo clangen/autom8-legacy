@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">autom8</string>
-    <string name="edit_connection_name">autom8 - Edit connection</string>
-    <string name="edit_create_connection">autom8 - Create new connection</string>
-    <string name="connection_manager_name">autom8 - Connection manager</string>
+    <string name="edit_connection_name">Edit connection</string>
+    <string name="edit_create_connection">Create connection</string>
+    <string name="connection_manager_name">Connection manager</string>
     <string name="settings_name">autom8 - Settings</string>
     <string name="service_name">autom8 - ClientService</string>
 
@@ -28,6 +28,7 @@
     <string name="setting_version_title">Version</string>
     <string name="setting_version_desc">v%1$s (build %2$d)</string>
 
+    <string name="running_notification_desc">Tap here to manage your devices</string>
     <string name="security_notification_title">Security alert</string>
     <plurals name="security_notification_desc">
         <item quantity="one">There is %1$s uncleared security alert.</item>

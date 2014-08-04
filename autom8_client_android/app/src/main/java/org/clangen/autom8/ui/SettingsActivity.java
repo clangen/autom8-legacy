@@ -93,11 +93,11 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private void showTranslucencyToggledDialog() {
-        AlertDialog.Builder b = new AlertDialog.Builder(this);
-        b.setTitle(R.string.dlg_translucency_warning_title);
-        b.setMessage(R.string.dlg_translucency_warning_desc);
-        b.setPositiveButton(R.string.button_ok, null);
-        b.create().show();
+//        AlertDialog.Builder b = new AlertDialog.Builder(this);
+//        b.setTitle(R.string.dlg_translucency_warning_title);
+//        b.setMessage(R.string.dlg_translucency_warning_desc);
+//        b.setPositiveButton(R.string.button_ok, null);
+//        b.create().show();
         sendBroadcast(new Intent(ACTION_TRANSLUCENCY_TOGGLED));
     }
 

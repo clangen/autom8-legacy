@@ -1,17 +1,5 @@
 package org.clangen.autom8.service;
 
-import org.clangen.autom8.R;
-import org.clangen.autom8.connection.Connection;
-import org.clangen.autom8.connection.ConnectionLibrary;
-import org.clangen.autom8.db.DeviceLibrary;
-import org.clangen.autom8.db.device.JSONDevice;
-import org.clangen.autom8.net.Client;
-import org.clangen.autom8.net.Message;
-import org.clangen.autom8.net.MessageName;
-import org.clangen.autom8.net.Client.OnMessageReceivedListener;
-import org.clangen.autom8.net.request.GetDeviceList;
-import org.clangen.autom8.ui.DevicesActivity;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -22,6 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -32,7 +23,18 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.RemoteViews;
+
+import org.clangen.autom8.R;
+import org.clangen.autom8.connection.Connection;
+import org.clangen.autom8.connection.ConnectionLibrary;
+import org.clangen.autom8.db.DeviceLibrary;
+import org.clangen.autom8.db.device.JSONDevice;
+import org.clangen.autom8.net.Client;
+import org.clangen.autom8.net.Client.OnMessageReceivedListener;
+import org.clangen.autom8.net.Message;
+import org.clangen.autom8.net.MessageName;
+import org.clangen.autom8.net.request.GetDeviceList;
+import org.clangen.autom8.ui.DevicesActivity;
 
 public class ClientService extends Service {
     private static final String TAG = "ClientService";
@@ -65,6 +67,7 @@ public class ClientService extends Service {
     private boolean mSecurityNotificationVisible;
     private boolean mDestroyed;
     private boolean mHeartbeatScheduled;
+    private Bitmap mLargeAppIcon, mLargeAlertIcon;
 
     private NotificationManager mNotificationManager;
     private DeviceLibrary mLibrary;
@@ -104,6 +107,8 @@ public class ClientService extends Service {
         super.onCreate();
 
         Log.i(TAG, "service created");
+
+        initIcons();
 
         sClient.setOnResponseReceivedListener(mOnResponseReceived);
         sClient.setOnStateChangedListener(mOnClientStateChangeListener);
@@ -385,10 +390,12 @@ public class ClientService extends Service {
         boolean enabled = prefs.getBoolean(getString(R.string.pref_run_in_background), false);
 
         if (enabled && (mClientCount == 0)) {
-            Notification n = new Notification(
-                R.drawable.background_notification_icon,
-                null,
-                System.currentTimeMillis());
+            Notification n = new Notification.Builder(this)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.running_notification_desc))
+                .setSmallIcon(R.drawable.icon)
+                .setLargeIcon(mLargeAppIcon)
+                .getNotification();
 
             Intent intent = new Intent(this, DevicesActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
@@ -396,7 +403,6 @@ public class ClientService extends Service {
 
             n.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
             n.defaults = 0;
-            n.contentView = new RemoteViews(getPackageName(), R.layout.background_notification);
             n.contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
             mNotificationManager.notify(BACKGROUND_NOTIFICATION_ID, n);
@@ -406,7 +412,7 @@ public class ClientService extends Service {
         }
     }
 
-    private void updateSecurityNotification() {
+    private boolean updateSecurityNotification() {
         int alertCount = mLibrary.getAlertCount();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean enabled = prefs.getBoolean(getString(R.string.pref_security_notifications), false);
@@ -414,19 +420,22 @@ public class ClientService extends Service {
         if (( ! enabled) || (alertCount == 0) || ( ! sClient.isConnected()) || (mClientCount > 0)) {
             mNotificationManager.cancel(SECURITY_NOTIFICATION_ID);
             mSecurityNotificationVisible = false;
+            return false;
         }
         else {
             if (mSecurityNotificationVisible) {
-                return;
+                return false;
             }
-
-            Notification notification = new Notification(
-                R.drawable.security_notification_icon,
-                getString(R.string.security_notification_title),
-                System.currentTimeMillis());
 
             final String alertDetails = getResources().getQuantityString(
                 R.plurals.security_notification_desc, alertCount, alertCount);
+
+            Notification notification = new Notification.Builder(this)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(alertDetails)
+                .setSmallIcon(R.drawable.alert)
+                .setLargeIcon(mLargeAlertIcon)
+                .getNotification();
 
             Intent intent = new Intent();
             intent.setClassName(getPackageName(), DevicesActivity.class.getCanonicalName());
@@ -438,8 +447,6 @@ public class ClientService extends Service {
             notification.ledARGB = 0xffff0000;
             notification.ledOffMS = 1000;
             notification.ledOnMS = 1000;
-            notification.contentView = new RemoteViews(getPackageName(), R.layout.security_notification);
-            notification.contentView.setTextViewText(R.id.SecurityAlertDetailsViews, alertDetails);
             notification.contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
             String sound = prefs.getString(getString(R.string.pref_notification_ringtone), null);
@@ -450,6 +457,7 @@ public class ClientService extends Service {
 
             mNotificationManager.notify(SECURITY_NOTIFICATION_ID, notification);
             mSecurityNotificationVisible = true;
+            return true;
         }
     }
 
@@ -474,6 +482,20 @@ public class ClientService extends Service {
 
         checkStartConnectionStateChecking();
         checkStopDelayed();
+    }
+
+    private void initIcons() {
+        final Resources res = getResources();
+
+        int nw = res.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);
+        int nh = res.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
+        int size = Math.min(nh, nw) / 2;
+
+        mLargeAppIcon = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(res, R.drawable.icon), size, size, true);
+
+        mLargeAlertIcon = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(res, R.drawable.alert), size, size, true);
     }
 
     private Handler mHandler = new Handler() {

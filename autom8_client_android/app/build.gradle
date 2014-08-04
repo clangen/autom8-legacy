@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'android-L'
+    compileSdkVersion 15
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         applicationId "com.example.clangen.autom8"
-        minSdkVersion 'L'
-        targetSdkVersion 'L'
+        minSdkVersion 15
+        targetSdkVersion 15
         versionCode 1
         versionName "1.0"
     }

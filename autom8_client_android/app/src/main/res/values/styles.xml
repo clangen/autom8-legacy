@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="DeviceActivityTheme" parent="@android:style/Theme.Wallpaper.NoTitleBar">
+
+    <style name="DeviceActivityTheme" parent="@android:style/Theme.Holo">
+    </style>
+
+    <style name="DeviceActivityTranslucentTheme" parent="@android:style/Theme.Holo">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:actionBarStyle">@style/TranslucentActionBar</item>
+    </style>
+
+    <style name="TranslucentActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">#aa000000</item>
     </style>
 
     <style name="DefaultText">

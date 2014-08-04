@@ -1,22 +1,5 @@
 package org.clangen.autom8.ui;
 
-import org.clangen.autom8.R;
-import org.clangen.autom8.connection.Connection;
-import org.clangen.autom8.connection.ConnectionLibrary;
-import org.clangen.autom8.device.Device;
-import org.clangen.autom8.device.DeviceStatus;
-import org.clangen.autom8.device.DeviceType;
-import org.clangen.autom8.device.Lamp;
-import org.clangen.autom8.device.SecuritySensor;
-import org.clangen.autom8.net.Client;
-import org.clangen.autom8.net.Message;
-import org.clangen.autom8.net.request.ArmSensor;
-import org.clangen.autom8.net.request.ResetSensorStatus;
-import org.clangen.autom8.net.request.SetDeviceStatus;
-import org.clangen.autom8.net.request.SetLampBrightness;
-import org.clangen.autom8.service.ClientService;
-import org.clangen.autom8.service.IClientService;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -42,7 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -51,6 +33,23 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.clangen.autom8.R;
+import org.clangen.autom8.connection.Connection;
+import org.clangen.autom8.connection.ConnectionLibrary;
+import org.clangen.autom8.device.Device;
+import org.clangen.autom8.device.DeviceStatus;
+import org.clangen.autom8.device.DeviceType;
+import org.clangen.autom8.device.Lamp;
+import org.clangen.autom8.device.SecuritySensor;
+import org.clangen.autom8.net.Client;
+import org.clangen.autom8.net.Message;
+import org.clangen.autom8.net.request.ArmSensor;
+import org.clangen.autom8.net.request.ResetSensorStatus;
+import org.clangen.autom8.net.request.SetDeviceStatus;
+import org.clangen.autom8.net.request.SetLampBrightness;
+import org.clangen.autom8.service.ClientService;
+import org.clangen.autom8.service.IClientService;
 
 public class DevicesActivity extends Activity {
     private final static String TAG = "DevicesActivity";
@@ -98,7 +97,6 @@ public class DevicesActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         checkEnableTranslucency();
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         getIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         super.onCreate(savedInstanceState);
@@ -300,9 +298,13 @@ public class DevicesActivity extends Activity {
         return null;
     }
 
+    private void setActionBarProgressIndicatorVisibility(boolean visible) {
+
+    }
+
     private void setUiState(int newState) {
         boolean visible = (newState == Client.STATE_CONNECTING);
-        setProgressBarIndeterminateVisibility(visible);
+        setActionBarProgressIndicatorVisibility(visible);
 
         int progressState = View.GONE;
         int connectedState = View.GONE;
@@ -499,12 +501,18 @@ public class DevicesActivity extends Activity {
         final boolean enabled = prefs.getBoolean(key, false);
 
         if (supportedOs && enabled) {
-            setTheme(R.style.DeviceActivityTheme);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            getWindow().getAttributes().dimAmount = 0.45f;
+            setTheme(R.style.DeviceActivityTranslucentTheme);
+
+            final int flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+            getWindow().setFlags(flags, flags);
+
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.dimAmount = 0.45f;
+            params.alpha = 1.0f;
+            getWindow().setAttributes(params);
         }
         else {
-            setTheme(android.R.style.Theme);
+            setTheme(R.style.DeviceActivityTheme);
         }
     }
 

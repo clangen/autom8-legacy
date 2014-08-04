@@ -21,6 +21,7 @@ autom8_node/server/minifier.cache
 autom8_node/server/pid
 autom8_server_node/node_modules/
 autom8_server_qt/GeneratedFiles/
+bin/osx/
 debug/
 ipch/
 libautom8.dylib

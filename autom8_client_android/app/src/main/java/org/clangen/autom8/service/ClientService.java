@@ -393,7 +393,7 @@ public class ClientService extends Service {
             Notification n = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.running_notification_desc))
-                .setSmallIcon(R.drawable.icon)
+                .setSmallIcon(R.drawable.notification_icon)
                 .setLargeIcon(mLargeAppIcon)
                 .getNotification();
 
@@ -433,7 +433,7 @@ public class ClientService extends Service {
             Notification notification = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(alertDetails)
-                .setSmallIcon(R.drawable.alert)
+                .setSmallIcon(R.drawable.notification_alert)
                 .setLargeIcon(mLargeAlertIcon)
                 .getNotification();
 

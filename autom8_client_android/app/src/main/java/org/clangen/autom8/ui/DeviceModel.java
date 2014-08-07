@@ -6,10 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceLibraryFactory;
-import org.clangen.autom8.device.Device;
-import org.clangen.autom8.device.DeviceType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +47,6 @@ public class DeviceModel {
 
     public interface OnChangedListener {
         void onChanged();
-        void onSensorChanged(String address);
     }
 
     public DeviceModel(Context context, OnChangedListener listener) {
@@ -106,33 +104,6 @@ public class DeviceModel {
         for (Device device : mDevices) {
             mAddressToIndexMap.put(device.getAddress(), i++);
         }
-    }
-
-    private Device requeryDevice(String address) throws IndexOutOfBoundsException {
-        Integer index = mAddressToIndexMap.get(address);
-
-        if (index == null) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        Device oldDevice = mDevices.get(index);
-        Device newDevice = mLibrary.getDeviceByAddress(address);
-        Device result;
-
-        if (oldDevice.getDisplayPriority() != newDevice.getDisplayPriority()) {
-            requery();
-            result = mDevices.get(mAddressToIndexMap.get(address));
-        }
-        else {
-            mDevices.set(index, newDevice);
-            result = newDevice;
-        }
-
-        if (result != null && result.getType() == DeviceType.SECURITY_SENSOR) {
-            mListener.onSensorChanged(result.getAddress());
-        }
-
-        return result;
     }
 
     private BroadcastReceiver mLibraryIntentHandler = new BroadcastReceiver() {

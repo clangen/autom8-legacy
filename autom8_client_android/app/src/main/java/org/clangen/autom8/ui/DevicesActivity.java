@@ -398,17 +398,6 @@ public class DevicesActivity extends Activity {
         }
     }
 
-    private void onSensorStatusChanged(final String address) {
-        SecuritySensor sensor = (SecuritySensor) mDeviceModel.get(address);
-
-        if (sensor.isArmed() && sensor.isTripped()) {
-            mViews.mListView.setAdapter(mListAdapter);
-        }
-        else {
-            mListAdapter.notifyDataSetChanged();
-        }
-    }
-
     private void showLightDimDialog(final Lamp lampDevice) {
         View dimView = getLayoutInflater().inflate(R.layout.dim_lamp, null, false);
         final SeekBar seekBar = (SeekBar) dimView.findViewById(R.id.DimLampSeekBar);
@@ -533,10 +522,6 @@ public class DevicesActivity extends Activity {
     {
         public void onChanged() {
             mListAdapter.notifyDataSetChanged();
-        }
-
-        public void onSensorChanged(String address) {
-            onSensorStatusChanged(address);
         }
     };
 

@@ -3,6 +3,7 @@ package org.clangen.autom8.device.impl.json;
 import android.util.Log;
 
 import org.clangen.autom8.device.Device;
+import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
 import org.json.JSONArray;
@@ -84,6 +85,6 @@ public class JsonDevice implements Device {
     }
 
     public int getDisplayPriority() {
-        return 0;
+        return DeviceLibrary.DEFAULT_DISPLAY_PRIORITY;
     }
 }

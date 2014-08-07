@@ -3,7 +3,6 @@ package org.clangen.autom8.device;
 import android.content.Context;
 import android.content.Intent;
 
-import org.clangen.autom8.device.Device;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -17,10 +16,11 @@ public abstract class DeviceLibrary {
     public static final String ACTION_DEVICE_LIBRARY_CLEARED = "org.clangen.autom8.ACTION_DEVICE_LIBRARY_CLEARED";
     public static final String EXTRA_DEVICE_ADDRESS = "org.clangen.autom8.EXTRA_DEVICE_ADDRESS";
 
-    public static final int SECURITY_ALERT_DISPLAY_PRIORITY = Integer.MAX_VALUE;
-    public static final int MAXIMUM_DISPLAY_PRIORITY = Integer.MAX_VALUE - 1;
+    public static final int MAXIMUM_DISPLAY_PRIORITY = 100;
     public static final int MINIMUM_DISPLAY_PRIORITY = 0;
-    public static final int DEFAULT_DISPLAY_PRIORITY = 100;
+    public static final int SECURITY_ALERT_DISPLAY_PRIORITY = MAXIMUM_DISPLAY_PRIORITY;
+    public static final int SECURITY_SENSOR_DISPLAY_PRIORITY = MINIMUM_DISPLAY_PRIORITY;
+    public static final int DEFAULT_DISPLAY_PRIORITY = 25;
 
     protected Context mContext;
 

@@ -11,12 +11,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by clangen on 8/6/14.
  */
 public class InMemoryDeviceLibrary extends DeviceLibrary {
+    private static final DisplayPriorityComparator PRIORITY_COMPARATOR = new DisplayPriorityComparator();
     private static final String TAG = "InMemoryDeviceLibrary";
     private ArrayList<Device> mDevices = new ArrayList<Device>();
 
@@ -26,7 +28,15 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
 
     @Override
     public synchronized List<Device> getDevices() {
-        return new ArrayList<Device>(mDevices);
+        ArrayList<Device> result;
+
+        synchronized(this) {
+            result = new ArrayList<Device>(mDevices);
+
+        }
+
+        Collections.sort(result, PRIORITY_COMPARATOR);
+        return result;
     }
 
     @Override

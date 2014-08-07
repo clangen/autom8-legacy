@@ -1,8 +1,8 @@
 package org.clangen.autom8.device.impl.db;
 
-import java.util.HashMap;
-
 import org.clangen.autom8.device.SecuritySensor;
+
+import java.util.HashMap;
 
 public class DbSecuritySensor extends DbDevice implements SecuritySensor {
     private static final String ARMED_ATTRIBUTE = "armed";

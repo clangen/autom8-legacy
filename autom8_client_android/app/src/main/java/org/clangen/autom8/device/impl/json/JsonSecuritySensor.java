@@ -1,5 +1,6 @@
 package org.clangen.autom8.device.impl.json;
 
+import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.SecuritySensor;
 import org.json.JSONObject;
 
@@ -7,17 +8,37 @@ import org.json.JSONObject;
  * Created by clangen on 8/6/14.
  */
 public class JsonSecuritySensor extends JsonDevice implements SecuritySensor {
+    private static final String ARMED_ATTRIBUTE = "armed";
+    private static final String TRIPPED_ATTRIBUTE = "tripped";
+
+    private boolean mTripped, mArmed;
+
     public JsonSecuritySensor(JSONObject json) {
         super(json);
+        init();
     }
 
     @Override
     public boolean isTripped() {
-        return false;
+        return mTripped;
     }
 
     @Override
     public boolean isArmed() {
-        return false;
+        return mArmed;
+    }
+
+    @Override
+    public int getDisplayPriority() {
+        if (mTripped && mArmed) {
+            return DeviceLibrary.SECURITY_ALERT_DISPLAY_PRIORITY;
+        }
+
+        return DeviceLibrary.SECURITY_SENSOR_DISPLAY_PRIORITY;
+    }
+
+    private void init() {
+        mArmed = "true".equals(getAttribute(ARMED_ATTRIBUTE));
+        mTripped = "true".equals(getAttribute(TRIPPED_ATTRIBUTE));
     }
 }

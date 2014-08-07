@@ -1,10 +1,10 @@
 package org.clangen.autom8.device.impl.db;
 
-import java.util.HashMap;
+import android.util.Log;
 
 import org.clangen.autom8.device.Lamp;
 
-import android.util.Log;
+import java.util.HashMap;
 
 public class DbLamp extends DbDevice implements Lamp {
     private static final String BRIGHTNESS_ATTRIBUTE = "brightness";

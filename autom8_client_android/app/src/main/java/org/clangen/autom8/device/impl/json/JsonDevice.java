@@ -10,7 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class JsonDevice implements Device {
     public static final String LABEL_NODE = "label";
@@ -18,14 +22,18 @@ public class JsonDevice implements Device {
     public static final String ADDRESS_NODE = "address";
     public static final String STATUS_NODE = "status";
     public static final String ATTRIBUTES_NODE = "attributes";
+    public static final String GROUPS_NODE = "groups";
 
     private String mAddress, mLabel;
     private int mStatus = DeviceStatus.UNKNOWN, mType = DeviceType.UNKNOWN;
     private boolean mValid = false;
     private HashMap<String, String> mAttributes = new HashMap<String, String>();
+    private List<String> mGroups;
+    private JSONObject mRaw;
 
     public JsonDevice(JSONObject json) {
-        mValid = createFromJSON(json);
+        mRaw = json;
+        swap(json);
     }
 
     public boolean isValid() {
@@ -48,17 +56,62 @@ public class JsonDevice implements Device {
         return mType;
     }
 
+    @Override
+    public List<String> getGroups() {
+        synchronized (this) {
+            return new ArrayList<String>(mGroups);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public HashMap<String, String> getAttributes() {
         return (HashMap<String, String>) mAttributes.clone();
     }
 
-    private boolean createFromJSON(JSONObject json) {
+    private void parseGroups(JSONArray groups) throws JSONException {
+        mGroups = new ArrayList<String>();
+
+        if (groups != null) {
+            for (int i = 0; i < groups.length(); i++) {
+                mGroups.add(groups.getString(i));
+            }
+        }
+
+        mGroups = Collections.unmodifiableList(mGroups);
+    }
+
+    public synchronized final void swap(JSONObject json) {
+        init(json);
+        reinitialize();
+    }
+
+    public synchronized final void swap(Device d) {
+        if (d instanceof JsonDevice) {
+            swap(((JsonDevice) d).getRaw());
+        }
+        else {
+            throw new InvalidParameterException("expected a JsonDevice");
+        }
+    }
+
+    protected void reinitialize() {
+        /* for base class use */
+    }
+
+    protected final JSONObject getRaw() {
+        return mRaw;
+    }
+
+    protected final void init(JSONObject json) {
+        mValid = false;
+
         try {
             mAddress = json.getString(ADDRESS_NODE);
             mLabel = json.getString(LABEL_NODE);
             mStatus = json.getInt(STATUS_NODE);
             mType = json.getInt(TYPE_NODE);
+
+            parseGroups(json.optJSONArray(GROUPS_NODE));
 
             JSONObject attributes = json.getJSONObject(ATTRIBUTES_NODE);
             JSONArray keys = attributes.names();
@@ -71,13 +124,11 @@ public class JsonDevice implements Device {
                 }
             }
 
-            return true;
+            mValid = true;
         }
         catch (JSONException ex) {
             Log.i("JSONDevice", "unable to parse device from JSON!", ex);
         }
-
-        return false;
     }
 
     public String getAttribute(String key) {

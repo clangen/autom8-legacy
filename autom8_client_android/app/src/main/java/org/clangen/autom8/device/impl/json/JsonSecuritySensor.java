@@ -15,7 +15,6 @@ public class JsonSecuritySensor extends JsonDevice implements SecuritySensor {
 
     public JsonSecuritySensor(JSONObject json) {
         super(json);
-        init();
     }
 
     @Override
@@ -37,7 +36,9 @@ public class JsonSecuritySensor extends JsonDevice implements SecuritySensor {
         return DeviceLibrary.SECURITY_SENSOR_DISPLAY_PRIORITY;
     }
 
-    private void init() {
+    @Override
+    protected void reinitialize() {
+        super.reinitialize();
         mArmed = "true".equals(getAttribute(ARMED_ATTRIBUTE));
         mTripped = "true".equals(getAttribute(TRIPPED_ATTRIBUTE));
     }

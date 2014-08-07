@@ -13,7 +13,6 @@ public class JsonLamp extends JsonDevice implements Lamp {
 
     public JsonLamp(JSONObject json) {
         super(json);
-        init();
     }
 
     @Override
@@ -21,7 +20,9 @@ public class JsonLamp extends JsonDevice implements Lamp {
         return mBrightness;
     }
 
-    private void init() {
-        mBrightness = Integer.parseInt(getAttribute("brightness"));
+    @Override
+    protected void reinitialize() {
+        super.reinitialize();
+        mBrightness = Integer.parseInt(getAttribute(BRIGHTNESS_ATTRIBUTE));
     }
 }

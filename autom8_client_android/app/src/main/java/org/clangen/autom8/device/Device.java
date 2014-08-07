@@ -1,5 +1,7 @@
 package org.clangen.autom8.device;
 
+import java.util.List;
+
 public interface Device {
     int getType();
     int getStatus();
@@ -7,4 +9,6 @@ public interface Device {
     String getLabel();
     String getAttribute(String key);
     int getDisplayPriority();
+    List<String> getGroups();
+    void swap(Device d);
 }

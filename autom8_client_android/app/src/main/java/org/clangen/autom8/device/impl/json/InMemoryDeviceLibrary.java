@@ -76,7 +76,7 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
     public boolean update(JSONObject rawJson) {
         Device updatedDevice;
         try {
-            updatedDevice = (JsonDevice) DeviceFactory.fromJson(rawJson);
+            updatedDevice = DeviceFactory.fromJson(rawJson);
         }
         catch (JSONException ex) {
             Log.e(TAG, "update() failed to parse JSON");
@@ -85,15 +85,12 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
 
         boolean success = false;
         final String address = updatedDevice.getAddress();
-        synchronized(this) {
-            for (int i = 0; i < mDevices.size(); i++) {
-                Device d = mDevices.get(i);
 
-                if (d.getAddress().equals(address)) {
-                    mDevices.set(i, updatedDevice);
-                    success = true;
-                    break;
-                }
+        synchronized(this) {
+            Device device = getDeviceByAddress(address);
+            if (device != null) {
+                device.swap(updatedDevice);
+                success = true;
             }
         }
 

@@ -149,15 +149,7 @@ public class DeviceModel {
                 requery();
             }
             else if (DeviceLibrary.ACTION_DEVICE_UPDATED.equals(action)) {
-                String address = intent.getStringExtra(DeviceLibrary.EXTRA_DEVICE_ADDRESS);
-                if (address != null && address.length() > 0) {
-                    Log.i(TAG, "address of updated device: " + address);
-                    mUpdatingSet.remove(address);
-                    requeryDevice(address);
-                }
-                else {
-                    requery();
-                }
+                requery();
             }
             else {
                 return;

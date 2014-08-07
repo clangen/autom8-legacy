@@ -89,7 +89,7 @@
 
     <string name="connection_mgr_button_edit">edit</string>
     <string name="connection_mgr_button_delete">del</string>
-    <string name="connection_mgr_button_add_connection">Add connection</string>
+    <string name="connection_mgr_button_add_connection">New connection</string>
     <string name="connection_mgr_no_connections">No connections.\nPlease add a new connection below.</string>
 
     <string name="pref_run_in_background">runInBackground</string>

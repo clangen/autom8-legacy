@@ -15,7 +15,6 @@
         android:padding="0sp"
         android:horizontalSpacing="1sp"
         android:verticalSpacing="1sp"
-        android:numColumns="2"
-        android:layout_below="@+id/ConnectionStatusView" />
+        android:numColumns="2" />
 
 </RelativeLayout>

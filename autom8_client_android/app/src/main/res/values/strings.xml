@@ -4,8 +4,8 @@
     <string name="edit_connection_name">Edit connection</string>
     <string name="edit_create_connection">Create connection</string>
     <string name="connection_manager_name">Connection manager</string>
-    <string name="settings_name">autom8 - Settings</string>
-    <string name="service_name">autom8 - ClientService</string>
+    <string name="settings_name">Settings</string>
+    <string name="service_name">autom8 ClientService</string>
 
     <string name="settings_section_service">Service settings</string>
     <string name="settings_section_advanced">Advanced settings</string>
@@ -18,7 +18,7 @@
     <string name="setting_connection_manager_title">Connection manager</string>
     <string name="setting_connection_manager_desc">Create and edit multiple connection profiles.</string>
     <string name="setting_translucency_title">Enable translucency</string>
-    <string name="setting_translucency_desc">Display main screen with wallpaper translucency. (Android 2.0+ required)</string>
+    <string name="setting_translucency_desc">Display main screen with wallpaper translucency.</string>
     <string name="setting_ringtone_title">Notification ringtone</string>
     <string name="setting_ringtone_desc">Change the default security alert notification ringtone.</string>
     <string name="setting_heartbeat_title">Heartbeat</string>

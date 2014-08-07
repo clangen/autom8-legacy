@@ -5,11 +5,11 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.example.clangen.autom8"
+        applicationId "org.clangen.autom8"
         minSdkVersion 15
         targetSdkVersion 15
-        versionCode 1
-        versionName "1.0"
+        versionCode 50
+        versionName "0.5.2"
     }
 
     buildTypes {

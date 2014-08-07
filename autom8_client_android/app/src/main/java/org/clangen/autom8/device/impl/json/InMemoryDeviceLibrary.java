@@ -6,6 +6,8 @@ import android.util.Log;
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceFactory;
 import org.clangen.autom8.device.DeviceLibrary;
+import org.clangen.autom8.device.DeviceType;
+import org.clangen.autom8.device.SecuritySensor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,8 +70,20 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
     }
 
     @Override
-    public int getAlertCount() {
-        return 0;
+    public synchronized int getAlertCount() {
+        int alerts = 0;
+
+        SecuritySensor s;
+        for (Device d : mDevices) {
+            if (d.getType() == DeviceType.SECURITY_SENSOR) {
+                s = (SecuritySensor) d;
+                if (s.isArmed() && s.isTripped()) {
+                    alerts += 1;
+                }
+            }
+        }
+
+        return alerts;
     }
 
     @Override

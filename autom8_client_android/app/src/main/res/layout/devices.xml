@@ -10,7 +10,6 @@
         android:divider="@android:drawable/divider_horizontal_dark"
         android:dividerHeight="1dp"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ConnectionStatusView" />
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

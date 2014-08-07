@@ -1,6 +1,6 @@
 package org.clangen.autom8;
 
-import org.clangen.autom8.db.DeviceLibraryFactory;
+import org.clangen.autom8.device.DeviceLibraryFactory;
 
 public class Application extends android.app.Application {
     @Override

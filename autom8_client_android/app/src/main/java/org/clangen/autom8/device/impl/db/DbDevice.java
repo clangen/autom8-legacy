@@ -1,4 +1,4 @@
-package org.clangen.autom8.db.device;
+package org.clangen.autom8.device.impl.db;
 
 import android.database.Cursor;
 

@@ -1,6 +1,8 @@
-package org.clangen.autom8.db;
+package org.clangen.autom8.device;
 
 import android.content.Context;
+
+import org.clangen.autom8.device.impl.json.InMemoryDeviceLibrary;
 
 /**
  * Created by clangen on 8/6/14.

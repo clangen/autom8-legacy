@@ -1,4 +1,4 @@
-package org.clangen.autom8.device.impl;
+package org.clangen.autom8.device.impl.json;
 
 import org.clangen.autom8.device.SecuritySensor;
 import org.json.JSONObject;

@@ -1,8 +1,8 @@
 package org.clangen.autom8.device;
 
-import org.clangen.autom8.device.impl.JsonDevice;
-import org.clangen.autom8.device.impl.JsonLamp;
-import org.clangen.autom8.device.impl.JsonSecuritySensor;
+import org.clangen.autom8.device.impl.json.JsonDevice;
+import org.clangen.autom8.device.impl.json.JsonLamp;
+import org.clangen.autom8.device.impl.json.JsonSecuritySensor;
 import org.json.JSONException;
 import org.json.JSONObject;
 

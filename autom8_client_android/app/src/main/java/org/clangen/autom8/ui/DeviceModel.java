@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
-import org.clangen.autom8.db.DeviceLibrary;
-import org.clangen.autom8.db.DeviceLibraryFactory;
+import org.clangen.autom8.device.DeviceLibrary;
+import org.clangen.autom8.device.DeviceLibraryFactory;
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceType;
 

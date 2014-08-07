@@ -1,11 +1,11 @@
-package org.clangen.autom8.db;
+package org.clangen.autom8.device.impl.json;
 
 import android.content.Context;
 import android.util.Log;
 
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceFactory;
-import org.clangen.autom8.device.impl.JsonDevice;
+import org.clangen.autom8.device.DeviceLibrary;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

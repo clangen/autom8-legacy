@@ -1,4 +1,4 @@
-package org.clangen.autom8.db.device;
+package org.clangen.autom8.device.impl.db;
 
 import java.util.HashMap;
 
@@ -16,11 +16,11 @@ public class DbSecuritySensor extends DbDevice implements SecuritySensor {
     public boolean isArmed() {
         return mArmed;
     }
-    
+
     public boolean isTripped() {
         return mTripped;
     }
-    
+
     protected void loadExtendedAttributes(HashMap<String, String> attributes) {
         mArmed = "true".equals(attributes.get(ARMED_ATTRIBUTE));
         mTripped = "true".equals(attributes.get(TRIPPED_ATTRIBUTE));

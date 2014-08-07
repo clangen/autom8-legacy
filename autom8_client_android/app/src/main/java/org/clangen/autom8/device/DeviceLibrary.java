@@ -1,4 +1,4 @@
-package org.clangen.autom8.db;
+package org.clangen.autom8.device;
 
 import android.content.Context;
 import android.content.Intent;

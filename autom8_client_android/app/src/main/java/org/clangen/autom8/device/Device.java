@@ -6,4 +6,5 @@ public interface Device {
     String getAddress();
     String getLabel();
     String getAttribute(String key);
+    int getDisplayPriority();
 }

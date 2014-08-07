@@ -28,7 +28,8 @@ import org.clangen.autom8.R;
 import org.clangen.autom8.connection.Connection;
 import org.clangen.autom8.connection.ConnectionLibrary;
 import org.clangen.autom8.db.DeviceLibrary;
-import org.clangen.autom8.db.device.JSONDevice;
+import org.clangen.autom8.db.DeviceLibraryFactory;
+import org.clangen.autom8.device.impl.JsonDevice;
 import org.clangen.autom8.net.Client;
 import org.clangen.autom8.net.Client.OnMessageReceivedListener;
 import org.clangen.autom8.net.Message;
@@ -90,11 +91,15 @@ public class ClientService extends Service {
         mHandler.removeMessages(MESSAGE_DELAYED_STOP);
         mHandler.removeMessages(MESSAGE_DELAYED_DISCONNECT);
 
+        if (intent == null) {
+            intent = new Intent();
+        }
+
         final String a = intent.getAction();
-        if (a.equals(ACTION_INC_CLIENT_COUNT)) {
+        if (ACTION_INC_CLIENT_COUNT.equals(a)) {
             updateClientCount(1);
         }
-        else if (a.equals(ACTION_DEC_CLIENT_COUNT)) {
+        else if (ACTION_DEC_CLIENT_COUNT.equals(a)) {
             updateClientCount(-1);
         }
         else {
@@ -113,7 +118,7 @@ public class ClientService extends Service {
         sClient.setOnResponseReceivedListener(mOnResponseReceived);
         sClient.setOnStateChangedListener(mOnClientStateChangeListener);
 
-        mLibrary = DeviceLibrary.getInstance(this);
+        mLibrary = DeviceLibraryFactory.getInstance(this);
 
         registerReceiver(
             mHeartbeatReceiver,
@@ -241,10 +246,10 @@ public class ClientService extends Service {
                 boolean deviceUpdated = MessageName.DeviceStatusUpdated.is(message.getName());
 
                 if (sensorChanged || deviceUpdated) {
-                    JSONDevice device = new JSONDevice(message.bodyToJSON());
+                    JsonDevice device = new JsonDevice(message.bodyToJSON());
 
                     if (device.isValid()) {
-                        mLibrary.update(device);
+                        mLibrary.update(message.bodyToJSON());
                     }
                 }
             }

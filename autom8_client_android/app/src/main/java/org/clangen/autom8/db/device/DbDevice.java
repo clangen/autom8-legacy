@@ -1,10 +1,10 @@
 package org.clangen.autom8.db.device;
 
-import java.util.HashMap;
+import android.database.Cursor;
 
 import org.clangen.autom8.device.Device;
 
-import android.database.Cursor;
+import java.util.HashMap;
 
 public class DbDevice implements Device {
     private boolean mInitialized = false;

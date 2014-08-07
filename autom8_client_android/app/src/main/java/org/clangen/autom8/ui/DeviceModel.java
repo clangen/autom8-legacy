@@ -1,20 +1,20 @@
 package org.clangen.autom8.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import org.clangen.autom8.db.DeviceLibrary;
-import org.clangen.autom8.db.device.DbDevice;
-import org.clangen.autom8.device.Device;
-import org.clangen.autom8.device.DeviceType;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
+
+import org.clangen.autom8.db.DeviceLibrary;
+import org.clangen.autom8.db.DeviceLibraryFactory;
+import org.clangen.autom8.device.Device;
+import org.clangen.autom8.device.DeviceType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * This class is very similar to a Cursor that automatically requeries
@@ -58,7 +58,7 @@ public class DeviceModel {
 
         mContext = context.getApplicationContext();
         mContext.registerReceiver(mLibraryIntentHandler, LIBRARY_INTENTS);
-        mLibrary = DeviceLibrary.getInstance(context);
+        mLibrary = DeviceLibraryFactory.getInstance(context);
         mListener = listener;
         mUpdatingSet = new HashSet<String>();
         mAddressToIndexMap = new HashMap<String, Integer>();
@@ -115,8 +115,8 @@ public class DeviceModel {
             throw new IndexOutOfBoundsException();
         }
 
-        DbDevice oldDevice = (DbDevice) mDevices.get(index);
-        DbDevice newDevice = (DbDevice) mLibrary.getDeviceByAddress(address);
+        Device oldDevice = mDevices.get(index);
+        Device newDevice = mLibrary.getDeviceByAddress(address);
         Device result;
 
         if (oldDevice.getDisplayPriority() != newDevice.getDisplayPriority()) {

@@ -1,6 +1,6 @@
-package org.clangen.autom8.db.device;
+package org.clangen.autom8.device.impl;
 
-import java.util.HashMap;
+import android.util.Log;
 
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceStatus;
@@ -9,21 +9,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import java.util.HashMap;
 
-public class JSONDevice implements Device {
-    private static final String LABEL_NODE = "label";
-    private static final String TYPE_NODE = "type";
-    private static final String ADDRESS_NODE = "address";
-    private static final String STATUS_NODE = "status";
-    private static final String ATTRIBUTES_NODE = "attributes";
+public class JsonDevice implements Device {
+    public static final String LABEL_NODE = "label";
+    public static final String TYPE_NODE = "type";
+    public static final String ADDRESS_NODE = "address";
+    public static final String STATUS_NODE = "status";
+    public static final String ATTRIBUTES_NODE = "attributes";
 
     private String mAddress, mLabel;
     private int mStatus = DeviceStatus.UNKNOWN, mType = DeviceType.UNKNOWN;
     private boolean mValid = false;
     private HashMap<String, String> mAttributes = new HashMap<String, String>();
 
-    public JSONDevice(JSONObject json) {
+    public JsonDevice(JSONObject json) {
         mValid = createFromJSON(json);
     }
 

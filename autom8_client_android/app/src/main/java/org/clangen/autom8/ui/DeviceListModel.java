@@ -11,7 +11,6 @@ import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceLibraryFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -26,12 +25,11 @@ import java.util.List;
  * @author avatar
  *
  */
-public class DeviceModel {
+public class DeviceListModel {
     private static final String TAG = "DeviceModel";
 
     private List<Device> mDevices = new ArrayList<Device>();
     private HashSet<String> mUpdatingSet;
-    private HashMap<String, Integer> mAddressToIndexMap;
     private DeviceLibrary mLibrary;
     private OnChangedListener mListener;
     private Context mContext;
@@ -49,7 +47,7 @@ public class DeviceModel {
         void onChanged();
     }
 
-    public DeviceModel(Context context, OnChangedListener listener) {
+    public DeviceListModel(Context context, OnChangedListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("ChangedListener cannot be null");
         }
@@ -59,7 +57,6 @@ public class DeviceModel {
         mLibrary = DeviceLibraryFactory.getInstance(context);
         mListener = listener;
         mUpdatingSet = new HashSet<String>();
-        mAddressToIndexMap = new HashMap<String, Integer>();
 
         requery();
     }
@@ -77,14 +74,7 @@ public class DeviceModel {
     }
 
     public Device get(String address) {
-        Device result = null;
-        Integer index = mAddressToIndexMap.get(address);
-
-        if (index != null) {
-            result = mDevices.get(index);
-        }
-
-        return result;
+        return mLibrary.getDeviceByAddress(address);
     }
 
     public void setUpdating(String address) {
@@ -96,37 +86,16 @@ public class DeviceModel {
     }
 
     private void requery() {
-        mAddressToIndexMap.clear();
         mUpdatingSet.clear();
-        mDevices = mLibrary.getDevices();
-
-        int i = 0;
-        for (Device device : mDevices) {
-            mAddressToIndexMap.put(device.getAddress(), i++);
-        }
+        mDevices = mLibrary.getDeviceList();
+        mListener.onChanged();
     }
 
     private BroadcastReceiver mLibraryIntentHandler = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            Log.i(TAG, "Handling event: " + action);
-
-            if (DeviceLibrary.ACTION_DEVICE_LIBRARY_CLEARED.equals(action)) {
-                mDevices.clear();
-                mAddressToIndexMap.clear();
-            }
-            else if (DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED.equals(action)) {
-                requery();
-            }
-            else if (DeviceLibrary.ACTION_DEVICE_UPDATED.equals(action)) {
-                requery();
-            }
-            else {
-                return;
-            }
-
-            mListener.onChanged();
+            Log.i(TAG, "Handling event: " + intent.getAction());
+            requery();
         }
     };
 }

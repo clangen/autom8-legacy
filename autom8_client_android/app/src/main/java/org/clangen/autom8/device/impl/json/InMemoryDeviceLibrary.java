@@ -7,6 +7,9 @@ import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceFactory;
 import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceType;
+import org.clangen.autom8.device.DisplayPriorityComparator;
+import org.clangen.autom8.device.Group;
+import org.clangen.autom8.device.GroupComparator;
 import org.clangen.autom8.device.SecuritySensor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,29 +25,69 @@ import java.util.List;
  */
 public class InMemoryDeviceLibrary extends DeviceLibrary {
     private static final DisplayPriorityComparator PRIORITY_COMPARATOR = new DisplayPriorityComparator();
+    private static final GroupComparator GROUP_COMPARATOR = new GroupComparator();
+
     private static final String TAG = "InMemoryDeviceLibrary";
     private ArrayList<Device> mDevices = new ArrayList<Device>();
+    private ArrayList<Device> mSortedDevices;
+    private ArrayList<Group> mGroups;
 
     public InMemoryDeviceLibrary(Context context) {
         super(context);
     }
 
     @Override
-    public synchronized List<Device> getDevices() {
-        ArrayList<Device> result;
-
-        synchronized(this) {
-            result = new ArrayList<Device>(mDevices);
-
+    public synchronized List<Device> getDeviceList() {
+        if (mSortedDevices == null) {
+            mSortedDevices = new ArrayList<Device>(mDevices);
+            Collections.sort(mSortedDevices, PRIORITY_COMPARATOR);
         }
 
-        Collections.sort(result, PRIORITY_COMPARATOR);
-        return result;
+        return new ArrayList<Device>(mSortedDevices);
+    }
+
+    @Override
+    public synchronized List<Group> getDeviceGroups() {
+        if (mGroups == null) {
+            HashMap<String, ArrayList<Device>> aggregated =
+              new HashMap<String, ArrayList<Device>>();
+
+            /* collect a hash map of device lists. the key in this hash
+            map will be the group name, the value will the the list of
+            devices associated with the group. */
+            ArrayList<Device> list;
+            for (Device device : mDevices) {
+                for (String groupName : device.getGroups()) {
+                    list = aggregated.get(groupName);
+
+                    if (list == null) {
+                        list = new ArrayList<Device>();
+                        aggregated.put(groupName, list);
+                    }
+
+                    list.add(device);
+                }
+            }
+
+            /* the groups have been aggregated together, now let's convert
+            it into a sorted structure. first, use the data within the
+            hash maps to actually create the Group instances, then sort. */
+            ArrayList<Group> sorted = new ArrayList<Group>();
+            for (String groupName : aggregated.keySet()) {
+                sorted.add(new Group(groupName, aggregated.get(groupName)));
+            }
+
+            Collections.sort(sorted, GROUP_COMPARATOR);
+            mGroups = sorted;
+        }
+
+        return new ArrayList<Group>(mGroups);
     }
 
     @Override
     public void setFromDeviceListJSON(JSONObject devices) {
         ArrayList<Device> result = new ArrayList<Device>();
+        boolean success = false;
 
         try {
             JSONArray deviceArray = devices.getJSONArray("devices");
@@ -52,14 +96,18 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
                 result.add(DeviceFactory.fromJson(deviceArray.getJSONObject(i)));
             }
 
-            onReloaded();
+            success = true;
         }
         catch(JSONException jex) {
             Log.e(TAG, "setFromDeviceListJSON failed!");
         }
 
-        synchronized(this) {
-            mDevices = result;
+        if (success) {
+            synchronized(this) {
+                mDevices = result;
+                markDirty();
+                onReloaded();
+            }
         }
     }
 
@@ -109,6 +157,7 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
         }
 
         if (success) {
+            markDirty();
             onDeviceUpdated(address);
         }
 
@@ -124,5 +173,12 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
         }
 
         return null;
+    }
+
+    private void markDirty() {
+        synchronized(this) {
+            mSortedDevices = null;
+            mGroups = null;
+        }
     }
 }

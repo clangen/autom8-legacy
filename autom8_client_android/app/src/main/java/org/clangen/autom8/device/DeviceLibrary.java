@@ -28,7 +28,8 @@ public abstract class DeviceLibrary {
         mContext = context;
     }
 
-    public abstract List<Device> getDevices();
+    public abstract List<Device> getDeviceList();
+    public abstract List<Group> getDeviceGroups();
     public abstract void setFromDeviceListJSON(JSONObject devices);
     public abstract void clear();
     public abstract int getAlertCount();

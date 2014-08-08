@@ -64,7 +64,7 @@ public class DevicesActivity extends Activity {
 
     private View mDevicesView;
     private ViewHolder mViews = new ViewHolder();
-    private DeviceModel mDeviceModel;
+    private DeviceListModel mDeviceListModel;
     private ConnectionLibrary mConnectionLibrary;
     private IClientService mClientService;
     private boolean mPaused = true, mDestroyed;
@@ -209,14 +209,14 @@ public class DevicesActivity extends Activity {
         mDestroyed = true;
 
         unregisterReceiver(mBroadcastReceiver);
-        mDeviceModel.close();
+        mDeviceListModel.close();
         unbindService();
     }
 
     private void init() {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
-        mDeviceModel = new DeviceModel(this,  mOnDeviceModelChanged);
+        mDeviceListModel = new DeviceListModel(this,  mOnDeviceModelChanged);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
         final ActionBar ab = getActionBar();
@@ -462,8 +462,8 @@ public class DevicesActivity extends Activity {
     private void onDeviceItemClicked(Device device) {
         final String address = device.getAddress();
 
-        if ( ! mDeviceModel.isUpdating(address)) {
-            mDeviceModel.setUpdating(address);
+        if ( ! mDeviceListModel.isUpdating(address)) {
+            mDeviceListModel.setUpdating(address);
             mListAdapter.notifyDataSetChanged();
         }
 
@@ -517,8 +517,8 @@ public class DevicesActivity extends Activity {
         }
     }
 
-    private DeviceModel.OnChangedListener mOnDeviceModelChanged =
-        new DeviceModel.OnChangedListener()
+    private DeviceListModel.OnChangedListener mOnDeviceModelChanged =
+        new DeviceListModel.OnChangedListener()
     {
         public void onChanged() {
             mListAdapter.notifyDataSetChanged();
@@ -548,7 +548,7 @@ public class DevicesActivity extends Activity {
 
     private BaseAdapter mListAdapter = new BaseAdapter() {
         public int getCount() {
-            return (mDeviceModel == null ? 0 : mDeviceModel.size());
+            return (mDeviceListModel == null ? 0 : mDeviceListModel.size());
         }
 
         public Object getItem(int position) {
@@ -573,11 +573,11 @@ public class DevicesActivity extends Activity {
                 convertView.setTag(holder);
             }
 
-            if (mDeviceModel == null) {
+            if (mDeviceListModel == null) {
                 return convertView;
             }
 
-            Device device = mDeviceModel.get(position);
+            Device device = mDeviceListModel.get(position);
 
             ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
 
@@ -588,7 +588,7 @@ public class DevicesActivity extends Activity {
             holder.mModuleInfoView.setText(
                 deviceTypeToString(device.getType()) + " " + device.getAddress());
 
-            if (mDeviceModel.isUpdating(device.getAddress())) {
+            if (mDeviceListModel.isUpdating(device.getAddress())) {
                 // device status is UPDATING?
                 holder.mUpdatingView.setVisibility(View.VISIBLE);
                 holder.mStatusText.setVisibility(View.GONE);
@@ -701,7 +701,7 @@ public class DevicesActivity extends Activity {
 
     private OnItemClickListener mOnDeviceRowClicked = new OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Device device = mDeviceModel.get(position);
+            Device device = mDeviceListModel.get(position);
 
             switch (device.getType()) {
             case DeviceType.SECURITY_SENSOR:
@@ -717,7 +717,7 @@ public class DevicesActivity extends Activity {
 
     private OnItemLongClickListener mOnDeviceRowLongClicked = new OnItemLongClickListener() {
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            final Device device = mDeviceModel.get(position);
+            final Device device = mDeviceListModel.get(position);
 
             if ((device.getType() == DeviceType.LAMP)
             && (device.getStatus() == DeviceStatus.ON)) {

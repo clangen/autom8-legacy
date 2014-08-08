@@ -1,6 +1,6 @@
 package org.clangen.autom8.receiver;
 
-import org.clangen.autom8.ui.DevicesActivity;
+import org.clangen.autom8.ui.activity.DevicesActivity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

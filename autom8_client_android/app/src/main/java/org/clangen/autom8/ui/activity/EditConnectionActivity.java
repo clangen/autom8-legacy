@@ -1,4 +1,4 @@
-package org.clangen.autom8.ui;
+package org.clangen.autom8.ui.activity;
 
 import java.security.MessageDigest;
 import java.util.Formatter;

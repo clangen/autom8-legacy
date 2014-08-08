@@ -1,4 +1,4 @@
-package org.clangen.autom8.ui;
+package org.clangen.autom8.ui.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -20,18 +19,15 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.BaseAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -51,6 +47,8 @@ import org.clangen.autom8.net.request.SetDeviceStatus;
 import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
+import org.clangen.autom8.ui.adapter.DeviceListAdapter;
+import org.clangen.autom8.ui.model.DeviceListModel;
 
 public class DevicesActivity extends Activity {
     private final static String TAG = "DevicesActivity";
@@ -69,7 +67,7 @@ public class DevicesActivity extends Activity {
     private IClientService mClientService;
     private boolean mPaused = true, mDestroyed;
     private boolean mServiceDisconnected;
-    private boolean mTranslucent;
+    private DeviceListAdapter mListAdapter = new DeviceListAdapter(this);
 
     private class ViewHolder {
         public View mConnectionStatusView;
@@ -80,13 +78,6 @@ public class DevicesActivity extends Activity {
         public TextView mConnectingTextView;
         public TextView mDisconnectedTextView;
         public AbsListView mListView;
-    }
-
-    private class ItemViewHolder {
-        public TextView mModuleInfoView;
-        public TextView mLabelView;
-        public View mUpdatingView;
-        public TextView mStatusText;
     }
 
     static {
@@ -216,7 +207,9 @@ public class DevicesActivity extends Activity {
     private void init() {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
-        mDeviceListModel = new DeviceListModel(this,  mOnDeviceModelChanged);
+
+        mDeviceListModel = new DeviceListModel(this);
+        mListAdapter.setDeviceListModel(mDeviceListModel);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
         final ActionBar ab = getActionBar();
@@ -231,9 +224,6 @@ public class DevicesActivity extends Activity {
         mViews.mDisconnectedView = status.findViewById(R.id.DisconnectedView);
         mViews.mDisconnectedTextView = (TextView) status.findViewById(R.id.DisconnectedTextView);
         mViews.mConnectedHostName = (TextView) status.findViewById(R.id.ConnectedHostNameView);
-
-        mTranslucent = PreferenceManager.getDefaultSharedPreferences(this)
-            .getBoolean(getString(R.string.pref_translucency_enabled), false);
 
         mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesListView);
         if (mViews.mListView == null) {
@@ -302,14 +292,7 @@ public class DevicesActivity extends Activity {
         return null;
     }
 
-    private void setActionBarProgressIndicatorVisibility(boolean visible) {
-
-    }
-
     private void setUiState(int newState) {
-        boolean visible = (newState == Client.STATE_CONNECTING);
-        setActionBarProgressIndicatorVisibility(visible);
-
         int progressState = View.GONE;
         int connectedState = View.GONE;
         int disconnectedState = View.GONE;
@@ -517,14 +500,6 @@ public class DevicesActivity extends Activity {
         }
     }
 
-    private DeviceListModel.OnChangedListener mOnDeviceModelChanged =
-        new DeviceListModel.OnChangedListener()
-    {
-        public void onChanged() {
-            mListAdapter.notifyDataSetChanged();
-        }
-    };
-
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder service) {
             Log.i(TAG, "ClientService bound to Activity");
@@ -543,138 +518,6 @@ public class DevicesActivity extends Activity {
         public void onServiceDisconnected(ComponentName name) {
             Log.i(TAG, "ClientService unbound from Activity");
             mServiceDisconnected = true;
-        }
-    };
-
-    private BaseAdapter mListAdapter = new BaseAdapter() {
-        public int getCount() {
-            return (mDeviceListModel == null ? 0 : mDeviceListModel.size());
-        }
-
-        public Object getItem(int position) {
-            return null;
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if ((convertView == null) || (convertView.getId() != R.id.DeviceItemView)) {
-                LayoutInflater inflater = getLayoutInflater();
-                convertView = inflater.inflate(R.layout.device_item, null, false);
-
-                ItemViewHolder holder = new ItemViewHolder();
-                holder.mStatusText = (TextView) convertView.findViewById(R.id.DeviceItemStatusViewText);
-                holder.mLabelView = (TextView) convertView.findViewById(R.id.DeviceItemLabelView);
-                holder.mModuleInfoView = (TextView) convertView.findViewById(R.id.DeviceItemModuleInfoView);
-                holder.mUpdatingView = convertView.findViewById(R.id.DeviceItemUpdatingView);
-
-                convertView.setTag(holder);
-            }
-
-            if (mDeviceListModel == null) {
-                return convertView;
-            }
-
-            Device device = mDeviceListModel.get(position);
-
-            ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
-
-            holder.mLabelView.setText(device.getLabel());
-            holder.mStatusText.setTextSize(18.0f);
-
-            // String.format() is very inefficient
-            holder.mModuleInfoView.setText(
-                deviceTypeToString(device.getType()) + " " + device.getAddress());
-
-            if (mDeviceListModel.isUpdating(device.getAddress())) {
-                // device status is UPDATING?
-                holder.mUpdatingView.setVisibility(View.VISIBLE);
-                holder.mStatusText.setVisibility(View.GONE);
-
-                convertView.setBackgroundResource(
-                    device.getStatus() == DeviceStatus.ON
-                        ? android.R.drawable.list_selector_background
-                        : R.drawable.device_item_on_background);
-            }
-            else {
-                holder.mUpdatingView.setVisibility(View.GONE);
-                holder.mStatusText.setVisibility(View.VISIBLE);
-
-                switch (device.getType()) {
-                case DeviceType.SECURITY_SENSOR:
-                    applySensorStyle((SecuritySensor) device, convertView);
-                    break;
-
-                default:
-                    applyDefaultStyle(device, convertView);
-                    break;
-                }
-            }
-
-            return convertView;
-        }
-
-        private void applyDefaultStyle(Device device, View itemView) {
-            final ItemViewHolder holder = (ItemViewHolder) itemView.getTag();
-            final Resources r = getResources();
-
-            int status = R.string.device_status_off;
-
-            switch (device.getStatus()) {
-            case DeviceStatus.ON:
-                status = R.string.device_status_on;
-                holder.mStatusText.setTextColor(r.getColor(R.color.device_row_on_status_text));
-                holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_on_status_bg));
-                itemView.setBackgroundResource(R.drawable.device_item_on_background);
-                break;
-
-            case DeviceStatus.OFF:
-                holder.mStatusText.setTextColor(r.getColor(R.color.device_row_off_status_text));
-                holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_off_status_bg));
-                itemView.setBackgroundResource(android.R.drawable.list_selector_background);
-                break;
-            }
-
-            holder.mStatusText.setText(status);
-        }
-
-        private void applySensorStyle(SecuritySensor sensor, View itemView) {
-            final ItemViewHolder holder = (ItemViewHolder) itemView.getTag();
-            final Resources r = getResources();
-
-            int status = R.string.device_status_off;
-
-            if (sensor.isTripped()) {
-                status = R.string.device_status_alert;
-                holder.mStatusText.setTextColor(r.getColor(R.color.device_row_alert_status_text));
-                holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_alert_status_bg));
-                itemView.setBackgroundResource(R.drawable.device_item_alert_background);
-            }
-            else if (sensor.isArmed()) {
-                status = R.string.device_status_armed;
-                holder.mStatusText.setTextSize(16.0f);
-                holder.mStatusText.setTextColor(r.getColor(R.color.device_row_on_status_text));
-                holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_on_status_bg));
-                itemView.setBackgroundResource(R.drawable.device_item_on_background);
-            }
-            else {
-                holder.mStatusText.setTextColor(r.getColor(R.color.device_row_off_status_text));
-                holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_off_status_bg));
-                itemView.setBackgroundResource(android.R.drawable.list_selector_background);
-            }
-
-            holder.mStatusText.setText(status);
-        }
-
-        private String deviceTypeToString(int deviceType) {
-            switch (deviceType) {
-            case DeviceType.LAMP: return getString(R.string.device_type_lamp);
-            case DeviceType.APPLIANCE: return getString(R.string.device_type_appliance);
-            case DeviceType.SECURITY_SENSOR: return getString(R.string.device_type_sensor);
-            default: return getString(R.string.device_type_unknown);
-            }
         }
     };
 

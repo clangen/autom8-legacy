@@ -35,7 +35,7 @@ import org.clangen.autom8.net.Client.OnMessageReceivedListener;
 import org.clangen.autom8.net.Message;
 import org.clangen.autom8.net.MessageName;
 import org.clangen.autom8.net.request.GetDeviceList;
-import org.clangen.autom8.ui.DevicesActivity;
+import org.clangen.autom8.ui.activity.DevicesActivity;
 
 public class ClientService extends Service {
     private static final String TAG = "ClientService";

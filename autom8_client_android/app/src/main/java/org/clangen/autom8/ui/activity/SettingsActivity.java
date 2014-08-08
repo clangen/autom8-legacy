@@ -1,11 +1,10 @@
-package org.clangen.autom8.ui;
+package org.clangen.autom8.ui.activity;
 
 import org.clangen.autom8.R;
 import org.clangen.autom8.receiver.CameraButtonReceiver;
 import org.clangen.autom8.service.ClientService;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;

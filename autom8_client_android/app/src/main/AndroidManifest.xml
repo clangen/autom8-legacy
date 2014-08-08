@@ -19,7 +19,7 @@
         android:label="@string/app_name" >
 
         <activity
-            android:name=".ui.DevicesActivity"
+            android:name=".ui.activity.DevicesActivity"
             android:launchMode="singleInstance"
             android:theme="@style/DeviceActivityTheme"
             android:label="@string/app_name" >
@@ -42,15 +42,15 @@
         </receiver>
 
         <activity
-           android:name=".ui.EditConnectionActivity"
+           android:name=".ui.activity.EditConnectionActivity"
            android:label="@string/edit_connection_name" />
 
         <activity
-           android:name=".ui.ConnectionManagerActivity"
+           android:name=".ui.activity.ConnectionManagerActivity"
            android:label="@string/connection_manager_name" />
 
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.activity.SettingsActivity"
             android:label="@string/settings_name" />
 
         <service android:label="@string/service_name" android:name=".service.ClientService">

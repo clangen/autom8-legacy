@@ -48,7 +48,7 @@ import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
-import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
+import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 
 public class DevicesActivity extends Activity {
@@ -207,7 +207,7 @@ public class DevicesActivity extends Activity {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
-        mListAdapter = new DeviceGroupModelAdapter(this);
+        mListAdapter = new DeviceListModelAdapter(this);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
         final ActionBar ab = getActionBar();

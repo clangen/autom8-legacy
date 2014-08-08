@@ -5,12 +5,25 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <TextView
+    <RelativeLayout
         android:id="@+id/DeviceItemSeparator"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:visibility="gone" />
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/DeviceItemSeparatorText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/DeviceItemSeparatorText"
+            android:background="@android:drawable/divider_horizontal_dark" />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/DeviceItemMainContent"

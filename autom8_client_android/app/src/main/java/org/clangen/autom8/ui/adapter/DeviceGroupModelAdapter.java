@@ -27,7 +27,7 @@ public class DeviceGroupModelAdapter extends BaseDeviceModelAdapter {
 
         String groupName = mGroupModel.getDelimiterText(position);
         if (groupName != null) {
-            holder.mSeparator.setText(groupName);
+            holder.mSeparatorText.setText(groupName);
             holder.mSeparator.setVisibility(View.VISIBLE);
         }
         else {

@@ -27,7 +27,8 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
 
     protected static class ItemViewHolder {
         public View mMainContent;
-        public TextView mSeparator;
+        public View mSeparator;
+        public TextView mSeparatorText;
         public TextView mModuleInfoView;
         public TextView mLabelView;
         public View mUpdatingView;
@@ -70,7 +71,8 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
 
             ItemViewHolder holder = new ItemViewHolder();
             holder.mMainContent = convertView.findViewById(R.id.DeviceItemMainContent);
-            holder.mSeparator = (TextView) convertView.findViewById(R.id.DeviceItemSeparator);
+            holder.mSeparator = convertView.findViewById(R.id.DeviceItemSeparator);
+            holder.mSeparatorText = (TextView) convertView.findViewById(R.id.DeviceItemSeparatorText);
             holder.mStatusText = (TextView) convertView.findViewById(R.id.DeviceItemStatusViewText);
             holder.mLabelView = (TextView) convertView.findViewById(R.id.DeviceItemLabelView);
             holder.mModuleInfoView = (TextView) convertView.findViewById(R.id.DeviceItemModuleInfoView);

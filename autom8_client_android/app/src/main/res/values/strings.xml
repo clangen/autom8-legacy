@@ -101,5 +101,6 @@
     <string name="pref_connection_manager">connectionManager</string>
     <string name="pref_notification_ringtone">notificationRingtone</string>
     <string name="pref_use_camera_button">useCameraButton</string>
+    <string name="pref_devices_view_type">devicesViewType</string>
     <string name="pref_version">version</string>
 </resources>

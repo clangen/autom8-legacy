@@ -1,6 +1,7 @@
 package org.clangen.autom8.ui.adapter;
 
-import android.app.Activity;
+import android.app.Service;
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,16 +14,18 @@ import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
 import org.clangen.autom8.device.SecuritySensor;
+import org.clangen.autom8.ui.model.BaseDeviceModel;
 import org.clangen.autom8.ui.model.DeviceListModel;
 
 /**
  * Created by clangen on 8/7/14.
  */
-public class DeviceListAdapter extends BaseAdapter {
-    private Activity mContext;
-    private DeviceListModel mDeviceListModel;
+public abstract class BaseDeviceModelAdapter extends BaseAdapter {
+    private Context mContext;
+    private BaseDeviceModel mDeviceModel;
+    private LayoutInflater mLayoutInflater;
 
-    private static class ItemViewHolder {
+    protected static class ItemViewHolder {
         public View mMainContent;
         public TextView mSeparator;
         public TextView mModuleInfoView;
@@ -31,26 +34,30 @@ public class DeviceListAdapter extends BaseAdapter {
         public TextView mStatusText;
     }
 
-    public DeviceListAdapter(Activity activity) {
-        mContext = activity;
+    public BaseDeviceModelAdapter(Context context) {
+        mContext = context;
+        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void setDeviceListModel(DeviceListModel model) {
-        if (mDeviceListModel != null && mDeviceListModel != model) {
-            mDeviceListModel.setOnChangedListener(null);
-        }
+    protected void setModel(BaseDeviceModel deviceModel) {
+        mDeviceModel = deviceModel;
+        mDeviceModel.setOnChangedListener(mOnDeviceModelChanged);
+    }
 
-        mDeviceListModel = model;
-        mDeviceListModel.setOnChangedListener(mOnDeviceModelChanged);
-        notifyDataSetInvalidated();
+    public BaseDeviceModel getDeviceModel() {
+        return mDeviceModel;
+    }
+
+    public void close() {
+        mDeviceModel.close();
     }
 
     public int getCount() {
-        return (mDeviceListModel == null ? 0 : mDeviceListModel.size());
+        return (mDeviceModel == null ? 0 : mDeviceModel.size());
     }
 
     public Object getItem(int position) {
-        return null;
+        return (mDeviceModel == null ? null : mDeviceModel.get(position));
     }
 
     public long getItemId(int position) {
@@ -59,8 +66,7 @@ public class DeviceListAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         if ((convertView == null) || (convertView.getId() != R.id.DeviceItemView)) {
-            LayoutInflater inflater = mContext.getLayoutInflater();
-            convertView = inflater.inflate(R.layout.device_item, null, false);
+            convertView = mLayoutInflater.inflate(R.layout.device_item, null, false);
 
             ItemViewHolder holder = new ItemViewHolder();
             holder.mMainContent = convertView.findViewById(R.id.DeviceItemMainContent);
@@ -73,30 +79,33 @@ public class DeviceListAdapter extends BaseAdapter {
             convertView.setTag(holder);
         }
 
-        if (mDeviceListModel == null) {
-            return convertView;
+        if (mDeviceModel != null) {
+            bindDeviceToView(convertView, mDeviceModel.get(position), position);
         }
 
-        Device device = mDeviceListModel.get(position);
+        return convertView;
+    }
 
-        ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
+    protected void bindDeviceToView(View deviceView, Device device, int position) {
+        ItemViewHolder holder = (ItemViewHolder) deviceView.getTag();
 
         holder.mLabelView.setText(device.getLabel());
         holder.mStatusText.setTextSize(18.0f);
 
         // String.format() is very inefficient
         holder.mModuleInfoView.setText(
-                deviceTypeToString(device.getType()) + " " + device.getAddress());
+            deviceTypeToString(device.getType()) + " " + device.getAddress()
+        );
 
-        if (mDeviceListModel.isUpdating(device.getAddress())) {
-            // device status is UPDATING?
+        if (mDeviceModel.isUpdating(device.getAddress())) {
             holder.mUpdatingView.setVisibility(View.VISIBLE);
             holder.mStatusText.setVisibility(View.GONE);
 
             holder.mMainContent.setBackgroundResource(
                 device.getStatus() == DeviceStatus.ON
                     ? android.R.drawable.list_selector_background
-                    : R.drawable.device_item_on_background);
+                    : R.drawable.device_item_on_background
+            );
         }
         else {
             holder.mUpdatingView.setVisibility(View.GONE);
@@ -104,19 +113,17 @@ public class DeviceListAdapter extends BaseAdapter {
 
             switch (device.getType()) {
                 case DeviceType.SECURITY_SENSOR:
-                    applySensorStyle((SecuritySensor) device, convertView);
+                    applySensorStyle((SecuritySensor) device, deviceView);
                     break;
 
                 default:
-                    applyDefaultStyle(device, convertView);
+                    applyDefaultStyle(device, deviceView);
                     break;
             }
         }
-
-        return convertView;
     }
 
-    private void applyDefaultStyle(Device device, View itemView) {
+    protected void applyDefaultStyle(Device device, View itemView) {
         final ItemViewHolder holder = (ItemViewHolder) itemView.getTag();
         final Resources r = mContext.getResources();
 
@@ -140,7 +147,7 @@ public class DeviceListAdapter extends BaseAdapter {
         holder.mStatusText.setText(status);
     }
 
-    private void applySensorStyle(SecuritySensor sensor, View itemView) {
+    protected void applySensorStyle(SecuritySensor sensor, View itemView) {
         final ItemViewHolder holder = (ItemViewHolder) itemView.getTag();
         final Resources r = mContext.getResources();
 
@@ -168,7 +175,7 @@ public class DeviceListAdapter extends BaseAdapter {
         holder.mStatusText.setText(status);
     }
 
-    private String deviceTypeToString(int deviceType) {
+    protected String deviceTypeToString(int deviceType) {
         switch (deviceType) {
             case DeviceType.LAMP: return mContext.getString(R.string.device_type_lamp);
             case DeviceType.APPLIANCE: return mContext.getString(R.string.device_type_appliance);
@@ -177,11 +184,14 @@ public class DeviceListAdapter extends BaseAdapter {
         }
     }
 
+    protected void onDeviceModelChanged() {
+        notifyDataSetChanged();
+    }
+
     private DeviceListModel.OnChangedListener mOnDeviceModelChanged =
         new DeviceListModel.OnChangedListener() {
             public void onChanged() {
-                notifyDataSetChanged();
+                onDeviceModelChanged();
             }
         };
-
 }

@@ -7,7 +7,7 @@ import org.clangen.autom8.device.Device;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceListModel extends DeviceModelBase {
+public class DeviceListModel extends BaseDeviceModel {
     private static final String TAG = "DeviceListModel";
 
     private List<Device> mDevices = new ArrayList<Device>();

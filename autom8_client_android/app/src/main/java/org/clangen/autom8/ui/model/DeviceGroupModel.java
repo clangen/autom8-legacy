@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by clangen on 8/7/14.
  */
-public class DeviceGroupModel extends DeviceModelBase {
+public class DeviceGroupModel extends BaseDeviceModel {
     private ArrayList<Device> mFlattened = new ArrayList<Device>();
     private List<Group> mGroups = new ArrayList<Group>();
     private HashMap<Integer, String> mDelimiters = new HashMap<Integer, String>();

@@ -47,8 +47,9 @@ import org.clangen.autom8.net.request.SetDeviceStatus;
 import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
-import org.clangen.autom8.ui.adapter.DeviceListAdapter;
-import org.clangen.autom8.ui.model.DeviceListModel;
+import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
+import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
+import org.clangen.autom8.ui.model.BaseDeviceModel;
 
 public class DevicesActivity extends Activity {
     private final static String TAG = "DevicesActivity";
@@ -62,12 +63,11 @@ public class DevicesActivity extends Activity {
 
     private View mDevicesView;
     private ViewHolder mViews = new ViewHolder();
-    private DeviceListModel mDeviceListModel;
     private ConnectionLibrary mConnectionLibrary;
     private IClientService mClientService;
     private boolean mPaused = true, mDestroyed;
     private boolean mServiceDisconnected;
-    private DeviceListAdapter mListAdapter = new DeviceListAdapter(this);
+    private BaseDeviceModelAdapter mListAdapter;
 
     private class ViewHolder {
         public View mConnectionStatusView;
@@ -198,9 +198,8 @@ public class DevicesActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mDestroyed = true;
-
+        mListAdapter.close();
         unregisterReceiver(mBroadcastReceiver);
-        mDeviceListModel.close();
         unbindService();
     }
 
@@ -208,8 +207,7 @@ public class DevicesActivity extends Activity {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
-        mDeviceListModel = new DeviceListModel(this);
-        mListAdapter.setDeviceListModel(mDeviceListModel);
+        mListAdapter = new DeviceGroupModelAdapter(this);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
         final ActionBar ab = getActionBar();
@@ -445,8 +443,9 @@ public class DevicesActivity extends Activity {
     private void onDeviceItemClicked(Device device) {
         final String address = device.getAddress();
 
-        if ( ! mDeviceListModel.isUpdating(address)) {
-            mDeviceListModel.setUpdating(address);
+        final BaseDeviceModel deviceModel = mListAdapter.getDeviceModel();
+        if (!deviceModel.isUpdating(address)) {
+            deviceModel.setUpdating(address);
             mListAdapter.notifyDataSetChanged();
         }
 
@@ -544,7 +543,7 @@ public class DevicesActivity extends Activity {
 
     private OnItemClickListener mOnDeviceRowClicked = new OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Device device = mDeviceListModel.get(position);
+            Device device = mListAdapter.getDeviceModel().get(position);
 
             switch (device.getType()) {
             case DeviceType.SECURITY_SENSOR:
@@ -560,7 +559,7 @@ public class DevicesActivity extends Activity {
 
     private OnItemLongClickListener mOnDeviceRowLongClicked = new OnItemLongClickListener() {
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            final Device device = mDeviceListModel.get(position);
+            final Device device = mListAdapter.getDeviceModel().get(position);
 
             if ((device.getType() == DeviceType.LAMP)
             && (device.getStatus() == DeviceStatus.ON)) {

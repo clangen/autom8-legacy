@@ -15,7 +15,7 @@ import java.util.HashSet;
 /**
  * Created by clangen on 8/7/14.
  */
-public abstract class DeviceModelBase {
+public abstract class BaseDeviceModel {
     private static final String TAG = "DeviceModelBase";
 
     private HashSet<String> mUpdatingSet;
@@ -36,17 +36,16 @@ public abstract class DeviceModelBase {
         void onChanged();
     }
 
-    public DeviceModelBase(Context context) {
+    public BaseDeviceModel(Context context) {
         this(context, null);
     }
 
-    public DeviceModelBase(Context context, OnChangedListener listener) {
+    public BaseDeviceModel(Context context, OnChangedListener listener) {
         mContext = context.getApplicationContext();
         mContext.registerReceiver(mLibraryIntentHandler, LIBRARY_INTENTS);
         mLibrary = DeviceLibraryFactory.getInstance(context);
         mListener = listener;
         mUpdatingSet = new HashSet<String>();
-//        requery();
     }
 
     public abstract int size();

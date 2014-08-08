@@ -40,7 +40,6 @@
 
         <TextView
             style="@style/DeviceItemPrimaryText"
-            android:layout_below="@id/DeviceItemSeparator"
             android:id="@+id/DeviceItemLabelView"
             android:layout_toRightOf="@id/DeviceItemStatusViewContainer" />
 

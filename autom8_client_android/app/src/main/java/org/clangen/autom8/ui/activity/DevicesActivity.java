@@ -70,11 +70,6 @@ public class DevicesActivity extends Activity {
     private BaseDeviceModelAdapter mListAdapter;
     private AdapterType mAdapterType = AdapterType.Flat;
 
-    private enum AdapterType {
-        Flat,
-        Grouped
-    }
-
     private class ViewHolder {
         public android.view.View mConnectionStatusView;
         public android.view.View mConnectingView;
@@ -252,8 +247,27 @@ public class DevicesActivity extends Activity {
             mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesGridView);
         }
 
+        readAdapterTypeFromPreferences();
         resetListAdapter();
+
         setUiState(Client.STATE_DISCONNECTED);
+    }
+
+    private void writeAdapterTypePreference() {
+        SharedPreferences.Editor editor =
+            PreferenceManager.getDefaultSharedPreferences(this).edit();
+
+        editor.putInt(getString(R.string.pref_devices_view_type), mAdapterType.getId());
+
+        editor.commit();
+    }
+
+    public void readAdapterTypeFromPreferences() {
+        mAdapterType = AdapterType.fromId(
+            PreferenceManager.getDefaultSharedPreferences(this).getInt(
+                getString(R.string.pref_devices_view_type), AdapterType.Flat.getId()
+            )
+        );
     }
 
     private void resetListAdapter() {
@@ -261,11 +275,16 @@ public class DevicesActivity extends Activity {
             mListAdapter.setOnDeviceClickHandler(null);
         }
 
-        if (isLandscape() || mAdapterType == AdapterType.Flat) {
+        if (isLandscape()) {
             mListAdapter = new DeviceListModelAdapter(this);
+        }
+        else if (mAdapterType == AdapterType.Flat) {
+            mListAdapter = new DeviceListModelAdapter(this);
+            writeAdapterTypePreference();
         }
         else if (mAdapterType == AdapterType.Grouped) {
             mListAdapter = new DeviceGroupModelAdapter(this);
+            writeAdapterTypePreference();
         }
 
         mListAdapter.setOnDeviceClickHandler(mOnDeviceClickHandler);

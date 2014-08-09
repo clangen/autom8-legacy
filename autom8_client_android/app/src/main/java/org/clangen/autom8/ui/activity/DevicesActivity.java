@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -45,6 +46,7 @@ import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
+import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 
@@ -54,6 +56,7 @@ public class DevicesActivity extends Activity {
     private final static int MENU_ID_EDIT_CONNECTION = 0;
     private final static int MENU_ID_SETTINGS = 1;
     private final static int MENU_ID_RECONNECT = 2;
+    private final static int MENU_ID_ADAPTER_TYPE = 3;
 
     private final static IntentFilter INTENT_FILTER;
     private static boolean sFirstRunChecked;
@@ -65,10 +68,16 @@ public class DevicesActivity extends Activity {
     private boolean mPaused = true, mDestroyed;
     private boolean mServiceDisconnected;
     private BaseDeviceModelAdapter mListAdapter;
+    private AdapterType mAdapterType = AdapterType.Flat;
+
+    private enum AdapterType {
+        Flat,
+        Grouped
+    }
 
     private class ViewHolder {
-        public View mConnectionStatusView;
-        public View mConnectingView;
+        public android.view.View mConnectionStatusView;
+        public android.view.View mConnectingView;
         public View mConnectedView;
         public View mDisconnectedView;
         public TextView mConnectedHostName;
@@ -141,6 +150,24 @@ public class DevicesActivity extends Activity {
         item = menu.add(0, MENU_ID_RECONNECT, 2, R.string.menu_reconnect);
         item.setIcon(R.drawable.menu_reconnect);
 
+        if (!isLandscape()) {
+            menu.add(0, MENU_ID_ADAPTER_TYPE, 3, R.string.menu_list_flat);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem item = menu.findItem(MENU_ID_ADAPTER_TYPE);
+        if (item != null) {
+            item.setTitle(mAdapterType == AdapterType.Flat ?
+                R.string.menu_list_grouped : R.string.menu_list_flat
+            );
+        }
+
         return true;
     }
 
@@ -181,6 +208,13 @@ public class DevicesActivity extends Activity {
         case MENU_ID_RECONNECT:
             reconnect();
             return true;
+
+        case MENU_ID_ADAPTER_TYPE:
+            mAdapterType = (mAdapterType == AdapterType.Flat) ?
+                AdapterType.Grouped : AdapterType.Flat;
+
+            resetListAdapter();
+            return true;
         }
 
         return super.onMenuItemSelected(featureId, item);
@@ -198,9 +232,6 @@ public class DevicesActivity extends Activity {
     private void init() {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
-
-        mListAdapter = new DeviceListModelAdapter(this);
-        mListAdapter.setOnDeviceClickHandler(mOnDeviceClickHandler);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
         final ActionBar ab = getActionBar();
@@ -221,9 +252,25 @@ public class DevicesActivity extends Activity {
             mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesGridView);
         }
 
-        mViews.mListView.setAdapter(mListAdapter);
-
+        resetListAdapter();
         setUiState(Client.STATE_DISCONNECTED);
+    }
+
+    private void resetListAdapter() {
+        if (mListAdapter != null) {
+            mListAdapter.setOnDeviceClickHandler(null);
+        }
+
+        if (isLandscape() || mAdapterType == AdapterType.Flat) {
+            mListAdapter = new DeviceListModelAdapter(this);
+        }
+        else if (mAdapterType == AdapterType.Grouped) {
+            mListAdapter = new DeviceGroupModelAdapter(this);
+        }
+
+        mListAdapter.setOnDeviceClickHandler(mOnDeviceClickHandler);
+        mViews.mListView.setAdapter(mListAdapter);
+        mListAdapter.notifyDataSetChanged();
     }
 
     private void reconnect() {
@@ -488,6 +535,10 @@ public class DevicesActivity extends Activity {
                 sFirstRunChecked = true;
             }
         }
+    }
+
+    private boolean isLandscape() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {

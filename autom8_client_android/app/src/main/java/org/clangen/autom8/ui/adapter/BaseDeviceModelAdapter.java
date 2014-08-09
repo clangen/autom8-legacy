@@ -57,6 +57,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
 
     protected void setModel(BaseDeviceModel deviceModel) {
         mDeviceModel = deviceModel;
+        mDeviceModel.requery();
         mDeviceModel.setOnChangedListener(mOnDeviceModelChanged);
     }
 

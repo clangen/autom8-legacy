@@ -80,7 +80,7 @@ public abstract class BaseDeviceModel {
         /* for derived class use */
     }
 
-    private void requery() {
+    public void requery() {
         onRequery();
         mUpdatingSet.clear();
 

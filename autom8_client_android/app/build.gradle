@@ -8,8 +8,8 @@ android {
         applicationId "org.clangen.autom8"
         minSdkVersion 15
         targetSdkVersion 15
-        versionCode 50
-        versionName "0.5.2"
+        versionCode 53
+        versionName "0.5.3"
     }
 
     buildTypes {

@@ -13,6 +13,7 @@ public class Group implements Iterable<Device> {
 
     private ArrayList<Device> mDevices;
     private String mName;
+    private int mToggleableCount = -1;
 
     public Group(String name, List<Device> devices) {
         mName = name;
@@ -24,8 +25,58 @@ public class Group implements Iterable<Device> {
         return mName;
     }
 
+    public int getAlertCount() {
+        int count = 0;
+
+        SecuritySensor sensor;
+        for (Device device : mDevices) {
+            if (device.getType() == DeviceType.SECURITY_SENSOR) {
+                sensor = (SecuritySensor) device;
+                count += (sensor.isArmed() && sensor.isTripped()) ? 1 : 0;
+            }
+        }
+        return count;
+    }
+
+    public int getToggleableDeviceCount() {
+        if (mToggleableCount == -1) {
+            mToggleableCount = 0;
+
+            for (Device device : mDevices) {
+                if (isDeviceToggleable(device)) {
+                    mToggleableCount++;
+                }
+            }
+        }
+
+        return mToggleableCount;
+    }
+
+    public boolean atLeastOneToggleableDeviceOn() {
+        for (Device device : mDevices) {
+            if (isDeviceToggleable(device) && device.getStatus() == DeviceStatus.ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public Iterator<Device> iterator() {
         return mDevices.iterator();
+    }
+
+    public int deviceCount() {
+        return mDevices.size();
+    }
+
+    public Device getDeviceAt(int index) {
+        return mDevices.get(index);
+    }
+
+    private boolean isDeviceToggleable(Device d) {
+        final int type = d.getType();
+        return type == DeviceType.APPLIANCE || type == DeviceType.LAMP;
     }
 }

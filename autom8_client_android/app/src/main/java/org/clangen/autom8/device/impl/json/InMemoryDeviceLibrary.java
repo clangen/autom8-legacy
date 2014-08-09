@@ -3,6 +3,7 @@ package org.clangen.autom8.device.impl.json;
 import android.content.Context;
 import android.util.Log;
 
+import org.clangen.autom8.R;
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceFactory;
 import org.clangen.autom8.device.DeviceLibrary;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public class InMemoryDeviceLibrary extends DeviceLibrary {
     private static final DisplayPriorityComparator PRIORITY_COMPARATOR = new DisplayPriorityComparator();
-    private static final GroupComparator GROUP_COMPARATOR = new GroupComparator();
+    private static GroupComparator GROUP_COMPARATOR = null;
 
     private static final String TAG = "InMemoryDeviceLibrary";
     private ArrayList<Device> mDevices = new ArrayList<Device>();
@@ -34,6 +35,10 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
 
     public InMemoryDeviceLibrary(Context context) {
         super(context);
+
+        if (GROUP_COMPARATOR == null) {
+            GROUP_COMPARATOR = new GroupComparator(context);
+        }
     }
 
     @Override
@@ -52,21 +57,34 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
             HashMap<String, ArrayList<Device>> aggregated =
               new HashMap<String, ArrayList<Device>>();
 
+            ArrayList<Device> ungrouped = new ArrayList<Device>();
+
             /* collect a hash map of device lists. the key in this hash
             map will be the group name, the value will the the list of
             devices associated with the group. */
             ArrayList<Device> list;
             for (Device device : mDevices) {
-                for (String groupName : device.getGroups()) {
-                    list = aggregated.get(groupName);
+                List<String> groups = device.getGroups();
 
-                    if (list == null) {
-                        list = new ArrayList<Device>();
-                        aggregated.put(groupName, list);
-                    }
-
-                    list.add(device);
+                if (groups.size() == 0) {
+                    ungrouped.add(device);
                 }
+                else {
+                    for (String groupName : groups) {
+                        list = aggregated.get(groupName);
+
+                        if (list == null) {
+                            list = new ArrayList<Device>();
+                            aggregated.put(groupName, list);
+                        }
+
+                        list.add(device);
+                    }
+                }
+            }
+
+            if (ungrouped.size() > 0) {
+                aggregated.put(mContext.getString(R.string.device_group_no_groups), ungrouped);
             }
 
             /* the groups have been aggregated together, now let's convert

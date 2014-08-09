@@ -25,9 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -37,6 +34,7 @@ import org.clangen.autom8.connection.ConnectionLibrary;
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
+import org.clangen.autom8.device.Group;
 import org.clangen.autom8.device.Lamp;
 import org.clangen.autom8.device.SecuritySensor;
 import org.clangen.autom8.net.Client;
@@ -48,7 +46,7 @@ import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
-import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
+import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 
 public class DevicesActivity extends Activity {
@@ -207,7 +205,8 @@ public class DevicesActivity extends Activity {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
-        mListAdapter = new DeviceListModelAdapter(this);
+        mListAdapter = new DeviceGroupModelAdapter(this);
+        mListAdapter.setOnDeviceClickHandler(mOnDeviceClickHandler);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
         final ActionBar ab = getActionBar();
@@ -228,8 +227,6 @@ public class DevicesActivity extends Activity {
             mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesGridView);
         }
 
-        mViews.mListView.setOnItemClickListener(mOnDeviceRowClicked);
-        mViews.mListView.setOnItemLongClickListener(mOnDeviceRowLongClicked);
         mViews.mListView.setAdapter(mListAdapter);
 
         setUiState(Client.STATE_DISCONNECTED);
@@ -541,35 +538,37 @@ public class DevicesActivity extends Activity {
         }
     };
 
-    private OnItemClickListener mOnDeviceRowClicked = new OnItemClickListener() {
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Device device = mListAdapter.getDeviceModel().get(position);
+    private BaseDeviceModelAdapter.OnDeviceClickHandler mOnDeviceClickHandler =
+        new BaseDeviceModelAdapter.OnDeviceClickHandler() {
+            @Override
+            public void onDeviceClicked(Device device) {
+                switch (device.getType()) {
+                    case DeviceType.SECURITY_SENSOR:
+                        onSecuritySensorItemClicked((SecuritySensor) device);
+                        break;
 
-            switch (device.getType()) {
-            case DeviceType.SECURITY_SENSOR:
-                onSecuritySensorItemClicked((SecuritySensor) device);
-                break;
-
-            default:
-                onDeviceItemClicked(device);
-                break;
-            }
-        }
-    };
-
-    private OnItemLongClickListener mOnDeviceRowLongClicked = new OnItemLongClickListener() {
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            final Device device = mListAdapter.getDeviceModel().get(position);
-
-            if ((device.getType() == DeviceType.LAMP)
-            && (device.getStatus() == DeviceStatus.ON)) {
-                showLightDimDialog((Lamp) device);
-                return true;
+                    default:
+                        onDeviceItemClicked(device);
+                        break;
+                }
             }
 
-            return false;
-        }
-    };
+            @Override
+            public boolean onDeviceLongClicked(Device device) {
+                if ((device.getType() == DeviceType.LAMP)
+                        && (device.getStatus() == DeviceStatus.ON)) {
+                    showLightDimDialog((Lamp) device);
+                    return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public void onGroupToggleClicked(Group group, boolean checked) {
+
+            }
+        };
 
     private OnClickListener mOnReconnectClicked = new OnClickListener() {
         public void onClick(View view) {

@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class JsonDevice implements Device {
+    private static final String TAG = "JsonDevice";
+
     public static final String LABEL_NODE = "label";
     public static final String TYPE_NODE = "type";
     public static final String ADDRESS_NODE = "address";
@@ -73,7 +75,13 @@ public class JsonDevice implements Device {
 
         if (groups != null) {
             for (int i = 0; i < groups.length(); i++) {
-                mGroups.add(groups.getString(i));
+                String groupName = groups.getString(i).trim();
+                if (groupName.length() > 0) {
+                    mGroups.add(groups.getString(i));
+                }
+                else {
+                    Log.w(TAG, "parsed empty group name!");
+                }
             }
         }
 

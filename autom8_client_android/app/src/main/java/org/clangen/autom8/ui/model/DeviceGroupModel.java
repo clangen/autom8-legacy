@@ -15,7 +15,7 @@ import java.util.List;
 public class DeviceGroupModel extends BaseDeviceModel {
     private ArrayList<Device> mFlattened = new ArrayList<Device>();
     private List<Group> mGroups = new ArrayList<Group>();
-    private HashMap<Integer, String> mDelimiters = new HashMap<Integer, String>();
+    private HashMap<Integer, Group> mDelimiters = new HashMap<Integer, Group>();
 
     public DeviceGroupModel(Context context) {
         super(context);
@@ -31,7 +31,7 @@ public class DeviceGroupModel extends BaseDeviceModel {
 
         mFlattened.clear();
         for (Group group : mGroups) {
-            mDelimiters.put(mFlattened.size(), group.getName());
+            mDelimiters.put(mFlattened.size(), group);
 
             for (Device device : group) {
                 mFlattened.add(device);
@@ -49,7 +49,7 @@ public class DeviceGroupModel extends BaseDeviceModel {
         return mFlattened.get(position);
     }
 
-    public String getDelimiterText(int position) {
+    public Group getDelimiter(int position) {
         return mDelimiters.get(position);
     }
 

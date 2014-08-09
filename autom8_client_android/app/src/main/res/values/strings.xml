@@ -66,6 +66,8 @@
     <string name="button_close">Close</string>
     <string name="button_continue">Continue</string>
 
+    <string name="device_group_no_groups">(not categorized)</string>
+
     <string name="dlg_welcome_title">Welcome to autom8!</string>
     <string name="dlg_welcome_desc">To get started you need to create a connection to the computer running the autom8 server.\n\nPress continue and configure this connection now.</string>
     <string name="dlg_incorrect_pw_title">Incorrect password</string>

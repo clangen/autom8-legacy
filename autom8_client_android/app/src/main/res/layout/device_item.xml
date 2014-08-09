@@ -9,19 +9,28 @@
         android:id="@+id/DeviceItemSeparator"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingRight="4dp"
+        android:paddingLeft="8dp"
+        android:background="#55000000"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/DeviceItemSeparatorText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp" />
+            android:layout_toLeftOf="@+id/DeviceItemGroupToggleView"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:textStyle="bold" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/DeviceItemSeparatorText"
-            android:background="@android:drawable/divider_horizontal_dark" />
+        <ToggleButton
+            android:id="@+id/DeviceItemGroupToggleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
 
     </RelativeLayout>
 

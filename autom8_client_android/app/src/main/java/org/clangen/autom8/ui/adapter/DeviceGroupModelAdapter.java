@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.clangen.autom8.device.Device;
+import org.clangen.autom8.device.Group;
 import org.clangen.autom8.ui.model.DeviceGroupModel;
 
 /**
@@ -25,10 +26,13 @@ public class DeviceGroupModelAdapter extends BaseDeviceModelAdapter {
 
         ItemViewHolder holder = (ItemViewHolder) deviceView.getTag();
 
-        String groupName = mGroupModel.getDelimiterText(position);
-        if (groupName != null) {
-            holder.mSeparatorText.setText(groupName);
+        Group group = mGroupModel.getDelimiter(position);
+        if (group != null) {
+            holder.mSeparatorText.setText(group.getName());
             holder.mSeparator.setVisibility(View.VISIBLE);
+            holder.mToggleButton.setEnabled(group.getToggleableDeviceCount() > 0);
+            holder.mToggleButton.setTag(group);
+            holder.mToggleButton.setChecked(group.atLeastOneToggleableDeviceOn());
         }
         else {
             holder.mSeparator.setVisibility(View.GONE);

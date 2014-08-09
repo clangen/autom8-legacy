@@ -7,12 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import org.clangen.autom8.R;
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
+import org.clangen.autom8.device.Group;
 import org.clangen.autom8.device.SecuritySensor;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 import org.clangen.autom8.ui.model.DeviceListModel;
@@ -24,6 +27,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     private Context mContext;
     private BaseDeviceModel mDeviceModel;
     private LayoutInflater mLayoutInflater;
+    private OnDeviceClickHandler mClickHandler;
 
     protected static class ItemViewHolder {
         public View mMainContent;
@@ -33,11 +37,22 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
         public TextView mLabelView;
         public View mUpdatingView;
         public TextView mStatusText;
+        public ToggleButton mToggleButton;
+    }
+
+    public interface OnDeviceClickHandler {
+        void onDeviceClicked(Device device);
+        boolean onDeviceLongClicked(Device device);
+        void onGroupToggleClicked(Group group, boolean checked);
     }
 
     public BaseDeviceModelAdapter(Context context) {
         mContext = context;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void setOnDeviceClickHandler(OnDeviceClickHandler handler) {
+        mClickHandler = handler;
     }
 
     protected void setModel(BaseDeviceModel deviceModel) {
@@ -77,12 +92,21 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             holder.mLabelView = (TextView) convertView.findViewById(R.id.DeviceItemLabelView);
             holder.mModuleInfoView = (TextView) convertView.findViewById(R.id.DeviceItemModuleInfoView);
             holder.mUpdatingView = convertView.findViewById(R.id.DeviceItemUpdatingView);
+            holder.mToggleButton = (ToggleButton) convertView.findViewById(R.id.DeviceItemGroupToggleView);
 
             convertView.setTag(holder);
         }
 
+        final Device device = mDeviceModel.get(position);
+
+        final ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
+        holder.mToggleButton.setOnCheckedChangeListener(mOnGroupToggleListener);
+        holder.mMainContent.setOnClickListener(mOnDeviceClickListener);
+        holder.mMainContent.setOnLongClickListener(mOnDeviceLongClickListener);
+        holder.mMainContent.setTag(device);
+
         if (mDeviceModel != null) {
-            bindDeviceToView(convertView, mDeviceModel.get(position), position);
+            bindDeviceToView(convertView, device, position);
         }
 
         return convertView;
@@ -189,6 +213,38 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     protected void onDeviceModelChanged() {
         notifyDataSetChanged();
     }
+
+    private View.OnLongClickListener mOnDeviceLongClickListener =
+        new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mClickHandler != null) {
+                    return mClickHandler.onDeviceLongClicked((Device) view.getTag());
+                }
+
+                return false;
+            }
+        };
+
+    private View.OnClickListener mOnDeviceClickListener =
+        new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mClickHandler != null) {
+                    mClickHandler.onDeviceClicked((Device) view.getTag());
+                }
+            }
+        };
+
+    private CompoundButton.OnCheckedChangeListener mOnGroupToggleListener =
+        new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (mClickHandler != null) {
+                    mClickHandler.onGroupToggleClicked((Group) compoundButton.getTag(), checked);
+                }
+            }
+        };
 
     private DeviceListModel.OnChangedListener mOnDeviceModelChanged =
         new DeviceListModel.OnChangedListener() {

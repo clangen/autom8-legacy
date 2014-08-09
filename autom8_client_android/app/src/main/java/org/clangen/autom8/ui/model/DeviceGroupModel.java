@@ -30,6 +30,7 @@ public class DeviceGroupModel extends BaseDeviceModel {
         mGroups = getDeviceLibrary().getDeviceGroups();
 
         mFlattened.clear();
+        mDelimiters.clear();
         for (Group group : mGroups) {
             mDelimiters.put(mFlattened.size(), group);
 

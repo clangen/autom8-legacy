@@ -100,14 +100,23 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
         final Device device = mDeviceModel.get(position);
 
         final ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
-        holder.mToggleButton.setOnCheckedChangeListener(mOnGroupToggleListener);
         holder.mMainContent.setOnClickListener(mOnDeviceClickListener);
         holder.mMainContent.setOnLongClickListener(mOnDeviceLongClickListener);
         holder.mMainContent.setTag(device);
+        holder.mSeparator.setVisibility(View.GONE);
+
+        /* IMPORTANT!: set the toggle button's listener to nothing until the
+        bind is complete, otherwise setting the state for this particular
+        view will trigger the callback and lead to a crazy cascade of toggling
+        due to constant rebinds */
+        holder.mToggleButton.setOnCheckedChangeListener(null);
+        holder.mToggleButton.setTag(null);
 
         if (mDeviceModel != null) {
             bindDeviceToView(convertView, device, position);
         }
+
+        holder.mToggleButton.setOnCheckedChangeListener(mOnGroupToggleListener);
 
         return convertView;
     }
@@ -164,6 +173,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
                 break;
 
             case DeviceStatus.OFF:
+            case DeviceStatus.UNKNOWN:
                 holder.mStatusText.setTextColor(r.getColor(R.color.device_row_off_status_text));
                 holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_off_status_bg));
                 holder.mMainContent.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -218,7 +228,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
         new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (mClickHandler != null) {
+                if (mClickHandler != null && view.getTag() != null) {
                     return mClickHandler.onDeviceLongClicked((Device) view.getTag());
                 }
 
@@ -230,7 +240,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
         new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mClickHandler != null) {
+                if (mClickHandler != null && view.getTag() != null) {
                     mClickHandler.onDeviceClicked((Device) view.getTag());
                 }
             }
@@ -240,7 +250,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
         new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if (mClickHandler != null) {
+                if (mClickHandler != null && compoundButton.getTag() != null) {
                     mClickHandler.onGroupToggleClicked((Group) compoundButton.getTag(), checked);
                 }
             }

@@ -43,7 +43,7 @@ public class Group implements Iterable<Device> {
             mToggleableCount = 0;
 
             for (Device device : mDevices) {
-                if (isDeviceToggleable(device)) {
+                if (DeviceUtil.isDeviceToggleable(device)) {
                     mToggleableCount++;
                 }
             }
@@ -54,7 +54,7 @@ public class Group implements Iterable<Device> {
 
     public boolean atLeastOneToggleableDeviceOn() {
         for (Device device : mDevices) {
-            if (isDeviceToggleable(device) && device.getStatus() == DeviceStatus.ON) {
+            if (DeviceUtil.isDeviceToggleable(device) && device.getStatus() == DeviceStatus.ON) {
                 return true;
             }
         }
@@ -65,18 +65,5 @@ public class Group implements Iterable<Device> {
     @Override
     public Iterator<Device> iterator() {
         return mDevices.iterator();
-    }
-
-    public int deviceCount() {
-        return mDevices.size();
-    }
-
-    public Device getDeviceAt(int index) {
-        return mDevices.get(index);
-    }
-
-    private boolean isDeviceToggleable(Device d) {
-        final int type = d.getType();
-        return type == DeviceType.APPLIANCE || type == DeviceType.LAMP;
     }
 }

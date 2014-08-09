@@ -16,8 +16,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +32,7 @@ import org.clangen.autom8.connection.ConnectionLibrary;
 import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
+import org.clangen.autom8.device.DeviceUtil;
 import org.clangen.autom8.device.Group;
 import org.clangen.autom8.device.Lamp;
 import org.clangen.autom8.device.SecuritySensor;
@@ -46,7 +45,7 @@ import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
-import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
+import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 
 public class DevicesActivity extends Activity {
@@ -132,11 +131,6 @@ public class DevicesActivity extends Activity {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuItem item = menu.add(0, MENU_ID_SETTINGS, 0, R.string.menu_settings);
         item.setIcon(R.drawable.menu_settings);
@@ -205,7 +199,7 @@ public class DevicesActivity extends Activity {
         mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
-        mListAdapter = new DeviceGroupModelAdapter(this);
+        mListAdapter = new DeviceListModelAdapter(this);
         mListAdapter.setOnDeviceClickHandler(mOnDeviceClickHandler);
 
         mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
@@ -566,7 +560,13 @@ public class DevicesActivity extends Activity {
 
             @Override
             public void onGroupToggleClicked(Group group, boolean checked) {
+                int status = checked ? DeviceStatus.ON : DeviceStatus.OFF;
 
+                for (Device device : group) {
+                    if (DeviceUtil.isDeviceToggleable(device)) {
+                        sendClientMessage(new SetDeviceStatus(device, status));
+                    }
+                }
             }
         };
 

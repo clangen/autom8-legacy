@@ -5,15 +5,15 @@ import org.clangen.autom8.R;
 /**
 * Created by clangen on 8/8/14.
 */
-enum AdapterType {
+public enum AdapterType {
     Flat(0, R.string.menu_list_flat),
     Grouped(1, R.string.menu_list_grouped);
 
-    private int mId, mString;
+    private int mId, mStringId;
 
     AdapterType(int id, int stringId) {
         mId = id;
-        mString = stringId;
+        mStringId = stringId;
     }
 
     public static AdapterType fromId(int id) {
@@ -27,5 +27,9 @@ enum AdapterType {
 
     public int getId() {
         return mId;
+    }
+
+    public int getStringId() {
+        return mStringId;
     }
 }

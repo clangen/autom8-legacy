@@ -11,44 +11,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.widget.AbsListView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import org.clangen.autom8.R;
 import org.clangen.autom8.connection.Connection;
 import org.clangen.autom8.connection.ConnectionLibrary;
-import org.clangen.autom8.device.Device;
-import org.clangen.autom8.device.DeviceStatus;
-import org.clangen.autom8.device.DeviceType;
-import org.clangen.autom8.device.DeviceUtil;
-import org.clangen.autom8.device.Group;
-import org.clangen.autom8.device.Lamp;
-import org.clangen.autom8.device.SecuritySensor;
 import org.clangen.autom8.net.Client;
-import org.clangen.autom8.net.Message;
-import org.clangen.autom8.net.request.ArmSensor;
-import org.clangen.autom8.net.request.ResetSensorStatus;
-import org.clangen.autom8.net.request.SetDeviceStatus;
-import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
-import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
-import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
-import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
-import org.clangen.autom8.ui.model.BaseDeviceModel;
+import org.clangen.autom8.ui.adapter.DevicesPagerAdapter;
+import org.clangen.autom8.ui.view.ActionBarStatusView;
 
 public class DevicesActivity extends Activity {
     private final static String TAG = "DevicesActivity";
@@ -61,25 +42,13 @@ public class DevicesActivity extends Activity {
     private final static IntentFilter INTENT_FILTER;
     private static boolean sFirstRunChecked;
 
-    private View mDevicesView;
-    private ViewHolder mViews = new ViewHolder();
+    private ActionBarStatusView mStatusView;
+    private ViewPager mDevicesPager;
     private ConnectionLibrary mConnectionLibrary;
     private IClientService mClientService;
+    private DevicesPagerAdapter mPagerAdapter;
     private boolean mPaused = true, mDestroyed;
     private boolean mServiceDisconnected;
-    private BaseDeviceModelAdapter mListAdapter;
-    private AdapterType mAdapterType = AdapterType.Flat;
-
-    private class ViewHolder {
-        public android.view.View mConnectionStatusView;
-        public android.view.View mConnectingView;
-        public View mConnectedView;
-        public View mDisconnectedView;
-        public TextView mConnectedHostName;
-        public TextView mConnectingTextView;
-        public TextView mDisconnectedTextView;
-        public AbsListView mListView;
-    }
 
     static {
         INTENT_FILTER = new IntentFilter();
@@ -96,7 +65,7 @@ public class DevicesActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         bindService();
-        setContentView(R.layout.devices);
+        setContentView(R.layout.devices_pager);
         registerReceiver(mBroadcastReceiver, INTENT_FILTER);
 
         init();
@@ -114,11 +83,8 @@ public class DevicesActivity extends Activity {
         updateUiFromClientServiceState();
         checkFirstRun();
 
-        /*
-         * mServiceDisconnected will get set to true if the Activity was
-         * paused and the Service connection was forcibly reset because
-         * the Service was automatically shut down.
-         */
+        mPagerAdapter.setClientService(mClientService);
+
         if (mServiceDisconnected) {
             bindService();
         }
@@ -145,47 +111,7 @@ public class DevicesActivity extends Activity {
         item = menu.add(0, MENU_ID_RECONNECT, 2, R.string.menu_reconnect);
         item.setIcon(R.drawable.menu_reconnect);
 
-        if (!isLandscape()) {
-            menu.add(0, MENU_ID_ADAPTER_TYPE, 3, R.string.menu_list_flat);
-        }
-
         return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        MenuItem item = menu.findItem(MENU_ID_ADAPTER_TYPE);
-        if (item != null) {
-            item.setTitle(mAdapterType == AdapterType.Flat ?
-                R.string.menu_list_grouped : R.string.menu_list_flat
-            );
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-            final boolean interceptCamera = PreferenceManager
-                .getDefaultSharedPreferences(this).getBoolean(
-                    getString(R.string.pref_use_camera_button), false);
-
-            if (interceptCamera && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                /*
-                 * Works around the case where the user holds the button too long and
-                 * the ACTION_DOWN event gets resent.
-                 */
-                if (event.getRepeatCount() == 0) {
-                    finish();
-                    return true;
-                }
-            }
-        }
-
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -203,13 +129,6 @@ public class DevicesActivity extends Activity {
         case MENU_ID_RECONNECT:
             reconnect();
             return true;
-
-        case MENU_ID_ADAPTER_TYPE:
-            mAdapterType = (mAdapterType == AdapterType.Flat) ?
-                AdapterType.Grouped : AdapterType.Flat;
-
-            resetListAdapter();
-            return true;
         }
 
         return super.onMenuItemSelected(featureId, item);
@@ -219,78 +138,59 @@ public class DevicesActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mDestroyed = true;
-        mListAdapter.close();
+        mPagerAdapter.setClientService(null);
         unregisterReceiver(mBroadcastReceiver);
         unbindService();
     }
 
     private void init() {
-        mDevicesView = findViewById(R.id.DevicesView);
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
-        mViews.mConnectionStatusView = View.inflate(this, R.layout.connection_status, null);
+        mPagerAdapter = new DevicesPagerAdapter(this);
+        mDevicesPager = (ViewPager) findViewById(R.id.devices_pager);
+        mDevicesPager.setAdapter(mPagerAdapter);
+
+        PagerTabStrip strip = (PagerTabStrip) findViewById(R.id.devices_pager_tab_strip);
+        strip.setDrawFullUnderline(false);
+
+        mStatusView = new ActionBarStatusView(this);
+        mStatusView.setOnActionBarStatusViewEventListener(mStatusViewEventListener);
+
         final ActionBar ab = getActionBar();
-        ab.setCustomView(mViews.mConnectionStatusView);
+        ab.setCustomView(mStatusView);
         ab.setDisplayShowCustomEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
 
-        final View status = mViews.mConnectionStatusView;
-        mViews.mConnectingView = status.findViewById(R.id.ConnectingView);
-        mViews.mConnectingTextView = (TextView) status.findViewById(R.id.ConnectingText);
-        mViews.mConnectedView = status.findViewById(R.id.ConnectedView);
-        mViews.mDisconnectedView = status.findViewById(R.id.DisconnectedView);
-        mViews.mDisconnectedTextView = (TextView) status.findViewById(R.id.DisconnectedTextView);
-        mViews.mConnectedHostName = (TextView) status.findViewById(R.id.ConnectedHostNameView);
-
-        mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesListView);
-        if (mViews.mListView == null) {
-            mViews.mListView = (AbsListView) mDevicesView.findViewById(R.id.DevicesGridView);
-        }
-
-        readAdapterTypeFromPreferences();
-        resetListAdapter();
+// CAL TODO: switch to default tab insead of reset adapater
+//        readAdapterTypeFromPreferences();
+//        resetListAdapter();
 
         setUiState(Client.STATE_DISCONNECTED);
     }
 
-    private void writeAdapterTypePreference() {
-        SharedPreferences.Editor editor =
-            PreferenceManager.getDefaultSharedPreferences(this).edit();
+// CAL TODO
+//    private void writeAdapterTypePreference() {
+//        SharedPreferences.Editor editor =
+//            PreferenceManager.getDefaultSharedPreferences(this).edit();
+//
+//
+//        editor.putInt(getString(R.string.pref_devices_view_type), mAdapterType.getId());
+//
+//        editor.apply();
+//    }
 
-        editor.putInt(getString(R.string.pref_devices_view_type), mAdapterType.getId());
+// CAL TODO
+//    public void readAdapterTypeFromPreferences() {
+//        mAdapterType = AdapterType.fromId(
+//            PreferenceManager.getDefaultSharedPreferences(this).getInt(
+//                getString(R.string.pref_devices_view_type), AdapterType.Flat.getId()
+//            )
+//        );
+//    }
 
-        editor.commit();
-    }
-
-    public void readAdapterTypeFromPreferences() {
-        mAdapterType = AdapterType.fromId(
-            PreferenceManager.getDefaultSharedPreferences(this).getInt(
-                getString(R.string.pref_devices_view_type), AdapterType.Flat.getId()
-            )
-        );
-    }
-
-    private void resetListAdapter() {
-        if (mListAdapter != null) {
-            mListAdapter.setOnDeviceClickHandler(null);
-        }
-
-        if (isLandscape()) {
-            mListAdapter = new DeviceListModelAdapter(this);
-        }
-        else if (mAdapterType == AdapterType.Flat) {
-            mListAdapter = new DeviceListModelAdapter(this);
-            writeAdapterTypePreference();
-        }
-        else if (mAdapterType == AdapterType.Grouped) {
-            mListAdapter = new DeviceGroupModelAdapter(this);
-            writeAdapterTypePreference();
-        }
-
-        mListAdapter.setOnDeviceClickHandler(mOnDeviceClickHandler);
-        mViews.mListView.setAdapter(mListAdapter);
-        mListAdapter.notifyDataSetChanged();
-    }
+// CAL TODO create tabs
+//    private void resetListAdapter() {
+//    }
 
     private void reconnect() {
         if (mClientService != null) {
@@ -298,6 +198,7 @@ public class DevicesActivity extends Activity {
                 mClientService.reconnect();
             }
             catch (RemoteException re) {
+                Log.d(TAG, "reconnected failed with a RemoteException");
             }
         }
     }
@@ -326,74 +227,8 @@ public class DevicesActivity extends Activity {
         mClientService = null;
     }
 
-    private void sendClientMessage(Message message) {
-        try {
-            if (mClientService != null) {
-                mClientService.sendMessage(message);
-            }
-        }
-        catch (RemoteException re) {
-            Log.d("DevicesController", "onReconnectClicked", re);
-        }
-    }
-
-    private String getConnectedHostnameString() {
-        Connection c = ConnectionLibrary.getDefaultConnection(this);
-
-        if (c != null) {
-            return String.format(" @ %s", c.getAlias());
-        }
-
-        return null;
-    }
-
     private void setUiState(int newState) {
-        int progressState = View.GONE;
-        int connectedState = View.GONE;
-        int disconnectedState = View.GONE;
-        int listViewState = View.GONE;
-        String progressString = "";
-        String disconnectedString = "";
-
-        switch (newState) {
-        case Client.STATE_CONNECTING:
-            progressState = View.VISIBLE;
-            progressString = getString(R.string.status_connecting);
-            mViews.mConnectedHostName.setText(getConnectedHostnameString());
-            break;
-
-        case Client.STATE_CONNECTED:
-            listViewState = View.VISIBLE;
-            connectedState = View.VISIBLE;
-            mViews.mConnectedHostName.setText(getConnectedHostnameString());
-            mViews.mConnectedView.setOnClickListener(null);
-            mListAdapter.notifyDataSetChanged();
-            break;
-
-        case Client.STATE_AUTHENTICATING:
-            progressState = View.VISIBLE;
-            progressString = getString(R.string.status_authenticating);
-            break;
-
-        case Client.STATE_DISCONNECTED:
-            disconnectedState = View.VISIBLE;
-            mViews.mDisconnectedView.setOnClickListener(mOnReconnectClicked);
-            mListAdapter.notifyDataSetInvalidated();
-
-            if ((mConnectionLibrary != null) && (mConnectionLibrary.count() == 0)) {
-                disconnectedString = getString(R.string.status_tap_to_setup);
-            }
-            else {
-                disconnectedString = getString(R.string.status_tap_to_reconnect);
-            }
-        }
-
-        mViews.mConnectingView.setVisibility(progressState);
-        mViews.mConnectingTextView.setText(progressString);
-        mViews.mConnectedView.setVisibility(connectedState);
-        mViews.mDisconnectedView.setVisibility(disconnectedState);
-        mViews.mDisconnectedTextView.setText(disconnectedString);
-        mViews.mListView.setVisibility(listViewState);
+        mStatusView.setClientServerState(newState);
     }
 
     private void onAuthenticationFailed() {
@@ -409,9 +244,7 @@ public class DevicesActivity extends Activity {
             }
         };
 
-        AlertDialog.Builder builder =
-            new AlertDialog.Builder(DevicesActivity.this);
-
+        AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);
         builder.setPositiveButton(R.string.button_yes, yesClickListener);
         builder.setNegativeButton(R.string.button_no, null);
         builder.setTitle(R.string.dlg_incorrect_pw_title);
@@ -423,102 +256,15 @@ public class DevicesActivity extends Activity {
         if (mClientService != null) {
             try {
                 final int state = mClientService.getState();
-
-                setUiState(state); // set initial state
+                setUiState(state);
 
                 if (state == Client.STATE_DISCONNECTED) {
                     mClientService.reconnect();
                 }
             }
             catch (RemoteException re) {
-                Log.d("DevicesController", "serviceConnection.onServiceConnected", re);
+                Log.d(TAG, "serviceConnection.onServiceConnected", re);
             }
-        }
-    }
-
-    private void showLightDimDialog(final Lamp lampDevice) {
-        View dimView = getLayoutInflater().inflate(R.layout.dim_lamp, null, false);
-        final SeekBar seekBar = (SeekBar) dimView.findViewById(R.id.DimLampSeekBar);
-
-        seekBar.setMax(100);
-        seekBar.setProgress(lampDevice.getBrightness());
-
-        DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                int dim = seekBar.getProgress();
-                sendClientMessage(new SetLampBrightness(lampDevice, dim));
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(R.string.button_ok, okClickListener);
-        builder.setNegativeButton(R.string.button_cancel, null);
-        builder.setTitle(getString(R.string.dlg_lamp_brightness_title));
-        builder.setView(dimView);
-        builder.show();
-    }
-
-    private void confirmClearAlert(final SecuritySensor sensor) {
-        if (sensor.getStatus() != DeviceStatus.ON) {
-            return;
-        }
-
-        DialogInterface.OnClickListener yesClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                sendClientMessage(new ResetSensorStatus(sensor));
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(R.string.button_yes, yesClickListener);
-        builder.setNegativeButton(R.string.button_no, null);
-        builder.setTitle(R.string.dlg_reset_alert_title);
-        builder.setMessage(R.string.dlg_reset_alert_desc);
-        builder.show();
-    }
-
-    private void toggleArmSecuritySensor(final SecuritySensor sensor) {
-        if ( ! sensor.isArmed()) {
-            sendClientMessage(new ArmSensor(sensor, true));
-            return;
-        }
-
-        DialogInterface.OnClickListener yesClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                sendClientMessage(new ArmSensor(sensor, false));
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(R.string.button_yes, yesClickListener);
-        builder.setNegativeButton(R.string.button_no, null);
-        builder.setTitle(R.string.dlg_disarm_title);
-        builder.setMessage(R.string.dlg_disarm_desc);
-        builder.show();
-    }
-
-    private void onDeviceItemClicked(Device device) {
-        final String address = device.getAddress();
-
-        final BaseDeviceModel deviceModel = mListAdapter.getDeviceModel();
-        if (!deviceModel.isUpdating(address)) {
-            deviceModel.setUpdating(address);
-            mListAdapter.notifyDataSetChanged();
-        }
-
-        int newStatus = (device.getStatus() == DeviceStatus.ON)
-            ? DeviceStatus.OFF
-            : DeviceStatus.ON;
-
-        sendClientMessage(new SetDeviceStatus(device, newStatus));
-    }
-
-    private void onSecuritySensorItemClicked(SecuritySensor sensor) {
-        if (sensor.isTripped()) {
-            confirmClearAlert(sensor);
-        }
-        else {
-            toggleArmSecuritySensor(sensor);
         }
     }
 
@@ -556,15 +302,13 @@ public class DevicesActivity extends Activity {
         }
     }
 
-    private boolean isLandscape() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-    }
-
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder service) {
             Log.i(TAG, "ClientService bound to Activity");
 
             mClientService = IClientService.Stub.asInterface(service);
+            mPagerAdapter.setClientService(mClientService);
+
             mServiceDisconnected = false;
 
             if (mDestroyed) {
@@ -602,59 +346,24 @@ public class DevicesActivity extends Activity {
         }
     };
 
-    private BaseDeviceModelAdapter.OnDeviceClickHandler mOnDeviceClickHandler =
-        new BaseDeviceModelAdapter.OnDeviceClickHandler() {
+    private ActionBarStatusView.OnActionBarStatusViewEventListener mStatusViewEventListener =
+        new ActionBarStatusView.OnActionBarStatusViewEventListener() {
             @Override
-            public void onDeviceClicked(Device device) {
-                switch (device.getType()) {
-                    case DeviceType.SECURITY_SENSOR:
-                        onSecuritySensorItemClicked((SecuritySensor) device);
-                        break;
-
-                    default:
-                        onDeviceItemClicked(device);
-                        break;
-                }
-            }
-
-            @Override
-            public boolean onDeviceLongClicked(Device device) {
-                if ((device.getType() == DeviceType.LAMP)
-                        && (device.getStatus() == DeviceStatus.ON)) {
-                    showLightDimDialog((Lamp) device);
-                    return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            public void onGroupToggleClicked(Group group, boolean checked) {
-                int status = checked ? DeviceStatus.ON : DeviceStatus.OFF;
-
-                for (Device device : group) {
-                    if (DeviceUtil.isDeviceToggleable(device) && device.getStatus() != status) {
-                        sendClientMessage(new SetDeviceStatus(device, status));
+            public void onReconnectClicked() {
+                try {
+                    if (mClientService != null) {
+                        if (mConnectionLibrary.count() > 0) {
+                            mClientService.reconnect();
+                        }
+                        else {
+                            EditConnectionActivity.start(DevicesActivity.this);
+                        }
                     }
+                }
+                catch (RemoteException re) {
+                    Log.d("DevicesController", "onReconnectClicked", re);
                 }
             }
         };
 
-    private OnClickListener mOnReconnectClicked = new OnClickListener() {
-        public void onClick(View view) {
-            try {
-                if (mClientService != null) {
-                    if (mConnectionLibrary.count() > 0) {
-                        mClientService.reconnect();
-                    }
-                    else {
-                        EditConnectionActivity.start(DevicesActivity.this);
-                    }
-                }
-            }
-            catch (RemoteException re) {
-                Log.d("DevicesController", "onReconnectClicked", re);
-            }
-        }
-    };
 }

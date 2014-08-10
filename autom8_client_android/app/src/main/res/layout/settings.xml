@@ -27,12 +27,6 @@
             android:dependency="@string/pref_run_in_background"
             android:defaultValue="false" />
 
-        <CheckBoxPreference
-            android:key="@string/pref_use_camera_button"
-            android:title="@string/setting_camera_button_title"
-            android:summary="@string/setting_camera_button_desc"
-            android:defaultValue="false" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

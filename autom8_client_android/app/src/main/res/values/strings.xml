@@ -55,8 +55,8 @@
     <string name="device_type_sensor">security sensor</string>
     <string name="device_type_unknown">unknown device</string>
 
-    <string name="menu_list_flat">Show Flat List</string>
-    <string name="menu_list_grouped">Group by Area</string>
+    <string name="menu_list_flat">All Devices</string>
+    <string name="menu_list_grouped">Grouped by Area</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_connection">Connection</string>
     <string name="menu_reconnect">Reconnect</string>

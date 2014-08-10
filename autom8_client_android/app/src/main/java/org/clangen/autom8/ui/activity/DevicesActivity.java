@@ -548,7 +548,7 @@ public class DevicesActivity extends Activity {
     }
 
     private void checkFirstRun() {
-        if ( ! sFirstRunChecked) {
+        if (!sFirstRunChecked) {
             if (mConnectionLibrary.count() <= 0) {
                 EditConnectionActivity.startFirstRun(this);
                 sFirstRunChecked = true;
@@ -633,7 +633,7 @@ public class DevicesActivity extends Activity {
                 int status = checked ? DeviceStatus.ON : DeviceStatus.OFF;
 
                 for (Device device : group) {
-                    if (DeviceUtil.isDeviceToggleable(device)) {
+                    if (DeviceUtil.isDeviceToggleable(device) && device.getStatus() != status) {
                         sendClientMessage(new SetDeviceStatus(device, status));
                     }
                 }

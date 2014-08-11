@@ -1,9 +1,8 @@
 package org.clangen.autom8.ui.fragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -11,10 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.SeekBar;
 
 import org.clangen.autom8.R;
 import org.clangen.autom8.device.Device;
+import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceLibraryFactory;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
@@ -33,7 +32,9 @@ import org.clangen.autom8.ui.activity.ClientServiceProvider;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
-import org.clangen.autom8.ui.dialog.ConfirmClearAlertDialog;
+import org.clangen.autom8.ui.dialog.ClearSensorAlertDialog;
+import org.clangen.autom8.ui.dialog.DisarmSensorDialog;
+import org.clangen.autom8.ui.dialog.LampBrightnessDialog;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 import org.clangen.autom8.util.ActivityUtil;
 
@@ -51,6 +52,7 @@ public class DeviceModelFragment extends Fragment {
     private View mView;
     private AbsListView mListView;
     private AdapterType mAdapterType = AdapterType.Flat;
+    private DeviceLibrary mDeviceLibrary;
 
     public DeviceModelFragment(AdapterType type) {
         super();
@@ -65,6 +67,7 @@ public class DeviceModelFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mDeviceLibrary = DeviceLibraryFactory.getInstance(getActivity());
         mClientServiceProvider = (ClientServiceProvider) getActivity();
 
         if (savedInstanceState != null) {
@@ -150,25 +153,14 @@ public class DeviceModelFragment extends Fragment {
     }
 
     private void showLightDimDialog(final Lamp lampDevice) {
-        View dimView = mInflater.inflate(R.layout.dim_lamp, null, false);
-        final SeekBar seekBar = (SeekBar) dimView.findViewById(R.id.DimLampSeekBar);
+        Bundle bundle = new Bundle();
+        bundle.putString(LampBrightnessDialog.DEVICE_ADDRESS, lampDevice.getAddress());
+        bundle.putInt(LampBrightnessDialog.LAMP_BRIGHTNESS, lampDevice.getBrightness());
 
-        seekBar.setMax(100);
-        seekBar.setProgress(lampDevice.getBrightness());
-
-        DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                int dim = seekBar.getProgress();
-                sendClientMessage(new SetLampBrightness(lampDevice, dim));
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setPositiveButton(R.string.button_ok, okClickListener);
-        builder.setNegativeButton(R.string.button_cancel, null);
-        builder.setTitle(getString(R.string.dlg_lamp_brightness_title));
-        builder.setView(dimView);
-        builder.show();
+        LampBrightnessDialog dialog = new LampBrightnessDialog();
+        dialog.setArguments(bundle);
+        dialog.setOnSetLampBrightnessListener(mSetLampBrightnessListener);
+        dialog.show(getFragmentManager(), LampBrightnessDialog.TAG);
     }
 
     private void confirmClearAlert(final SecuritySensor sensor) {
@@ -176,12 +168,13 @@ public class DeviceModelFragment extends Fragment {
             return;
         }
 
-        ConfirmClearAlertDialog dialog = new ConfirmClearAlertDialog();
-        dialog.setOnConfirmClearListener(mConfirmClearAlertListener);
         Bundle bundle = new Bundle();
-        bundle.putString(ConfirmClearAlertDialog.EXTRA_SENSOR_ADDRESS, sensor.getAddress());
+        bundle.putString(ClearSensorAlertDialog.SENSOR_ADDRESS, sensor.getAddress());
+
+        ClearSensorAlertDialog dialog = new ClearSensorAlertDialog();
         dialog.setArguments(bundle);
-        dialog.show(getFragmentManager(), ConfirmClearAlertDialog.TAG);
+        dialog.setOnClearSensorAlertListener(mClearSensorAlertDialogListener);
+        dialog.show(getFragmentManager(), ClearSensorAlertDialog.TAG);
     }
 
     private void toggleArmSecuritySensor(final SecuritySensor sensor) {
@@ -190,18 +183,13 @@ public class DeviceModelFragment extends Fragment {
             return;
         }
 
-        DialogInterface.OnClickListener yesClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                sendClientMessage(new ArmSensor(sensor, false));
-            }
-        };
+        Bundle bundle = new Bundle();
+        bundle.putString(DisarmSensorDialog.SENSOR_ADDRESS, sensor.getAddress());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setPositiveButton(R.string.button_yes, yesClickListener);
-        builder.setNegativeButton(R.string.button_no, null);
-        builder.setTitle(R.string.dlg_disarm_title);
-        builder.setMessage(R.string.dlg_disarm_desc);
-        builder.show();
+        DisarmSensorDialog dialog = new DisarmSensorDialog();
+        dialog.setArguments(bundle);
+        dialog.setOnDisarmSensorListener(mDisarmSensorListener);
+        dialog.show(getFragmentManager(), DisarmSensorDialog.TAG);
     }
 
     private void onDeviceItemClicked(Device device) {
@@ -230,19 +218,47 @@ public class DeviceModelFragment extends Fragment {
     }
 
     private void restoreDialogEventHandlers() {
-        Fragment fragment = getFragmentManager().findFragmentByTag(ConfirmClearAlertDialog.TAG);
+        final FragmentManager fm = getFragmentManager();
+
+        Fragment fragment = fm.findFragmentByTag(ClearSensorAlertDialog.TAG);
         if (fragment != null) {
-            ((ConfirmClearAlertDialog) fragment).setOnConfirmClearListener(mConfirmClearAlertListener);
+            ((ClearSensorAlertDialog) fragment).setOnClearSensorAlertListener(mClearSensorAlertDialogListener);
+        }
+
+        fragment = fm.findFragmentByTag(LampBrightnessDialog.TAG);
+        if (fragment != null) {
+            ((LampBrightnessDialog) fragment).setOnSetLampBrightnessListener(mSetLampBrightnessListener);
+        }
+
+        fragment = fm.findFragmentByTag(DisarmSensorDialog.TAG);
+        if (fragment != null) {
+            ((DisarmSensorDialog) fragment).setOnDisarmSensorListener(mDisarmSensorListener);
         }
     }
 
-    private ConfirmClearAlertDialog.OnConfirmClearListener mConfirmClearAlertListener =
-        new ConfirmClearAlertDialog.OnConfirmClearListener() {
+    private DisarmSensorDialog.OnDisarmSensorListener mDisarmSensorListener =
+        new DisarmSensorDialog.OnDisarmSensorListener() {
             @Override
-            public void onConfirmClear(String address) {
-                SecuritySensor sensor = (SecuritySensor)
-                    DeviceLibraryFactory.getInstance(getActivity()).getDeviceByAddress(address);
+            public void onDisarmSensor(String address) {
+                SecuritySensor sensor = (SecuritySensor) mDeviceLibrary.getDeviceByAddress(address);
+                sendClientMessage(new ArmSensor(sensor, false));
+            }
+        };
 
+    private LampBrightnessDialog.OnSetLampBrightnessListener mSetLampBrightnessListener =
+        new LampBrightnessDialog.OnSetLampBrightnessListener() {
+            @Override
+            public void onSetLampBrightness(String address, int brightness) {
+                Lamp lamp = (Lamp) mDeviceLibrary.getDeviceByAddress(address);
+                sendClientMessage(new SetLampBrightness(lamp, brightness));
+            }
+        };
+
+    private ClearSensorAlertDialog.OnClearSensorAlertListener mClearSensorAlertDialogListener =
+        new ClearSensorAlertDialog.OnClearSensorAlertListener() {
+            @Override
+            public void onClearSensorAlert(String address) {
+                SecuritySensor sensor = (SecuritySensor) mDeviceLibrary.getDeviceByAddress(address);
                 sendClientMessage(new ResetSensorStatus(sensor));
             }
         };

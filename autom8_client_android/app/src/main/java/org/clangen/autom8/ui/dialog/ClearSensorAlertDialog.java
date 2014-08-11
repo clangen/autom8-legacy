@@ -11,32 +11,31 @@ import org.clangen.autom8.R;
 /**
  * Created by clangen on 8/10/14.
  */
-public class ConfirmClearAlertDialog extends DialogFragment {
-    public static final String TAG = "ConfirmClearAlertDialog";
-    public static final String EXTRA_SENSOR_ADDRESS = "org.clangen.autom8.SENSOR_ADDRESS";
+public class ClearSensorAlertDialog extends DialogFragment {
+    public static final String TAG = "ClearSensorAlertDialog";
+    public static final String SENSOR_ADDRESS = "org.clangen.autom8.SENSOR_ADDRESS";
 
-    private String mAddress;
-    private OnConfirmClearListener mListener;
+    private OnClearSensorAlertListener mListener;
 
-    public interface OnConfirmClearListener {
-        void onConfirmClear(String address);
+    public interface OnClearSensorAlertListener {
+        void onClearSensorAlert(String address);
     }
 
-    public ConfirmClearAlertDialog() {
+    public ClearSensorAlertDialog() {
     }
 
-    public void setOnConfirmClearListener(OnConfirmClearListener listener) {
+    public void setOnClearSensorAlertListener(OnClearSensorAlertListener listener) {
         mListener = listener;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mAddress = getArguments().getString(EXTRA_SENSOR_ADDRESS);
+        final String address = getArguments().getString(SENSOR_ADDRESS);
 
         DialogInterface.OnClickListener yesClickListener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 if (mListener != null) {
-                    mListener.onConfirmClear(mAddress);
+                    mListener.onClearSensorAlert(address);
                 }
             }
         };
@@ -47,10 +46,5 @@ public class ConfirmClearAlertDialog extends DialogFragment {
         builder.setTitle(R.string.dlg_reset_alert_title);
         builder.setMessage(R.string.dlg_reset_alert_desc);
         return builder.create();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 }

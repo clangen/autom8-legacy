@@ -23,8 +23,6 @@
     <string name="setting_ringtone_desc">Change the default security alert notification ringtone.</string>
     <string name="setting_heartbeat_title">Heartbeat</string>
     <string name="setting_heartbeat_desc">How often a heartbeat should be sent to the server (in minutes).</string>
-    <string name="setting_camera_button_title">Intercept camera button</string>
-    <string name="setting_camera_button_desc">Start autom8 the camera button is clicked.</string>
     <string name="setting_version_title">Version</string>
     <string name="setting_version_desc">v%1$s (build %2$d)</string>
 
@@ -104,7 +102,6 @@
     <string name="pref_translucency_enabled">translucencyEnabled</string>
     <string name="pref_connection_manager">connectionManager</string>
     <string name="pref_notification_ringtone">notificationRingtone</string>
-    <string name="pref_use_camera_button">useCameraButton</string>
     <string name="pref_devices_view_type">devicesViewType</string>
     <string name="pref_version">version</string>
 </resources>

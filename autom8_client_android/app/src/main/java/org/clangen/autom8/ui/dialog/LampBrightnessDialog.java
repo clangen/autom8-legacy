@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.SeekBar;
 
 import org.clangen.autom8.R;
-import org.clangen.autom8.net.request.SetLampBrightness;
 
 /**
  * Created by avatar on 8/10/2014.

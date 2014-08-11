@@ -1,21 +1,17 @@
 package org.clangen.autom8.ui.activity;
 
-import org.clangen.autom8.R;
-import org.clangen.autom8.receiver.CameraButtonReceiver;
-import org.clangen.autom8.service.ClientService;
-
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+
+import org.clangen.autom8.R;
+import org.clangen.autom8.service.ClientService;
 
 public class SettingsActivity extends PreferenceActivity {
     public static final String ACTION_TRANSLUCENCY_TOGGLED = "org.clangen.autom8.ACTION_TRANSLUCENCY_TOGGLED";
@@ -47,9 +43,6 @@ public class SettingsActivity extends PreferenceActivity {
             ConnectionManagerActivity.start(this);
             return false;
         }
-        else if (p == getCameraButtonPreference()) {
-            onCameraButtonPreferenceChanged();
-        }
 
         sendBroadcast(new Intent(ClientService.ACTION_RELOAD_SETTINGS));
 
@@ -79,10 +72,6 @@ public class SettingsActivity extends PreferenceActivity {
         return findPreference(getString(R.string.pref_translucency_enabled));
     }
 
-    private Preference getCameraButtonPreference() {
-        return findPreference(getString(R.string.pref_use_camera_button));
-    }
-
     private Preference getPeristencePreference() {
         return findPreference(getString(R.string.pref_run_in_background));
     }
@@ -98,22 +87,6 @@ public class SettingsActivity extends PreferenceActivity {
 //        b.setPositiveButton(R.string.button_ok, null);
 //        b.create().show();
         sendBroadcast(new Intent(ACTION_TRANSLUCENCY_TOGGLED));
-    }
-
-    private void onCameraButtonPreferenceChanged() {
-        SharedPreferences prefs =
-            PreferenceManager.getDefaultSharedPreferences(this);
-
-        final boolean enabled = prefs.getBoolean(
-            getString(R.string.pref_use_camera_button), false);
-
-        final int newState = enabled
-            ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-            : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-
-        PackageManager pm = getPackageManager();
-        ComponentName cn = new ComponentName(this, CameraButtonReceiver.class);
-        pm.setComponentEnabledSetting(cn, newState, PackageManager.DONT_KILL_APP);
     }
 
     private void setVersionPreference() {

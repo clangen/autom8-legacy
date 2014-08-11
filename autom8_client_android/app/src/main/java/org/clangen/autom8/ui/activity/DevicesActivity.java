@@ -304,7 +304,6 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
             Log.i(TAG, "ClientService bound to Activity");
 
             mClientService = IClientService.Stub.asInterface(service);
-
             mServiceDisconnected = false;
 
             if (mDestroyed) {

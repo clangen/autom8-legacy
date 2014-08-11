@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import org.clangen.autom8.R;
-import org.clangen.autom8.net.request.ArmSensor;
 
 /**
  * Created by avatar on 8/10/2014.

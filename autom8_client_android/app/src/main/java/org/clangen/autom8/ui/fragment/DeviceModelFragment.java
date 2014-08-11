@@ -29,6 +29,7 @@ import org.clangen.autom8.net.request.SetDeviceStatus;
 import org.clangen.autom8.net.request.SetLampBrightness;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.activity.AdapterType;
+import org.clangen.autom8.ui.activity.ClientServiceProvider;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
@@ -43,15 +44,13 @@ import org.clangen.autom8.util.ActivityUtil;
 public class DeviceModelFragment extends Fragment {
     private final static String TAG = "DeviceModelFragment";
     private static final String ADAPTER_TYPE = "org.clangen.autom8.AdapterType";
-    private static int INSTANCE_COUNTER = 0;
 
-    private IClientService mClientService;
+    private ClientServiceProvider mClientServiceProvider;
     private BaseDeviceModelAdapter mListAdapter;
     private LayoutInflater mInflater;
     private View mView;
     private AbsListView mListView;
     private AdapterType mAdapterType = AdapterType.Flat;
-    private int mInstanceId;
 
     public DeviceModelFragment(AdapterType type) {
         super();
@@ -66,7 +65,7 @@ public class DeviceModelFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mInstanceId = INSTANCE_COUNTER++;
+        mClientServiceProvider = (ClientServiceProvider) getActivity();
 
         if (savedInstanceState != null) {
             mAdapterType = AdapterType.fromId(savedInstanceState.getInt(ADAPTER_TYPE, 0));
@@ -90,10 +89,6 @@ public class DeviceModelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return init(inflater);
-    }
-
-    public void setClientService(IClientService service) {
-        mClientService = service;
     }
 
     private View init(LayoutInflater inflater) {
@@ -137,8 +132,10 @@ public class DeviceModelFragment extends Fragment {
 
     protected boolean sendClientMessage(final Message message) {
         try {
-            if (mClientService != null) {
-                mClientService.sendMessage(message);
+            IClientService clientService  = mClientServiceProvider.getClientService();
+
+            if (clientService != null) {
+                clientService.sendMessage(message);
                 return true;
             }
             else {

@@ -32,7 +32,7 @@ import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.adapter.DevicesPagerAdapter;
 import org.clangen.autom8.ui.view.ActionBarStatusView;
 
-public class DevicesActivity extends Activity {
+public class DevicesActivity extends Activity implements ClientServiceProvider {
     private final static String TAG = "DevicesActivity";
 
     private final static int MENU_ID_EDIT_CONNECTION = 0;
@@ -84,8 +84,6 @@ public class DevicesActivity extends Activity {
         updateUiFromClientServiceState();
         checkFirstRun();
 
-        mPagerAdapter.setClientService(mClientService);
-
         if (mServiceDisconnected) {
             bindService();
         }
@@ -133,6 +131,11 @@ public class DevicesActivity extends Activity {
         }
 
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public IClientService getClientService() {
+        return mClientService;
     }
 
     @Override
@@ -301,7 +304,6 @@ public class DevicesActivity extends Activity {
             Log.i(TAG, "ClientService bound to Activity");
 
             mClientService = IClientService.Stub.asInterface(service);
-            mPagerAdapter.setClientService(mClientService);
 
             mServiceDisconnected = false;
 
@@ -315,7 +317,6 @@ public class DevicesActivity extends Activity {
 
         public void onServiceDisconnected(ComponentName name) {
             Log.i(TAG, "ClientService unbound from Activity");
-            mPagerAdapter.setClientService(null);
             mServiceDisconnected = true;
         }
     };

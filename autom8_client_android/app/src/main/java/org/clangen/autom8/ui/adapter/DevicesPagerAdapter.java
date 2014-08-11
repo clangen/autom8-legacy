@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceLibraryFactory;
-import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.activity.AdapterType;
 import org.clangen.autom8.ui.fragment.DeviceModelFragment;
 import org.clangen.autom8.util.ActivityUtil;
@@ -30,7 +29,6 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
 
     private static final IntentFilter INTENT_FILTER = new IntentFilter();
 
-    private IClientService mClientService;
     private Context mContext;
     private HashMap<Integer, DeviceModelFragment> mItems;
     private DeviceLibrary mDeviceLibrary;
@@ -50,16 +48,7 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
     }
 
     public void onDestroy() {
-        setClientService(null);
         ActivityUtil.unregisterReceiver(mContext, mLibraryRefreshedReceiver);
-    }
-
-    public void setClientService(IClientService service) {
-        mClientService = service;
-
-        for (Integer i : mItems.keySet()) {
-            mItems.get(i).setClientService(service);
-        }
     }
 
     @Override
@@ -70,7 +59,7 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         DeviceModelFragment fragment = new DeviceModelFragment(mPages[position]);
-        fragment.setClientService(mClientService);
+        mItems.put(position, fragment);
         return fragment;
     }
 
@@ -85,7 +74,6 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
             (DeviceModelFragment) super.instantiateItem(container, position);
 
         mItems.put(position, fragment);
-        fragment.setClientService(mClientService);
 
         return fragment;
     }

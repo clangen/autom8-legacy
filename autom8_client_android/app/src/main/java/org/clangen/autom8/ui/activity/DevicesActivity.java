@@ -153,6 +153,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         mPagerAdapter = new DevicesPagerAdapter(this);
         mDevicesPager = (ViewPager) findViewById(R.id.devices_pager);
         mDevicesPager.setAdapter(mPagerAdapter);
+        mDevicesPager.setOnPageChangeListener(mViewPagerChangedListener);
 
         PagerTabStrip strip = (PagerTabStrip) findViewById(R.id.devices_pager_tab_strip);
         strip.setDrawFullUnderline(false);
@@ -169,25 +170,34 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         setUiState(Client.STATE_DISCONNECTED);
     }
 
-// CAL TODO
-//    private void writeAdapterTypePreference() {
-//        SharedPreferences.Editor editor =
-//            PreferenceManager.getDefaultSharedPreferences(this).edit();
-//
-//
-//        editor.putInt(getString(R.string.pref_devices_view_type), mAdapterType.getId());
-//
-//        editor.apply();
-//    }
+    private void writeAdapterTypePreference(int position) {
+        SharedPreferences.Editor editor =
+            PreferenceManager.getDefaultSharedPreferences(this).edit();
 
-// CAL TODO
-//    public void readAdapterTypeFromPreferences() {
-//        mAdapterType = AdapterType.fromId(
-//            PreferenceManager.getDefaultSharedPreferences(this).getInt(
-//                getString(R.string.pref_devices_view_type), AdapterType.Flat.getId()
-//            )
-//        );
-//    }
+        final int typeId = mPagerAdapter.getAdapterType(position).getId();
+
+        editor.putInt(getString(R.string.pref_devices_view_type), typeId);
+
+        editor.apply();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        int index = mPagerAdapter.getIndexForType(readAdapterTypeFromPreferences());
+        if (index != -1) {
+            mDevicesPager.setCurrentItem(index, true);
+        }
+    }
+
+    public AdapterType readAdapterTypeFromPreferences() {
+        return AdapterType.fromId(
+            PreferenceManager.getDefaultSharedPreferences(this).getInt(
+                getString(R.string.pref_devices_view_type), AdapterType.Flat.getId()
+            )
+        );
+    }
 
     private void reconnect() {
         if (mClientService != null) {
@@ -298,6 +308,22 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
             }
         }
     }
+
+    private ViewPager.OnPageChangeListener mViewPagerChangedListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            writeAdapterTypePreference(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder service) {

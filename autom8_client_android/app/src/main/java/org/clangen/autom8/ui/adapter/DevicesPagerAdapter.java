@@ -58,9 +58,29 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        DeviceModelFragment fragment = new DeviceModelFragment(mPages[position]);
+        DeviceModelFragment fragment = mItems.get(position);
+
+        if (fragment != null) {
+            return fragment;
+        }
+
+        fragment = new DeviceModelFragment(mPages[position]);
         mItems.put(position, fragment);
         return fragment;
+    }
+
+    public int getIndexForType(AdapterType type) {
+        for (int i = 0; i < mPages.length; i++) {
+            if (mPages[i] == type) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public AdapterType getAdapterType(int position) {
+        final DeviceModelFragment f = mItems.get(position);
+        return f == null ? AdapterType.Flat : f.getAdapterType();
     }
 
     @Override

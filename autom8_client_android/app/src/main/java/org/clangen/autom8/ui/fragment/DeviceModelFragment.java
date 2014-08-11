@@ -94,6 +94,10 @@ public class DeviceModelFragment extends Fragment {
         return init(inflater);
     }
 
+    public AdapterType getAdapterType() {
+        return mAdapterType;
+    }
+
     private View init(LayoutInflater inflater) {
         mInflater = inflater;
 

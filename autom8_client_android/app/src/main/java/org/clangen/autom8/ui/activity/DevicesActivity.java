@@ -31,6 +31,7 @@ import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.adapter.DevicesPagerAdapter;
 import org.clangen.autom8.ui.view.ActionBarStatusView;
+import org.clangen.autom8.util.ActivityUtil;
 
 public class DevicesActivity extends Activity implements ClientServiceProvider {
     private final static String TAG = "DevicesActivity";
@@ -38,7 +39,6 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     private final static int MENU_ID_EDIT_CONNECTION = 0;
     private final static int MENU_ID_SETTINGS = 1;
     private final static int MENU_ID_RECONNECT = 2;
-    private final static int MENU_ID_ADAPTER_TYPE = 3;
 
     private final static IntentFilter INTENT_FILTER;
     private static boolean sFirstRunChecked;
@@ -47,7 +47,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     private ViewPager mDevicesPager;
     private ConnectionLibrary mConnectionLibrary;
     private IClientService mClientService;
-    private DevicesPagerAdapter mPagerAdapter;
+    private DevicesPagerAdapter mDevicesPagerAdapter;
     private boolean mPaused = true, mDestroyed;
     private boolean mServiceDisconnected;
 
@@ -142,7 +142,14 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     protected void onDestroy() {
         super.onDestroy();
         mDestroyed = true;
-        mPagerAdapter.onDestroy();
+        mDevicesPagerAdapter.onDestroy();
+
+        /* for now, only portrait mode supports saving/restoring the last
+        selected AdapterType; group mode is not supported in landscape */
+        if (ActivityUtil.isLandscape(this)) {
+            writeAdapterTypePreference();
+        }
+
         unregisterReceiver(mBroadcastReceiver);
         unbindService();
     }
@@ -150,10 +157,11 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     private void init() {
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
-        mPagerAdapter = new DevicesPagerAdapter(this);
+        mDevicesPagerAdapter = new DevicesPagerAdapter(this);
+        mDevicesPagerAdapter.setOnInitializedListener(mOnPagerInitializedListener);
+
         mDevicesPager = (ViewPager) findViewById(R.id.devices_pager);
-        mDevicesPager.setAdapter(mPagerAdapter);
-        mDevicesPager.setOnPageChangeListener(mViewPagerChangedListener);
+        mDevicesPager.setAdapter(mDevicesPagerAdapter);
 
         PagerTabStrip strip = (PagerTabStrip) findViewById(R.id.devices_pager_tab_strip);
         strip.setDrawFullUnderline(false);
@@ -170,25 +178,16 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         setUiState(Client.STATE_DISCONNECTED);
     }
 
-    private void writeAdapterTypePreference(int position) {
+    private void writeAdapterTypePreference() {
         SharedPreferences.Editor editor =
             PreferenceManager.getDefaultSharedPreferences(this).edit();
 
-        final int typeId = mPagerAdapter.getAdapterType(position).getId();
+        int position = mDevicesPager.getCurrentItem();
+        final int typeId = mDevicesPagerAdapter.getAdapterType(position).getId();
 
         editor.putInt(getString(R.string.pref_devices_view_type), typeId);
 
         editor.apply();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        int index = mPagerAdapter.getIndexForType(readAdapterTypeFromPreferences());
-        if (index != -1) {
-            mDevicesPager.setCurrentItem(index, true);
-        }
     }
 
     public AdapterType readAdapterTypeFromPreferences() {
@@ -227,7 +226,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
                 unbindService(mServiceConnection);
             }
             catch (Exception e) {
-                Log.d("DevicesController", "DevicesController.unbindService: error calling Activity.unbindService()", e);
+                Log.d(TAG, "unbindService threw", e);
             }
         }
 
@@ -309,21 +308,16 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         }
     }
 
-    private ViewPager.OnPageChangeListener mViewPagerChangedListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            writeAdapterTypePreference(position);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-
-        }
-    };
+    private DevicesPagerAdapter.OnResetListener mOnPagerInitializedListener =
+        new DevicesPagerAdapter.OnResetListener() {
+            @Override
+            public void onReset() {
+                int index = mDevicesPagerAdapter.getIndexForType(readAdapterTypeFromPreferences());
+                if (index != -1) {
+                    mDevicesPager.setCurrentItem(index, true);
+                }
+            }
+        };
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, final IBinder service) {

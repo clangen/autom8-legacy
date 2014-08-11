@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
@@ -27,12 +28,20 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
     private static final AdapterType[] PAGE_ORDER_FLAT_ONLY =
         new AdapterType[] { AdapterType.Flat };
 
+    private static final AdapterType[] EMPTY = new AdapterType[] { };
+
     private static final IntentFilter INTENT_FILTER = new IntentFilter();
 
     private Context mContext;
     private HashMap<Integer, DeviceModelFragment> mItems;
     private DeviceLibrary mDeviceLibrary;
-    private AdapterType[] mPages;
+    private AdapterType[] mPages = EMPTY;
+    private OnResetListener mOnResetListener;
+    private Handler mHandler = new Handler();
+
+    public interface OnResetListener {
+        void onReset();
+    }
 
     static {
         INTENT_FILTER.addAction(DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED);
@@ -43,12 +52,24 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
         this.mContext = context;
         mItems = new HashMap<Integer, DeviceModelFragment>();
         mDeviceLibrary = DeviceLibraryFactory.getInstance(context.getApplicationContext());
-        updatePageOrder();
         ActivityUtil.registerReceiver(context, mLibraryRefreshedReceiver, INTENT_FILTER);
+
+        /* wait until the next pass through the event loop so the caller
+        has a chance to register a reset handler */
+        mHandler.post(new Runnable() {
+            public void run() {
+                updatePageOrder();
+            }
+        });
     }
 
     public void onDestroy() {
         ActivityUtil.unregisterReceiver(mContext, mLibraryRefreshedReceiver);
+        mOnResetListener = null;
+    }
+
+    public void setOnInitializedListener(OnResetListener listener) {
+        mOnResetListener = listener;
     }
 
     @Override
@@ -107,6 +128,10 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
         if (pages != mPages) {
             mPages = pages;
             this.notifyDataSetChanged();
+
+            if (mOnResetListener != null) {
+                mOnResetListener.onReset();
+            }
         }
     }
 

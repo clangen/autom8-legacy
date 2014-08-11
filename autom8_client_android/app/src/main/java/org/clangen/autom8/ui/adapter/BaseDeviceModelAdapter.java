@@ -118,6 +118,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
         }
 
         holder.mToggleButton.setOnCheckedChangeListener(mOnGroupToggleListener);
+        holder.mToggleButton.setOnLongClickListener(mOnToggleButtonLongClickListener);
 
         return convertView;
     }
@@ -224,6 +225,19 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     protected void onDeviceModelChanged() {
         notifyDataSetChanged();
     }
+
+    private View.OnLongClickListener mOnToggleButtonLongClickListener =
+        new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mClickHandler != null && view.getTag() != null) {
+                    mClickHandler.onGroupToggleClicked((Group) view.getTag(), true);
+                    return true;
+                }
+
+                return false;
+            }
+        };
 
     private View.OnLongClickListener mOnDeviceLongClickListener =
         new View.OnLongClickListener() {

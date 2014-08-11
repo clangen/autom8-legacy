@@ -2,32 +2,56 @@ package org.clangen.autom8.ui.adapter;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
+import org.clangen.autom8.device.DeviceLibrary;
+import org.clangen.autom8.device.DeviceLibraryFactory;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.activity.AdapterType;
 import org.clangen.autom8.ui.fragment.DeviceModelFragment;
+import org.clangen.autom8.util.ActivityUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Created by avatar on 8/10/2014.
  */
 public class DevicesPagerAdapter extends FragmentPagerAdapter {
-    private static AdapterType[] PAGE_ORDER =
+    private static final AdapterType[] PAGE_ORDER_FLAT_AND_GROUPED =
         new AdapterType[] { AdapterType.Flat, AdapterType.Grouped };
+
+    private static final AdapterType[] PAGE_ORDER_FLAT_ONLY =
+        new AdapterType[] { AdapterType.Flat };
+
+    private static final IntentFilter INTENT_FILTER = new IntentFilter();
 
     private IClientService mClientService;
     private Context mContext;
     private HashMap<Integer, DeviceModelFragment> mItems;
+    private DeviceLibrary mDeviceLibrary;
+    private AdapterType[] mPages;
+
+    static {
+        INTENT_FILTER.addAction(DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED);
+    }
 
     public DevicesPagerAdapter(Activity context) {
         super(context.getFragmentManager());
-        mItems = new HashMap<Integer, DeviceModelFragment>();
         this.mContext = context;
+        mItems = new HashMap<Integer, DeviceModelFragment>();
+        mDeviceLibrary = DeviceLibraryFactory.getInstance(context.getApplicationContext());
+        updatePageOrder();
+        ActivityUtil.registerReceiver(context, mLibraryRefreshedReceiver, INTENT_FILTER);
+    }
+
+    public void onDestroy() {
+        setClientService(null);
+        ActivityUtil.unregisterReceiver(mContext, mLibraryRefreshedReceiver);
     }
 
     public void setClientService(IClientService service) {
@@ -40,17 +64,19 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return PAGE_ORDER.length;
+        return mPages.length;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return new DeviceModelFragment(PAGE_ORDER[position]);
+        DeviceModelFragment fragment = new DeviceModelFragment(mPages[position]);
+        fragment.setClientService(mClientService);
+        return fragment;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mContext.getString(PAGE_ORDER[position].getStringId());
+        return mContext.getString(mPages[position].getStringId());
     }
 
     @Override
@@ -63,4 +89,23 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
 
         return fragment;
     }
+
+    private void updatePageOrder() {
+        AdapterType[] pages = PAGE_ORDER_FLAT_AND_GROUPED;
+        if (ActivityUtil.isLandscape(mContext) || mDeviceLibrary.getDeviceGroups().size() == 0) {
+            pages = PAGE_ORDER_FLAT_ONLY;
+        }
+
+        if (pages != mPages) {
+            mPages = pages;
+            this.notifyDataSetChanged();
+        }
+    }
+
+    private BroadcastReceiver mLibraryRefreshedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updatePageOrder();
+        }
+    };
 }

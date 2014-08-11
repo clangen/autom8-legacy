@@ -20,6 +20,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 
 import org.clangen.autom8.R;
@@ -138,7 +139,7 @@ public class DevicesActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mDestroyed = true;
-        mPagerAdapter.setClientService(null);
+        mPagerAdapter.onDestroy();
         unregisterReceiver(mBroadcastReceiver);
         unbindService();
     }
@@ -152,6 +153,7 @@ public class DevicesActivity extends Activity {
 
         PagerTabStrip strip = (PagerTabStrip) findViewById(R.id.devices_pager_tab_strip);
         strip.setDrawFullUnderline(false);
+        strip.setVisibility(View.GONE);
 
         mStatusView = new ActionBarStatusView(this);
         mStatusView.setOnActionBarStatusViewEventListener(mStatusViewEventListener);
@@ -160,10 +162,6 @@ public class DevicesActivity extends Activity {
         ab.setCustomView(mStatusView);
         ab.setDisplayShowCustomEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
-
-// CAL TODO: switch to default tab insead of reset adapater
-//        readAdapterTypeFromPreferences();
-//        resetListAdapter();
 
         setUiState(Client.STATE_DISCONNECTED);
     }
@@ -186,10 +184,6 @@ public class DevicesActivity extends Activity {
 //                getString(R.string.pref_devices_view_type), AdapterType.Flat.getId()
 //            )
 //        );
-//    }
-
-// CAL TODO create tabs
-//    private void resetListAdapter() {
 //    }
 
     private void reconnect() {
@@ -321,6 +315,7 @@ public class DevicesActivity extends Activity {
 
         public void onServiceDisconnected(ComponentName name) {
             Log.i(TAG, "ClientService unbound from Activity");
+            mPagerAdapter.setClientService(null);
             mServiceDisconnected = true;
         }
     };
@@ -361,7 +356,7 @@ public class DevicesActivity extends Activity {
                     }
                 }
                 catch (RemoteException re) {
-                    Log.d("DevicesController", "onReconnectClicked", re);
+                    Log.d(TAG, "onReconnectClicked", re);
                 }
             }
         };

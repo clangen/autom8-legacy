@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -16,6 +15,7 @@ import android.widget.SeekBar;
 
 import org.clangen.autom8.R;
 import org.clangen.autom8.device.Device;
+import org.clangen.autom8.device.DeviceLibraryFactory;
 import org.clangen.autom8.device.DeviceStatus;
 import org.clangen.autom8.device.DeviceType;
 import org.clangen.autom8.device.DeviceUtil;
@@ -32,16 +32,18 @@ import org.clangen.autom8.ui.activity.AdapterType;
 import org.clangen.autom8.ui.adapter.BaseDeviceModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceGroupModelAdapter;
 import org.clangen.autom8.ui.adapter.DeviceListModelAdapter;
+import org.clangen.autom8.ui.dialog.ConfirmClearAlertDialog;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
+import org.clangen.autom8.util.ActivityUtil;
 
 /**
  * does stuff
  * Created by avatar on 8/9/2014.
  */
 public class DeviceModelFragment extends Fragment {
-//    private final static String TAG = "DeviceModelFragment";
+    private final static String TAG = "DeviceModelFragment";
     private static final String ADAPTER_TYPE = "org.clangen.autom8.AdapterType";
-
+    private static int INSTANCE_COUNTER = 0;
 
     private IClientService mClientService;
     private BaseDeviceModelAdapter mListAdapter;
@@ -49,6 +51,7 @@ public class DeviceModelFragment extends Fragment {
     private View mView;
     private AbsListView mListView;
     private AdapterType mAdapterType = AdapterType.Flat;
+    private int mInstanceId;
 
     public DeviceModelFragment(AdapterType type) {
         super();
@@ -63,14 +66,12 @@ public class DeviceModelFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mInstanceId = INSTANCE_COUNTER++;
+
         if (savedInstanceState != null) {
             mAdapterType = AdapterType.fromId(savedInstanceState.getInt(ADAPTER_TYPE, 0));
+            restoreDialogEventHandlers();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -116,7 +117,7 @@ public class DeviceModelFragment extends Fragment {
         }
 
         final Activity a = getActivity();
-        if (isLandscape()) {
+        if (ActivityUtil.isLandscape(a)) {
             mListAdapter = new DeviceListModelAdapter(a);
         }
         else if (mAdapterType == AdapterType.Flat) {
@@ -134,15 +135,18 @@ public class DeviceModelFragment extends Fragment {
         mListAdapter.notifyDataSetChanged();
     }
 
-    protected boolean sendClientMessage(Message message) {
+    protected boolean sendClientMessage(final Message message) {
         try {
             if (mClientService != null) {
                 mClientService.sendMessage(message);
                 return true;
             }
+            else {
+                Log.d(TAG, "sendClientMessage failed because mClientService is null");
+            }
         }
         catch (RemoteException re) {
-            Log.d("DevicesController", "onReconnectClicked", re);
+            Log.d(TAG, "sendClientMessage failed due to RemoteException", re);
         }
 
         return false;
@@ -175,18 +179,12 @@ public class DeviceModelFragment extends Fragment {
             return;
         }
 
-        DialogInterface.OnClickListener yesClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                sendClientMessage(new ResetSensorStatus(sensor));
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setPositiveButton(R.string.button_yes, yesClickListener);
-        builder.setNegativeButton(R.string.button_no, null);
-        builder.setTitle(R.string.dlg_reset_alert_title);
-        builder.setMessage(R.string.dlg_reset_alert_desc);
-        builder.show();
+        ConfirmClearAlertDialog dialog = new ConfirmClearAlertDialog();
+        dialog.setOnConfirmClearListener(mConfirmClearAlertListener);
+        Bundle bundle = new Bundle();
+        bundle.putString(ConfirmClearAlertDialog.EXTRA_SENSOR_ADDRESS, sensor.getAddress());
+        dialog.setArguments(bundle);
+        dialog.show(getFragmentManager(), ConfirmClearAlertDialog.TAG);
     }
 
     private void toggleArmSecuritySensor(final SecuritySensor sensor) {
@@ -234,9 +232,23 @@ public class DeviceModelFragment extends Fragment {
         }
     }
 
-    private boolean isLandscape() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    private void restoreDialogEventHandlers() {
+        Fragment fragment = getFragmentManager().findFragmentByTag(ConfirmClearAlertDialog.TAG);
+        if (fragment != null) {
+            ((ConfirmClearAlertDialog) fragment).setOnConfirmClearListener(mConfirmClearAlertListener);
+        }
     }
+
+    private ConfirmClearAlertDialog.OnConfirmClearListener mConfirmClearAlertListener =
+        new ConfirmClearAlertDialog.OnConfirmClearListener() {
+            @Override
+            public void onConfirmClear(String address) {
+                SecuritySensor sensor = (SecuritySensor)
+                    DeviceLibraryFactory.getInstance(getActivity()).getDeviceByAddress(address);
+
+                sendClientMessage(new ResetSensorStatus(sensor));
+            }
+        };
 
     private BaseDeviceModelAdapter.OnDeviceClickHandler mOnDeviceClickHandler =
             new BaseDeviceModelAdapter.OnDeviceClickHandler() {

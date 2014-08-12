@@ -1,17 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.view.ViewPager
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/devices_pager"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <android.support.v4.view.PagerTabStrip
-        android:id="@+id/devices_pager_tab_strip"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/devices_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp" />
+        android:layout_height="match_parent" >
 
-</android.support.v4.view.ViewPager>
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/devices_pager_tab_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp" />
+
+    </android.support.v4.view.ViewPager>
+
+    <FrameLayout
+        android:id="@+id/NotConnectedOverlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#cc000000"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/DefaultText"
+            android:id="@+id/NotConnectedText"
+            android:textSize="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/list_overlay_not_connected"/>
+
+    </FrameLayout>
+
+</FrameLayout>

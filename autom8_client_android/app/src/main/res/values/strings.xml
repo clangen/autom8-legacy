@@ -104,4 +104,7 @@
     <string name="pref_notification_ringtone">notificationRingtone</string>
     <string name="pref_devices_view_type">devicesViewType</string>
     <string name="pref_version">version</string>
+
+    <string name="list_overlay_not_connected">not connected</string>
+    <string name="list_overlay_connecting">connecting...</string>
 </resources>

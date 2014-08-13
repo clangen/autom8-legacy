@@ -152,6 +152,10 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
         return alerts;
     }
 
+    @Override public synchronized int getDeviceCount() {
+        return mDevices.size();
+    }
+
     @Override
     public boolean update(JSONObject rawJson) {
         Device updatedDevice;

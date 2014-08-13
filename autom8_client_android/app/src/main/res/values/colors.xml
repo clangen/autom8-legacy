@@ -12,7 +12,7 @@
     <color name="device_row_on_status_text">#ffffff</color>
 
     <color name="device_row_default_primary_text">#ffffff</color>
-    <color name="device_row_default_secondary_text">#dddddd</color>
+    <color name="device_row_default_secondary_text">#bbbbbb</color>
     <color name="device_row_text_shadow">#000000</color>
 
     <color name="notification_text">#000000</color>

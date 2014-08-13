@@ -1,5 +1,9 @@
 package org.clangen.autom8.net;
 
+import android.util.Log;
+
+import org.clangen.autom8.connection.Connection;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,10 +28,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import org.clangen.autom8.connection.Connection;
-
-import android.util.Log;
 
 public class Client {
     private static final String TAG = "Client";
@@ -373,6 +373,10 @@ public class Client {
 
         public void run() {
             try {
+                /* CAL 08/12/2014: really, really bad hack to fix problem with reconnect.
+                TODO: figure out real race condition. */
+                try { Thread.sleep(128); } catch(Exception ex) { }
+
                 SSLSocket socket = null;
 
                 // create the SSL connection, set the state to AUTHENTICATING

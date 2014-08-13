@@ -33,6 +33,7 @@ public abstract class DeviceLibrary {
     public abstract void setFromDeviceListJSON(JSONObject devices);
     public abstract void clear();
     public abstract int getAlertCount();
+    public abstract int getDeviceCount();
     public abstract boolean update(JSONObject device);
     public abstract Device getDeviceByAddress(String str);
 

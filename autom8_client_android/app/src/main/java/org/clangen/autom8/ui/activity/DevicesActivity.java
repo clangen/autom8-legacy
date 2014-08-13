@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import org.clangen.autom8.R;
 import org.clangen.autom8.connection.Connection;
 import org.clangen.autom8.connection.ConnectionLibrary;
+import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.net.Client;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
@@ -51,6 +52,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         INTENT_FILTER.addAction(ClientService.ACTION_AUTHENTICATION_FAILED);
         INTENT_FILTER.addAction(ClientService.ACTION_CONNECTION_STATE_CHANGED);
         INTENT_FILTER.addAction(SettingsActivity.ACTION_TRANSLUCENCY_TOGGLED);
+        INTENT_FILTER.addAction(DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED);
     }
 
     @Override
@@ -70,7 +72,6 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
             getFragmentManager().findFragmentByTag(DevicesPagerFragment.TAG);
 
         mStatusView = new ActionBarStatusView(this);
-        mStatusView.setOnActionBarStatusViewEventListener(mStatusViewEventListener);
 
         final ActionBar ab = getActionBar();
         ab.setCustomView(mStatusView);
@@ -144,6 +145,22 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     @Override
     public IClientService getClientService() {
         return mClientService;
+    }
+
+    public void reconnectOrSetupConnection() {
+        try {
+            if (mClientService != null) {
+                if (mConnectionLibrary.count() > 0) {
+                    mClientService.reconnect();
+                }
+                else {
+                    EditConnectionActivity.start(DevicesActivity.this);
+                }
+            }
+        }
+        catch (RemoteException re) {
+            Log.d(TAG, "onReconnectClicked", re);
+        }
     }
 
     @Override
@@ -304,27 +321,9 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
             else if (SettingsActivity.ACTION_TRANSLUCENCY_TOGGLED.equals(action)) {
                 finish();
             }
+            else if (DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED.equals(action)) {
+                mStatusView.refreshDeviceCount();
+            }
         }
     };
-
-    private ActionBarStatusView.OnActionBarStatusViewEventListener mStatusViewEventListener =
-        new ActionBarStatusView.OnActionBarStatusViewEventListener() {
-            @Override
-            public void onReconnectClicked() {
-                try {
-                    if (mClientService != null) {
-                        if (mConnectionLibrary.count() > 0) {
-                            mClientService.reconnect();
-                        }
-                        else {
-                            EditConnectionActivity.start(DevicesActivity.this);
-                        }
-                    }
-                }
-                catch (RemoteException re) {
-                    Log.d(TAG, "onReconnectClicked", re);
-                }
-            }
-        };
-
 }

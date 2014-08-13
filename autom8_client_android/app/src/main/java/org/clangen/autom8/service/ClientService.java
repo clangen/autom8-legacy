@@ -208,10 +208,10 @@ public class ClientService extends Service {
                 return true;
             }
 
-            return false;
+            return false; // CAL: should be gone?
         }
 
-        if ( ! defaultConnection.equals(currentConnection)) {
+        if (!defaultConnection.equals(currentConnection)) {
             currentConnection = defaultConnection;
             reconnect();
             return true;
@@ -340,7 +340,7 @@ public class ClientService extends Service {
         sendBroadcast(i);
     }
 
-    private void checkStartConnectionStateChecking() {
+    private void checkStartConnectionStateChecking() { /* CAL: wtf this is really weird */
         if (mSecurityNotification) {
             scheduleHeartbeat();
         }

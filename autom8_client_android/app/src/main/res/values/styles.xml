@@ -49,9 +49,9 @@
 
     <style name="DeviceItemPrimaryText" parent="DeviceItemText">
         <item name="android:textColor">@color/device_row_default_primary_text</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:layout_marginLeft">8sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginLeft">12sp</item>
         <item name="android:layout_marginRight">8sp</item>
         <item name="android:layout_marginTop">6sp</item>
     </style>
@@ -59,8 +59,9 @@
     <style name="DeviceItemSecondaryText" parent="DeviceItemText">
         <item name="android:shadowRadius">1.0</item>
         <item name="android:textColor">@color/device_row_default_secondary_text</item>
-        <item name="android:layout_marginLeft">8sp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_marginLeft">12sp</item>
         <item name="android:layout_marginRight">8sp</item>
-        <item name="android:layout_marginTop">2sp</item>
+        <item name="android:layout_marginTop">0sp</item>
     </style>
 </resources>

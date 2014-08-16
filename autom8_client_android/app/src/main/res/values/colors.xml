@@ -4,7 +4,7 @@
     <color name="device_row_alert_status_text">#ffffff</color>
     <color name="device_row_alert_status_bg">#44000000</color>
 
-    <color name="device_row_off_status_bg">#11ffffff</color>
+    <color name="device_row_off_status_bg">#00ffffff</color>
     <color name="device_row_off_status_text">#888888</color>
 
     <color name="device_row_on_bg">#44ffffff</color>

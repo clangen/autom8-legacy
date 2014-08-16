@@ -37,34 +37,25 @@ public class DevicesPagerFragment extends Fragment {
     private Overlay mOverlay = new Overlay();
     private ViewPager mDevicesPagerView;
     private DevicesPagerAdapter mDevicesPagerAdapter;
+    private boolean mDestroyed = false;
 
     private static class Overlay {
         View mView;
         Button mButton;
-        TextView mText;
 
         public void show(boolean show) {
             mView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mButton.setVisibility(View.GONE);
-            mText.setVisibility(View.GONE);
-        }
-
-        public void showText() {
-            this.show(true);
-            mText.setVisibility(View.VISIBLE);
             mButton.setVisibility(View.GONE);
         }
 
         public void showButton(int stringId) {
             this.show(true);
-            mText.setVisibility(View.GONE);
             mButton.setVisibility(View.VISIBLE);
             mButton.setText(stringId);
         }
 
         public void empty() {
             this.show(true);
-            mText.setVisibility(View.GONE);
             mButton.setVisibility(View.GONE);
         }
     }
@@ -83,7 +74,6 @@ public class DevicesPagerFragment extends Fragment {
 
         mOverlay.mView = mView.findViewById(R.id.NotConnectedOverlay);
         mOverlay.mButton = (Button) mView.findViewById(R.id.NotConectedOverlayButton);
-        mOverlay.mText = (TextView) mView.findViewById(R.id.NotConnectedText);
 
         mOverlay.mButton.setOnClickListener(mOverlayButtonClickListener);
 
@@ -98,6 +88,7 @@ public class DevicesPagerFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
+        mDestroyed = true;
         mDevicesPagerAdapter.onDestroy();
 
         /* for now, only portrait mode supports saving/restoring the last
@@ -129,18 +120,19 @@ public class DevicesPagerFragment extends Fragment {
 
     private Runnable mAsyncShowDisconnected = new Runnable() {
         public void run() {
-            final IClientService svc = ((ClientServiceProvider) getActivity()).getClientService();
-            try {
-                if (svc != null && svc.getState() == Client.STATE_DISCONNECTED) {
-                    final int buttonText = mConnectionLibrary.count() == 0 ?
-                            R.string.pager_overlay_setup_connection :
-                            R.string.pager_overlay_reconnect;
+            if (!mDestroyed) {
+                final IClientService svc = ((ClientServiceProvider) getActivity()).getClientService();
+                try {
+                    if (svc != null && svc.getState() == Client.STATE_DISCONNECTED) {
+                        final int buttonText = mConnectionLibrary.count() == 0 ?
+                                R.string.pager_overlay_setup_connection :
+                                R.string.pager_overlay_reconnect;
 
-                    mOverlay.showButton(buttonText);
+                        mOverlay.showButton(buttonText);
+                    }
+                } catch (RemoteException ex) {
+                    Log.d(TAG, "ClientService call failed");
                 }
-            }
-            catch (RemoteException ex) {
-                Log.d(TAG, "ClientService call failed");
             }
         }
     };

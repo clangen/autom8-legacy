@@ -28,15 +28,6 @@
         android:clickable="true"
         android:visibility="visible">
 
-        <TextView
-            style="@style/DefaultText"
-            android:id="@+id/NotConnectedText"
-            android:textSize="18dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/pager_overlay_connecting"/>
-
         <Button
             android:id="@+id/NotConectedOverlayButton"
             android:layout_width="wrap_content"

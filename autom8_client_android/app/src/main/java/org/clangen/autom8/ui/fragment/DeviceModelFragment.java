@@ -44,7 +44,7 @@ import org.clangen.autom8.util.ActivityUtil;
  */
 public class DeviceModelFragment extends Fragment {
     private final static String TAG = "DeviceModelFragment";
-    private static final String ADAPTER_TYPE = "org.clangen.autom8.AdapterType";
+    public static final String ADAPTER_TYPE = "org.clangen.autom8.AdapterType";
 
     private ClientServiceProvider mClientServiceProvider;
     private BaseDeviceModelAdapter mListAdapter;
@@ -53,11 +53,6 @@ public class DeviceModelFragment extends Fragment {
     private AbsListView mListView;
     private AdapterType mAdapterType = AdapterType.Flat;
     private DeviceLibrary mDeviceLibrary;
-
-    public DeviceModelFragment(AdapterType type) {
-        super();
-        mAdapterType = type;
-    }
 
     public DeviceModelFragment() {
         super();
@@ -70,10 +65,15 @@ public class DeviceModelFragment extends Fragment {
         mDeviceLibrary = DeviceLibraryFactory.getInstance(getActivity());
         mClientServiceProvider = (ClientServiceProvider) getActivity();
 
-        if (savedInstanceState != null) {
-            mAdapterType = AdapterType.fromId(savedInstanceState.getInt(ADAPTER_TYPE, 0));
-            restoreDialogEventHandlers();
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mAdapterType = AdapterType.fromId(
+                getArguments().getInt(ADAPTER_TYPE,
+                AdapterType.Flat.getId())
+            );
         }
+
+        restoreDialogEventHandlers();
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
@@ -85,8 +86,14 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
             return fragment;
         }
 
-        fragment = new DeviceModelFragment(mPages[position]);
+        Bundle arguments = new Bundle();
+        arguments.putInt(DeviceModelFragment.ADAPTER_TYPE, mPages[position].getId());
+
+        fragment = new DeviceModelFragment();
+        fragment.setArguments(arguments);
+
         mItems.put(position, fragment);
+
         return fragment;
     }
 

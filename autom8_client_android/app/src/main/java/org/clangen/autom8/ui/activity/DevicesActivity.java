@@ -10,11 +10,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +27,7 @@ import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.fragment.DevicesPagerFragment;
 import org.clangen.autom8.ui.view.ActionBarStatusView;
+import org.clangen.autom8.util.ActivityUtil;
 
 public class DevicesActivity extends Activity implements ClientServiceProvider {
     private final static String TAG = "DevicesActivity";
@@ -249,15 +248,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     }
 
     private void checkEnableTranslucency() {
-        SharedPreferences prefs =
-            PreferenceManager.getDefaultSharedPreferences(this);
-
-        final String key = getString(R.string.pref_translucency_enabled);
-
-        final boolean supportedOs = (android.os.Build.VERSION.SDK_INT >= 5);
-        final boolean enabled = prefs.getBoolean(key, false);
-
-        if (supportedOs && enabled) {
+        if (ActivityUtil.isTranslucencyEnabled(this)) {
             setTheme(R.style.DeviceActivityTranslucentTheme);
 
             final int flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;

@@ -19,6 +19,7 @@ import org.clangen.autom8.device.Group;
 import org.clangen.autom8.device.SecuritySensor;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 import org.clangen.autom8.ui.model.DeviceListModel;
+import org.clangen.autom8.util.ActivityUtil;
 
 /**
  * Created by clangen on 8/7/14.
@@ -28,6 +29,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     private BaseDeviceModel mDeviceModel;
     private LayoutInflater mLayoutInflater;
     private OnDeviceClickHandler mClickHandler;
+    private boolean mTranslucent;
 
     protected static class ItemViewHolder {
         public View mMainContent;
@@ -49,6 +51,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     public BaseDeviceModelAdapter(Context context) {
         mContext = context;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
+        mTranslucent = ActivityUtil.isTranslucencyEnabled(context);
     }
 
     public void setOnDeviceClickHandler(OnDeviceClickHandler handler) {
@@ -195,7 +198,12 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             status = R.string.device_status_alert;
             holder.mStatusText.setTextColor(r.getColor(R.color.device_row_alert_status_text));
             holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_alert_status_bg));
-            holder.mMainContent.setBackgroundResource(R.drawable.device_item_alert_background);
+
+            int background = mTranslucent
+                ? R.drawable.device_item_alert_translucent_background
+                : R.drawable.device_item_alert_background;
+
+            holder.mMainContent.setBackgroundResource(background);
         }
         else if (sensor.isArmed()) {
             status = R.string.device_status_armed;

@@ -50,9 +50,10 @@ rpc_callback rpc_callback_ = no_op;
 
 /* processing thread */
 static volatile int rpc_mode_ = AUTOM8_RPC_MODE_ASYNC;
-boost::thread* io_thread_ = 0;
-boost::mutex io_thread_lock_, enforce_serial_lock_;
-boost::asio::io_service io_service_;
+static boost::thread* io_thread_ = 0;
+static boost::recursive_mutex enforce_serial_lock_;
+static boost::mutex io_thread_lock_;
+static boost::asio::io_service io_service_;
 
 static void io_thread_proc() {
     debug::log(debug::info, RPC_TAG, "thread started");
@@ -66,10 +67,6 @@ static void io_thread_proc() {
 }
 
 static void handle_rpc_request(std::string input) {
-    /* regardless of the thread we're being called from, make sure only
-    one request is processed at a time. */
-    boost::mutex::scoped_lock lock(enforce_serial_lock_);
-
     try {
         process_rpc_request(input);
     }
@@ -607,6 +604,12 @@ void autom8_rpc(const char* input) {
         enqueue_rpc_request(std::string(input));
     }
     else {
+        /* the enqueue above will guarantee serial processing of requests.
+        in sync mode we need to take extra care to do this ourselves.
+        NOTE: we use a recursive_lock here just in case a poorly implemented
+        client decides to make another RPC call while processing the result
+        of another call, leading to a re-entrant autom8_rpc() call. */
+        boost::recursive_mutex::scoped_lock lock(enforce_serial_lock_);
         handle_rpc_request(std::string(input));
     }
 }

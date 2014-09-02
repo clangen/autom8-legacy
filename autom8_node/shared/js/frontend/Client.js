@@ -64,7 +64,7 @@ namespace("autom8").client = (function () {
         context.checkingSignIn = false;
 
         if (xhr.status === 401) {
-          setState(context, 'expired');
+          setState(context, 'expired', {silent: true});
         }
       }
     });

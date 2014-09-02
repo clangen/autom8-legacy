@@ -1,304 +1,305 @@
-/*
- * Object which encapsulates all of the https server logic. Exposes
- * a single "create()" method that should be called befoore starting
- * the client.
- */
-(function() {
-  var express = require('express');
-  var fs = require('fs');
-  var url = require('url');
-  var zlib = require('zlib');
-  var path = require('path');
+var _ = require('lodash')._;
+var Q = require('q');
+var fs = require('fs');
+var url = require('url');
+var zlib = require('zlib');
+var path = require('path');
+var https = require('https');
 
-  var util = require('./Util.js');
-  var config = require('./Config.js').get();
-  var blacklist = require('./Blacklist.js');
-  var minifier = require('./Minifier.js');
-  var fileCache = require('./FileCache.js');
-  var resource = require('./Resource.js');
+var express = require('express');
+var bodyParser = require('body-parser');
+var compression = require('compression');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
 
-  var root = process.cwd() + '/frontend';
+var util = require('./Util.js');
+var blacklist = require('./Blacklist.js');
+var resource = require('./Resource.js');
+var config = require('./Config.js');
+var log = require('./Logger.js');
+var ClientProxy = require('./ClientProxy.js');
+var Sessions = require ('./Sessions.js');
 
-  var COOKIE_SECRET = "autom84Lyfe";
+var TAG = "[HttpServer]".blue;
+var COOKIE_SECRET = "autom84Lyfe";
+var BLACKLISTED_PAGE = fs.readFileSync(__dirname + '/static/blacklisted.html').toString("utf-8");
 
-  var STATIC_PAGES = {
-    'compiling': fs.readFileSync(__dirname + '/static/compiling.html').toString(),
-    'blacklisted': fs.readFileSync(__dirname + '/static/blacklisted.html').toString()
-  };
+var DEBUG_CONNECTIONS = false;
 
-  function resolvePem(path) {
-    /* if the config value looks like {{RESOURCE:filename}} then
-    see if the resource loader can find it */
-    var match = path.match(/{{(RESOURCE:)(.*)}}/);
-    if (match && match.length === 3) {
-      var found = resource.resolve('conf', match[2]);
-      if (found) {
-        return found;
-      }
+var STATE = {
+  stopped: 1,
+  running: 2,
+  starting: 3,
+  stopping: 4
+};
+
+function resolvePem(path) {
+  /* if the config value looks like {{RESOURCE:filename}} then
+  see if the resource loader can find it */
+  var match = path.match(/{{(RESOURCE:)(.*)}}/);
+  if (match && match.length === 3) {
+    var found = resource.resolve('conf', match[2]);
+    if (found) {
+      return found;
     }
-
-    return path;
   }
 
-  function fileRequest(req, res) {
-    var fn = url.parse(req.url).pathname;
+  return path;
+}
 
-    /* check-remove leading slash */
-    if (fn.length > 0 && fn.charAt(0) == '/') {
-      fn = fn.substr(1);
+function HttpServer(options) {
+  options = options || { };
+  if (!options.directory) {
+    throw new Error("HttpServer created without a root directory specified");
+  }
+
+  if (!options.configKey || !config.get(options.configKey)) {
+    throw new Error("invalid configKey specified when creating HttpServer");
+  }
+
+  this.directory = options.directory;
+  this.configKey = options.configKey;
+  this.debug = options.debug;
+  this.config = config.get(options.configKey);
+  this.connections = [];
+
+  var self = this;
+
+  /* update our internal config if the password changes; we do this
+  because the auth handler (registered below) uses this value for
+  web client login */
+  config.on("changed", function(key, value) {
+    if (key.indexOf(options.configKey) === 0) {
+      log.info(TAG, "updating config for key", self.configKey);
+      self.config = config.get(self.configKey);
+    }
+  });
+
+  this.state = STATE.stopped;
+}
+
+_.extend(HttpServer.prototype, {
+  start: function() {
+    var d = Q.defer();
+
+    var errorHandler = function(err) {
+      this.state = STATE.stopped;
+      d.reject({message: "failed to start server", error: err});
+    }.bind(this);
+
+    switch (this.state) {
+      case STATE.running:
+        d.resolve();
+        break;
+
+      case STATE.stopping:
+      case STATE.starting:
+        d.reject({message: "cannot start, invalid state", state: this.state});
+        break;
+
+      case STATE.stopped:
+        this.state = STATE.starting;
+        this.recreate();
+
+        this.httpServer.once('error', errorHandler);
+
+        this.httpServer.listen(this.config.port, function() {
+          this.httpServer.removeListener('error', errorHandler);
+          this.state = STATE.running;
+          d.resolve();
+        }.bind(this));
+
+        break;
     }
 
-    /* if debug.html is being requested, or the referrer is debug.html,
-    then set the debug flag to bypass both the fileCache and the
-    minification process */
-    var debug = false;
-    if (fn === "debug.html") {
-      if (config.debug) {
-        fileCache.clear();
-        debug = true;
-      }
+    return d.promise;
+  },
 
-      fn = "index.html";
-    }
-    else if (/.*debug.html$/.test(req.headers.referer)) {
-      debug = config.debug;
-    }
+  stop: function() {
+    var d = Q.defer();
 
-    if (fn === "reset.html") { /* ehh */
-      minifier.clearCache();
-      res.writeHead(200);
-      res.end('minifier cache reset ' + Math.random());
-      return;
-    }
+    switch (this.state) {
+      case STATE.running:
+        this.state = STATE.stopping;
 
-    if (fn === "" || fn.indexOf("..") > -1) {
-      fn = "index.html";
-    }
+        var onClosed = _.once(function() {
+          this.clientProxy.disconnect();
+          this.clientProxy = null;
+          this.sessions.close();
+          this.sessions = null;
+          this.express = null;
+          this.httpServer = null;
+          this.state = STATE.stopped;
+          d.resolve();
+        }).bind(this);
 
-    /* shared functionality actually lives in the parent directory,
-    so look for it there. */
-    if (fn.indexOf("shared/") > -1) {
-      fn = "../../" + fn;
-    }
-
-    /* determine the MIME type we'll write in the response */
-    var mimeType = util.getMimeType(fn);
-
-    fn = path.resolve(root + '/' + fn);
-
-    /* given the request, figure out what type of encoding to use when
-    writing the result */
-    var acceptEncoding = req.headers['accept-encoding'] || "";
-    var responseEncoding = null; /* encoding we report in response headers */
-    var writeEncode = 'binary'; /* encoding of compressed output */
-
-    if (acceptEncoding.match(/\bdeflate\b/)) {
-      responseEncoding = "deflate";
-    }
-    else if (acceptEncoding.match(/\bgzip\b/)) {
-      responseEncoding = "gzip";
-    }
-    else {
-      writeEncode = 'utf8';
-    }
-
-    /* writes the response for this request with the specified encoding */
-    var writeResponse = function(fn, data, options) {
-      options = options || { };
-
-      /* default compression is a no-op */
-      var compress = function(data, callback) {
-        callback(null, data);
-      };
-
-      /* if we're writing from a cache hit, don't re-compress */
-      if (!options.fromCache) {
-        if (responseEncoding === "deflate") {
-          compress = zlib.deflate;
-        }
-        else if (responseEncoding === "gzip") {
-          compress = zlib.gzip;
-        }
-      }
-
-      /* run the compression algorithm */
-      compress(data, function(err, compressed) {
-        /* it's important the compressed data is properly encoded. for deflate
-        and gzip we need to writeEncode with 'binary', but 'utf8' for non-
-        compressed responses */
-        data = compressed.toString(writeEncode);
-
-        if (!debug) {
-          if (fn.split('/').pop() !== "index.html") {
-            fileCache.put(fn, responseEncoding, data);
-          }
-        }
-
-        /* figure out response headers */
-        var responseHeaders = {
-          'content-type': mimeType
-        };
-
-        if (responseEncoding) {
-          responseHeaders['content-encoding'] = responseEncoding;
+        for (var i = 0; i < this.connections.length; i++) {
+          this.connections[i].destroy();
         }
 
-        /* write it back to the requester */
-        res.writeHead(200, responseHeaders);
-        res.write(data, writeEncode);
-        res.end();
-      });
-    };
+        this.connections = [];
+        this.httpServer.close(onClosed);
 
-    /* check to see if the file is cached. if it is, return it now */
-    var cachedFile;
-    if (!debug) {
-      cachedFile = fileCache.get(fn, responseEncoding);
-    }
+        setTimeout(function() {
+          log.warn(TAG, "httpServer.close() callback timeout; automated reset now");
+          onClosed();
+        }, 5000);
+        break;
 
-    var fileReadHandler = function(err, data) {
-      /* read failed */
-      if (err || !data) {
-        res.writeHead(500);
-        return res.end('error loading: ' + fn);
-      }
-
-      if (fn.match(/.*\.less$/)) {
-        minifier.minifyLessData(data, fn, function(error, data) {
-          writeResponse(fn, data || '');
+      case STATE.stopping:
+      case STATE.starting:
+        d.reject({
+          message: "cannot stop, already in state " + this.state,
+          directory: this.directory
         });
-      }
-      else if (fn.match(/.*\.html$/)) {
-        data = data.toString();
+        break;
 
-        /* appcache only included in document if we're not hitting a debug
-        url and there's an appcache version. if there's no appcache version,
-        that means the cache hasn't finished generating yet, so we'll serve
-        up a regular document; in most of these cases this will be a 'warming
-        up' message. */
-        var appCacheEnabled = (config.server.enableHtml5AppCache);
-        var appCacheVersion = minifier.getCacheVersion();
-        data = data.replace("{{manifest}}", (!debug && appCacheEnabled && appCacheVersion) ? 'autom8.appcache' : '');
-        data = data.replace("{{build}}", appCacheVersion);
-
-        data = minifier.renderTemplates(data);
-
-        if (debug) {
-          data = minifier.renderNonMinifiedStyles(data);
-          data = minifier.renderNonMinifiedScripts(data);
-          writeResponse(fn, data);
-        }
-        else {
-          data = minifier.renderMinifiedStyles(data, function(withStyles) {
-            if (withStyles instanceof Error) {
-              writeResponse(fn, STATIC_PAGES.compiling);
-              return;
-            }
-
-            data = minifier.renderMinifiedScripts(withStyles, function(withScripts) {
-              if (withScripts instanceof Error) {
-                writeResponse(fn, STATIC_PAGES.compiling);
-                return;
-              }
-
-              writeResponse(fn, withScripts);
-            });
-          });
-        }
-      }
-      else {
-        writeResponse(fn, data);
-      }
-    };
-
-    if (cachedFile) {
-      writeResponse(fn, cachedFile, {fromCache: true});
+      case STATE.stopped:
+        d.resolve();
+        break;
     }
-    else {
-      fs.readFile(fn, fileReadHandler);
-    }
-  }
 
-  function create() {
-    /* the one and only application */
-    var app = express();
+    return d.promise;
+  },
+
+  recreate: function() {
+    log.info(TAG, "recreate()ing...");
+
+    this.express = express();
+
+    this.authCookieName = 'connect.sid-' + this.config.port;
 
     /* connection validator */
-    app.use(function(req, res, next) {
+    this.express.use(function(req, res, next) {
       if (!blacklist.allowConnection(req)) {
         res.writeHead(401);
-        res.end(STATIC_PAGES.blacklisted);
+        res.end(BLACKLISTED_PAGE);
       }
       else {
         next();
       }
     });
 
-    /* magic middleware */
-    app.use(express.cookieParser(COOKIE_SECRET));
-    app.use(express.bodyParser());
-    app.authCookieName = 'connect.sid-' + config.server.port;
+    /* standard middleware */
+    this.express.use(cookieParser(COOKIE_SECRET));
+    this.express.use(bodyParser.urlencoded({ extended: false }));
+    this.express.use(bodyParser.json());
+    this.express.use(compression());
 
     /* maps browser sessions to socket connections. doing this allows us
     to correlate browser sessions with web sockets. note: this must come
     *after* initializing the express.cookieParser with the same secret key */
-    var sessionStore = new express.session.MemoryStore();
-    app.use(express.session({
-      store: sessionStore,
+    this.sessionStore = new session.MemoryStore();
+
+    this.express.use(session({
+      store: this.sessionStore,
       secret: COOKIE_SECRET,
-      key: app.authCookieName
+      resave: true,
+      saveUninitialized: true,
+      key: this.authCookieName
     }));
 
-    /* start the http server */
-    var serverOptions = {
-      key: fs.readFileSync(resolvePem(config.server.key)),
-      cert: fs.readFileSync(resolvePem(config.server.cert))
-    };
+    /* request handlers. these need to come after the session middleware,
+    so that has a chance to inject the "session" instance before we look
+    at the requests */
+    require('./Auth.js').addRequestHandler(this);
+    require('./AppCache.js').addRequestHandler(this);
 
-    app.httpServer = require('https').createServer(serverOptions, app);
-    app.sessionStore = sessionStore;
+    var target = this.debug ? "/dist/debug/" : "/dist/release/";
+    this.express.use(express.static(this.directory + target));
 
-    /* magic method we add to the express instance to get the server started.
-    we do this so other parts of the code can do things like attach event
-    handlers before starting */
-    app.start = function() {
-      minifier.init();
+    /* create the http server instance, but don't start it yet. */
+    this.httpServer = https.createServer({
+      key: fs.readFileSync(resolvePem(this.config.key)),
+      cert: fs.readFileSync(resolvePem(this.config.cert))
+    }, this.express);
 
-      /* standard request handlers for various bits of shared functionality */
-      require('./Auth.js').add(app);
-      require('./AppCache.js').add(app);
+    /* sessions is a class that brokers communication between the
+    browser clients and the http server; that is, this is the thing
+    that receives raw messages from the browser */
+    this.sessions = Sessions.create({
+      httpServer: this.httpServer,
+      sessionStore: this.sessionStore,
+      authCookieName: this.authCookieName
+    });
 
-      /* general request handler; looks at the request, figures out which file
-      to return. Deals with caching, compression, and unathenticated clients.
-      make sure we do this as late as possible, to give the calling application
-      a chance to register its own handlers first... */
-      app.get(/.*/, fileRequest);
+    /* the ClientProxy receives raw messages from the low-level autom8
+    server */
+    this.clientProxy = ClientProxy.create({
+      configKey: this.configKey + ".proxy"
+    });
 
-      app.httpServer.listen(config.server.port);
-    };
+    var self = this;
 
-    return app;
+    /* when a message is received from the low-level server, relay it
+    to the web clients so they can redraw */
+    this.clientProxy.on('recvMessage', function(message) {
+      self.sessions.broadcast('recvMessage', message);
+    });
+
+    /* when a message is received from a web client, relay it to the
+    low-level server to query/set device status */
+    this.sessions.onMessage('sendMessage', function(message, socket) {
+      /* TODO FIXME: weird special case when receiving messages from
+      admin server. ideally this logic would exist externally, somehow */
+      if (message.uri.indexOf("autom8://request/libautom8/rpc") !== -1) {
+        return;
+      }
+
+      self.clientProxy.send(message.uri, message.body);
+    });
+
+    /* when the http server finishes booting, connect to the client proxy */
+    this.httpServer.on('listening', function() {
+      self.clientProxy.connect();
+    });
+
+    /* when the server is shut down, close the client proxy */
+    this.httpServer.on('close', function() {
+      self.clientProxy.disconnect();
+    });
+
+    /* annoyingly, we need to keep track of open connections ourselves, and
+    shut these down manually when the server is stopped */
+    this.httpServer.on('secureConnection', function(socket) {
+      self.connections.push(socket);
+
+      if (DEBUG_CONNECTIONS) {
+        log.info(
+          TAG,
+          self.configKey,
+          "new connection".green,
+          "connection count:",
+          self.connections.length);
+      }
+
+      /* TODO FIXME: after *DAYS* of futzing around, it appears that web sockets
+      remove the "close" listener before they hang up, leading to sockets that
+      are never removed from our array. to fix this, we patch the socket's emit
+      method and intercept "close" before it's processed */
+      var originalEmit = socket.emit;
+
+      socket.emit = function() {
+        if (arguments[0] === "close") {
+          self.connections = _.without(self.connections, socket);
+
+          if (DEBUG_CONNECTIONS) {
+            log.info(
+              TAG,
+              self.configKey,
+              "socket closed".red,
+              "connection count:",
+              self.connections.length);
+          }
+        }
+
+        originalEmit.apply(socket, arguments);
+        /* TODO FIXME: end */
+      };
+    });
   }
+});
 
-  var compile = function() {
-    var noOp = function() { };
-
-    var request = {
-      url: 'index.html',
-      headers: { }
-    };
-
-    var response = {
-      write: noOp,
-      writeHead: noOp,
-      end: noOp
-    };
-
-    minifier.init();
-    fileRequest(request, response); /* a dummy file request will trigger the
-      initial compile, just make sure the minififer is ready first... */
-  };
-
-  exports.create = create;
-  exports.compile = compile;
-}());
+exports.create = function(options) {
+  return new HttpServer(options);
+};

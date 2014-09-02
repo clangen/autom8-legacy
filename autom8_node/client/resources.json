@@ -1,0 +1,106 @@
+{
+    "name": "autom8 web client",
+
+    "SHARED_STYLESHEET_SOURCE_DIR": "./../shared/css/",
+    "SHARED_STYLESHEET_SOURCE_FILES": [
+        "3rdparty/reset.css",
+        "3rdparty/jquery-dropdown.css",
+        "dropdown.less",
+        "main.less",
+        "header.less",
+        "dialog-about.less",
+        "fixed-header.less",
+        "loading-row.less",
+        "scrollbar.less",
+        "dialog.less",
+        "signin.less",
+        "iphone.less",
+        "chrome-iphone.less",
+        "firefox.less"
+    ],
+
+    "CLIENT_STYLESHEET_SOURCE_DIR": "./frontend/css/",
+    "CLIENT_STYLESHEET_SOURCE_FILES": [
+        "dialog-lamp.less",
+        "switcher.less",
+        "devicelist.less",
+        "devicerow.less",
+        "devicerow-grouped.less",
+        "devicerow-appliance.less",
+        "devicerow-lamp.less",
+        "devicerow-sensor.less",
+        "desktop.less"
+    ],
+
+    "THIRDPARTY_JAVASCRIPT_SOURCE_DIR": "./../shared/js/3rdparty/",
+    "THIRDPARTY_JAVASCRIPT_SOURCE_FILES": [
+        "q.js",
+        "lodash.js",
+        "jquery.js",
+        "jquery.dropdown.js",
+        "backbone.js",
+        "spin.js",
+        "handlebars.js",
+        "cryptojs-sha256.js"
+    ],
+
+    "SHARED_JAVASCRIPT_SOURCE_DIR": "./../shared/js/frontend/",
+    "SHARED_JAVASCRIPT_SOURCE_FILES": [
+        "mvc/mvc.js",
+        "mvc/Lifecycle.js",
+        "mvc/TouchableMixin.js",
+        "mvc/ViewInflaterMixin.js",
+        "mvc/ViewContainerMixin.js",
+        "mvc/ViewDebugMixin.js",
+        "mvc/View.js",
+        "mvc/ControllerContainerMixin.js",
+        "mvc/Controller.js",
+        "util/AppCache.js",
+        "Constants.js",
+        "util/HandlebarsHelpers.js",
+        "util/Dialog.js",
+        "util/Browser.js",
+        "util/Animation.js",
+        "util/Timer.js",
+        "util/Device.js",
+        "model/DeviceModel.js",
+        "model/DeviceList.js",
+        "model/DeviceGroup.js",
+        "view/SignInView.js",
+        "controller/SignInController.js",
+        "view/SpinnerView.js",
+        "view/AboutView.js",
+        "view/HeaderView.js",
+        "controller/HeaderController.js",
+        "controller/ConnectivityController.js",
+        "Config.js",
+        "Client.js"
+    ],
+
+    "CLIENT_JAVASCRIPT_SOURCE_DIR": "./frontend/js/",
+    "CLIENT_JAVASCRIPT_SOURCE_FILES": [
+        "view/SwitcherView.js",
+        "view/DeviceListView.js",
+        "view/GroupedDeviceListView.js",
+        "view/DeviceRow.js",
+        "view/ApplianceRow.js",
+        "view/SecuritySensorRow.js",
+        "view/GroupRowListView.js",
+        "view/GroupRow.js",
+        "view/DeviceRowFactory.js",
+        "view/DeviceHomeView.js",
+        "view/BrightnessView.js",
+        "controller/DeviceHomeController.js",
+        "controller/MainController.js"
+    ],
+
+    "TEMPLATE_SOURCE_FILES": [
+        "./frontend/templates/*.html",
+        "./../shared/templates/*.html"
+    ],
+
+    "IMAGE_SOURCE_FILES": [
+        "./frontend/favicon.ico",
+        "./frontend/icon.png"
+    ]
+}

@@ -1,5 +1,3 @@
-/* please publish this some day */
-/* npm install ffi ref colors */
 var ffi = require('ffi');
 var ref = require('ref');
 var path = require('path');
@@ -49,9 +47,9 @@ process.on('exit', function() {
 
 var loadLibrary = function() {
     var dllFilename =
-        resource.resolve('lib', 'libautom8.so', [LIBAUTOM8_DIR])  ||
-        resource.resolve('lib', 'libautom8.dll', [LIBAUTOM8_DIR]) ||
-        resource.resolve('lib', 'libautom8.dylib', [LIBAUTOM8_DIR])
+        resource.resolve('lib', 'libautom8.so', [__dirname, LIBAUTOM8_DIR])  ||
+        resource.resolve('lib', 'libautom8.dll', [__dirname, LIBAUTOM8_DIR]) ||
+        resource.resolve('lib', 'libautom8.dylib', [__dirname + "./../", LIBAUTOM8_DIR]);
 
     if (dllFilename) {
         var dllDir = path.dirname(dllFilename);
@@ -85,6 +83,8 @@ var makeRpcCall = function(component, command, options, promise) {
             console.log(RPC_RECV, logId, JSON.stringify(result));
         }
 
+        /* IMPORTANT: always resolve during the next tick of the event
+        loop to prevent potentially large RPC call stacks */
         setImmediate(function() {
             promise.resolve(result);
         });
@@ -94,7 +94,12 @@ var makeRpcCall = function(component, command, options, promise) {
         console.log(RPC_SEND, logId, payload);
     }
 
-    dll.autom8_rpc(payload);
+    /* IMPORTANT: make sure all RPC calls are made as part of their
+    own pass through the event loop to avoid making an RPC call in the
+    same stack as another one */
+    setImmediate(function() {
+        dll.autom8_rpc(payload);
+    });
 };
 
 var initLogging = function() {

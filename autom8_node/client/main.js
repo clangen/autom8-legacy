@@ -1,93 +1,22 @@
-// npm install commander express socket.io socket.io-client less closurecompiler clean-css prompt
+var server = require('./program').init();
 
-(function() {
-  var program = require('commander');
-  require('colors');
+server.start()
 
-  var shared = "./../shared/js/backend/";
-  var config = require(shared + 'Config.js');
-  var httpServer = require(shared + 'HttpServer.js');
-  var util = require(shared + 'Util.js');
-  var clientProxy = require(shared + 'ClientProxy.js').create();
+.then(function() {
+  console.log("client web-app server up and running!".green);
 
-  function start() {
-    config.init(program);
+  // setTimeout(function() {
+  // 	debugger;
+  // 	server.stop().then(function() {
+  // 		setTimeout(function() {
+  // 			debugger;
+  // 			server.start();
+  // 		}, 10000);
+  // 	})
+  // }, 2500);
+})
 
-    clientProxy.sessions.on('sendMessage', function(message, socket) {
-      clientProxy.send(message.uri, message.body);
-    });
-
-    var app = httpServer.create();
-    clientProxy.sessions.init(app);
-    app.start();
-
-    clientProxy.connect();
-  }
-
-  program
-    .version("0.6.1")
-    .usage('params:')
-    .option('--listen <port>', 'port we will listen on', Number, 7902)
-    .option('--key <pem>', 'pem file containing the private key used for the https server', String)
-    .option('--cert <pem>', 'pem file containing the cert to use for the https server', String)
-    .option('--clienthost <hostname>', 'autom8 server to connect to', String, "127.0.0.1")
-    .option('--clientport <port>', 'port the autom8 server is listening on', Number, 7901)
-    .option('--clientpw <password hash>', 'password for the autom8 server')
-    .option('--headless', 'instance will be controlled via node/IPC', Boolean, false)
-    .option('--debug', 'enable verbose debug output', Boolean, false)
-    .parse(process.argv);
-
-  /* in headless mode we run as a fork'd node node process so we have
-  a special communication channel. this channel is used for password
-  communication and keep-alive heartbeats */
-  if (program.headless) {
-    var dieAfterMillis = 7000;
-    var heartbeatTimeout = null;
-
-    var dieIfNoHeartbeat = function() {
-      console.log("*** FATAL *** controlling program unresponsive, exiting...".red);
-      process.exit(101);
-    };
-
-    heartbeatTimeout = setTimeout(dieIfNoHeartbeat, dieAfterMillis);
-
-    process.on('message', function(m) {
-      switch (m.name) {
-        case "password":
-          program.clientpw = m.options.value;
-          start();
-          break;
-
-        case "heartbeat":
-          clearTimeout(heartbeatTimeout);
-          heartbeatTimeout = setTimeout(dieIfNoHeartbeat, dieAfterMillis);
-          break;
-
-        case "die":
-          process.exit(102);
-          break;
-      }
-    });
-  }
-  /* If a password hash wasn't supplied via command-line, read one
-  from stdin now, hash it, and cache it. */
-  else if (!program.clientpw) {
-    var host = program.clienthost;
-
-    var prompt = require('prompt');
-    prompt.message = "autom8";
-    prompt.start();
-
-    var promptOptions = { name: 'password', hidden: true };
-    prompt.get(promptOptions, function(error, result) {
-      program.clientpw = result.password;
-      start();
-    });
-  }
-  /* not headless, password already supplied. we're ready to go! */
-  else {
-    start();
-  }
-}());
-
-
+.fail(function(error) {
+  console.log("failed to start server!".red, error);
+  process.exit(255);
+});

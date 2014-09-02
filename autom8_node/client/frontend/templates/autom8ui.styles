@@ -1,9 +1,0 @@
-<link rel="stylesheet" href="css/dialog-lamp.less"></link>
-<link rel="stylesheet" href="css/switcher.less"></link>
-<link rel="stylesheet" href="css/devicelist.less"></link>
-<link rel="stylesheet" href="css/devicerow.less"></link>
-<link rel="stylesheet" href="css/devicerow-grouped.less"></link>
-<link rel="stylesheet" href="css/devicerow-appliance.less"></link>
-<link rel="stylesheet" href="css/devicerow-lamp.less"></link>
-<link rel="stylesheet" href="css/devicerow-sensor.less"></link>
-<link rel="stylesheet" href="css/desktop.less"></link>

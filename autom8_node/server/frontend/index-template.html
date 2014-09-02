@@ -5,25 +5,23 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon-precomposed" href="icon.png"/>
+    <link rel="apple-touch-icon-precomposed" href="img/icon.png"/>
 
-    {{autom8common.styles}}
-    {{autom8server.styles}}
-        {{minified_styles}}
+    <!-- build:style bundle -->
+    <!-- /build -->
 
-    {{templates}}
+    <!-- build:section templates -->
+    <!-- /build -->
 
-    {{3rdparty.scripts}}
-    {{autom8mvc.scripts}}
-    {{autom8common.scripts}}
-    {{autom8client.scripts}}
-    {{autom8config.scripts}}
-    {{autom8server.scripts}}
-        {{minified_scripts}}
+    <!-- build:script bundle -->
+    <!-- /build -->
+
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 
     <script>
+      Q.longStackSupport = true;
       namespace("autom8").version = "{{version}} ({{build}})";
       namespace("autom8").app = "server";
 

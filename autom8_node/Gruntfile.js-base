@@ -1,0 +1,318 @@
+/*
+ *
+ * START
+ * load our css, js, html resources from resources.json
+ *
+ */
+
+ var util = {
+    replaceExtension: function(fn, ext) {
+        return fn.substr(0, fn.lastIndexOf(".")) + ext;
+    }
+ };
+
+var res = JSON.parse(require('fs').readFileSync("./resources.json"));
+
+/* additional directories */
+res.SHARED_STYLESHEET_COMPILE_DIR = "./build/shared/css/";
+res.CLIENT_STYLESHEET_COMPILE_DIR = "./build/client/css/";
+
+res.THIRDPARTY_JAVASCRIPT_DIST_DIR = "./dist/debug/js/3rdparty/";
+res.DEBUG_SHARED_JAVASCRIPT_DIST_DIR = "./dist/debug/js/shared/";
+res.DEBUG_CLIENT_JAVASCRIPT_DIST_DIR = "./dist/debug/js/client/";
+
+/*
+ *
+ * STYLESHEET CONFIGURATION
+ *
+ */
+
+var COMPILED_STYLESHEET_FILES = [];
+
+res.SHARED_STYLESHEET_SOURCE_FILES.forEach(function(fn) {
+    fn = util.replaceExtension(fn, ".css");
+    COMPILED_STYLESHEET_FILES.push(res.SHARED_STYLESHEET_COMPILE_DIR + fn);
+});
+
+res.CLIENT_STYLESHEET_SOURCE_FILES.forEach(function(fn) {
+    fn = util.replaceExtension(fn, ".css");
+    COMPILED_STYLESHEET_FILES.push(res.CLIENT_STYLESHEET_COMPILE_DIR + fn);
+});
+
+/*
+ *
+ * JAVASCRIPT FILES
+ *
+ */
+
+var COMPILED_JAVASCRIPT_FILES = [];
+var ALL_JAVASCRIPT_SOURCE_FILES = [];
+var ALL_JAVASCRIPT_FILE_COPY_MAPPINGS = [];
+
+res.THIRDPARTY_JAVASCRIPT_SOURCE_FILES.forEach(function(item) {
+    var src = res.THIRDPARTY_JAVASCRIPT_SOURCE_DIR + item;
+    var dest = res.THIRDPARTY_JAVASCRIPT_DIST_DIR + item;
+
+    ALL_JAVASCRIPT_SOURCE_FILES.push(src);
+    ALL_JAVASCRIPT_FILE_COPY_MAPPINGS.push({ src: src, dest: dest });
+    COMPILED_JAVASCRIPT_FILES.push(dest);
+});
+
+res.SHARED_JAVASCRIPT_SOURCE_FILES.forEach(function(item) {
+    var src = res.SHARED_JAVASCRIPT_SOURCE_DIR + item;
+    var dest = res.DEBUG_SHARED_JAVASCRIPT_DIST_DIR + item;
+
+    ALL_JAVASCRIPT_SOURCE_FILES.push(src);
+    ALL_JAVASCRIPT_FILE_COPY_MAPPINGS.push({ src: src, dest: dest });
+    COMPILED_JAVASCRIPT_FILES.push(dest);
+});
+
+res.CLIENT_JAVASCRIPT_SOURCE_FILES.forEach(function(item) {
+    var src = res.CLIENT_JAVASCRIPT_SOURCE_DIR + item;
+    var dest = res.DEBUG_CLIENT_JAVASCRIPT_DIST_DIR + item;
+
+    ALL_JAVASCRIPT_SOURCE_FILES.push(src);
+    ALL_JAVASCRIPT_FILE_COPY_MAPPINGS.push({ src: src, dest: dest });
+    COMPILED_JAVASCRIPT_FILES.push(dest);
+});
+
+/*
+ *
+ * ICONS
+ *
+ */
+var ALL_IMAGE_FILE_COPY_MAPPINGS = function(target) {
+    var result = [];
+    res.IMAGE_SOURCE_FILES.forEach(function(item) {
+        var parts = item.split("/");
+        result.push({
+            src: item,
+            dest: "./dist/" + target + "/img/" + parts[parts.length - 1]
+        });
+    });
+    return result;
+};
+
+/*
+ *
+ * TASK DEFINITIONS
+ *
+ */
+
+module.exports = function(grunt) {
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('./../package.json'),
+
+        /* css (step 1): less -> css transformation. intermediate
+        result is stored in the build directory */
+        less: {
+            all: {
+                options: {
+                    compress: true
+                },
+
+                files: [
+                    {
+                        expand: true,
+                        cwd: res.SHARED_STYLESHEET_SOURCE_DIR,
+                        src: res.SHARED_STYLESHEET_SOURCE_FILES,
+                        dest: res.SHARED_STYLESHEET_COMPILE_DIR,
+                        ext: '.css'
+                    },
+                    {
+                        expand: true,
+                        cwd: res.CLIENT_STYLESHEET_SOURCE_DIR,
+                        src: res.CLIENT_STYLESHEET_SOURCE_FILES,
+                        dest: res.CLIENT_STYLESHEET_COMPILE_DIR,
+                        ext: '.css'
+                    }
+                ]
+            }
+        },
+
+        concat: {
+            /* css (step 2): many css files to single css file. no
+            sourcemaps yet. */
+            debug_stylesheets: {
+                src: COMPILED_STYLESHEET_FILES,
+                dest: 'dist/debug/css/main.css'
+            },
+
+            release_stylesheets: {
+                src: COMPILED_STYLESHEET_FILES,
+                dest: 'dist/release/css/main.css'
+            },
+
+            debug_templates: {
+                src: res.TEMPLATE_SOURCE_FILES,
+                dest: 'dist/debug/templates/main.html'
+            },
+
+            release_templates: {
+                src: res.TEMPLATE_SOURCE_FILES,
+                dest: 'dist/release/templates/main.html'
+            },
+
+            debug_javascript: {
+                /* nothing; files served individually */
+            },
+
+            release_javascript: {
+                src: ALL_JAVASCRIPT_SOURCE_FILES,
+                dest: 'build/release/js/main.js'
+            }
+        },
+
+        copy: {
+            debug_javascript: {
+                files: ALL_JAVASCRIPT_FILE_COPY_MAPPINGS
+            },
+
+            release_javascript: {
+                /* nothing; concat'd above */
+            },
+
+            debug_icons: {
+                files: ALL_IMAGE_FILE_COPY_MAPPINGS('debug')
+            },
+
+            release_icons: {
+                files: ALL_IMAGE_FILE_COPY_MAPPINGS('release')
+            }
+        },
+
+        uglify: {
+            debug_javascript: {
+                /* nothing; no uglification! */
+            },
+
+            release_javascript: {
+                files: {
+                    'dist/release/js/main.js': ['build/release/js/main.js']
+                }
+            }
+        },
+
+        htmlbuild: {
+            debug: {
+                src: 'frontend/index-template.html',
+                dest: 'dist/debug/index.html',
+                options: {
+                    relative: true,
+
+                    scripts: {
+                        bundle: COMPILED_JAVASCRIPT_FILES
+                    },
+
+                    styles: {
+                        bundle: ['dist/debug/css/main.css']
+                    },
+
+                    sections: {
+                        templates: ['dist/debug/templates/main.html']
+                    }
+                }
+            },
+
+            release: {
+                src: 'frontend/index-template.html',
+                dest: 'dist/release/index.html',
+                options: {
+                    relative: true,
+
+                    scripts: {
+                        bundle: ['dist/release/js/main.js']
+                    },
+
+                    styles: {
+                        bundle: ['dist/release/css/main.css']
+                    },
+
+                    sections: {
+                        templates: ['dist/release/templates/main.html']
+                    }
+                }
+            }
+        },
+
+        watch: {
+            stylesheets: {
+                files: [
+                    "./../shared/css/**",
+                    "./frontend/css/**"
+                ],
+                tasks: [
+                    'less',
+                    'concat:debug_stylesheets'
+                ],
+                options: {
+                    event: ['changed']
+                }
+            },
+
+            templates: {
+                files: res.TEMPLATE_SOURCE_FILES,
+                tasks: [
+                    'concat:debug_templates',
+                    'htmlbuild:debug'
+                ],
+                options: {
+                    event: ['changed', 'added', 'removed']
+                }
+            },
+
+            javascript: {
+                files: [
+                    './../shared/js/**/*.js',
+                    './frontend/js/**/*.js'
+                ],
+                tasks: [
+                    'copy:debug_javascript'
+                ],
+                options: {
+                    event: ['changed']
+                }
+            }
+        },
+
+        concurrent: {
+            options: {
+                logConcurrentOutput: true
+            },
+
+            debug: {
+                tasks: [
+                    'watch:stylesheets',
+                    'watch:templates',
+                    'watch:javascript'
+                ]
+            },
+
+            release: {
+                /* nothing! no watching. */
+            }
+        }
+    });
+
+    var target = grunt.option('target') || 'debug';
+
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-html-build');
+    grunt.loadNpmTasks('grunt-concurrent');
+
+    grunt.registerTask('default', [
+        'less',
+        'concat:' + target + '_stylesheets',
+        'concat:' + target + '_templates',
+        'concat:' + target + '_javascript',
+        'copy:' + target + '_javascript',
+        'copy:' + target + '_icons',
+        'uglify:' + target + '_javascript',
+        'htmlbuild:' + target,
+        'concurrent:' + target
+    ]);
+};

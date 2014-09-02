@@ -24,14 +24,16 @@ var reconnecting = false;
 every couple seconds so it stays alive */
 setInterval(function() {
     if (child && !child.dead) {
+        console.log(TAG, "heartbeat");
         child.send({name: 'heartbeat'});
+    }
+    else {
+        console.log(TAG, "NO HEARTBEAT!".red);
     }
 }, 2000);
 
-function stop(callback) {
+function stop() {
     var deferred = Q.defer();
-
-    callback = callback || function() { };
 
     if (child && !child.dead) {
         log.info(TAG, "stopping...");
@@ -48,7 +50,6 @@ function stop(callback) {
             stopping = false;
             reconnecting = false;
             clearTimeout(forceKillTimeout);
-            callback();
             deferred.resolve();
         });
 
@@ -56,7 +57,6 @@ function stop(callback) {
     }
     else {
         deferred.resolve();
-        callback();
     }
 
     return deferred.promise;
@@ -70,7 +70,7 @@ function restart() {
         return;
     }
 
-    exports.stop(function() {
+    stop().then(function() {
         log.info(TAG, "connecting...");
 
         var options = {

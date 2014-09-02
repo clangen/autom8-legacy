@@ -1,13 +1,11 @@
-(function() {
-  var TAG = "[web socket auth]".yellow;
+var TAG = "[web-socket-auth]".yellow;
+var blacklist = require('./Blacklist.js');
 
-  var config = require("./Config.js").get();
-  var blacklist = require('./Blacklist.js');
-
-  function signIn(req, res) {
-    if (req.body.password === config.clientProxy.password) {
+function add(app) {
+  var signIn = function(req, res) {
+    if (req.body.password === app.config.password) {
       req.session.authenticated = true;
-      req.session.cookie.maxAge = config.server.sessionTimeout;
+      req.session.cookie.maxAge = app.config.sessionTimeout;
       res.writeHead(200);
     }
     else {
@@ -16,17 +14,17 @@
     }
 
     res.end("");
-  }
+  };
 
-  function signOut(req, res) {
+  var signOut = function(req, res) {
     req.session.authenticated = false;
     req.session.cookie.maxAge = 0;
     res.writeHead(200);
     res.end("");
-  }
+  };
 
-  function isSignedIn(req, res) {
-    var result = {signedIn: false};
+  var isSignedIn = function(req, res) {
+    var result = { signedIn: false };
     if (req.session.authenticated) {
       /* todo: better way? */
       var expires = req.session.cookie._expires;
@@ -37,15 +35,13 @@
 
     res.writeHead(result.signedIn ? 200 : 401);
     res.end(JSON.stringify(result));
-  }
-
-  function add(app) {
-    app.post('/signin.action', signIn);
-    app.post('/signout.action', signOut);
-    app.get('/signedin.action', isSignedIn);
-  }
-
-  exports = module.exports = {
-    add: add
   };
-}());
+
+  app.express.post('/signin.action', signIn);
+  app.express.post('/signout.action', signOut);
+  app.express.get('/signedin.action', isSignedIn);
+}
+
+exports = module.exports = {
+  addRequestHandler: add
+};

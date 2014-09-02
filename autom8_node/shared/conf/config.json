@@ -1,15 +1,33 @@
 {
     "server": {
-        // "port": 7903
-        // "key": "/etc/autom8/autom8.pem",
-        // "cert": "/etc/autom8/autom8.pem"
-        "key": "{{RESOURCE:autom8.pem}}",
-        "cert": "{{RESOURCE:autom8.pem}}"
-        // "sessionTimeout": null,
-        // "enableHtml5AppCache": true
-    },
+        "client": {
+            "proxy": {
+                // "host": "127.0.0.1",
+                // "port": 7901,
+                // "allowSelfSignedCerts": true
+            },
 
-    "clientProxy": {
-        // "allowSelfSignedCerts": true
+            "port": 7902,
+            "key": "{{RESOURCE:autom8.pem}}",
+            "cert": "{{RESOURCE:autom8.pem}}",
+            // "sessionTimeout": <milliseconds int>,
+            // "enableHtml5AppCache": <bool>
+        },
+
+        "admin" {,
+            "proxy": {
+                // "host": "127.0.0.1",
+                // "port": 7901,
+                // "allowSelfSignedCerts": true
+            },
+
+            // "port": 7903
+            // "key": "/etc/autom8/autom8.pem",
+            // "cert": "/etc/autom8/autom8.pem"
+            "key": "{{RESOURCE:autom8.pem}}",
+            "cert": "{{RESOURCE:autom8.pem}}"
+            // "sessionTimeout": <miliseconds int>,
+            // "enableHtml5AppCache": <bool>
+        }
     }
 }

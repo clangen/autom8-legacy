@@ -23,12 +23,14 @@ namespace("autom8.view").GroupedDeviceListView = (function() {
       /* flatten to array so we can sort */
       var groupedDeviceList = [];
       _.each(groupMap, function(value, key) {
-        var groupModel = new autom8.model.DeviceGroup({
-          name: key,
-          deviceList: new autom8.model.DeviceList(value, listOptions)
-        });
+        if (value && key) {
+          var groupModel = new autom8.model.DeviceGroup({
+            name: key,
+            deviceList: new autom8.model.DeviceList(value, listOptions)
+          });
 
-        groupedDeviceList.push(groupModel);
+          groupedDeviceList.push(groupModel);
+        }
       });
 
       /* sort */

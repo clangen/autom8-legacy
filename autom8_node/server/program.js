@@ -289,7 +289,8 @@ function start(options) {
   })
 
   .fail(function(ex) {
-    log.error(TAG, '*** ERROR ***'.red, ex, ex.stack);
+    log.error(TAG, '*** ERROR during server start ***'.red, ex, ex.stack);
+    throw ex;
   });
 }
 

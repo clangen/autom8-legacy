@@ -4,46 +4,23 @@
     <script>
         setTimeout(function() {
             debugger;
-            var program = require('./client/program.js');
+            var program = require('./server/program.js');
 
             var server = program.init({
                 debug: true,
-                clienthost: "ricochet.ydns.eu",
-                clientport: 7901,
-                clientpw: 'c66247c6abc4c8d745969b4ea11674c7ad8579a40ce1e5da01ff3a845dc72d35',
                 key: __dirname + '/shared/conf/autom8.pem',
                 cert: __dirname + '/shared/conf/autom8.pem'
             });
 
-            server.start().then(function() {
+            server.start()
+
+            .then(function() {
+                debugger;
+            })
+
+            .fail(function(err) {
                 debugger;
             });
-            // var client = require('./client/program.js');
-
-            // var $status = $('.status');
-            // debugger;
-            // if (client.running()) {
-            //     $status.text("running");
-            // }
-            // else {
-            //     client.run({
-            //         listen: 7999,
-            //         clienthost: 'localhost',
-            //         clientport: 7901,
-            //         debug: true,
-            //         clientpw: 'c66247c6abc4c8d745969b4ea11674c7ad8579a40ce1e5da01ff3a845dc72d35',
-            //         key: './shared/conf/autom8.pem',
-            //         cert: './shared/conf/autom8.pem'
-            //     });
-            // }
-
-            // setTimeout(function() {
-            //     client;
-            //     debugger;
-            //     // client.stop(function(){
-            //     //     debugger;
-            //     // });
-            // }, 3000);
         }, 2000);
     </script>
 </head>

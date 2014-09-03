@@ -40,6 +40,7 @@ static void no_op(const char*) {
 /* prototypes, forward decls */
 static void process_rpc_request(const std::string& input);
 static int system_select(const std::string& system);
+static void respond_with_status(json_value_ref input, int status_code);
 rpc_callback rpc_callback_ = no_op;
 
 /* constants */
@@ -72,6 +73,16 @@ static void handle_rpc_request(std::string input) {
     }
     catch (...) {
         debug::log(debug::error, RPC_TAG, "request processing threw for input: " + input);
+
+        try {
+            respond_with_status(
+                json_value_from_string(input),
+                AUTOM8_UNEXPECTED_ERROR
+            );
+        }
+        catch (...) {
+            /* handling the error resulted in an... error. give up. */
+        }
     }
 }
 

@@ -6,6 +6,12 @@
 			[
 				"3rdparty/include/win32",
 				"autom8_node/node_modules",
+				"autom8_node/client/node_modules",
+				"autom8_node/client/build",
+				"autom8_node/client/dist",
+				"autom8_node/server/node_modules",
+				"autom8_node/server/build",
+				"autom8_node/server/dist",
 				"autom8_cli",
 				"autom8_client_android",
 				"autom8_server_qt",

@@ -14,6 +14,8 @@ var LIBAUTOM8_DIR = path.resolve(__dirname + '/../../../');
 var RPC_MODE_SYNC = 1;
 var RPC_MODE_ASYNC = 2;
 
+var AUTOM8_UNEXPECTED_ERROR = -14;
+
 var NATIVE_LOG = "[libautom8]".grey;
 var RPC_SEND = "[rpc send]".yellow;
 var RPC_RECV = "[rpc recv]".green;
@@ -86,7 +88,15 @@ var makeRpcCall = function(component, command, options, promise) {
         /* IMPORTANT: always resolve during the next tick of the event
         loop to prevent potentially large RPC call stacks */
         setImmediate(function() {
-            promise.resolve(result);
+            if (result && result.status === AUTOM8_UNEXPECTED_ERROR) {
+                promise.reject({
+                    request: JSON.parse(payload),
+                    response: result
+                });
+            }
+            else {
+                promise.resolve(result);
+            }
         });
     };
 

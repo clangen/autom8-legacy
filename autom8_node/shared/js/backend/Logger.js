@@ -1,9 +1,15 @@
 var EventEmitter = require('events').EventEmitter;
+var _ = require('lodash')._;
+var stripcolorcodes = require('stripcolorcodes');
 
 var LEVELS = {
     INFO: '[nfo]'.grey,
     WARN: '[wrn]'.yellow,
     ERROR: '[err]'.red
+};
+
+var CONFIG = {
+    stripColorCodes: false
 };
 
 function timestamp() {
@@ -30,24 +36,42 @@ function log(level, args, options) {
         args.unshift(timestamp());
     }
 
-    console.log(args.join(' '));
     module.exports.emit('log', args);
+
+    if (CONFIG.stripColorCodes) {
+        args = _.map(args, function(a) {
+            return (_.isString(a)) ? stripcolorcodes(a) : a;
+        });
+    }
+
+    console.log(args.join(' '));
 }
 
 module.exports = new EventEmitter();
 
-module.exports.info = function() {
-    log(LEVELS.INFO, arguments);
-};
+_.extend(module.exports, {
+    info: function() {
+        log(LEVELS.INFO, arguments);
+    },
 
-module.exports.warn = function() {
-    log(LEVELS.WARN, arguments);
-};
+    warn: function() {
+        log(LEVELS.WARN, arguments);
+    },
 
-module.exports.error = function() {
-    log(LEVELS.ERROR, arguments);
-};
+    error: function() {
+        log(LEVELS.ERROR, arguments);
+    },
 
-module.exports.dump = function() {
-    log(null, arguments, {noTimestamp: true});
-};
+    dump: function() {
+        log(null, arguments, {noTimestamp: true});
+    },
+
+    configure: function() {
+        if (arguments.length === 2) {
+            CONFIG[arguments[0]] = arguments[1];
+        }
+        else if (arguments.length === 1) {
+            _.merge(CONFIG, arguments[0]);
+        }
+    }
+});

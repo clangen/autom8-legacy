@@ -3,6 +3,12 @@
     <script src="./shared/js/3rdparty/jquery.js"></script>
     <script>
         setTimeout(function() {
+            var log = require ('./shared/js/backend/Logger.js');
+
+            log.configure({
+                stripColorCodes: true
+            });
+
             debugger;
             var program = require('./server/program.js');
 

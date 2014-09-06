@@ -154,16 +154,18 @@ function encodeLog(args) {
   return result;
 }
 
-function initializeLoggingRelay() {
-  /* when a new log entry is written, relay it to all clients
-  using the admin interface */
-  log.on('log', function(args) {
+/* when a new log entry is written, relay it to all clients
+using the admin interface */
+log.on('log', function(args) {
+  if (adminApp && adminApp.sessions) {
     adminApp.sessions.broadcast('recvMessage', {
       uri: 'autom8://response/libautom8/log',
       body: { html: encodeLog(args) }
     });
-  });
+  }
+});
 
+function initializeLoggingRelay() {
   /* when a new session is connected, send the most recent
   log entries to the client */
   adminApp.sessions.on('connection', function(socket) {
@@ -267,6 +269,7 @@ function initializeNativeBridgeRelay() {
   });
 }
 
+
 /*
  *
  * INITIALIZATION, STARTUP, SHUTDOWN
@@ -279,6 +282,7 @@ function start(options) {
   to the selected system. note: it's safe to do all of this before the
   server http server is started */
   return nativeBridge.init()
+  .then(stop)
   .then(reloadPreferences)
   .then(startNonAdminServersIfDeviceConnected)
   .then(startAdminApp)

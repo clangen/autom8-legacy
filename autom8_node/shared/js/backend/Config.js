@@ -23,8 +23,8 @@ var DEFAULT_CONFIG = {
       },
 
       port: 7902,
-      key: "../shared/conf/autom8.pem",
-      cert: "../shared/conf/autom8.pem",
+      key: "{{RESOURCE:autom8.pem}}",
+      cert: "{{RESOURCE:autom8.pem}}",
       enableHtml5AppCache: true,
       sessionTimeout: ONE_DAY_MILLISECONDS
     },
@@ -37,8 +37,8 @@ var DEFAULT_CONFIG = {
       },
 
       port: 7903,
-      key: "../shared/conf/autom8.pem",
-      cert: "../shared/conf/autom8.pem",
+      key: "{{RESOURCE:autom8.pem}}",
+      cert: "{{RESOURCE:autom8.pem}}",
       enableHtml5AppCache: true,
       sessionTimeout: ONE_DAY_MILLISECONDS
     }

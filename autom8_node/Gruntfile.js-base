@@ -95,6 +95,16 @@ var ALL_IMAGE_FILE_COPY_MAPPINGS = function(target) {
 
 /*
  *
+ * TEMPLATE AND INDEX WATCH FILES
+ *
+ *
+ */
+var ALL_TEMPLATE_AND_INDEX_HTML_FILES =
+    [].concat(res.TEMPLATE_SOURCE_FILES)
+    .concat(['./frontend/index-template.html']);
+
+/*
+ *
  * TASK DEFINITIONS
  *
  */
@@ -251,7 +261,7 @@ module.exports = function(grunt) {
             },
 
             templates: {
-                files: res.TEMPLATE_SOURCE_FILES,
+                files: ALL_TEMPLATE_AND_INDEX_HTML_FILES,
                 tasks: [
                     'concat:debug_templates',
                     'htmlbuild:debug'

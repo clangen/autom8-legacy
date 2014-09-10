@@ -11,7 +11,10 @@
 				"client/build",
 				"server/node_modules",
 				"server/dist",
-				"server/build"
+				"server/build",
+				"desktop/node_modules",
+				"desktop/dist",
+				"desktop/build"
 			]
 		}
 	]

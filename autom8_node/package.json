@@ -1,6 +1,6 @@
 {
   "name": "autom8",
-  "main": "index.js",
+  "main": "desktop/index.js",
   "version": "0.0.1",
   "dependencies": {
     "body-parser": "^1.6.7",

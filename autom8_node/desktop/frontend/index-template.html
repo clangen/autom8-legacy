@@ -1,0 +1,69 @@
+<html>
+<head>
+    <!-- build:style bundle -->
+    <!-- /build -->
+
+    <!-- build:section templates -->
+    <!-- /build -->
+
+    <!-- build:script bundle -->
+    <!-- /build -->
+
+    <script>
+        var DEBUG = true;
+
+        var backend = require(__dirname + "/js/client/backend_require.js");
+        var program = backend.require('server', 'program.js');
+        var state = 'stopped';
+        var server;
+
+        var log = backend.require('shared', 'Logger.js');
+        log.configure({ stripColorCodes: true });
+
+        var startAdminServer = function() {
+            $('.admin-ui').attr("src", "about:blank");
+            state = 'starting';
+
+            server.start().then(function() {
+                $('.admin-ui').attr("src", "https://clangen.dyndns.org:7903");
+                state = 'started';
+            })
+            .fail(function(err) {
+                debugger;
+            });
+        };
+
+        var stopAdminServer = function() {
+            $('.admin-ui').attr("src", "about:blank");
+            state = 'stopping';
+
+            server.stop().then(function() {
+                state = 'stopped';
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            debugger;
+            $('.stop').on('click', stopAdminServer);
+            $('.start').on('click', startAdminServer);
+
+            server = program.init({ debug: DEBUG });
+
+            if (!DEBUG) {
+                startAdminServer();
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="controls-container">
+        <div class="button stop">stop</div>
+        <div class="button start">start</div>
+    </div>
+    <div class="admin-ui-container">
+        <iframe sandbox="none" class="admin-ui"></iframe>
+    </div>
+</body>
+
+</html>

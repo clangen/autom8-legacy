@@ -5,9 +5,13 @@ rm ./client/Gruntfile.js 2> /dev/null
 rm ./client/node_modules 2> /dev/null
 rm ./server/Gruntfile.js 2> /dev/null
 rm ./server/node_modules 2> /dev/null
+rm ./desktop/Gruntfile.js 2> /dev/null
+rm ./desktop/node_modules 2> /dev/null
 
 PWD=`pwd`
 ln -s $PWD/Gruntfile.js-base client/Gruntfile.js
 ln -s $PWD/node_modules client/node_modules
 ln -s $PWD/Gruntfile.js-base server/Gruntfile.js
 ln -s $PWD/node_modules server/node_modules
+ln -s $PWD/Gruntfile.js-base desktop/Gruntfile.js
+ln -s $PWD/node_modules desktop/node_modules

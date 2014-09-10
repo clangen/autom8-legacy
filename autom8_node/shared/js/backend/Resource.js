@@ -4,13 +4,25 @@ var log = require('./Logger.js');
 
 var TAG = "[resource loader]".green;
 
-/* <root>/lib/autom8/shared/js/backend/Resource.js */
-var RELATIVE_ROOT = path.resolve(__dirname + "/../../../../../");
+var ROOT_DIRECTORY;
+
+if (process.versions["atom-shell"]) {
+    /* when running within atom-shell, __dirname is always the
+    directory name for index.html, so we need to resolve our
+    relative root a bit differently... */
+    ROOT_DIRECTORY = path.resolve(__dirname + "/../../../");
+}
+else {
+    /* when running under node proper, the __dirname is the
+    directory that contains this source unit, i.e.:
+    <root>/lib/autom8/shared/js/backend/Resource.js */
+    ROOT_DIRECTORY = path.resolve(__dirname + "/../../../../../");
+}
 
 var TYPE_TO_PATH_LIST = {
     'bin': [
         '{{PREFIX}}/bin',
-        RELATIVE_ROOT + "/bin/",
+        ROOT_DIRECTORY + "/bin/",
         '/usr/bin',
         '/usr/local/bin'
     ],
@@ -18,14 +30,14 @@ var TYPE_TO_PATH_LIST = {
     'lib': [
         '.',
         '{{PREFIX}}/lib',
-        RELATIVE_ROOT + "/bin",
+        ROOT_DIRECTORY + "/bin",
         '/usr/lib',
         '/usr/local/lib'
     ],
 
     'conf': [
         '/etc/autom8',
-        RELATIVE_ROOT + "/share/autom8",
+        ROOT_DIRECTORY + "/shared/conf",
         '{{PREFIX}}/share/autom8',
         '{{PREFIX}}/share/autom8'
     ]

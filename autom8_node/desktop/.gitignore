@@ -1,0 +1,5 @@
+build
+dist
+node_modules
+Gruntfile.js
+libautom8.dylib

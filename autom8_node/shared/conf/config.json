@@ -9,12 +9,12 @@
 
             "port": 7902,
             "key": "{{RESOURCE:autom8.pem}}",
-            "cert": "{{RESOURCE:autom8.pem}}",
+            "cert": "{{RESOURCE:autom8.pem}}"
             // "sessionTimeout": <milliseconds int>,
             // "enableHtml5AppCache": <bool>
         },
 
-        "admin" {,
+        "admin": {
             "proxy": {
                 // "host": "127.0.0.1",
                 // "port": 7901,

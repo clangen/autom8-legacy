@@ -1,6 +1,8 @@
+var VERSION = "0.10.0";
+var BUILD = Date.now();
+
 /*
  *
- * START
  * load our css, js, html resources from resources.json
  *
  */
@@ -87,7 +89,7 @@ var ALL_IMAGE_FILE_COPY_MAPPINGS = function(target) {
         var parts = item.split("/");
         result.push({
             src: item,
-            dest: "./dist/" + target + "/img/" + parts[parts.length - 1]
+            dest: "./dist/" + target + "/" + parts[parts.length - 1]
         });
     });
     return result;
@@ -220,6 +222,12 @@ module.exports = function(grunt) {
 
                     sections: {
                         templates: ['dist/debug/templates/main.html']
+                    },
+
+                    data: {
+                        version: VERSION,
+                        build: BUILD,
+                        manifest: ""
                     }
                 }
             },
@@ -240,6 +248,12 @@ module.exports = function(grunt) {
 
                     sections: {
                         templates: ['dist/release/templates/main.html']
+                    },
+
+                    data: {
+                        version: VERSION,
+                        build: BUILD,
+                        manifest: "app.cache"
                     }
                 }
             }

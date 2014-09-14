@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html manifest="{{manifest}}">
+<!-- build:process -->
+<html manifest="<%= manifest %>">
+<!-- /build -->
   <head>
     <title>autom8 client</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -22,7 +24,9 @@
 
     <script>
       Q.longStackSupport = true;
-      namespace("autom8").version = "{{version}} ({{build}})";
+      <!-- build:process -->
+      namespace("autom8").version = "<%= version %> (#<%= build %>)";
+      <!-- /build -->
       namespace("autom8").app = "client";
 
       $(document).ready(function() {

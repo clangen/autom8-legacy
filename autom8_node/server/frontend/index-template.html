@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html manifest="{{manifest}}">
+<!-- build:process -->
+<html manifest="<%= manifest %>">
+<!-- /build -->
   <head>
     <title>autom8 server</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -22,8 +24,10 @@
 
     <script>
       Q.longStackSupport = true;
-      namespace("autom8").version = "{{version}} ({{build}})";
-      namespace("autom8").app = "server";
+      <!-- build:process -->
+      namespace("autom8").version = "<%= version %> (#<%= build %>)";
+      <!-- /build -->
+      namespace("autom8").app = "admin";
 
       $(document).ready(function() {
         autom8.util.ClientRpc.init();

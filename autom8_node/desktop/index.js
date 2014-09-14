@@ -1,6 +1,9 @@
-var DEBUG = true;
 var app = require('app');
+var path = require('path');
 var BrowserWindow = require('browser-window');
+
+var DEBUG = true;
+var target = DEBUG ? "/dist/debug" : "/dist/release";
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -15,13 +18,19 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    title: 'autom8',
+    icon: path.resolve(__dirname + target + '/icon.png')
+  });
+
+  console.log(path.resolve(__dirname + target + '/icon.png'));
 
   if (DEBUG) {
     mainWindow.openDevTools();
   }
 
-  var target = DEBUG ? "/dist/debug" : "/dist/release";
   var index = 'file://' + __dirname + target + '/index.html';
   mainWindow.loadUrl(index);
 

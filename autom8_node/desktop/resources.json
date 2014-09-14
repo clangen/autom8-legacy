@@ -61,8 +61,7 @@
 
     "CLIENT_JAVASCRIPT_SOURCE_DIR": "./frontend/js/",
     "CLIENT_JAVASCRIPT_SOURCE_FILES": [
-        "backend_require.js",
-        "MainMenu.js"
+
     ],
 
     "TEMPLATE_SOURCE_FILES": [

@@ -28,6 +28,6 @@
     "grunt-contrib-less": "^0.11.4",
     "grunt-contrib-uglify": "^0.5.1",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-html-build": "^0.3.2"
+    "grunt-html-build": "git+https://git@github.com/avatar5d/grunt-html-build"
   }
 }

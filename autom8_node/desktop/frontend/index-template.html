@@ -12,10 +12,11 @@
     <script>
         var DEBUG = true;
 
-        require(__dirname + "/js/client/MainMenu.js").install();
-
-        var backend = require(__dirname + "/js/client/backend_require.js");
+        var path = require('path');
+        var backend = require(path.resolve(__dirname + "./../../frontend/js/backend_require.js"));
         var program = backend.require('server', 'program.js');
+        backend.require('desktop', "MainMenu.js").install();
+
         var Dialog = window.autom8.util.Dialog;
         var state = 'stopped';
         var server;
@@ -28,7 +29,10 @@
             state = 'starting';
 
             server.start().then(function() {
-                $('.admin-ui').attr("src", "https://clangen.dyndns.org:7903");
+                /* make sure to bust appcache if in debug mode */
+                var url = "https://clangen.dyndns.org:7903";
+                url = DEBUG ? (url + "?debug=" + Date.now()) : url;
+                $('.admin-ui').attr("src", url);
                 state = 'started';
             })
             .fail(function(err) {

@@ -84,7 +84,11 @@ _.extend(HttpServer.prototype, {
 
     var errorHandler = function(err) {
       this.state = STATE.stopped;
-      d.reject({message: "failed to start server", error: err});
+      d.reject({
+        message: "failed to start server",
+        configKey: this.configKey,
+        error: err
+      });
     }.bind(this);
 
     switch (this.state) {
@@ -94,7 +98,11 @@ _.extend(HttpServer.prototype, {
 
       case STATE.stopping:
       case STATE.starting:
-        d.reject({message: "cannot start, invalid state", state: this.state});
+        d.reject({
+          message: "cannot start, invalid state",
+          configKey: this.configKey,
+          state: this.state
+        });
         break;
 
       case STATE.stopped:

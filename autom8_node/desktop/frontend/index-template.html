@@ -12,8 +12,11 @@
     <script>
         var DEBUG = true;
 
+        require(__dirname + "/js/client/MainMenu.js").install();
+
         var backend = require(__dirname + "/js/client/backend_require.js");
         var program = backend.require('server', 'program.js');
+        var Dialog = window.autom8.util.Dialog;
         var state = 'stopped';
         var server;
 
@@ -29,7 +32,29 @@
                 state = 'started';
             })
             .fail(function(err) {
-                debugger;
+                Dialog.show({
+                    title: "failed to start server",
+                    message: 'component "' + err.component + '" reported an error. make sure there is ' +
+                        'no other instance of the autom8 server running, and the configured ports are ' +
+                        'not in use by another application.',
+                    icon: Dialog.Icon.Error,
+                    buttons: [
+                        {
+                            caption: "retry",
+                            positive: true,
+                            callback: function() {
+                                startAdminServer();
+                            }
+                        },
+                        {
+                            caption: "exit",
+                            negative: true,
+                            callback: function() {
+                                window.close();
+                            }
+                        }
+                    ]
+                });
             });
         };
 
@@ -43,7 +68,6 @@
         };
 
         document.addEventListener('DOMContentLoaded', function() {
-            debugger;
             $('.stop').on('click', stopAdminServer);
             $('.start').on('click', startAdminServer);
 
@@ -64,6 +88,7 @@
     <div class="admin-ui-container">
         <iframe sandbox="none" class="admin-ui"></iframe>
     </div>
+    <div id="dialogs"> </div>
 </body>
 
 </html>

@@ -293,8 +293,20 @@ function start(options) {
   })
 
   .fail(function(ex) {
-    log.error(TAG, '*** ERROR during server start ***'.red, ex, ex.stack);
-    throw ex;
+    log.error(TAG, '*** ERROR during server start. stopping everything... ***'.red);
+    stop();
+
+    /* use a bit of (kind of ugly) heuristics to determine which component
+    failed during startup. the HttpServer instances will always tack on a
+    "configKey" to the exception, so use that if it exists. if there's a
+    failure starting the native server from the dll then there will be both
+    a "request" and "response" fields. otherwise... who knows? */
+    var component = ex.configKey;
+    if (!component) {
+      component = (ex.request && ex.response) ? "server.native" : "unknown";
+    }
+
+    throw { error: ex, component: component };
   });
 }
 

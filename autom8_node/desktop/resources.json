@@ -55,12 +55,14 @@
         "util/Animation.js",
         "util/Timer.js",
         "util/Device.js",
-        "view/SpinnerView.js"
+        "view/SpinnerView.js",
+        "Config.js"
     ],
 
     "CLIENT_JAVASCRIPT_SOURCE_DIR": "./frontend/js/",
     "CLIENT_JAVASCRIPT_SOURCE_FILES": [
-        "backend_require.js"
+        "backend_require.js",
+        "MainMenu.js"
     ],
 
     "TEMPLATE_SOURCE_FILES": [

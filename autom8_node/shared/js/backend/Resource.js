@@ -4,20 +4,8 @@ var log = require('./Logger.js');
 
 var TAG = "[resource loader]".green;
 
-var ROOT_DIRECTORY;
-
-if (process.versions["atom-shell"]) {
-    /* when running within atom-shell, __dirname is always the
-    directory name for index.html, so we need to resolve our
-    relative root a bit differently... */
-    ROOT_DIRECTORY = path.resolve(__dirname + "/../../../");
-}
-else {
-    /* when running under node proper, the __dirname is the
-    directory that contains this source unit, i.e.:
-    <root>/lib/autom8/shared/js/backend/Resource.js */
-    ROOT_DIRECTORY = path.resolve(__dirname + "/../../../../../");
-}
+/* __dirname = ../lib/autom8/shared/js/backend/Resource.js */
+var ROOT_DIRECTORY = path.resolve(__dirname + "/../../../");
 
 var TYPE_TO_PATH_LIST = {
     'bin': [

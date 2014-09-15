@@ -59,7 +59,7 @@ function HttpServer(options) {
 
   this.directory = options.directory;
   this.configKey = options.configKey;
-  this.debug = options.debug;
+  this.debug = config.get("debug");
   this.config = config.get(options.configKey);
   this.connections = [];
 

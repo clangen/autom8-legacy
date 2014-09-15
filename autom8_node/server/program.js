@@ -328,9 +328,9 @@ exports.init = function(options) {
       .option('--cert <pem>', 'pem file containing the cert to use for the https server', String)
       .option('--debug', 'enable verbose debug output')
       .parse(process.argv);
-  }
 
-  config.set("debug", options.debug);
+    config.set("debug", options.debug);
+  }
 
   config.set("server.admin", {
     proxy: {
@@ -341,7 +341,6 @@ exports.init = function(options) {
     port: options.listen,
     key: options.key,
     cert: options.cert,
-    debug: options.debug
   });
 
   config.set("server.client", {
@@ -353,18 +352,15 @@ exports.init = function(options) {
     port: 7902,
     key: options.key,
     cert: options.cert,
-    debug: options.debug
   });
 
   adminApp = HttpServer.create({
     directory: __dirname,
-    debug: options.debug,
     configKey: "server.admin"
   });
 
   clientApp = HttpServer.create({
     directory: path.resolve(__dirname + '/../client'),
-    debug: config.get("debug"),
     configKey: "server.client"
   });
 

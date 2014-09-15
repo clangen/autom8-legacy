@@ -52,9 +52,7 @@ exports.init = function(options) {
 
   /* if options aren't explicitly supplied, try to parse them from the command line */
   if (!options) {
-    var program = require('commander');
-
-    program
+    options = require('commander')
       .version(VERSION)
       .usage('params:')
       .option('--listen <port>', 'port we will listen on', Number, 7902)
@@ -67,15 +65,13 @@ exports.init = function(options) {
       .option('--debug', 'enable verbose debug output', Boolean, false)
       .parse(process.argv);
 
-      options = program;
+      config.set("debug", options.debug);
   }
 
   /* validate input */
   if (!options.clienthost || !options.clientport || !options.clientpw) {
     throw new Error("--clienthost, --clientport, or --clientpw not supplied");
   }
-
-  config.set("debug", options.debug);
 
   /* update our config from input arguments. */
   config.set("server.client", {
@@ -94,7 +90,6 @@ exports.init = function(options) {
   /* create the server instance. */
   app = HttpServer.create({
     directory: __dirname,
-    debug: config.get("debug"),
     configKey: "server.client"
   });
 

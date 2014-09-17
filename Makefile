@@ -1,5 +1,5 @@
 # may be one of the following: drawin, linux, pi
-BUILD_TARGET := darwin
+BUILD_TARGET := linux
 
 ifeq ($(BUILD_TARGET), darwin)
 	# mac: WARNING! using "-undefined suppress -flat_namespace" will cause problems

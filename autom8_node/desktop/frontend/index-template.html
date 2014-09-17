@@ -16,13 +16,16 @@
         var path = require('path');
         var backend = require(path.resolve(__dirname + "./../../frontend/js/backend_require.js"));
         var program = backend.require('server', 'program.js');
-        backend.require('desktop', "MainMenu.js").install();
+        var config = backend.require('shared', 'Config.js');
+        var log = backend.require('shared', 'Logger.js');
+        var mainMenu = backend.require('desktop', "MainMenu.js");
 
         var Dialog = window.autom8.util.Dialog;
         var state = 'stopped';
-        var server;
+        var server = program.init({debug: DEBUG});
 
-        var log = backend.require('shared', 'Logger.js');
+        mainMenu.install();
+        config.set("debug", DEBUG);
         log.configure({ stripColorCodes: true });
 
         var startAdminServer = function() {
@@ -75,8 +78,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             $('.stop').on('click', stopAdminServer);
             $('.start').on('click', startAdminServer);
-
-            server = program.init({ debug: DEBUG });
 
             if (DEBUG) {
                 $('.controls-container').addClass('debug');

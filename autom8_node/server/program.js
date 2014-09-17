@@ -109,10 +109,13 @@ function reloadPreferences() {
     var client = { };
 
     if (pw && pw.status === 1 && pw.message && pw.message.value) {
-      admin.password = pw.message.value;
-      client.password = pw.message.value;
-      proxy.password = pw.message.value;
+      pw = pw.message.value;
     }
+    else {
+      pw = DEFAULT_PASSWORD;
+    }
+
+    proxy.password = pw;
 
     if (port && port.status === 1 && port.message && port.message.value) {
       proxy.port = parseInt(port.message.value, 10);
@@ -138,11 +141,14 @@ function reloadPreferences() {
 var MAX_LOGS = 100;
 var recentLogs = [];
 
-function encodeLog(args) {
+function encodeLog(args) { /* ick, this could be a lot better */
+  args = args.slice(); /* don't modify the input; clone the array */
   args[0] = '<span class="timestamp">' + args[0] + '</span>';
   var result = '<div class="log-entry">';
   for (var i = 0; i < args.length; i++) {
-    result += args[i].toString().toHtml();
+    if (args[i]) {
+      result += args[i].toString().toHtml();
+    }
   }
   result += "</div>";
 
@@ -381,6 +387,6 @@ process.on('exit', function() {
 });
 
 process.on('uncaughtException', function(ex) {
-  log.eror(TAG, ex, ex.stack);
+  log.error(TAG, ex, ex.stack);
   process.exit(256);
 });

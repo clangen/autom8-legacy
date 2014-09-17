@@ -3,7 +3,7 @@ var blacklist = require('./Blacklist.js');
 
 function add(app) {
   var signIn = function(req, res) {
-    if (req.body.password === app.config.password) {
+    if (req.body.password === app.config.proxy.password) {
       req.session.authenticated = true;
       req.session.cookie.maxAge = app.config.sessionTimeout;
       res.writeHead(200);

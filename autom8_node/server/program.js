@@ -96,6 +96,42 @@ function stopAdminApp() {
   return adminApp.stop();
 }
 
+/*
+ *
+ * PREFERENCE HANDLING
+ *
+ */
+
+function ensureNativePasswordExists() {
+  var d = Q.defer();
+
+  nativeBridge.rpc("server", "get_preference", {key: "password"})
+  .then(function(result) {
+    console.log(JSON.stringify(arguments));
+    if (result && result.message && result.message.value) {
+      d.resolve();
+    }
+    else {
+      nativeBridge.rpc("server", "set_preference", {
+        key: "password",
+        value: DEFAULT_PASSWORD
+      })
+      .then(function() {
+        d.resolve();
+      })
+      .fail(function(ex) {
+        d.reject(ex);
+      });
+    }
+  })
+
+  .fail(function(ex) {
+    d.reject(ex);
+  })
+
+  return d.promise;
+}
+
 function reloadPreferences() {
   return Q.all([
     nativeBridge.rpc("server", "get_preference", {key: "password"}),
@@ -106,16 +142,10 @@ function reloadPreferences() {
   .spread(function(pw, port, webClientPort) {
     var proxy = { };
     var admin = { };
-    var client = { };
 
     if (pw && pw.status === 1 && pw.message && pw.message.value) {
-      pw = pw.message.value;
+      proxy.password = pw.message.value;
     }
-    else {
-      pw = DEFAULT_PASSWORD;
-    }
-
-    proxy.password = pw;
 
     if (port && port.status === 1 && port.message && port.message.value) {
       proxy.port = parseInt(port.message.value, 10);
@@ -126,7 +156,6 @@ function reloadPreferences() {
     }
 
     config.set("server.admin", admin);
-    config.set("server.client", client);
     config.set("server.admin.proxy", proxy);
     config.set("server.client.proxy", proxy);
   });
@@ -289,6 +318,7 @@ function start(options) {
   server http server is started */
   return nativeBridge.init()
   .then(stop)
+  .then(ensureNativePasswordExists)
   .then(reloadPreferences)
   .then(startNonAdminServersIfDeviceConnected)
   .then(startAdminApp)

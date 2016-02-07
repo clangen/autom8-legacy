@@ -24,7 +24,13 @@
 
     <color name="connection_item_button_text">#ffffff</color>
     <color name="connection_item_button_normal_bg">#444444</color>
+    <color name="ripple_color">#cccccc</color>
     <color name="connection_item_button_focused_bg">#777777</color>
     <color name="connection_item_button_pressed_bg">#666666</color>
     <color name="connection_item_primary_text">#ffffff</color>
+    <color name="button_bar_button">#55000000</color>
+
+    <color name="color_primary">#44661f</color>
+    <color name="color_primary_dark">#2c4214</color>
+    <color name="color_accent">#d1ff9f</color>
 </resources>

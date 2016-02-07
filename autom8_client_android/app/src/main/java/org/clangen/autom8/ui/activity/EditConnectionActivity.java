@@ -1,18 +1,11 @@
 package org.clangen.autom8.ui.activity;
 
-import java.security.MessageDigest;
-import java.util.Formatter;
-
-import org.clangen.autom8.R;
-import org.clangen.autom8.connection.Connection;
-import org.clangen.autom8.connection.ConnectionLibrary;
-import org.clangen.autom8.service.ClientService;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -20,13 +13,21 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
 
-public class EditConnectionActivity extends Activity {
+import org.clangen.autom8.R;
+import org.clangen.autom8.connection.Connection;
+import org.clangen.autom8.connection.ConnectionLibrary;
+import org.clangen.autom8.service.ClientService;
+import org.clangen.autom8.util.ToolbarUtil;
+
+import java.security.MessageDigest;
+import java.util.Formatter;
+
+public class EditConnectionActivity extends AppCompatActivity {
     public static final int EDIT_CONNECTION_RESULT_OK = 1000;
     public static final int EDIT_CONNECTION_RESULT_CANCEL = 1001;
     public static final String EXTRA_DEFAULT_CONNECTION_ID = "org.clangen.autom8.EXTRA_DEFAULT_CONNECTION_ID";
     public static final String EXTRA_IS_FIRST_RUN = "org.clangen.autom8.EXTRA_IS_FIRST_RUN";
 
-    private View mMainView;
     private ViewHolder mViews = new ViewHolder();
     private Long mConnectionBeingEdited;
     private boolean mPasswordChanged = false;
@@ -88,7 +89,9 @@ public class EditConnectionActivity extends Activity {
     }
 
     private void init() {
-        mMainView = findViewById(R.id.EditConnectionView);
+        ToolbarUtil.initSolid(this);
+
+        final View mMainView = findViewById(R.id.EditConnectionView);
 
         Long connectionId = null;
 
@@ -147,7 +150,7 @@ public class EditConnectionActivity extends Activity {
         if (connection != null) {
             mViews.mAlias.setText(connection.getAlias());
             mViews.mHost.setText(connection.getHost());
-            mViews.mPort.setText(new Integer(connection.getPort()).toString());
+            mViews.mPort.setText(String.format("%s", connection.getPort()));
 
             if (connection.getPassword().length() > 0) {
                 /*
@@ -215,7 +218,7 @@ public class EditConnectionActivity extends Activity {
             String name = mViews.mAlias.getText().toString();
             String host = mViews.mHost.getText().toString();
             String password = getPassword();
-            int port = -1;
+            int port;
 
             try {
                 port = Integer.parseInt(mViews.mPort.getText().toString());
@@ -250,7 +253,7 @@ public class EditConnectionActivity extends Activity {
                  * to send a broadcast that it changed, so the ClientService can
                  * pick it up and act accordingly
                  */
-                if (def != null && def.getDatabaseId() == mConnectionBeingEdited) {
+                if (def != null && def.getDatabaseId().equals(mConnectionBeingEdited)) {
                     sendBroadcast(new Intent(ClientService.ACTION_DEFAULT_CONNECTION_CHANGED));
                 }
 

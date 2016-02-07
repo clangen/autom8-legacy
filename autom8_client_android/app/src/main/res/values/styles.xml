@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="DeviceActivityTheme" parent="@android:style/Theme.Holo">
+    <style name="DefaultActivityTheme" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
     </style>
 
-    <style name="DeviceActivityTranslucentTheme" parent="@android:style/Theme.Holo">
+    <style name="DeviceActivityTranslucentTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowShowWallpaper">true</item>
-        <item name="android:actionBarStyle">@style/TranslucentActionBar</item>
         <item name="android:listViewStyle">@style/TranslucentListView</item>
-    </style>
-
-    <style name="TranslucentActionBar" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">#aa000000</item>
     </style>
 
     <style name="TranslucentListView" parent="android:style/Widget.ListView">
@@ -57,8 +54,7 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">16sp</item>
         <item name="android:layout_marginLeft">12sp</item>
-        <item name="android:layout_marginRight">8sp</item>
-        <item name="android:layout_marginTop">6sp</item>
+        <item name="android:layout_marginRight">12sp</item>
     </style>
 
     <style name="DeviceItemSecondaryText" parent="DeviceItemText">
@@ -66,7 +62,6 @@
         <item name="android:textColor">@color/device_row_default_secondary_text</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_marginLeft">12sp</item>
-        <item name="android:layout_marginRight">8sp</item>
-        <item name="android:layout_marginTop">0sp</item>
+        <item name="android:layout_marginRight">12sp</item>
     </style>
 </resources>

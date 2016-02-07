@@ -3,6 +3,7 @@ package org.clangen.autom8.ui.adapter;
 import android.app.Service;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,9 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     private boolean mTranslucent;
 
     protected static class ItemViewHolder {
-        public View mMainContent;
+        public Device mDevice;
+       public View mMainContent;
+        public View mBackground;
         public View mSeparator;
         public TextView mSeparatorText;
         public TextView mModuleInfoView;
@@ -89,6 +92,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             convertView = mLayoutInflater.inflate(R.layout.device_item, null, false);
 
             ItemViewHolder holder = new ItemViewHolder();
+            holder.mBackground = convertView.findViewById(R.id.DeviceItemStatusContainer);
             holder.mMainContent = convertView.findViewById(R.id.DeviceItemMainContent);
             holder.mSeparator = convertView.findViewById(R.id.DeviceItemSeparator);
             holder.mSeparatorText = (TextView) convertView.findViewById(R.id.DeviceItemSeparatorText);
@@ -101,12 +105,14 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             convertView.setTag(holder);
         }
 
-        final Device device = mDeviceModel.get(position);
-
         final ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
-        holder.mMainContent.setOnClickListener(mOnDeviceClickListener);
-        holder.mMainContent.setOnLongClickListener(mOnDeviceLongClickListener);
-        holder.mMainContent.setTag(device);
+        final Device device = mDeviceModel.get(position);
+        holder.mDevice = device;
+
+        convertView.setOnClickListener(mOnDeviceClickListener);
+        convertView.setOnLongClickListener(mOnDeviceLongClickListener);
+        convertView.setTag(holder);
+
         holder.mSeparator.setVisibility(View.GONE);
 
         /* IMPORTANT!: set the toggle button's listener to nothing until the
@@ -141,11 +147,11 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             holder.mUpdatingView.setVisibility(View.VISIBLE);
             holder.mStatusText.setVisibility(View.GONE);
 
-            holder.mMainContent.setBackgroundResource(
-                device.getStatus() == DeviceStatus.ON
-                    ? android.R.drawable.list_selector_background
-                    : R.drawable.device_item_on_background
-            );
+//            holder.mMainContent.setBackgroundResource(
+//                device.getStatus() == DeviceStatus.ON
+//                    ? android.R.drawable.list_selector_background
+//                    : R.drawable.device_item_on_background
+//            );
         }
         else {
             holder.mUpdatingView.setVisibility(View.GONE);
@@ -174,14 +180,14 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
                 status = R.string.device_status_on;
                 holder.mStatusText.setTextColor(r.getColor(R.color.device_row_on_status_text));
                 holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_on_status_bg));
-                holder.mMainContent.setBackgroundResource(R.drawable.device_item_on_background);
+                holder.mBackground.setBackgroundResource(R.drawable.device_item_on_background);
                 break;
 
             case DeviceStatus.OFF:
             case DeviceStatus.UNKNOWN:
                 holder.mStatusText.setTextColor(r.getColor(R.color.device_row_off_status_text));
                 holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_off_status_bg));
-                holder.mMainContent.setBackgroundResource(android.R.drawable.list_selector_background);
+                holder.mBackground.setBackgroundColor(Color.TRANSPARENT);
                 break;
         }
 
@@ -203,19 +209,19 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
                 ? R.drawable.device_item_alert_translucent_background
                 : R.drawable.device_item_alert_background;
 
-            holder.mMainContent.setBackgroundResource(background);
+//            holder.mMainContent.setBackgroundResource(background);
         }
         else if (sensor.isArmed()) {
             status = R.string.device_status_armed;
             holder.mStatusText.setTextSize(16.0f);
             holder.mStatusText.setTextColor(r.getColor(R.color.device_row_on_status_text));
             holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_on_status_bg));
-            holder.mMainContent.setBackgroundResource(R.drawable.device_item_on_background);
+//            holder.mMainContent.setBackgroundResource(R.drawable.device_item_on_background);
         }
         else {
             holder.mStatusText.setTextColor(r.getColor(R.color.device_row_off_status_text));
             holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_off_status_bg));
-            holder.mMainContent.setBackgroundResource(android.R.drawable.list_selector_background);
+//            holder.mMainContent.setBackgroundResource(android.R.drawable.list_selector_background);
         }
 
         holder.mStatusText.setText(status);
@@ -252,7 +258,8 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             @Override
             public boolean onLongClick(View view) {
                 if (mClickHandler != null && view.getTag() != null) {
-                    return mClickHandler.onDeviceLongClicked((Device) view.getTag());
+                    final ItemViewHolder vh = (ItemViewHolder) view.getTag();
+                    return mClickHandler.onDeviceLongClicked(vh.mDevice);
                 }
 
                 return false;
@@ -264,7 +271,8 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 if (mClickHandler != null && view.getTag() != null) {
-                    mClickHandler.onDeviceClicked((Device) view.getTag());
+                    final ItemViewHolder vh = (ItemViewHolder) view.getTag();
+                    mClickHandler.onDeviceClicked(vh.mDevice);
                 }
             }
         };

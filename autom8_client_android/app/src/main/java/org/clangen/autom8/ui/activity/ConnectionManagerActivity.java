@@ -1,30 +1,32 @@
 package org.clangen.autom8.ui.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.clangen.autom8.R;
-import org.clangen.autom8.connection.Connection;
-import org.clangen.autom8.connection.ConnectionLibrary;
-import org.clangen.autom8.service.ClientService;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ConnectionManagerActivity extends Activity {
+import org.clangen.autom8.R;
+import org.clangen.autom8.connection.Connection;
+import org.clangen.autom8.connection.ConnectionLibrary;
+import org.clangen.autom8.service.ClientService;
+import org.clangen.autom8.util.ToolbarUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ConnectionManagerActivity extends AppCompatActivity {
     private View mMainView;
     private ViewHolder mViews = new ViewHolder();
-    private List<Connection> mConnections = new ArrayList<Connection>();
+    private List<Connection> mConnections = new ArrayList<>();
 
     private static class ViewHolder {
         ListView mListView;
@@ -54,8 +56,12 @@ public class ConnectionManagerActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.connection_manager);
         mMainView = findViewById(R.id.ConnectionManagerView);
+
+        ToolbarUtil.initSolid(this);
+
         initialize();
     }
 
@@ -98,7 +104,6 @@ public class ConnectionManagerActivity extends Activity {
 
         builder.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                // delete it for reals
                 if (ConnectionLibrary.getInstance(ConnectionManagerActivity.this).delete(connection)) {
                     ConnectionManagerActivity.this.onConnectionsUpdated();
                 }

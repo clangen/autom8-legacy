@@ -6,6 +6,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
+    <include layout="@layout/toolbar"/>
+
     <ListView
         android:id="@+id/ListView"
         android:layout_width="fill_parent"
@@ -33,7 +35,7 @@
 
         <TextView
             android:id="@+id/CloseButton"
-            android:background="@android:drawable/list_selector_background"
+            android:background="@drawable/buttonbar_item"
             android:focusable="true"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -49,7 +51,7 @@
 
         <TextView
             android:id="@+id/AddButton"
-            android:background="@android:drawable/list_selector_background"
+            android:background="@drawable/buttonbar_item"
             android:focusable="true"
             android:layout_width="fill_parent"
             android:layout_height="48dp"

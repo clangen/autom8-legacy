@@ -1,12 +1,12 @@
 package org.clangen.autom8;
 
-import org.clangen.autom8.service.ClientService;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import org.clangen.autom8.service.ClientService;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     @Override

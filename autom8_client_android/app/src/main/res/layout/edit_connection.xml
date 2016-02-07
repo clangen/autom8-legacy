@@ -6,6 +6,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
+    <include layout="@layout/toolbar"/>
+
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -17,42 +19,57 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <EditText
-                android:id="@+id/Name"
-                android:layout_width="fill_parent"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:hint="@string/edit_connection_name_hint"
-                android:inputType="textNoSuggestions" />
+                android:layout_marginBottom="12dp">
+                <EditText
+                    android:id="@+id/Name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:hint="@string/edit_connection_name_hint"
+                    android:inputType="textNoSuggestions" />
+            </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/Host"
-                android:layout_width="fill_parent"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:inputType="textUri|textNoSuggestions"
-                android:hint="@string/edit_connection_host_hint"  />
+                android:layout_marginBottom="12dp">
+                <EditText
+                    android:id="@+id/Host"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:inputType="textUri|textNoSuggestions"
+                    android:hint="@string/edit_connection_host_hint"  />
+            </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/PortNumber"
-                android:layout_width="fill_parent"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:inputType="number"
-                android:hint="@string/edit_connection_port_hint" />
+                android:layout_marginBottom="12dp">
+                <EditText
+                    android:id="@+id/PortNumber"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:inputType="number"
+                    android:hint="@string/edit_connection_port_hint" />
+            </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/Password"
-                android:layout_width="fill_parent"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:password="true"
-                android:hint="@string/edit_connection_password_hint" />
-
-            <!-- why? -->
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="12dp" />
+                android:layout_marginBottom="12dp">
+                <EditText
+                    android:id="@+id/Password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:password="true"
+                    android:hint="@string/edit_connection_password_hint" />
+            </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
 
@@ -71,7 +88,7 @@
 
         <TextView
             android:id="@+id/CancelButton"
-            android:background="@android:drawable/list_selector_background"
+            android:background="@drawable/buttonbar_item"
             android:focusable="true"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -87,7 +104,7 @@
 
         <TextView
             android:id="@+id/OkButton"
-            android:background="@android:drawable/list_selector_background"
+            android:background="@drawable/buttonbar_item"
             android:focusable="true"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

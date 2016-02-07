@@ -4,9 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="0dp"
     android:layout_marginLeft="8dp"
-    android:layout_marginBottom="2dp"
     android:gravity="left"
     android:layout_centerVertical="true" >
 

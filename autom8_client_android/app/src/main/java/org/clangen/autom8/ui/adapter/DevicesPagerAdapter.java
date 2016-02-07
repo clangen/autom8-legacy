@@ -1,14 +1,15 @@
 package org.clangen.autom8.ui.adapter;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
 import org.clangen.autom8.device.DeviceLibrary;
@@ -48,10 +49,10 @@ public class DevicesPagerAdapter extends FragmentPagerAdapter {
         INTENT_FILTER.addAction(DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED);
     }
 
-    public DevicesPagerAdapter(Activity context) {
-        super(context.getFragmentManager());
+    public DevicesPagerAdapter(Activity context, FragmentManager fm) {
+        super(fm);
         this.mContext = context;
-        mItems = new HashMap<Integer, DeviceModelFragment>();
+        mItems = new HashMap<>();
         mDeviceLibrary = DeviceLibraryFactory.getInstance(context.getApplicationContext());
         ActivityUtil.registerReceiver(context, mLibraryRefreshedReceiver, INTENT_FILTER);
 

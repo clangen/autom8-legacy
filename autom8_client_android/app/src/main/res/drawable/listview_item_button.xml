@@ -3,17 +3,10 @@
 <selector
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- pressed -->
     <item android:state_pressed="true" >
         <shape><solid android:color="@color/connection_item_button_pressed_bg" /></shape>
     </item>
 
-    <!-- focused -->
-    <item android:state_focused="true" >
-        <shape><solid android:color="@color/connection_item_button_focused_bg" /></shape>
-    </item>
-
-    <!-- normal -->
     <item>
         <shape><solid android:color="@color/connection_item_button_normal_bg" /></shape>
     </item>

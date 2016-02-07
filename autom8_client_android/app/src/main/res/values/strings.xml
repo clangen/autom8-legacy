@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">autom8</string>
-    <string name="edit_connection_name">Edit connection</string>
-    <string name="edit_create_connection">Setup connection</string>
-    <string name="connection_manager_name">Connection presets</string>
+    <string name="edit_connection_name">edit connection</string>
+    <string name="edit_create_connection">setup connection</string>
+    <string name="connection_manager_name">connection manager</string>
     <string name="settings_name">settings</string>
     <string name="service_name">autom8 ClientService</string>
 

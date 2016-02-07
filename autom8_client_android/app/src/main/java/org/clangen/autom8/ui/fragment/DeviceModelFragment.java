@@ -1,10 +1,10 @@
 package org.clangen.autom8.ui.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +48,6 @@ public class DeviceModelFragment extends Fragment {
 
     private ClientServiceProvider mClientServiceProvider;
     private BaseDeviceModelAdapter mListAdapter;
-    private LayoutInflater mInflater;
     private View mView;
     private AbsListView mListView;
     private AdapterType mAdapterType = AdapterType.Flat;
@@ -99,8 +98,6 @@ public class DeviceModelFragment extends Fragment {
     }
 
     private View init(LayoutInflater inflater) {
-        mInflater = inflater;
-
         mView = inflater.inflate(R.layout.devices, null);
 
         mListView = (AbsListView) mView.findViewById(R.id.DevicesListView);

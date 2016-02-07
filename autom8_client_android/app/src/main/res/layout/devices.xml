@@ -8,7 +8,8 @@
     <ListView
         android:id="@+id/DevicesListView"
         android:divider="@android:drawable/divider_horizontal_dark"
-        android:listSelector="@android:color/transparent"
+        android:drawSelectorOnTop="true"
+        android:listSelector="@drawable/buttonbar_item"
         android:dividerHeight="1dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />

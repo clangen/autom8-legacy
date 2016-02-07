@@ -1,7 +1,5 @@
 package org.clangen.autom8.ui.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,9 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,10 +27,12 @@ import org.clangen.autom8.net.Client;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.fragment.DevicesPagerFragment;
+import org.clangen.autom8.ui.fragment.SettingsFragment;
 import org.clangen.autom8.ui.view.ActionBarStatusView;
+import org.clangen.autom8.util.ToolbarUtil;
 import org.clangen.autom8.util.ActivityUtil;
 
-public class DevicesActivity extends Activity implements ClientServiceProvider {
+public class DevicesActivity extends AppCompatActivity implements ClientServiceProvider {
     private final static String TAG = "DevicesActivity";
 
     private final static int MENU_ID_EDIT_CONNECTION = 0;
@@ -50,7 +53,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         INTENT_FILTER = new IntentFilter();
         INTENT_FILTER.addAction(ClientService.ACTION_AUTHENTICATION_FAILED);
         INTENT_FILTER.addAction(ClientService.ACTION_CONNECTION_STATE_CHANGED);
-        INTENT_FILTER.addAction(SettingsActivity.ACTION_TRANSLUCENCY_TOGGLED);
+        INTENT_FILTER.addAction(SettingsFragment.ACTION_TRANSLUCENCY_TOGGLED);
         INTENT_FILTER.addAction(DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED);
     }
 
@@ -62,20 +65,16 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
         super.onCreate(savedInstanceState);
 
         bindService();
+
         setContentView(R.layout.devices_activity);
+        initToolbar();
+
         registerReceiver(mBroadcastReceiver, INTENT_FILTER);
 
         mConnectionLibrary = ConnectionLibrary.getInstance(this);
 
         mPagerFragment = (DevicesPagerFragment)
-            getFragmentManager().findFragmentByTag(DevicesPagerFragment.TAG);
-
-        mStatusView = new ActionBarStatusView(this);
-
-        final ActionBar ab = getActionBar();
-        ab.setCustomView(mStatusView);
-        ab.setDisplayShowCustomEnabled(true);
-        ab.setDisplayShowTitleEnabled(false);
+            getSupportFragmentManager().findFragmentByTag(DevicesPagerFragment.TAG);
 
         setUiState(Client.STATE_DISCONNECTED);
     }
@@ -122,23 +121,23 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case MENU_ID_EDIT_CONNECTION:
-            Connection c = ConnectionLibrary.getDefaultConnection(this);
-            EditConnectionActivity.start(this, (c == null) ? -1 :c.getDatabaseId());
-            return true;
+            case MENU_ID_EDIT_CONNECTION:
+                Connection c = ConnectionLibrary.getDefaultConnection(this);
+                EditConnectionActivity.start(this, (c == null) ? -1 :c.getDatabaseId());
+                return true;
 
-        case MENU_ID_SETTINGS:
-            SettingsActivity.start(this);
-            return true;
+            case MENU_ID_SETTINGS:
+                SettingsActivity.start(this);
+                return true;
 
-        case MENU_ID_RECONNECT:
-            reconnect();
-            return true;
+            case MENU_ID_RECONNECT:
+                reconnect();
+                return true;
         }
 
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -260,7 +259,18 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
             getWindow().setAttributes(params);
         }
         else {
-            setTheme(R.style.DeviceActivityTheme);
+            setTheme(R.style.DefaultActivityTheme);
+        }
+    }
+
+    private void initToolbar() {
+        mStatusView = new ActionBarStatusView(this);
+
+        if (ActivityUtil.isTranslucencyEnabled(this)) {
+            ToolbarUtil.initTranslucent(this).addView(mStatusView);
+        }
+        else {
+            ToolbarUtil.initSolid(this).addView(mStatusView);
         }
     }
 
@@ -309,7 +319,7 @@ public class DevicesActivity extends Activity implements ClientServiceProvider {
 
                 setUiState(state);
             }
-            else if (SettingsActivity.ACTION_TRANSLUCENCY_TOGGLED.equals(action)) {
+            else if (SettingsFragment.ACTION_TRANSLUCENCY_TOGGLED.equals(action)) {
                 finish();
             }
             else if (DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED.equals(action)) {

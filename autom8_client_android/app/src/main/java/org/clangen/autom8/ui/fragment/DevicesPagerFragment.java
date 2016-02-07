@@ -1,11 +1,11 @@
 package org.clangen.autom8.ui.fragment;
 
-import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -66,7 +66,7 @@ public class DevicesPagerFragment extends Fragment {
 
         mView = inflater.inflate(R.layout.devices_pager, container);
 
-        mDevicesPagerAdapter = new DevicesPagerAdapter(getActivity());
+        mDevicesPagerAdapter = new DevicesPagerAdapter(getActivity(), getFragmentManager());
         mDevicesPagerAdapter.setOnInitializedListener(mOnPagerInitializedListener);
 
         mDevicesPagerView = (ViewPager) mView.findViewById(R.id.devices_pager);

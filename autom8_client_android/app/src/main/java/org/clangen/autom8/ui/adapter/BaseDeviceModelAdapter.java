@@ -203,12 +203,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
             status = R.string.device_status_alert;
             holder.mStatusText.setTextColor(r.getColor(R.color.device_row_alert_status_text));
             holder.mStatusText.setBackgroundColor(r.getColor(R.color.device_row_alert_status_bg));
-
-            int background = mTranslucent
-                ? R.drawable.device_item_alert_translucent_background
-                : R.drawable.device_item_alert_background;
-
-            holder.mMainContent.setBackgroundResource(background);
+            holder.mMainContent.setBackgroundResource(R.drawable.device_item_alert_background);
         }
         else if (sensor.isArmed()) {
             status = R.string.device_status_armed;

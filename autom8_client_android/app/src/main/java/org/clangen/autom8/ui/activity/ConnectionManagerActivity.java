@@ -175,7 +175,7 @@ public class ConnectionManagerActivity extends AppCompatActivity {
                 convertView = getLayoutInflater().inflate(R.layout.connection_manager_item, null, false);
 
                 ItemViewHolder holder = new ItemViewHolder();
-                holder.mRow = convertView.findViewById(R.id.ConnectionItem);
+                holder.mRow = convertView;
                 holder.mName = (TextView) convertView.findViewById(R.id.Name);
                 holder.mDetails = (TextView) convertView.findViewById(R.id.Details);
                 holder.mEdit = convertView.findViewById(R.id.EditButton);

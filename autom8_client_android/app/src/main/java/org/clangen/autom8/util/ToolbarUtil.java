@@ -1,5 +1,6 @@
 package org.clangen.autom8.util;
 
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -25,6 +26,7 @@ public class ToolbarUtil {
     private static Toolbar init(final AppCompatActivity activity) {
         final Toolbar tb = (Toolbar) activity.findViewById(R.id.toolbar);
         activity.setSupportActionBar(tb);
+        ViewCompat.setElevation(tb, 5.0f);
         return tb;
     }
 

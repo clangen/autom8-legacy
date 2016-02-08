@@ -38,7 +38,7 @@
 
     <RelativeLayout
         android:id="@+id/DeviceItemRow"
-        android:background="@drawable/buttonbar_item"
+        android:background="@drawable/listview_item_background"
         android:layout_below="@id/DeviceItemSeparator"
         android:layout_width="fill_parent"
         android:layout_height="64dp">
@@ -46,7 +46,6 @@
         <FrameLayout
             android:id="@+id/DeviceItemStatusContainer"
             android:layout_alignParentLeft="true"
-            android:background="#ff0fff"
             android:layout_width="64dp"
             android:layout_height="64dp" >
 

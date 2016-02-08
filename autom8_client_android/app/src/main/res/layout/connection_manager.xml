@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/CloseButton"
-            android:background="@drawable/buttonbar_item"
+            android:background="@drawable/listview_item_background"
             android:focusable="true"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -51,7 +51,7 @@
 
         <TextView
             android:id="@+id/AddButton"
-            android:background="@drawable/buttonbar_item"
+            android:background="@drawable/listview_item_background"
             android:focusable="true"
             android:layout_width="fill_parent"
             android:layout_height="48dp"

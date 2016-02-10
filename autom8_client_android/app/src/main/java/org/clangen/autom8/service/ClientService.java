@@ -13,10 +13,12 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -395,12 +397,14 @@ public class ClientService extends Service {
         boolean enabled = prefs.getBoolean(getString(R.string.pref_run_in_background), false);
 
         if (enabled && (mClientCount == 0)) {
-            Notification n = new Notification.Builder(this)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.running_notification_desc))
-                .setSmallIcon(R.drawable.notification_icon)
-                .setLargeIcon(mLargeAppIcon)
-                .getNotification();
+            final Notification.Builder builder =
+                new Notification.Builder(this)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.running_notification_desc))
+                    .setSmallIcon(R.drawable.notification_monochrome)
+                    .setLargeIcon(mLargeAppIcon);
+
+            Notification n = builder.getNotification();
 
             Intent intent = new Intent(this, DevicesActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
@@ -435,12 +439,18 @@ public class ClientService extends Service {
             final String alertDetails = getResources().getQuantityString(
                 R.plurals.security_notification_desc, alertCount, alertCount);
 
-            Notification notification = new Notification.Builder(this)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(alertDetails)
-                .setSmallIcon(R.drawable.notification_alert)
-                .setLargeIcon(mLargeAlertIcon)
-                .getNotification();
+            final Notification.Builder builder =
+                new Notification.Builder(this)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(alertDetails)
+                    .setSmallIcon(R.drawable.notification_monochrome)
+                    .setLargeIcon(mLargeAlertIcon);
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setColor(Color.RED);
+            }
+
+            final Notification notification = builder.getNotification();
 
             Intent intent = new Intent();
             intent.setClassName(getPackageName(), DevicesActivity.class.getCanonicalName());

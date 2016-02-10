@@ -108,15 +108,9 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem item = menu.add(0, MENU_ID_SETTINGS, 0, R.string.menu_settings);
-        item.setIcon(R.drawable.menu_settings);
-
-        item = menu.add(0, MENU_ID_EDIT_CONNECTION, 1, R.string.menu_connection);
-        item.setIcon(R.drawable.menu_connections);
-
-        item = menu.add(0, MENU_ID_RECONNECT, 2, R.string.menu_reconnect);
-        item.setIcon(R.drawable.menu_reconnect);
-
+        menu.add(0, MENU_ID_SETTINGS, 0, R.string.menu_settings);
+        menu.add(0, MENU_ID_EDIT_CONNECTION, 1, R.string.menu_connection);
+        menu.add(0, MENU_ID_RECONNECT, 2, R.string.menu_reconnect);
         return true;
     }
 

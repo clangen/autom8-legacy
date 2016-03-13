@@ -17,7 +17,7 @@ ifeq ($(BUILD_TARGET), darwin)
 else ifeq ($(BUILD_TARGET), linux)
 	C := clang
 	CXX := clang++
-	LLVMCONFIG := /usr/bin/llvm-config-3.4
+	LLVMCONFIG := /usr/bin/llvm-config
 	DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
 	LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include
 	CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g

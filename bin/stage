@@ -21,10 +21,10 @@ elif [[ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]]; then
     echo "[*] detected windows"
 fi
 
-VERSION=0.7.5
+VERSION=0.8.0
 #NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
-#NODE_TARBALL=node-v0.10.26-linux-x86
-NODE_TARBALL=node-v0.10.26-darwin-x64
+NODE_TARBALL=node-v4.4.0-linux-x86
+#NODE_TARBALL=node-v0.10.26-darwin-x64
 #NODE_TARBALL=node-v0.10.26-win32
 
 echo "[*] deleting current staging area, if exists"
@@ -42,12 +42,32 @@ if [[ $WINDOWS != 1 ]]; then
     make
 fi
 
+echo "[*] bootstrapping dependencies"
+pushd ./autom8_node
+./bootstrap
+popd
+
+echo "[*] compiling server"
+pushd ./autom8_node/server > /dev/null
+rm -rf build
+rm -rf dist
+grunt --target=release
+popd > /dev/null
+
+echo "[*] compiling client"
+pushd ./autom8_node/client > /dev/null
+rm -rf build
+rm -rf dist
+grunt --target=release
+popd > /dev/null
+
 echo "[*] copying files+libautom8 to staging area"
 mkdir -p build/stage/bin
 mkdir -p build/stage/lib/autom8
 mkdir -p build/stage/share
 
 # get the important files in place
+cp -rfp autom8_node/node_modules build/stage/lib/autom8
 cp -rfp autom8_node/client build/stage/lib/autom8
 cp -rfp autom8_node/server build/stage/lib/autom8
 cp -rfp autom8_node/shared build/stage/lib/autom8
@@ -64,59 +84,48 @@ elif [[ $WINDOWS == 1 ]]; then
     cp release/*.dll build/stage/lib/ 2> /dev/null
 fi
 
-# we'll build these fresh
-rm build/stage/lib/autom8/client/minifier.cache
-rm build/stage/lib/autom8/server/minifier.cache
-
-echo "[*] compiling server"
-pushd ./build/stage/lib/autom8/server > /dev/null
-node compile.js
-popd > /dev/null
-
-echo "[*] compiling client"
-pushd ./build/stage/lib/autom8/client > /dev/null
-node compile.js
-popd > /dev/null
-
 echo "[*] removing files that don't need to be distributed"
-rm -rf build/stage/lib/autom8/client/frontend/js
-rm -rf build/stage/lib/autom8/client/frontend/css
-rm -rf build/stage/lib/autom8/client/frontend/templates/*.scripts
-rm -rf build/stage/lib/autom8/client/frontend/templates/*.styles
-rm -rf build/stage/lib/autom8/server/frontend/js
-rm -rf build/stage/lib/autom8/server/frontend/css
-rm -rf build/stage/lib/autom8/server/frontend/templates/*.scripts
-rm -rf build/stage/lib/autom8/server/frontend/templates/*.styles
+rm -rf build/stage/lib/autom8/client/.gitignore
+rm -rf build/stage/lib/autom8/client/resources.json
+rm -rf build/stage/lib/autom8/client/Gruntfile.js
+rm -rf build/stage/lib/autom8/client/node_modules
+rm -rf build/stage/lib/autom8/client/frontend
+rm -rf build/stage/lib/autom8/client/build
+
+rm -rf build/stage/lib/autom8/server/resources.json
+rm -rf build/stage/lib/autom8/server/.gitignore
+rm -rf build/stage/lib/autom8/server/Gruntfile.js
+rm -rf build/stage/lib/autom8/server/node_modules
+rm -rf build/stage/lib/autom8/server/frontend
+rm -rf build/stage/lib/autom8/server/build
+rm build/stage/lib/autom8/server/backend/raw.js
+
 rm -rf build/stage/lib/autom8/shared/css
-rm build/stage/lib/autom8/shared/templates/*.scripts
-rm build/stage/lib/autom8/shared/templates/*.styles
+rm -rf build/stage/lib/autom8/shared/templates
 rm -rf build/stage/lib/autom8/shared/js/3rdparty
 rm -rf build/stage/lib/autom8/shared/js/frontend
-rm ./build/stage/lib/autom8/server/compile.js
-rm ./build/stage/lib/autom8/server/backend/raw.js
-rm ./build/stage/lib/autom8/client/compile.js
 
-echo "[*] compressing server-side js..."
-for js in $(find ./build/stage -name *.js)
-do
-    echo "  $js"
-    ccjs $js > $js.min
-    mv $js.min $js
-done
+#echo "[*] compressing server-side js..."
+#for js in $(find ./build/stage -name *.js)
+#do
+#    echo "  $js"
+#    ccjs $js > $js.min
+#    mv $js.min $js
+#done
 
 echo "[*] setting client versions to $VERSION"
 pushd build/stage > /dev/null
-perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./lib/autom8/server/frontend/index.html
-perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./lib/autom8/client/frontend/index.html
-find ./$STAGE/ -name "*.delme" | xargs -0 rm
+perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./lib/autom8/server/dist/release/index.html
+perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./lib/autom8/client/dist/release/index.html
+find ./$STAGE/ -name "*.delme" -print0 | xargs -0 rm
 popd > /dev/null
 
 echo "[*] creating local node installation"
-cp ./bin/$NODE_TARBALL.tar.gz ./build/stage/lib/autom8
+cp ./bin/$NODE_TARBALL.tar.xz ./build/stage/lib/autom8
 pushd ./build/stage/lib/autom8 > /dev/null
-tar xvfz $NODE_TARBALL.tar.gz
+tar xf $NODE_TARBALL.tar.xz
 mv $NODE_TARBALL node
-rm $NODE_TARBALL.tar.gz
+rm $NODE_TARBALL.tar.xz
 popd > /dev/null
 
 echo "[*] copying installation script, readme, and license"

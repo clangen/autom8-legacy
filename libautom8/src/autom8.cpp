@@ -44,7 +44,7 @@ static void respond_with_status(json_value_ref input, int status_code);
 rpc_callback rpc_callback_ = no_op;
 
 /* constants */
-#define VERSION "0.7.5"
+#define VERSION "0.8.0"
 #define DEFAULT_PORT 7901
 #define TAG "c_api"
 #define RPC_TAG "rpc_queue"

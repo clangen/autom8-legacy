@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.clangen.autom8.Application;
 import org.clangen.autom8.R;
 import org.clangen.autom8.connection.Connection;
 import org.clangen.autom8.connection.ConnectionLibrary;
@@ -115,4 +116,5 @@ public class ActionBarStatusView extends FrameLayout {
 
         return null;
     }
+
 }

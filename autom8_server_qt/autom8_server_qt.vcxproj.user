@@ -6,12 +6,12 @@
     <LocalDebuggerEnvironment Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <QTDIR>D:\qt-4.7.3</QTDIR>
+    <QTDIR>d:\src\qt_4.8.6</QTDIR>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <QTDIR>D:\qt-4.7.3</QTDIR>
+    <QTDIR>d:\src\qt_4.8.6</QTDIR>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
-    <QTDIR>D:\qt-4.7.3</QTDIR>
+    <QTDIR>d:\src\qt_4.8.6</QTDIR>
   </PropertyGroup>
 </Project>

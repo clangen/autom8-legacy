@@ -3,11 +3,14 @@
 
 #include <QAbstractItemModel>
 #include <QTimer>
-#include <boost/thread.hpp>
 #include <sigslot/sigslot.h>
 #include <sqlite3.h>
 #include <vector>
+
+#ifndef Q_MOC_RUN
+#include <boost/thread.hpp>
 #include <autom8/util/debug.hpp>
+#endif
 
 #define TIME_COLUMN 0
 #define MESSAGE_COLUMN 1

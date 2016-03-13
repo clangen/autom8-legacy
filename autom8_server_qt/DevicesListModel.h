@@ -2,7 +2,9 @@
 #define AUTOM8_DEVICES_LIST_MODEL_QT_H
 
 #include <QAbstractItemModel>
+#ifndef Q_MOC_RUN
 #include <autom8/device/device_system.hpp>
+#endif
 #include <sigslot/sigslot.h>
 #include <map>
 

@@ -13,6 +13,7 @@
 #include <boost/asio/ssl.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/thread.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <sigslot/sigslot.h>
 
 using boost::asio::ip::tcp;

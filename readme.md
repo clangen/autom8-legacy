@@ -1,14 +1,14 @@
-# autom8
+# autom8 #
 
 autom8 is a simple home automation client and server that I started developing after I graduated college in 2008. It's sort of fallen behind the times, but is still really useful if you already have the hardware. It allows you to turn lights and appliances on and off, and monitor security sensors from your phone.
 
 I also used autom8 as a test bed for technology I wanted to experiment with over the years; as such, it has a number of components written in different languages and technologies. Sometimes it shows.
 
-## license
+## license ##
 
 todo
 
-## hardware
+## hardware ##
 
 Supported hardware includes:
 1. x10 cm15a device controller
@@ -19,9 +19,9 @@ Supported hardware includes:
 1. ms10a motion detector
 1. probably more generic x10 sensors... but untested
 
-## compiling
+## compiling ##
 
-### android client
+### android client ###
 
 Compiling the Android client is super easy:
 
@@ -29,9 +29,9 @@ Compiling the Android client is super easy:
 1. Import the project
 1. Build and Run
 
-### windows server
+### windows server ###
 
-#### pre-reqs
+#### pre-reqs ####
 If you want to compile the Windows server you need the following:
 
 1. Visual Studio 2010 with Service Pack 1

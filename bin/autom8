@@ -1,4 +1,4 @@
 #!/bin/bash
 pushd {{PREFIX}}/lib/autom8/server
-node main.js
+node autom8.js > /tmp/autom8.log
 popd

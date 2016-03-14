@@ -12,28 +12,20 @@
 # Description: autom8
 ### END INIT INFO
 
-NODE={{PREFIX}}/lib/autom8/node/bin/node
-if [ ! -e $NODE ]; then
-    NODE=`which node`
-fi
-
 SERVER={{PREFIX}}/lib/autom8/server
-EXE=main.js
-PARAMS="--debug"
-TTY=autom8tty
 USER={{USER}}
 
 start() {
     echo "[autom8] shutting down old instances"
-    su $USER -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill 2> /dev/null"
-    echo "[autom8] creating '$TTY' screen session"
-    su $USER -c "screen -S $TTY -d -m sh -c \"cd $SERVER; $NODE $EXE $PARAMS\""
+    killall -9 autom8
+    pkill -9 -f "node autom8.js"
+    {{PREFIX}}/bin/autom8 &
     echo "[autom8] started"
 }
 
 stop() {
     echo "[autom8] shutting down old instances"
-    su $USER -c "screen -ls | grep $TTY | cut -d. -f1 | awk '{print $1}' | xargs kill"
+    killall -9 autom8
     echo "[autom8] stopped"
 }
 

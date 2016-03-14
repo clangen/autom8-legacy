@@ -330,6 +330,7 @@ function start(options) {
 
   .fail(function(ex) {
     log.error(TAG, '*** ERROR during server start. stopping everything... ***'.red);
+    console.log(ex);
     stop();
 
     /* use a bit of (kind of ugly) heuristics to determine which component

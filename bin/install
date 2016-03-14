@@ -74,7 +74,7 @@ popd
 # install node modules
 echo "[*] installing node modules"
 pushd ./$STAGE/lib/autom8 > /dev/null
-sudo env "PATH=$PATH" npm install
+sudo npm install
 popd > /dev/null
 
 # chmod/chown files
@@ -97,9 +97,10 @@ rm -rf $STAGE
 if [[ $LINUX == 1 ]]; then
   echo "[*] installing init script"
   sudo rm /etc/init.d/autom8
-  sudo cp $PREFIX/bin/autom8-init.rc /etc/init.d/autom8
-  sudo chmod +x /etc/init.d/autom8
-  sudo update-rc.d autom8 defaults
+  sudo rm /etc/init.d/autom8-server
+  sudo cp $PREFIX/bin/autom8-init.rc /etc/init.d/autom8-server
+  sudo chmod +x /etc/init.d/autom8-server
+  sudo update-rc.d autom8-server defaults
 fi
 
 echo "[*] done"

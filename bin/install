@@ -71,32 +71,10 @@ find ./bin -type f -print0 | xargs -0 perl -p -i".delme" -e "s/{{USER}}/$USER/g"
 find . -name "*.delme" -type f -print0 | xargs -0 rm
 popd
 
-# install debs
-if [[ $LINUX == 1 ]]; then
-  echo "[*] installing dependencies using apt-get"
-  sudo apt-get install \
-      build-essential screen \
-      libsqlite3-0 libssl1.0.0 libboost-system1.54.0 \
-      libboost-regex1.54.0 libboost-date-time1.54.0 \
-      libboost-filesystem1.54.0 libboost-thread1.54.0
-fi
-
 # install node modules
-echo "[*] installing npm modules"
-NODE=$PREFIX/$STAGE/lib/autom8/node/bin/node
-NPM=$PREFIX/$STAGE/lib/autom8/node/lib/node_modules/npm/cli.js
-if [ ! -e $NODE ]; then
-    NODE=`which node`
-    NPM=`which npm`
-fi
-
+echo "[*] installing node modules"
 pushd ./$STAGE/lib/autom8 > /dev/null
-
-sudo $NODE $NPM install \
-    colors@0.6.2 commander@2.1.0 ffi@1.2.6 ref@0.1.3 express@3.5.0 \
-    jsonminify@0.2.3 lodash@2.4.1 q@1.0.0 socket.io@0.9.16 \
-    socket.io-client@0.9.16 stripcolorcodes@0.1.0
-
+sudo env "PATH=$PATH" npm install
 popd > /dev/null
 
 # chmod/chown files

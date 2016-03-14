@@ -18,10 +18,11 @@ else ifeq ($(BUILD_TARGET), linux)
 	C := clang
 	CXX := clang++
 	LLVMCONFIG := /usr/bin/llvm-config
-	DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
+	C_DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cflags)
+	CXX_DEFAULT_INCLUDES := -I/usr/include/i386-linux-gnu/c++/4.8 -I$(shell $(LLVMCONFIG) --src-root)/tools/clang/include -I$(shell $(LLVMCONFIG) --obj-root)/tools/clang/include $(shell $(LLVMCONFIG) --cxxflags)
 	LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include
-	CFLAGS := $(DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
-	CXXFLAGS := $(CFLAGS) -fexceptions
+	CFLAGS := $(C_DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
+	CXXFLAGS := $(CXX_DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -fexceptions -g
 	LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 	LD_FLAGS := -shared -o libautom8.so
 else ifeq ($(BUILD_TARGET), pi)

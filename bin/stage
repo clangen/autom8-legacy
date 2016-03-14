@@ -22,10 +22,6 @@ elif [[ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]]; then
 fi
 
 VERSION=0.8.0
-#NODE_TARBALL=node-v0.10.24-linux-arm-armv6j-vfp-hard
-NODE_TARBALL=node-v4.4.0-linux-x86
-#NODE_TARBALL=node-v0.10.26-darwin-x64
-#NODE_TARBALL=node-v0.10.26-win32
 
 echo "[*] deleting current staging area, if exists"
 rm -rf build/stage/
@@ -67,7 +63,7 @@ mkdir -p build/stage/lib/autom8
 mkdir -p build/stage/share
 
 # get the important files in place
-cp -rfp autom8_node/node_modules build/stage/lib/autom8
+cp -rfp autom8_node/package.json build/stage/lib/autom8
 cp -rfp autom8_node/client build/stage/lib/autom8
 cp -rfp autom8_node/server build/stage/lib/autom8
 cp -rfp autom8_node/shared build/stage/lib/autom8
@@ -118,14 +114,6 @@ pushd build/stage > /dev/null
 perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./lib/autom8/server/dist/release/index.html
 perl -p -i".delme" -e "s/{{version}}/$VERSION/g" ./lib/autom8/client/dist/release/index.html
 find ./$STAGE/ -name "*.delme" -print0 | xargs -0 rm
-popd > /dev/null
-
-echo "[*] creating local node installation"
-cp ./bin/$NODE_TARBALL.tar.xz ./build/stage/lib/autom8
-pushd ./build/stage/lib/autom8 > /dev/null
-tar xf $NODE_TARBALL.tar.xz
-mv $NODE_TARBALL node
-rm $NODE_TARBALL.tar.xz
 popd > /dev/null
 
 echo "[*] copying installation script, readme, and license"

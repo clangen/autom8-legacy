@@ -11,13 +11,13 @@ todo
 ## hardware
 
 Supported hardware includes:
-* x10 cm15a device controller
-* wgl v572rf32 transceiver
-* lm456 lamp module
-* am466 appliance module
-* ds10a door/window sensor
-* ms10a motion detector
-* probably more generic x10 sensors... but untested
+1. x10 cm15a device controller
+1. wgl v572rf32 transceiver
+1. lm456 lamp module
+1. am466 appliance module
+1. ds10a door/window sensor
+1. ms10a motion detector
+1. probably more generic x10 sensors... but untested
 
 ## compiling
 

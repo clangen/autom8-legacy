@@ -11,6 +11,7 @@ todo
 ## hardware ##
 
 Supported hardware includes:
+
 1. x10 cm15a device controller
 1. wgl v572rf32 transceiver
 1. lm456 lamp module

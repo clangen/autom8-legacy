@@ -26,6 +26,7 @@ start() {
 stop() {
     echo "[autom8] shutting down old instances"
     killall -9 autom8
+    pkill -9 -f "node autom8.js"
     echo "[autom8] stopped"
 }
 

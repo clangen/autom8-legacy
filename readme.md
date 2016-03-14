@@ -24,9 +24,10 @@ Supported hardware includes:
 ### android client
 
 Compiling the Android client is super easy:
+
 1. Install Android Studio 2.0 Beta 6 or newer.
-2. Import the project
-3. Build and Run
+1. Import the project
+1. Build and Run
 
 ### windows server
 

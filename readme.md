@@ -12,13 +12,13 @@ todo
 
 Supported hardware includes:
 
-1. x10 cm15a device controller
-1. wgl v572rf32 transceiver
-1. lm456 lamp module
-1. am466 appliance module
-1. ds10a door/window sensor
-1. ms10a motion detector
-1. probably more generic x10 sensors... but untested
+* x10 cm15a device controller
+* wgl v572rf32 transceiver
+* lm456 lamp module
+* am466 appliance module
+* ds10a door/window sensor
+* ms10a motion detector
+* probably more generic x10 sensors... but untested
 
 ## compiling ##
 
@@ -39,7 +39,7 @@ If you want to compile the Windows server you need the following:
 2. Boost 1.60 (https://sourceforge.net/projects/boost/files/boost-binaries/1.60.0/)
 3. QT 4.8.6 (https://download.qt.io/archive/qt/4.8/4.8.6/qt-opensource-windows-x86-vs2010-4.8.6.exe)
 4. QT Visual Studio Addin 1.1.11 (http://download.qt.io/official_releases/vsaddin/qt-vs-addin-1.1.11-opensource.exe)
-4. ActiveHome Pro SDK (http://www.starbasestudios.net/ahk/ahsdk_install.exe)
+5. ActiveHome Pro SDK (http://www.starbasestudios.net/ahk/ahsdk_install.exe)
 
 All other dependencies are included.
 
@@ -50,22 +50,22 @@ The Visual Studio Solution (.sln) assumes the following relative paths:
 
 In other words, autom8, Boost and QT share the same root directory.
 
-#### compile
+#### compile ####
 
 1. Open <autom8-src>/autom8.sln
 2. Compile and run!
 
-### linux server with web ui
+### linux server with web ui ###
 
-#### intall debian jessie
+#### intall debian jessie ####
 
 Use the 32-bit desktop iso. you can also use a Raspberry Pi with Raspbian!
 
-##### install system-level dependencies:
+##### install system-level dependencies: ####
 
 * sudo apt-get install build-essential clang llvm libboost-chrono-dev libboost-system-dev libboost-regex-dev libboost-date-time-dev libboost-filesystem-dev libboost-thread-dev libssl-dev libsqlite3-dev libusb-1.0-0-dev
 
-##### install nodejs and grunt
+##### install nodejs and grunt #####
 
 Note: the default apt-supplied version of nodejs is too old; install v4.4.
 
@@ -73,25 +73,25 @@ Note: the default apt-supplied version of nodejs is too old; install v4.4.
 2. sudo apt-get install -y nodejs
 3. npm install -g grunt grunt-cli
 
-##### install mochad (cm15a "driver"):
+##### install mochad (cm15a "driver"): #####
 
 1. Download, extract the sources (https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download)
 2. ./configure
 3. make
 4. sudo make install
 
-##### compile libautom8.so, stage, and install
+##### compile libautom8.so, stage, and install #####
 
 1. cd ~/src/autom8
 2. ./bin/stage
 3. cd build
 4. sudo ./install -p /opt/autom8/
 
-##### start the server
+##### start the server #####
 
 * /etc/init.d/autom8-server start
 
-## SSL
+## SSL ##
 
 If you're using the autom8 Linux server then you can easily configure the port numbers and certificates used by the HTTPS servers.
 

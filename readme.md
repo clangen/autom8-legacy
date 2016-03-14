@@ -1,16 +1,16 @@
 # autom8 #
 
-autom8 is a simple home automation client and server that I started developing after I graduated college in 2008. It's sort of fallen behind the times, but is still really useful if you already have the hardware. It allows you to turn lights and appliances on and off, and monitor security sensors from your phone.
+Turn on lights and monitor security sensors in your house, from your phone.
 
-I also used autom8 as a test bed for technology I wanted to experiment with over the years; as such, it has a number of components written in different languages and technologies. Sometimes it shows.
+autom8 is a home automation client and server I've been hacking on since my friend gave me some spare parts in 2007.
+
+It's really useful if you happen to own the supported hardware. 
 
 ## license ##
 
-todo
+standard 3-clause bsd
 
-## hardware ##
-
-Supported hardware includes:
+## supported hardware ##
 
 * x10 cm15a device controller
 * wgl v572rf32 transceiver
@@ -24,16 +24,13 @@ Supported hardware includes:
 
 ### android client ###
 
-Compiling the Android client is super easy:
-
 1. Install Android Studio 2.0 Beta 6 or newer.
-1. Import the project
-1. Build and Run
+2. Import the project
+3. Build and Run
 
-### windows server ###
+### server for windows ###
 
-#### pre-reqs ####
-If you want to compile the Windows server you need the following:
+#### install these things: ####
 
 1. Visual Studio 2010 with Service Pack 1
 2. Boost 1.60 (https://sourceforge.net/projects/boost/files/boost-binaries/1.60.0/)
@@ -41,25 +38,34 @@ If you want to compile the Windows server you need the following:
 4. QT Visual Studio Addin 1.1.11 (http://download.qt.io/official_releases/vsaddin/qt-vs-addin-1.1.11-opensource.exe)
 5. ActiveHome Pro SDK (http://www.starbasestudios.net/ahk/ahsdk_install.exe)
 
-All other dependencies are included.
+All other dependencies are included in the source.
 
-The Visual Studio Solution (.sln) assumes the following relative paths:
+The Visual Studio Solution (autom8.sln) assumes the following directory structure:
 
-1. Boost is installed to: <autom8-src>/../boost_1_60_0/
-2. QT is installed to: <autom8-src>/../qt_4.8.6/
+    ./
+    ../
+        autom8/
+            autom8.sln
+            ...
+        boost_1_60_0/
+            ...
+        qt_4.8.6/
+            ...
 
-In other words, autom8, Boost and QT share the same root directory.
+That is: autom8, Boost and QT sources all share the same parent directory.
 
 #### compile ####
 
 1. Open <autom8-src>/autom8.sln
-2. Compile and run!
+2. Compile and Run
 
-### linux server with web ui ###
+### Linux server with web admin ui ###
+
+This needs to be simplified.
 
 #### intall debian jessie ####
 
-Use the 32-bit desktop iso. you can also use a Raspberry Pi with Raspbian!
+autom8 works well on Debian Jessie. It works especially well on a Raspberry Pi running Raspbian. 
 
 ##### install system-level dependencies: ####
 
@@ -67,7 +73,7 @@ Use the 32-bit desktop iso. you can also use a Raspberry Pi with Raspbian!
 
 ##### install nodejs and grunt #####
 
-Note: the default apt-supplied version of nodejs is too old; install v4.4.
+The default apt-supplied version of nodejs is too old; **install version v4.4**.
 
 1. curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 2. sudo apt-get install -y nodejs
@@ -75,7 +81,9 @@ Note: the default apt-supplied version of nodejs is too old; install v4.4.
 
 ##### install mochad (cm15a "driver"): #####
 
-1. Download, extract the sources (https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download)
+https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
+
+1. tar xvfz
 2. ./configure
 3. make
 4. sudo make install
@@ -83,9 +91,10 @@ Note: the default apt-supplied version of nodejs is too old; install v4.4.
 ##### compile libautom8.so, stage, and install #####
 
 1. cd ~/src/autom8
-2. ./bin/stage
-3. cd build
-4. sudo ./install -p /opt/autom8/
+2. make
+3. ./bin/stage
+4. cd build
+5. sudo ./install -p /opt/autom8/
 
 ##### start the server #####
 
@@ -95,4 +104,4 @@ Note: the default apt-supplied version of nodejs is too old; install v4.4.
 
 If you're using the autom8 Linux server then you can easily configure the port numbers and certificates used by the HTTPS servers.
 
-Simply edit your **/opt/autom8/share/autom8/config.json** (note, you can also copy it to **/etc/autom8/config.json**) and update the **cert** and **key** values to point towards your preferred credentials.
+Edit **/opt/autom8/share/autom8/config.json** (note, you can also copy it to **/etc/autom8/config.json**) and update the **cert** and **key** values to point towards your preferred credentials.

@@ -103,7 +103,7 @@ System diagram:
     |     mochad     <-->        x10 cm15a controller        |
     +----------------+  +------------------------------------+
 
-Here are the ports that the main server listen on by default:
+Ports the main server listens on by default:
 
 * native/android client: TCP/7901
 * web client: HTTPS/7902

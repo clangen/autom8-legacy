@@ -83,10 +83,7 @@ The default apt-supplied version of nodejs is too old; **install version v4.4**.
 
 https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 
-1. tar xvfz
-2. ./configure
-3. make
-4. sudo make install
+* tar xvfz mochad-0.1.16.tar.gz; cd mochad-0.1.16; ./configure; make; sudo make install
 
 ##### compile libautom8.so, stage, and install #####
 

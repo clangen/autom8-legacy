@@ -77,7 +77,7 @@ The default apt-supplied version of nodejs is too old; **install version v4.4**.
 
 1. curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 2. sudo apt-get install -y nodejs
-3. npm install -g grunt grunt-cli
+3. sudo npm install -g grunt grunt-cli
 
 ##### install mochad (cm15a "driver"): #####
 

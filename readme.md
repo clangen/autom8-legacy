@@ -125,7 +125,7 @@ The default apt-supplied version of nodejs is too old; **install version v4.4**.
 2. sudo apt-get install -y nodejs
 3. sudo npm install -g grunt grunt-cli
 
-##### Install mochad (our X10 CM15A "driver"): #####
+##### Install mochad (the X10 CM15A "driver"): #####
 
 https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 

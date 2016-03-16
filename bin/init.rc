@@ -17,8 +17,10 @@ USER={{USER}}
 
 start() {
     echo "[autom8] shutting down old instances"
+    killall -9 mochad 
     killall -9 autom8
     pkill -9 -f "node autom8.js"
+    mochad &
     runuser -l autom8 -c '{{PREFIX}}/bin/autom8' &
     echo "[autom8] started"
 }

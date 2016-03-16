@@ -6,6 +6,8 @@ autom8 is a home automation client and server I've been hacking on since my frie
 
 It's really useful if you happen to own the supported hardware. 
 
+The autom8 server runs in both Windows and Linux. It loves running on a **Raspberry Pi with Raspbian Jessie**.
+
 ## license ##
 
 standard 3-clause bsd
@@ -111,7 +113,9 @@ Ports the main server listens on by default:
 
 #### Intall Debian Jessie ####
 
-autom8 works well on Debian Jessie. It works especially well on a Raspberry Pi running Raspbian. 
+autom8 works well on Debian Jessie.
+
+ It works especially well on a **Raspberry Pi running Raspbian Jessie.**
 
 ##### Install system-level dependencies: ####
 

@@ -8,7 +8,7 @@ It's really useful if you happen to own the supported hardware.
 
 The autom8 server runs in both Windows and Linux. It loves running on a **Raspberry Pi with Raspbian Jessie**.
 
-## license ##
+## License ##
 
 Standard 3-clause BSD.
 

@@ -10,9 +10,9 @@ The autom8 server runs in both Windows and Linux. It loves running on a **Raspbe
 
 ## license ##
 
-standard 3-clause bsd
+Standard 3-clause BSD.
 
-## supported hardware ##
+## Supported hardware ##
 
 * x10 cm15a device controller
 * wgl v572rf32 transceiver
@@ -22,7 +22,7 @@ standard 3-clause bsd
 * ms10a motion detector
 * probably more generic x10 sensors... but untested
 
-## compiling ##
+## Compiling ##
 
 ### autom8 client for Android ###
 

@@ -118,8 +118,14 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ID_EDIT_CONNECTION:
-                Connection c = ConnectionLibrary.getDefaultConnection(this);
-                EditConnectionActivity.start(this, (c == null) ? -1 :c.getDatabaseId());
+                final int count = ConnectionLibrary.getInstance(this).count();
+                if (count > 1) {
+                    ConnectionManagerActivity.start(this);
+                }
+                else {
+                    Connection c = ConnectionLibrary.getDefaultConnection(this);
+                    EditConnectionActivity.start(this, (c == null) ? -1 : c.getDatabaseId());
+                }
                 return true;
 
             case MENU_ID_SETTINGS:

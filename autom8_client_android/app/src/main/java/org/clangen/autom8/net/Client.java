@@ -1,5 +1,6 @@
 package org.clangen.autom8.net;
 
+import android.os.Handler;
 import android.util.Log;
 
 import org.clangen.autom8.connection.Connection;
@@ -32,6 +33,7 @@ import javax.net.ssl.X509TrustManager;
 public class Client {
     private static final String TAG = "Client";
 
+    private Handler mHandler = new Handler();
     private SSLSocket mSocket = null;
     private ReadThread mReadThread = null;
     private WriteThread mWriteThread = null;
@@ -60,16 +62,16 @@ public class Client {
     private final static int ENQUEUE_FRONT = 1;
 
     public interface OnStateChangedListener {
-        public void onStateChanged(int newState);
-        public void onError(int errorId);
+        void onStateChanged(int newState);
+        void onError(int errorId);
     }
 
     public interface OnMessageReceivedListener {
-        public void onMessageReceived(Message message);
+        void onMessageReceived(Message message);
     }
 
     public interface OnVerifyServerListener {
-        public boolean onVerifyServer(Connection connection, String fingerPrint);
+        boolean onVerifyServer(Connection connection, String fingerPrint);
     }
 
     public Client() {
@@ -148,24 +150,29 @@ public class Client {
                             w.cancel();
                             w.interrupt();
                         }
+
+                        mHandler.post(onDisconnectCompletedRunnable);
                     }
                 }}).start();
             }
         }
+    }
 
-        // if we get here all the cleanup has already been performed,
-        // i.e. we're already disconnected!
-        changeState(STATE_DISCONNECTED);
+    private Runnable onDisconnectCompletedRunnable = new Runnable() {
+        public void run() {
+            // if we get here all the cleanup has already been performed,
+            // i.e. we're already disconnected!
+            changeState(STATE_DISCONNECTED);
 
-        if (mReconnectOnce) {
-            mReconnectOnce = false;
+            if (mReconnectOnce) {
+                mReconnectOnce = false;
 
-            if (mConnection != null) {
-                connect(mConnection);
-                return;
+                if (mConnection != null) {
+                    connect(mConnection);
+                }
             }
         }
-    }
+    };
 
     public void sendMessage(Message message) {
         sendMessage(message, ENQUEUE_BACK);

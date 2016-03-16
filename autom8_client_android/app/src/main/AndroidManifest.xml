@@ -52,9 +52,12 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".BootCompletedReceiver">
+        <receiver android:name=".ExternalIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter android:priority="999999">
+                <action android:name="org.clangen.autom8.CHANGE_CONNECTION" />
             </intent-filter>
        </receiver>
 

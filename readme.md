@@ -143,6 +143,10 @@ https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 
 * /etc/init.d/autom8-server start
 
+If you want to start the server on boot:
+
+* sudo update-rc.d autom8-server defaults 99
+
 ## SSL ##
 
 If you're using the autom8 Linux server then you can easily configure port numbers and SSL certificates.

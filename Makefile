@@ -100,6 +100,6 @@ all: $(C_OBJECTS) $(CXX_OBJECTS)
 
 clean:
 	-rm -f $(CXX_OBJECTS) $(C_OBJECTS) *~
-	-rm autom8_cli/autom8_cli
-	-rm libautom8.so
-	-rm libautom8.dylib
+	-rm -f autom8_cli/autom8_cli
+	-rm -f libautom8.so
+	-rm -f libautom8.dylib

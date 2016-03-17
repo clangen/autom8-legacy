@@ -14,13 +14,13 @@ Standard 3-clause BSD.
 
 ## Supported hardware ##
 
-* x10 cm15a device controller
-* wgl v572rf32 transceiver
-* lm456 lamp module
-* am466 appliance module
-* ds10a door/window sensor
-* ms10a motion detector
-* probably more generic x10 sensors... but untested
+* X10 CM15A device controller
+* WGL V572RF32 transceiver
+* LM456 lamp module
+* AM466 appliance module
+* DS10A door/window sensor
+* MS10A motion detector
+* And probably more generic x10 sensors... but untested
 
 ## Compiling ##
 
@@ -133,15 +133,25 @@ The default apt-supplied version of nodejs is too old; **install version v4.4**.
 
 https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 
-* tar xvfz mochad-0.1.16.tar.gz; cd mochad-0.1.16; ./configure; make; sudo make install
+1. tar xvfz mochad-0.1.16.tar.gz 
+2. cd mochad-0.1.16
+3. ./configure
+4. make
+5. sudo make install
 
-##### Compile libautom8.so, stage, and install #####
+##### Compile libautom8.so and server, and install #####
 
 1. cd ~/src/autom8
-2. make
-3. ./bin/stage
-4. cd build
-5. sudo ./install -p /opt/autom8/
+2. ./bin/build
+3. cd build/
+4. sudo ./install -p /opt/autom8/
+
+**Note**: `bin/build` is a shell script that will do the following:
+
+1. Run make to compile `libautom8.so`
+2. Run grunt to compile the admin and web clients
+3. Stage all files required for distribution to `build/stage`
+4. Copy an `install` script to `build/`
 
 ##### Start the server #####
 

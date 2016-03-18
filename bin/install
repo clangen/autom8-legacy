@@ -100,7 +100,6 @@ if [[ $LINUX == 1 ]]; then
   sudo rm /etc/init.d/autom8-server
   sudo cp $PREFIX/bin/autom8-init.rc /etc/init.d/autom8-server
   sudo chmod +x /etc/init.d/autom8-server
-  sudo update-rc.d autom8-server defaults
 fi
 
 echo "[*] done"

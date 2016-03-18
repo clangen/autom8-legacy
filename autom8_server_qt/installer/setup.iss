@@ -2,14 +2,12 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define AppName "autom8"
-#define AppVerName "autom8 0.3.0"
+#define AppVerName "autom8 0.8.0"
 #define AppPublisher "casey langen"
 #define AppInstallDir "autom8"
-#define AppURL "http://autom8.clangen.org"
+#define AppURL "http://autom8.io"
 #define ServerAppName "autom8 server"
 #define ServerAppExeName "autom8_server_ui.exe"
-#define ClientAppName "autom8 client"
-#define ClientAppExeName "autom8_client_qt.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -25,7 +23,7 @@ AppUpdatesURL={#AppURL}
 DefaultDirName={pf}\{#AppInstallDir}
 DefaultGroupName={#AppName}
 AllowNoIcons=false
-LicenseFile=..\license.txt
+LicenseFile=..\..\LICENSE
 OutputDir=.\bin\
 OutputBaseFilename=autom8_setup
 SetupIconFile=setup.ico
@@ -43,29 +41,25 @@ Type: files; Name: {app}\boost_filesystem-vc100-mt-1_44.dll;
 Type: files; Name: {app}\boost_regex-vc100-mt-1_44.dll;
 Type: files; Name: {app}\boost_system-vc100-mt-1_44.dll;
 Type: files; Name: {app}\boost_thread-vc100-mt-1_44.dll;
+Type: files; Name: {app}\boost_date_time-vc100-mt-1_47.dll;
+Type: files; Name: {app}\boost_filesystem-vc100-mt-1_47.dll;
+Type: files; Name: {app}\boost_regex-vc100-mt-1_47.dll;
+Type: files; Name: {app}\boost_system-vc100-mt-1_47.dll;
+Type: files; Name: {app}\boost_thread-vc100-mt-1_47.dll;
+Type: files; Name: {app}\license.txt;
 
 [Files]
 Source: ..\..\release\autom8_server_ui.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\autom8_client_qt.exe; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\cm15a_controller.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\QtCore4.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\QtGui4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\QtNetwork4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\phonon4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\boost_date_time-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\boost_filesystem-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\boost_regex-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\boost_system-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\boost_thread-vc100-mt-1_47.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\cm15a_controller.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\license.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\LICENSE; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: {group}\{#ServerAppName}; Filename: {app}\{#ServerAppExeName}
-Name: {group}\{#ClientAppName}; Filename: {app}\{#ClientAppExeName}
 
 [Run]
 Filename: {app}\{#ServerAppExeName}; Description: {cm:LaunchProgram,{#ServerAppName}}; Flags: nowait postinstall skipifsilent
-Filename: {app}\{#ClientAppExeName}; Description: {cm:LaunchProgram,{#ClientAppName}}; Flags: nowait postinstall skipifsilent

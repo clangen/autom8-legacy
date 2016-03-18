@@ -146,12 +146,19 @@ https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 3. cd build/
 4. sudo ./install -p /opt/autom8/
 
-**Note**: `bin/build` is a shell script that will do the following:
+**Note 1**: `bin/build` is a shell script that will do the following:
 
-1. Run make to compile `libautom8.so`
-2. Run grunt to compile the admin and web clients
+1. Run `make` to compile `libautom8.so`
+2. Run `grunt` to compile the admin and web clients
 3. Stage all files required for distribution to `build/stage`
 4. Copy an `install` script to `build/`
+
+** Note2**: `build/install` is a shell script that will:
+
+1. Create a new user as specified by the `-u` parameter (defaults to `autom8`). the autom8 server will be run as this user, and device configuration will be stored in the `~/user/.autom8`.
+2. Copy all required files to the path specified by the required `-p` parameter.
+3. Use npm to compile and install all required node dependencies for the app to run
+4. Install an init script called `autom8-server` to `/etc/init.rd` so you can run autom8 automatically at boot
 
 ##### Start the server #####
 

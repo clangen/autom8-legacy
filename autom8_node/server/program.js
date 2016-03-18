@@ -107,7 +107,6 @@ function ensureNativePasswordExists() {
 
   nativeBridge.rpc("server", "get_preference", {key: "password"})
   .then(function(result) {
-    console.log(JSON.stringify(arguments));
     if (result && result.message && result.message.value) {
       d.resolve();
     }

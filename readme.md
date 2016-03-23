@@ -162,7 +162,7 @@ https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 
 ##### Start the server #####
 
-* /etc/init.d/autom8-server start
+* sudo /etc/init.d/autom8-server start
 
 If you want to start the server on boot:
 

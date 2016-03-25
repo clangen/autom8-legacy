@@ -16,6 +16,29 @@ elif [[ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]]; then
     echo "[*] detected windows"
 fi
 
+echo "[*] checking for nodejs and grunt"
+
+NODE_VERSION=`node --version`
+if [[ ! $NODE_VERSION =~ ^v4\.* ]]; then
+  echo "Node version detected is invalid: '$NODE_VERSION'."
+  echo "Please install version 4.0 or newer. Build aborted."
+  exit
+fi
+
+NPM_VERSION=`npm --version`
+if [[ ! $NPM_VERSION =~ ^2\.* ]]; then
+  echo "npm version detected is invalid: '$NPM_VERSION'."
+  echo "Please install version 2.0 or newer. Build aborted."
+  exit
+fi
+
+GRUNT_VERSION=`grunt --version`
+if [[ ! $GRUNT_VERSION =~ ^grunt-cli.* ]]; then
+  echo "Grunt version detected is invalid: '$GRUNT_VERSION'."
+  echo "Please install grunt using 'sudo npm install -g grunt grunt-cli'"
+  exit
+fi
+
 if [[ $LINUX != 1 ]]; then
     USER=`whoami`
 fi

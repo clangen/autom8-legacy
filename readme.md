@@ -24,6 +24,11 @@ Standard 3-clause BSD.
 
 ## Compiling ##
 
+To compile you need to check out the sources. Make sure git is installed, then:
+
+* `cd ~/src/`
+* `git clone git@bitbucket.org:clangen/autom8.git`
+ 
 ### autom8 client for Android ###
 
 1. Install Android Studio 2.0 Beta 6 or newer.
@@ -158,7 +163,7 @@ https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 1. Create a new user as specified by the `-u` parameter (defaults to `autom8`). the autom8 server will be run as this user, and device configuration will be stored in the `~/user/.autom8`.
 2. Copy all required files to the path specified by the required `-p` parameter.
 3. Use npm to compile and install all required node dependencies for the app to run
-4. Install an init script called `autom8-server` to `/etc/init.rd` so you can run autom8 automatically at boot
+4. Install an init script called `autom8-server` to `/etc/init.d/` so you can run autom8 automatically at boot
 
 ##### Start the server #####
 
@@ -173,3 +178,10 @@ If you want to start the server on boot:
 If you're using the autom8 Linux server then you can easily configure port numbers and SSL certificates.
 
 Edit **/opt/autom8/share/autom8/config.json** (note, you can also copy it to **/etc/autom8/config.json**, which will take precedence). Update the **cert** and **key** values to point towards your preferred credentials.
+
+## Troubleshooting ##
+
+* Q1: I'm having problems installing nodejs on my older Raspberry Pi
+* A1: It's probably because you need an ARM V6 build. Try to use this deb: http://node-arm.herokuapp.com/node_latest_armhf.deb
+* Q2: The server doesn't seem to be starting
+* A2: Tail the logs and try to start it again, hopefully you will get some useful diagnostic output. `tail -f /tmp/autom8.log`

@@ -69,6 +69,7 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_close">Close</string>
     <string name="button_continue">Continue</string>
+    <string name="button_edit_connections">Edit Connections</string>
     <string name="button_verify">Verify</string>
 
     <string name="device_group_no_groups">(not categorized)</string>

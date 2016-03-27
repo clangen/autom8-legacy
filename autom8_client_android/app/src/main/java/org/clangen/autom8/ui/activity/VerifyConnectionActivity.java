@@ -66,6 +66,16 @@ public class VerifyConnectionActivity extends AppCompatActivity {
                     finish();
                 }
             });
+
+        findViewById(R.id.EditConnectionsButton).setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ConnectionManagerActivity.start(VerifyConnectionActivity.this);
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            });
     }
 }
 

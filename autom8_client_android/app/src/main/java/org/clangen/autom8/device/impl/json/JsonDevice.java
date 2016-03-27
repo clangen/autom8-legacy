@@ -29,13 +29,13 @@ public class JsonDevice implements Device {
     private String mAddress, mLabel;
     private int mStatus = DeviceStatus.UNKNOWN, mType = DeviceType.UNKNOWN;
     private boolean mValid = false;
-    private HashMap<String, String> mAttributes = new HashMap<String, String>();
+    private HashMap<String, String> mAttributes = new HashMap<>();
     private List<String> mGroups;
     private JSONObject mRaw;
 
     public JsonDevice(JSONObject json) {
         mRaw = json;
-        swap(json);
+        copyFrom(json);
     }
 
     public boolean isValid() {
@@ -61,17 +61,17 @@ public class JsonDevice implements Device {
     @Override
     public List<String> getGroups() {
         synchronized (this) {
-            return new ArrayList<String>(mGroups);
+            return new ArrayList<>(mGroups);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public HashMap<String, String> getAttributes() {
+    protected HashMap<String, String> getAttributes() {
         return (HashMap<String, String>) mAttributes.clone();
     }
 
     private void parseGroups(JSONArray groups) throws JSONException {
-        mGroups = new ArrayList<String>();
+        mGroups = new ArrayList<>();
 
         if (groups != null) {
             for (int i = 0; i < groups.length(); i++) {
@@ -88,14 +88,14 @@ public class JsonDevice implements Device {
         mGroups = Collections.unmodifiableList(mGroups);
     }
 
-    public synchronized final void swap(JSONObject json) {
+    public synchronized final void copyFrom(JSONObject json) {
         init(json);
         reinitialize();
     }
 
-    public synchronized final void swap(Device d) {
+    public synchronized final void copyFrom(Device d) {
         if (d instanceof JsonDevice) {
-            swap(((JsonDevice) d).getRaw());
+            copyFrom(((JsonDevice) d).getRaw());
         }
         else {
             throw new InvalidParameterException("expected a JsonDevice");

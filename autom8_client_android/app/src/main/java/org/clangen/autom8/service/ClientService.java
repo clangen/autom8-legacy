@@ -65,7 +65,6 @@ public class ClientService extends Service {
     private int mLastError = Client.ERROR_NO_ERROR;
     private int mHeartbeatInterval;
     private int mClientCount;
-    private boolean mBackgroundNotification;
     private boolean mSecurityNotification;
     private boolean mSecurityNotificationVisible;
     private boolean mDestroyed;
@@ -201,11 +200,10 @@ public class ClientService extends Service {
         Connection defaultConnection =
             ConnectionLibrary.getDefaultConnection(ClientService.this);
 
-        Connection currentConnection = mConnection;
+        final Connection currentConnection = mConnection;
 
         if (defaultConnection == null) {
             if (currentConnection != null) {
-                currentConnection = null;
                 disconnect();
                 return true;
             }
@@ -214,7 +212,6 @@ public class ClientService extends Service {
         }
 
         if (!defaultConnection.equals(currentConnection)) {
-            currentConnection = defaultConnection;
             reconnect();
             return true;
         }
@@ -404,7 +401,7 @@ public class ClientService extends Service {
                     .setSmallIcon(R.drawable.notification_monochrome)
                     .setLargeIcon(mLargeAppIcon);
 
-            Notification n = builder.getNotification();
+            final Notification n = builder.getNotification();
 
             Intent intent = new Intent(this, DevicesActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
@@ -480,10 +477,10 @@ public class ClientService extends Service {
         SharedPreferences prefs =
             PreferenceManager.getDefaultSharedPreferences(ClientService.this);
 
-        mBackgroundNotification = prefs.getBoolean(
+        final boolean backgroundNotification = prefs.getBoolean(
             getString(R.string.pref_run_in_background), false);
 
-        mSecurityNotification = mBackgroundNotification && prefs.getBoolean(
+        mSecurityNotification = backgroundNotification && prefs.getBoolean(
             getString(R.string.pref_security_notifications), false);
 
         try {

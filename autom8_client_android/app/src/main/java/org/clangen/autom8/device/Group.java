@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by clangen on 8/7/14.
- */
 public class Group implements Iterable<Device> {
     private static final DisplayPriorityComparator PRIORITY_COMPARATOR = new DisplayPriorityComparator();
 
@@ -17,7 +14,7 @@ public class Group implements Iterable<Device> {
 
     public Group(String name, List<Device> devices) {
         mName = name;
-        mDevices = new ArrayList<Device>(devices);
+        mDevices = new ArrayList<>(devices);
         Collections.sort(mDevices, PRIORITY_COMPARATOR);
     }
 

@@ -2,9 +2,6 @@ package org.clangen.autom8.device;
 
 import java.util.Comparator;
 
-/**
- * Created by clangen on 8/6/14.
- */
 public class DisplayPriorityComparator implements Comparator<Device> {
     @Override
     public int compare(Device d1, Device d2) {

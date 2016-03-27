@@ -10,9 +10,6 @@ import android.widget.SeekBar;
 
 import org.clangen.autom8.R;
 
-/**
- * Created by avatar on 8/10/2014.
- */
 public class LampBrightnessDialog extends DialogFragment {
     public static final String TAG = "LampBrightnessDialog";
     public static final String DEVICE_ADDRESS = "org.clangen.autom8.DEVICE_ADDRESS";

@@ -8,9 +8,6 @@ import android.support.v4.app.DialogFragment;
 
 import org.clangen.autom8.R;
 
-/**
- * Created by avatar on 8/10/2014.
- */
 public class DisarmSensorDialog extends DialogFragment {
     public static final String TAG = "DisarmSensorDialog";
     public static final String SENSOR_ADDRESS = "org.clangen.autom8.SENSOR_ADDRESS";

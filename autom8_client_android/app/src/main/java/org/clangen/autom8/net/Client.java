@@ -46,7 +46,7 @@ public class Client {
     private OnMessageReceivedListener mOnResponseReceivedListener;
     private OnMessageReceivedListener mOnRequestReceivedListener;
     private OnStateChangedListener mOnStateChangedListener;
-    private Object mStateLock = new Object();
+    private final Object mStateLock = new Object();
     private int mState = STATE_DISCONNECTED;
 
     public final static int STATE_CONNECTING = 0;
@@ -206,11 +206,10 @@ public class Client {
         }
     }
 
+    @SuppressWarnings("unused")
     private void onThreadFinished(Thread thread) {
         synchronized (mStateLock) {
-            if (mState != STATE_DISCONNECTED &&
-                mState != STATE_DISCONNECTED)
-            {
+            if (mState != STATE_DISCONNECTED) {
                 disconnect();
             }
         }
@@ -219,10 +218,10 @@ public class Client {
     private void changeState(int newState) {
         if (newState != getState()) {
             switch (newState) {
-            case STATE_CONNECTING: Log.i(TAG, "connecting"); break;
-            case STATE_CONNECTED: Log.i(TAG, "connected"); break;
-            case STATE_AUTHENTICATING: Log.i(TAG, "authenticating"); break;
-            case STATE_DISCONNECTED: Log.i(TAG, "disconnected"); break;
+                case STATE_CONNECTING: Log.i(TAG, "connecting"); break;
+                case STATE_CONNECTED: Log.i(TAG, "connected"); break;
+                case STATE_AUTHENTICATING: Log.i(TAG, "authenticating"); break;
+                case STATE_DISCONNECTED: Log.i(TAG, "disconnected"); break;
             }
         }
 
@@ -288,7 +287,6 @@ public class Client {
             final Message message = Message.create(base64Text);
 
             if (message != null) {
-                //Log.i(TAG, "recv: " + message.getName());
                 synchronized (this) {
                     if (!mAuthenticated) {
                         handleAuthenticationResult(message);
@@ -369,59 +367,55 @@ public class Client {
         }
 
         public void run() {
+            /* CAL 08/12/2014: really, really bad hack to fix problem with reconnect.
+            TODO: figure out real race condition. */
+            try { Thread.sleep(128); } catch(Exception ex) { }
+
+            SSLSocket socket = null;
+
+            // create the SSL connection, set the state to AUTHENTICATING
             try {
-                /* CAL 08/12/2014: really, really bad hack to fix problem with reconnect.
-                TODO: figure out real race condition. */
-                try { Thread.sleep(128); } catch(Exception ex) { }
+                synchronized (mStateLock) {
+                    Connection connection = mConnection;
 
-                SSLSocket socket = null;
+                    SSLContext context = SSLContext.getInstance("TLS");
+                    context.init(null, mTrustAllCertificates, new SecureRandom());
 
-                // create the SSL connection, set the state to AUTHENTICATING
+                    socket = mSocket = (SSLSocket) context.getSocketFactory().createSocket();
+                    socket.setUseClientMode(true);
+                    socket.setWantClientAuth(false);
+                    socket.connect(new InetSocketAddress(connection.getHost(), connection.getPort()), 5000);
+
+                    changeState(STATE_AUTHENTICATING);
+                }
+            }
+            catch (NoSuchAlgorithmException e) {
+                Log.e(TAG, "ConnectThread.run: SSL context couldn't be created", e);
+            }
+            catch (KeyManagementException e) {
+                Log.e(TAG, "ConnectThread.run: SSL context couldn't be initialized", e);
+            }
+            catch (IOException e) {
+                Log.e(TAG, "ConnectThread.run: Connection failed", e);
+            }
+
+            // if we have a valid connection, start the handshake
+            if (socket != null && Client.this.getState() == STATE_AUTHENTICATING) {
                 try {
-                    synchronized (mStateLock) {
-                        Connection connection = mConnection;
-
-                        SSLContext context = SSLContext.getInstance("TLS");
-                        context.init(null, mTrustAllCertificates, new SecureRandom());
-
-                        socket = mSocket = (SSLSocket) context.getSocketFactory().createSocket();
-                        socket.setUseClientMode(true);
-                        socket.setWantClientAuth(false);
-                        socket.connect(new InetSocketAddress(connection.getHost(), connection.getPort()), 5000);
-
-                        changeState(STATE_AUTHENTICATING);
-                    }
+                    socket.startHandshake();
+                    mWriteThread = new WriteThread();
+                    mWriteThread.start(); // will send an AuthenticateMessage() upon startup
+                    mReadThread = new ReadThread();
+                    mReadThread.start();
                 }
-                catch (NoSuchAlgorithmException e) {
-                    Log.e(TAG, "ConnectThread.run: SSL context couldn't be created", e);
-                }
-                catch (KeyManagementException e) {
-                    Log.e(TAG, "ConnectThread.run: SSL context couldn't be initialized", e);
-                }
-                catch (IOException e) {
-                    Log.e(TAG, "ConnectThread.run: Connection failed", e);
-                }
-
-                // if we have a valid connection, start the handshake
-                if (Client.this.getState() == STATE_AUTHENTICATING) {
-                    try {
-                        socket.startHandshake();
-                        mWriteThread = new WriteThread();
-                        mWriteThread.start(); // will send an AuthenticateMessage() upon startup
-                        mReadThread = new ReadThread();
-                        mReadThread.start();
-                    }
-                    catch (IOException ex) {
-                        onError(ERROR_TYPE_HANDSHAKE_FAILED);
-                        disconnect();
-                    }
-                }
-                else {
-                    onError(ERROR_TYPE_COULD_NOT_CONNECT);
+                catch (IOException ex) {
+                    onError(ERROR_TYPE_HANDSHAKE_FAILED);
                     disconnect();
                 }
             }
-            finally {
+            else {
+                onError(ERROR_TYPE_COULD_NOT_CONNECT);
+                disconnect();
             }
         }
     }
@@ -429,7 +423,7 @@ public class Client {
     private class WriteThread extends Thread {
         private ReentrantLock mLock = new ReentrantLock();
         private Condition mMessageAvailable = mLock.newCondition();
-        private ArrayList<Message> mMessageQueue = new ArrayList<Message>();
+        private ArrayList<Message> mMessageQueue = new ArrayList<>();
         private volatile boolean mShouldCancel = false;
 
         private class AuthenticateMessage extends Message {
@@ -578,7 +572,7 @@ public class Client {
                 boolean readFailed = false;
                 ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 InputStream in = socket.getInputStream();
-                int currChar = 0;
+                int currChar;
                 while ((!shouldCancel()) && (!readFailed)) {
                     if ((currChar = in.read()) == -1) {
                         readFailed = true;

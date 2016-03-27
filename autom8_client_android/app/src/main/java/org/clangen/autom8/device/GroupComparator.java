@@ -6,9 +6,6 @@ import org.clangen.autom8.R;
 
 import java.util.Comparator;
 
-/**
- * Created by clangen on 8/7/14.
- */
 public class GroupComparator implements Comparator<Group> {
     private String KEY_SECURITY_ALERTS = "00";
     private String KEY_NO_SECURITY_ALERTS = "01";

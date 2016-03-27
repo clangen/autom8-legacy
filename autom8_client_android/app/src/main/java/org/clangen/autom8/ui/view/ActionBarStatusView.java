@@ -15,9 +15,6 @@ import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.DeviceLibraryFactory;
 import org.clangen.autom8.net.Client;
 
-/**
- * Created by avatar on 8/10/2014.
- */
 public class ActionBarStatusView extends FrameLayout {
     private DeviceLibrary mDeviceLibrary;
     private View mConnectingView;

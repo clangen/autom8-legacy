@@ -13,9 +13,6 @@ import org.clangen.autom8.R;
 import org.clangen.autom8.service.ClientService;
 import org.clangen.autom8.ui.activity.ConnectionManagerActivity;
 
-/**
- * Created by casey on 2/6/2016.
- */
 public class SettingsFragment extends PreferenceFragment {
     public static final String ACTION_TRANSLUCENCY_TOGGLED = "org.clangen.autom8.ACTION_TRANSLUCENCY_TOGGLED";
 

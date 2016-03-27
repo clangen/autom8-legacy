@@ -8,9 +8,6 @@ import android.support.v4.app.DialogFragment;
 
 import org.clangen.autom8.R;
 
-/**
- * Created by clangen on 8/10/14.
- */
 public class ClearSensorAlertDialog extends DialogFragment {
     public static final String TAG = "ClearSensorAlertDialog";
     public static final String SENSOR_ADDRESS = "org.clangen.autom8.SENSOR_ADDRESS";

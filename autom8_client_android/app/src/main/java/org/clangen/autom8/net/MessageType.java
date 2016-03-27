@@ -25,6 +25,6 @@ public enum MessageType {
     public static MessageType fromRawType(String rawType) {
         if (Request.is(rawType)) return Request;
         if (Response.is(rawType)) return Response;
-        throw new IllegalArgumentException("Uknown message type");
+        throw new IllegalArgumentException("Unknown message type");
     }
 }

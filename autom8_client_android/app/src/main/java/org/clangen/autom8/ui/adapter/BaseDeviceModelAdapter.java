@@ -20,17 +20,12 @@ import org.clangen.autom8.device.Group;
 import org.clangen.autom8.device.SecuritySensor;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 import org.clangen.autom8.ui.model.DeviceListModel;
-import org.clangen.autom8.util.ActivityUtil;
 
-/**
- * Created by clangen on 8/7/14.
- */
 public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     private Context mContext;
     private BaseDeviceModel mDeviceModel;
     private LayoutInflater mLayoutInflater;
     private OnDeviceClickHandler mClickHandler;
-    private boolean mTranslucent;
 
     protected static class ItemViewHolder {
         public Device mDevice;
@@ -53,7 +48,6 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
     public BaseDeviceModelAdapter(Context context) {
         mContext = context;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
-        mTranslucent = ActivityUtil.isTranslucencyEnabled(context);
     }
 
     public void setOnDeviceClickHandler(OnDeviceClickHandler handler) {
@@ -138,8 +132,7 @@ public abstract class BaseDeviceModelAdapter extends BaseAdapter {
 
         // String.format() is very inefficient
         holder.mModuleInfoView.setText(
-            deviceTypeToString(device.getType()) + " " + device.getAddress()
-        );
+            deviceTypeToString(device.getType()) + " " + device.getAddress());
 
         if (mDeviceModel.isUpdating(device.getAddress())) {
             holder.mUpdatingView.setVisibility(View.VISIBLE);

@@ -7,9 +7,6 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-/**
- * Created by clangen on 8/6/14.
- */
 public abstract class DeviceLibrary {
     public static final String ACTION_DEVICE_LIBRARY_REFRESHED = "org.clangen.autom8.ACTION_DEVICE_LIBRARY_REFRESHED";
     public static final String ACTION_DEVICE_UPDATED = "org.clangen.autom8.ACTION_DEVICE_UPDATED";

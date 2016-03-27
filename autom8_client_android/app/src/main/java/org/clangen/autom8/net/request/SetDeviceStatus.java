@@ -7,12 +7,12 @@ import org.clangen.autom8.device.DeviceCommandType;
 
 public class SetDeviceStatus extends SendDeviceCommand {
     private Device mDevice;
-    private HashMap<String, String> mParams = new HashMap<String, String>();
+    private HashMap<String, String> mParams = new HashMap<>();
 
     public SetDeviceStatus(Device device, int newStatus) {
         super();
         mDevice = device;
-        mParams.put("status", new Integer(newStatus).toString());
+        mParams.put("status", String.valueOf(newStatus));
     }
 
     @Override

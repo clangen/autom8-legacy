@@ -20,9 +20,6 @@ import org.clangen.autom8.util.ActivityUtil;
 
 import java.util.HashMap;
 
-/**
- * Created by avatar on 8/10/2014.
- */
 public class DevicesPagerAdapter extends FragmentPagerAdapter {
     private static final AdapterType[] PAGE_ORDER_FLAT_AND_GROUPED =
         new AdapterType[] { AdapterType.Flat, AdapterType.Grouped };

@@ -22,6 +22,7 @@ import org.clangen.autom8.util.ToolbarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ConnectionManagerActivity extends AppCompatActivity {
     private View mMainView;
@@ -190,7 +191,7 @@ public class ConnectionManagerActivity extends AppCompatActivity {
             ItemViewHolder holder = (ItemViewHolder) convertView.getTag();
 
             holder.mName.setText(connection.getAlias());
-            holder.mDetails.setText(String.format("%s:%d", connection.getHost(), connection.getPort()));
+            holder.mDetails.setText(String.format(Locale.ENGLISH, "%s:%d", connection.getHost(), connection.getPort()));
             holder.mConnection = connection;
             holder.mDelete.setOnClickListener(mOnDeleteConnectionClicked);
             holder.mEdit.setOnClickListener(mOnEditConnectionClicked);

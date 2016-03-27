@@ -38,17 +38,12 @@ import org.clangen.autom8.ui.dialog.LampBrightnessDialog;
 import org.clangen.autom8.ui.model.BaseDeviceModel;
 import org.clangen.autom8.util.ActivityUtil;
 
-/**
- * does stuff
- * Created by avatar on 8/9/2014.
- */
 public class DeviceModelFragment extends Fragment {
     private final static String TAG = "DeviceModelFragment";
     public static final String ADAPTER_TYPE = "org.clangen.autom8.AdapterType";
 
     private ClientServiceProvider mClientServiceProvider;
     private BaseDeviceModelAdapter mListAdapter;
-    private View mView;
     private AbsListView mListView;
     private AdapterType mAdapterType = AdapterType.Flat;
     private DeviceLibrary mDeviceLibrary;
@@ -98,16 +93,16 @@ public class DeviceModelFragment extends Fragment {
     }
 
     private View init(LayoutInflater inflater) {
-        mView = inflater.inflate(R.layout.devices, null);
+        final View view = inflater.inflate(R.layout.devices, null);
 
-        mListView = (AbsListView) mView.findViewById(R.id.DevicesListView);
+        mListView = (AbsListView) view.findViewById(R.id.DevicesListView);
         if (mListView == null) {
-            mListView = (AbsListView) mView.findViewById(R.id.DevicesGridView);
+            mListView = (AbsListView) view.findViewById(R.id.DevicesGridView);
         }
 
         resetListAdapter();
 
-        return mView;
+        return view;
     }
 
     private void resetListAdapter() {

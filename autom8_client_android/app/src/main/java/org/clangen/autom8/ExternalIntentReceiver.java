@@ -49,7 +49,7 @@ public class ExternalIntentReceiver extends BroadcastReceiver {
                 final String currentName = c.getAlias().trim().toLowerCase();
 
                 if (currentName.equals(connectionName)) {
-                    connectionLibrary.setDefaultConnection(context, c.getDatabaseId());
+                    ConnectionLibrary.setDefaultConnection(context, c.getDatabaseId());
 
                     final Intent startServiceIntent = new Intent(context, ClientService.class);
                     startServiceIntent.setAction(ClientService.ACTION_START_SERVICE);

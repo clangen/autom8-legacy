@@ -10,5 +10,5 @@ public interface Device {
     String getAttribute(String key);
     int getDisplayPriority();
     List<String> getGroups();
-    void swap(Device d);
+    void copyFrom(Device d);
 }

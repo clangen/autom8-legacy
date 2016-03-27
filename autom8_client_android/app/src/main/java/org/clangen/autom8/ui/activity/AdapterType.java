@@ -2,9 +2,6 @@ package org.clangen.autom8.ui.activity;
 
 import org.clangen.autom8.R;
 
-/**
-* Created by clangen on 8/8/14.
-*/
 public enum AdapterType {
     Flat(0, R.string.menu_list_flat),
     Grouped(1, R.string.menu_list_grouped);

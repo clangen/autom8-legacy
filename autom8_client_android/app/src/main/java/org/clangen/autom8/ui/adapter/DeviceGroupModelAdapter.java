@@ -7,9 +7,6 @@ import org.clangen.autom8.device.Device;
 import org.clangen.autom8.device.Group;
 import org.clangen.autom8.ui.model.DeviceGroupModel;
 
-/**
- * Created by clangen on 8/7/14.
- */
 public class DeviceGroupModelAdapter extends BaseDeviceModelAdapter {
     private DeviceGroupModel mGroupModel;
 

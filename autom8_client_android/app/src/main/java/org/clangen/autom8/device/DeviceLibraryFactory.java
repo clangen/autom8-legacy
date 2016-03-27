@@ -4,9 +4,6 @@ import android.content.Context;
 
 import org.clangen.autom8.device.impl.json.InMemoryDeviceLibrary;
 
-/**
- * Created by clangen on 8/6/14.
- */
 public class DeviceLibraryFactory {
     private static DeviceLibrary mInstance;
 

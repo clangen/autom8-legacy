@@ -21,9 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by clangen on 8/6/14.
- */
 public class InMemoryDeviceLibrary extends DeviceLibrary {
     private static final DisplayPriorityComparator PRIORITY_COMPARATOR = new DisplayPriorityComparator();
     private static GroupComparator GROUP_COMPARATOR = null;
@@ -44,20 +41,18 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
     @Override
     public synchronized List<Device> getDeviceList() {
         if (mSortedDevices == null) {
-            mSortedDevices = new ArrayList<Device>(mDevices);
+            mSortedDevices = new ArrayList<>(mDevices);
             Collections.sort(mSortedDevices, PRIORITY_COMPARATOR);
         }
 
-        return new ArrayList<Device>(mSortedDevices);
+        return new ArrayList<>(mSortedDevices);
     }
 
     @Override
     public synchronized List<Group> getDeviceGroups() {
         if (mGroups == null) {
-            HashMap<String, ArrayList<Device>> aggregated =
-              new HashMap<String, ArrayList<Device>>();
-
-            ArrayList<Device> ungrouped = new ArrayList<Device>();
+            final HashMap<String, ArrayList<Device>> aggregated = new HashMap<>();
+            final ArrayList<Device> ungrouped = new ArrayList<>();
 
             /* collect a hash map of device lists. the key in this hash
             map will be the group name, the value will the the list of
@@ -74,7 +69,7 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
                         list = aggregated.get(groupName);
 
                         if (list == null) {
-                            list = new ArrayList<Device>();
+                            list = new ArrayList<>();
                             aggregated.put(groupName, list);
                         }
 
@@ -90,7 +85,7 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
             /* the groups have been aggregated together, now let's convert
             it into a sorted structure. first, use the data within the
             hash maps to actually create the Group instances, then sort. */
-            ArrayList<Group> sorted = new ArrayList<Group>();
+            ArrayList<Group> sorted = new ArrayList<>();
             for (String groupName : aggregated.keySet()) {
                 sorted.add(new Group(groupName, aggregated.get(groupName)));
             }
@@ -99,12 +94,12 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
             mGroups = sorted;
         }
 
-        return new ArrayList<Group>(mGroups);
+        return new ArrayList<>(mGroups);
     }
 
     @Override
     public void setFromDeviceListJSON(JSONObject devices) {
-        ArrayList<Device> result = new ArrayList<Device>();
+        final ArrayList<Device> result = new ArrayList<>();
         boolean success = false;
 
         try {
@@ -131,7 +126,7 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
 
     @Override
     public synchronized void clear() {
-        mDevices = new ArrayList<Device>();
+        mDevices = new ArrayList<>();
         onCleared();
     }
 
@@ -173,7 +168,7 @@ public class InMemoryDeviceLibrary extends DeviceLibrary {
         synchronized(this) {
             Device device = getDeviceByAddress(address);
             if (device != null) {
-                device.swap(updatedDevice);
+                device.copyFrom(updatedDevice);
                 success = true;
             }
         }

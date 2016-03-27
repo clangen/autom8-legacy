@@ -25,15 +25,11 @@ import org.clangen.autom8.ui.activity.DevicesActivity;
 import org.clangen.autom8.ui.adapter.DevicesPagerAdapter;
 import org.clangen.autom8.util.ActivityUtil;
 
-/**
- * Created by clangen on 8/12/14.
- */
 public class DevicesPagerFragment extends Fragment {
     public static final String TAG = "DevicesPagerFragment";
 
     private Handler mHandler = new Handler();
     private ConnectionLibrary mConnectionLibrary;
-    private View mView;
     private Overlay mOverlay = new Overlay();
     private ViewPager mDevicesPagerView;
     private DevicesPagerAdapter mDevicesPagerAdapter;
@@ -64,24 +60,24 @@ public class DevicesPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mConnectionLibrary = ConnectionLibrary.getInstance(getActivity());
 
-        mView = inflater.inflate(R.layout.devices_pager, container);
+        final View view = inflater.inflate(R.layout.devices_pager, container);
 
         mDevicesPagerAdapter = new DevicesPagerAdapter(getActivity(), getFragmentManager());
         mDevicesPagerAdapter.setOnInitializedListener(mOnPagerInitializedListener);
 
-        mDevicesPagerView = (ViewPager) mView.findViewById(R.id.devices_pager);
+        mDevicesPagerView = (ViewPager) view.findViewById(R.id.devices_pager);
         mDevicesPagerView.setAdapter(mDevicesPagerAdapter);
 
-        mOverlay.mView = mView.findViewById(R.id.NotConnectedOverlay);
-        mOverlay.mButton = (Button) mView.findViewById(R.id.NotConectedOverlayButton);
+        mOverlay.mView = view.findViewById(R.id.NotConnectedOverlay);
+        mOverlay.mButton = (Button) view.findViewById(R.id.NotConectedOverlayButton);
 
         mOverlay.mButton.setOnClickListener(mOverlayButtonClickListener);
 
-        PagerTabStrip strip = (PagerTabStrip) mView.findViewById(R.id.devices_pager_tab_strip);
+        PagerTabStrip strip = (PagerTabStrip) view.findViewById(R.id.devices_pager_tab_strip);
         strip.setDrawFullUnderline(false);
         strip.setVisibility(View.GONE);
 
-        return mView;
+        return view;
     }
 
     @Override

@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by clangen on 8/7/14.
- */
 public class DeviceGroupModel extends BaseDeviceModel {
     private ArrayList<Device> mFlattened = new ArrayList<Device>();
     private List<Group> mGroups = new ArrayList<Group>();
@@ -19,10 +16,6 @@ public class DeviceGroupModel extends BaseDeviceModel {
 
     public DeviceGroupModel(Context context) {
         super(context);
-    }
-
-    public DeviceGroupModel(Context context, OnChangedListener listener) {
-        super(context, listener);
     }
 
     @Override

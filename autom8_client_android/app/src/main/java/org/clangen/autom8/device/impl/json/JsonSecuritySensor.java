@@ -4,9 +4,6 @@ import org.clangen.autom8.device.DeviceLibrary;
 import org.clangen.autom8.device.SecuritySensor;
 import org.json.JSONObject;
 
-/**
- * Created by clangen on 8/6/14.
- */
 public class JsonSecuritySensor extends JsonDevice implements SecuritySensor {
     private static final String ARMED_ATTRIBUTE = "armed";
     private static final String TRIPPED_ATTRIBUTE = "tripped";

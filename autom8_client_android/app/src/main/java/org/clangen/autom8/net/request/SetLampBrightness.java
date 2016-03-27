@@ -7,12 +7,12 @@ import org.clangen.autom8.device.Lamp;
 
 public class SetLampBrightness extends SendDeviceCommand {
     private String mDeviceAddress;
-    private HashMap<String, String> mParams = new HashMap<String, String>();
+    private HashMap<String, String> mParams = new HashMap<>();
 
     public SetLampBrightness(Lamp lampDevice, int dimPercent) {
         super();
         mDeviceAddress = lampDevice.getAddress();
-        mParams.put("brightness", new Integer(dimPercent).toString());
+        mParams.put("brightness", String.valueOf(dimPercent));
     }
 
     @Override

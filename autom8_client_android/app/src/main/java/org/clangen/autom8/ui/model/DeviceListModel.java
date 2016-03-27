@@ -16,10 +16,6 @@ public class DeviceListModel extends BaseDeviceModel {
         super(context);
     }
 
-    public DeviceListModel(Context context, OnChangedListener listener) {
-        super(context, listener);
-    }
-
     @Override
     protected void onRequery() {
         mDevices = getDeviceLibrary().getDeviceList();

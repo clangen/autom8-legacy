@@ -6,9 +6,6 @@ import org.clangen.autom8.device.impl.json.JsonSecuritySensor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by clangen on 8/6/14.
- */
 public class DeviceFactory {
     public static Device fromJson(JSONObject json) throws JSONException {
         int type = json.getInt(JsonDevice.TYPE_NODE);

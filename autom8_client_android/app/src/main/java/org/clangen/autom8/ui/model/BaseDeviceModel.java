@@ -12,9 +12,6 @@ import org.clangen.autom8.device.DeviceLibraryFactory;
 
 import java.util.HashSet;
 
-/**
- * Created by clangen on 8/7/14.
- */
 public abstract class BaseDeviceModel {
     private static final String TAG = "DeviceModelBase";
 

@@ -2,6 +2,7 @@ package org.clangen.autom8.connection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.clangen.autom8.R;
 
@@ -17,12 +18,17 @@ import android.preference.PreferenceManager;
 public class ConnectionLibrary {
     private SQLiteDatabase mDatabase;
 
+    private final static int CURRENT_DATABASE_VERSION = 2;
+    private final static int DATABASE_VERSION_WITH_FINGERPRINT = 2;
+
     private static final String CONNECTION_TABLE = "connection";
     private static final String ID_COLUMN = "id";
     private static final String ALIAS_COLUMN = "alias";
     private static final String HOST_COLUMN = "host";
     private static final String PORT_COLUMN = "port";
     private static final String PASSWORD_COLUMN = "password";
+    private static final String VERIFIED_COLUMN = "verified";
+    private static final String FINGERPRINT_COLUMN = "fingerprint";
 
     private static ConnectionLibrary sInstance;
 
@@ -64,15 +70,56 @@ public class ConnectionLibrary {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putLong(context.getString(R.string.pref_default_connection_id), databaseId);
-        editor.commit();
+        editor.apply();
+    }
+
+    public boolean markConnectionUnverified(final long databaseId, final String fingerprint) {
+        final ContentValues cv = new ContentValues();
+        cv.put(VERIFIED_COLUMN, 0);
+        cv.put(FINGERPRINT_COLUMN, fingerprint.toLowerCase());
+
+        final String predicate = String.format(Locale.ENGLISH, "%s = ?", ID_COLUMN);
+
+        int updated =
+            mDatabase.update(
+                CONNECTION_TABLE,
+                cv,
+                predicate,
+                new String[] { String.valueOf(databaseId) });
+
+        return updated > 0;
+    }
+
+    public boolean markConnectionVerified(final long databaseId) {
+        final ContentValues cv = new ContentValues();
+        cv.put(VERIFIED_COLUMN, 1);
+
+        final String predicate = String.format(Locale.ENGLISH, "%s = ?", ID_COLUMN);
+
+        int updated =
+            mDatabase.update(
+            CONNECTION_TABLE,
+            cv,
+            predicate,
+            new String[] { String.valueOf(databaseId) });
+
+        return updated > 0;
     }
 
     public List<Connection> getConnections() {
-        ArrayList<Connection> result = new ArrayList<Connection>();
+        ArrayList<Connection> result = new ArrayList<>();
 
         Cursor cursor = mDatabase.query(
             CONNECTION_TABLE,
-            new String[] { ID_COLUMN, ALIAS_COLUMN, HOST_COLUMN, PORT_COLUMN, PASSWORD_COLUMN },
+            new String[] {
+                ID_COLUMN,
+                ALIAS_COLUMN,
+                HOST_COLUMN,
+                PORT_COLUMN,
+                PASSWORD_COLUMN,
+                VERIFIED_COLUMN,
+                FINGERPRINT_COLUMN
+            },
             null,             // where clause
             null,             // where clause's binded parameters
             null,             // group by
@@ -87,7 +134,9 @@ public class ConnectionLibrary {
                         cursor.getString(2),
                         cursor.getInt(3),
                         cursor.getString(4),
-                        cursor.getLong(0)));
+                        cursor.getLong(0),
+                        cursor.getInt(5),
+                        cursor.getString(6)));
                 }
             }
             finally {
@@ -115,7 +164,6 @@ public class ConnectionLibrary {
         try {
             if ((cursor != null) && (cursor.getCount() > 0)) {
                 cursor.moveToNext();
-
                 return cursor.getInt(0);
             }
         }
@@ -132,8 +180,16 @@ public class ConnectionLibrary {
         if (databaseId != null) {
             Cursor cursor = mDatabase.query(
                 CONNECTION_TABLE,
-                new String[] { ID_COLUMN, ALIAS_COLUMN, HOST_COLUMN, PORT_COLUMN, PASSWORD_COLUMN },
-                String.format("%s=%d", ID_COLUMN, databaseId),
+                new String[] {
+                    ID_COLUMN,
+                    ALIAS_COLUMN,
+                    HOST_COLUMN,
+                    PORT_COLUMN,
+                    PASSWORD_COLUMN,
+                    VERIFIED_COLUMN,
+                    FINGERPRINT_COLUMN
+                },
+                String.format(Locale.ENGLISH, "%s=%d", ID_COLUMN, databaseId),
                 null,   // bind
                 null,   // group by
                 null,   // having
@@ -148,7 +204,9 @@ public class ConnectionLibrary {
                         cursor.getString(2),
                         cursor.getInt(3),
                         cursor.getString(4),
-                        cursor.getLong(0));
+                        cursor.getLong(0),
+                        cursor.getInt(5),
+                        cursor.getString(6));
                 }
             }
             finally {
@@ -173,7 +231,7 @@ public class ConnectionLibrary {
             int rowsChanged = mDatabase.update(
                 CONNECTION_TABLE,
                 contentValuesFromConnection(connection),
-                String.format("%s=%d", ID_COLUMN, connectionToUpdateId),
+                String.format(Locale.ENGLISH, "%s=%d", ID_COLUMN, connectionToUpdateId),
                 null);
 
             return (rowsChanged > 0);
@@ -186,7 +244,7 @@ public class ConnectionLibrary {
         if (exists(connection)) {
             int rowsDeleted = mDatabase.delete(
                 CONNECTION_TABLE,
-                String.format("%s=%d", ID_COLUMN, connection.getDatabaseId()),
+                String.format(Locale.ENGLISH, "%s=%d", ID_COLUMN, connection.getDatabaseId()),
                 null);
 
             return (rowsDeleted > 0);
@@ -201,12 +259,13 @@ public class ConnectionLibrary {
         values.put(HOST_COLUMN, connection.getHost());
         values.put(PORT_COLUMN, connection.getPort());
         values.put(PASSWORD_COLUMN, connection.getPassword());
-
+        values.put(VERIFIED_COLUMN, connection.isVerified() ? 1 : 0);
+        values.put(FINGERPRINT_COLUMN, connection.getFingerprint());
         return values;
     }
 
     private void loadDatabase(Context context) {
-        DatabaseHelper dbHelper = new DatabaseHelper(context, "ConnectionDatabase", null, 1);
+        DatabaseHelper dbHelper = new DatabaseHelper(context, "ConnectionDatabase", null, CURRENT_DATABASE_VERSION);
         mDatabase = dbHelper.getWritableDatabase();
     }
 
@@ -222,19 +281,35 @@ public class ConnectionLibrary {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // no upgrades yet
+            if (oldVersion < DATABASE_VERSION_WITH_FINGERPRINT) {
+                final String addFingerprintColumn = String.format(
+                    Locale.ENGLISH,
+                    "ALTER TABLE %s ADD COLUMN %s STRING;",
+                    CONNECTION_TABLE, FINGERPRINT_COLUMN);
+
+                final String addVerifiedColumn = String.format(
+                    Locale.ENGLISH,
+                    "ALTER TABLE %s ADD COLUMN %s INTEGER;",
+                    CONNECTION_TABLE, VERIFIED_COLUMN);
+
+                db.execSQL(addFingerprintColumn);
+                db.execSQL(addVerifiedColumn);
+            }
         }
 
         private void initializeTables(SQLiteDatabase db) {
-            String sql = "CREATE TABLE IF NOT EXISTS %s (" +
-                         "  %s INTEGER PRIMARY KEY AUTOINCREMENT," +     // id
-                         "  %s STRING UNIQUE," +                         // alias
-                         "  %s STRING," +                                // host
-                         "  %s INTEGER," +                               // port
-                         "  %s STRING);";                                // password
+            String sql =
+                "CREATE TABLE IF NOT EXISTS %s (" +
+                 "  %s INTEGER PRIMARY KEY AUTOINCREMENT," +    // id
+                 "  %s STRING UNIQUE," +                        // alias
+                 "  %s STRING," +                               // host
+                 "  %s INTEGER," +                              // port
+                 "  %s STRING," +                               // password
+                 "  %S STRING," +                               // fingerprint
+                 "  %S INTEGER);";                              // verified
 
             sql = String.format(sql, CONNECTION_TABLE, ID_COLUMN, ALIAS_COLUMN,
-                    HOST_COLUMN, PORT_COLUMN, PASSWORD_COLUMN);
+                HOST_COLUMN, PORT_COLUMN, PASSWORD_COLUMN, FINGERPRINT_COLUMN, VERIFIED_COLUMN);
 
             db.execSQL(sql);
         }

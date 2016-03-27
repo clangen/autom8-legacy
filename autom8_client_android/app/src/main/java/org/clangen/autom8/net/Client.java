@@ -1,9 +1,11 @@
 package org.clangen.autom8.net;
 
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import org.clangen.autom8.connection.Connection;
+import org.clangen.autom8.connection.ConnectionLibrary;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,12 +40,12 @@ public class Client {
     private ReadThread mReadThread = null;
     private WriteThread mWriteThread = null;
     private Connection mConnection = null;
+    private ConnectionLibrary mConnectionLibrary;
     private boolean mAuthenticated = false;
     private boolean mReconnectOnce = false;
     private OnMessageReceivedListener mOnResponseReceivedListener;
     private OnMessageReceivedListener mOnRequestReceivedListener;
     private OnStateChangedListener mOnStateChangedListener;
-    private OnVerifyServerListener mOnVerifyServerListener;
     private Object mStateLock = new Object();
     private int mState = STATE_DISCONNECTED;
 
@@ -70,13 +72,10 @@ public class Client {
         void onMessageReceived(Message message);
     }
 
-    public interface OnVerifyServerListener {
-        boolean onVerifyServer(Connection connection, String fingerPrint);
-    }
-
-    public Client() {
+    public Client(final Context context) {
         mAuthenticated = false;
         mState = STATE_DISCONNECTED;
+        mConnectionLibrary = ConnectionLibrary.getInstance(context);
     }
 
     public void connect(Connection connection) {
@@ -194,13 +193,9 @@ public class Client {
         mOnStateChangedListener = listener;
     }
 
-    public synchronized void setOnVerifyServerListener(OnVerifyServerListener listener) {
-        mOnVerifyServerListener = listener;
-    }
-
     private void sendMessage(Message message, int order) {
         synchronized (mStateLock) {
-            if ( ! mAuthenticated) {
+            if (!mAuthenticated) {
                 Log.e(TAG, "sendMessage: not authenticated, message was discarded!");
                 return;
             }
@@ -295,7 +290,7 @@ public class Client {
             if (message != null) {
                 //Log.i(TAG, "recv: " + message.getName());
                 synchronized (this) {
-                    if ( ! mAuthenticated) {
+                    if (!mAuthenticated) {
                         handleAuthenticationResult(message);
                         return;
                     }
@@ -321,11 +316,6 @@ public class Client {
             }
 
             public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                OnVerifyServerListener listener = mOnVerifyServerListener;
-                if (listener == null) {
-                    return;
-                }
-
                 RSAPublicKey publicKey = (RSAPublicKey) chain[0].getPublicKey();
                 String publicKeyHex = publicKey.getModulus().toString(16).toUpperCase();
 
@@ -346,10 +336,10 @@ public class Client {
                         }
                     }
 
-                    md5str = sb.toString();
-                    md5str.length();
+                    md5str = sb.toString().toLowerCase();
 
-                    if ( ! listener.onVerifyServer(mConnection, md5str)) {
+                    if (!mConnection.isVerified() || !md5str.equals(mConnection.getFingerprint())) {
+                        mConnectionLibrary.markConnectionUnverified(mConnection.getDatabaseId(), md5str);
                         throw new CertificateException();
                     }
                 }
@@ -501,7 +491,7 @@ public class Client {
 
                 outStream = new BufferedOutputStream(socket.getOutputStream(), 2048);
 
-                while ( ! shouldCancel()) {
+                while (!shouldCancel()) {
                     try {
                         Message nextMessage = null;
 
@@ -589,7 +579,7 @@ public class Client {
                 ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
                 InputStream in = socket.getInputStream();
                 int currChar = 0;
-                while (( ! shouldCancel()) && ( ! readFailed)) {
+                while ((!shouldCancel()) && (!readFailed)) {
                     if ((currChar = in.read()) == -1) {
                         readFailed = true;
                     }

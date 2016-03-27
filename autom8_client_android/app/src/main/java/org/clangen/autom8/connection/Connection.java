@@ -1,20 +1,22 @@
 package org.clangen.autom8.connection;
 
 public class Connection {
-    private String mAlias, mHost, mPassword;
-    private int mPort = 0;
+    private String mAlias, mHost, mPassword, mFingerprint;
+    private int mPort = 0, mVerified = 0;
     private Long mDatabaseId = null;
     private volatile int mHashCode = 0;
 
-    public Connection(String alias, String host, int port, String password) {
+    public Connection(String alias, String host, int port, String password, int verified, String fingerprint) {
         mAlias = alias;
         mHost = host;
         mPort = port;
         mPassword = password;
+        mVerified = verified;
+        mFingerprint = fingerprint;
     }
 
-    public Connection(String alias, String host, int port, String password, Long databaseId) {
-        this(alias, host, port, password);
+    public Connection(String alias, String host, int port, String password, Long databaseId, int verified, String fingerprint) {
+        this(alias, host, port, password, verified, fingerprint);
         mDatabaseId = databaseId;
     }
 
@@ -38,9 +40,13 @@ public class Connection {
         return mDatabaseId;
     }
 
+    public boolean isVerified() { return mVerified != 0; }
+
+    public String getFingerprint() { return mFingerprint == null ? "" : mFingerprint; }
+
     @Override
     public boolean equals(Object o) {
-        if ( ! (o instanceof Connection)) {
+        if (!(o instanceof Connection)) {
             return false;
         }
 
@@ -51,7 +57,9 @@ public class Connection {
         && (connection.getAlias().equals(mAlias))
         && (connection.getHost().equals(mHost))
         && (connection.getPort() == mPort)
-        && (connection.getPassword().equals(mPassword)));
+        && (connection.getPassword().equals(mPassword)))
+        && (connection.getFingerprint().equals(mFingerprint))
+        && (connection.isVerified() == isVerified());
     }
 
     @Override
@@ -66,9 +74,11 @@ public class Connection {
             }
 
             result = 31 * result + mPort;
+            result = 31 * result + mVerified;
             result = 31 * result + mAlias.hashCode();
             result = 31 * result + mHost.hashCode();
             result = 31 * result + mPassword.hashCode();
+            result = 31 * result + mFingerprint.hashCode();
 
             mHashCode = result;
         }

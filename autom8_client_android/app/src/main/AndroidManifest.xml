@@ -41,6 +41,11 @@
            android:label="@string/connection_manager_name" />
 
         <activity
+            android:name=".ui.activity.VerifyConnectionActivity"
+            android:launchMode="singleInstance"
+            android:label="@string/verify_server_name" />
+
+        <activity
             android:name=".ui.activity.SettingsActivity"
             android:label="@string/settings_name" />
 

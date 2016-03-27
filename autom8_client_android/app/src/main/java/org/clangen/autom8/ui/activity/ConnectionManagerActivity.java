@@ -49,7 +49,6 @@ public class ConnectionManagerActivity extends AppCompatActivity {
         intent.setClass(parentActivity, ConnectionManagerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setAction(Intent.ACTION_VIEW);
-
         parentActivity.startActivityForResult(intent, 0);
     }
 

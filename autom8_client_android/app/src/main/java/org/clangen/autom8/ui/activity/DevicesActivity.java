@@ -8,12 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,8 +27,8 @@ import org.clangen.autom8.service.IClientService;
 import org.clangen.autom8.ui.fragment.DevicesPagerFragment;
 import org.clangen.autom8.ui.fragment.SettingsFragment;
 import org.clangen.autom8.ui.view.ActionBarStatusView;
-import org.clangen.autom8.util.ToolbarUtil;
 import org.clangen.autom8.util.ActivityUtil;
+import org.clangen.autom8.util.ToolbarUtil;
 
 public class DevicesActivity extends AppCompatActivity implements ClientServiceProvider {
     private final static String TAG = "DevicesActivity";
@@ -104,6 +102,17 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
 
         mPaused = true;
         super.onPause();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == VerifyConnectionActivity.REQUEST_CODE) {
+            if (resultCode == RESULT_CANCELED) {
+                finish();
+            }
+        }
     }
 
     @Override
@@ -207,6 +216,13 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
     private void setUiState(int newState) {
         mStatusView.setClientServerState(newState);
         mPagerFragment.setClientServerState(newState);
+
+        if (newState == Client.STATE_DISCONNECTED) {
+            final Connection connection = ConnectionLibrary.getDefaultConnection(this);
+            if (connection != null && !connection.isVerified() && connection.getFingerprint().length() > 0) {
+                VerifyConnectionActivity.start(this);
+            }
+        }
     }
 
     private void onAuthenticationFailed() {

@@ -229,7 +229,7 @@ public class EditConnectionActivity extends AppCompatActivity {
 
             if ((name.length() > 0) && (host.length() > 0) && (port > 0 && port < 65535)) {
                 ConnectionLibrary cm = ConnectionLibrary.getInstance(EditConnectionActivity.this);
-                Connection connection = new Connection(name, host, port, password);
+                Connection connection = new Connection(name, host, port, password, 0, null);
 
                 if (mConnectionBeingEdited != null) {
                     cm.update(mConnectionBeingEdited, connection);

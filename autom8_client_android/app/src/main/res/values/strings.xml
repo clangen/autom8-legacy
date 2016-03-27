@@ -4,6 +4,7 @@
     <string name="edit_connection_name">edit connection</string>
     <string name="edit_create_connection">setup connection</string>
     <string name="connection_manager_name">connection manager</string>
+    <string name="verify_server_name">verify server</string>
     <string name="settings_name">settings</string>
     <string name="service_name">autom8 ClientService</string>
 
@@ -68,6 +69,7 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_close">Close</string>
     <string name="button_continue">Continue</string>
+    <string name="button_verify">Verify</string>
 
     <string name="device_group_no_groups">(not categorized)</string>
 
@@ -96,6 +98,8 @@
     <string name="connection_mgr_button_delete">del</string>
     <string name="connection_mgr_button_add_connection">New connection</string>
     <string name="connection_mgr_no_connections">No connections.\nPlease add a new connection below.</string>
+
+    <string name="verify_connection_header">Before you can start controlling your devices, you need to verify the server\'s fingerprint.\n\nLook at the fingerprint below, and ensure it\'s the same as the fingerprint reported by your server.\n\nIf the fingerprints do NOT match, it means that someone may be listening in on your connection.\n\nPress the "verify" button to confirm this is your server.\n\nFingerprint:\n</string>
 
     <string name="pref_run_in_background">runInBackground</string>
     <string name="pref_security_notifications">securityNotifications</string>

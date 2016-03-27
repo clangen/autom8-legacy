@@ -79,12 +79,6 @@ public class ClientService extends Service {
     private static ServiceWakeLock sConnectionWakeLock;
     private static ServiceWakeLock sSensorChangedWakeLock;
 
-    static {
-        sClient = new Client();
-        sConnectionWakeLock = new ServiceWakeLock("connection");
-        sSensorChangedWakeLock = new ServiceWakeLock("sensorChanged");
-    }
-
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
@@ -112,6 +106,12 @@ public class ClientService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (sClient == null) {
+            sClient = new Client(this);
+            sConnectionWakeLock = new ServiceWakeLock("connection");
+            sSensorChangedWakeLock = new ServiceWakeLock("sensorChanged");
+        }
 
         Log.i(TAG, "service created");
 
@@ -189,7 +189,7 @@ public class ClientService extends Service {
     }
 
     private boolean reconnectIfNotConnected() {
-        if (( ! mDestroyed) && (sClient.isDisconnected())) {
+        if ((!mDestroyed) && (sClient.isDisconnected())) {
             reconnect();
             return true;
         }
@@ -266,7 +266,7 @@ public class ClientService extends Service {
     }
 
     private boolean sendPingIfConnected() {
-        if (( ! mDestroyed) && (sClient.isConnected())) {
+        if ((!mDestroyed) && (sClient.isConnected())) {
             sClient.sendPing();
             return true;
         }
@@ -311,7 +311,7 @@ public class ClientService extends Service {
             switch (newState) {
             case Client.STATE_DISCONNECTED:
                 releaseWakeLock = true;
-                if ( ! mDestroyed) {
+                if (!mDestroyed) {
                     if (mLastError == Client.ERROR_TYPE_AUTHENTICATION_FAILED) {
                         mLibrary.clear();
                         sendBroadcast(new Intent(ACTION_AUTHENTICATION_FAILED));
@@ -360,7 +360,7 @@ public class ClientService extends Service {
     }
 
     private void checkStopDelayed() {
-        boolean stopDelayed = ( ! mSecurityNotification) && (mClientCount == 0);
+        boolean stopDelayed = (!mSecurityNotification) && (mClientCount == 0);
 
         if (stopDelayed) {
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_DELAYED_STOP), 10000);
@@ -426,7 +426,7 @@ public class ClientService extends Service {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean enabled = prefs.getBoolean(getString(R.string.pref_security_notifications), false);
 
-        if (( ! enabled) || (alertCount == 0) || ( ! sClient.isConnected()) || (mClientCount > 0)) {
+        if ((!enabled) || (alertCount == 0) || (!sClient.isConnected()) || (mClientCount > 0)) {
             mNotificationManager.cancel(SECURITY_NOTIFICATION_ID);
             mSecurityNotificationVisible = false;
             return false;
@@ -517,7 +517,7 @@ public class ClientService extends Service {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
             case MESSAGE_DELAYED_STOP:
-                if (( ! mSecurityNotification) && (mClientCount == 0)) {
+                if ((!mSecurityNotification) && (mClientCount == 0)) {
                     Log.i(TAG, "MESSAGE_DELAYED_STOP: service shutting down...");
                     disconnect();
                     stopSelf(mStartId);
@@ -619,7 +619,7 @@ public class ClientService extends Service {
                 return;
             }
 
-            if ( ! reconnectIfNotConnected()) {
+            if (!reconnectIfNotConnected()) {
                 // if this call succeeded it means the client is disconnected, and we are
                 // attempting to reconnect. wait until the client has reconnected to release
                 // the wake lock.
@@ -635,13 +635,13 @@ public class ClientService extends Service {
                 Log.i(TAG, "network connection changed");
 
                 Bundle extras = intent.getExtras();
-                NetworkInfo info = (NetworkInfo) extras.getParcelable(WifiManager.EXTRA_NETWORK_INFO);
+                NetworkInfo info = extras.getParcelable(WifiManager.EXTRA_NETWORK_INFO);
 
                 if ((info != null) && (info.isConnected())) {
                     Log.i(TAG, "network up again, reconnecting...");
 
                     sConnectionWakeLock.acquire(context);
-                    if ( ! reconnectIfNotConnected()) {
+                    if (!reconnectIfNotConnected()) {
                         sConnectionWakeLock.release();
                     }
                 }

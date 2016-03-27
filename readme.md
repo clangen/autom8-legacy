@@ -31,7 +31,7 @@ To compile you need to check out the sources. Make sure git is installed, then:
  
 ### autom8 client for Android ###
 
-1. Install Android Studio 2.0 Beta 6 or newer.
+1. Install Android Studio 2.0 Beta 7 or newer.
 2. Import the project
 3. Build and Run
 

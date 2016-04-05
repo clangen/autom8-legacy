@@ -12,6 +12,9 @@ The autom8 server runs in both Windows and Linux. It runs best on a **Raspberry 
 
 Standard 3-clause BSD.
 
+## Download ##
+[Binaries are here](https://bitbucket.org/clangen/autom8/downloads)
+
 ## Supported hardware ##
 
 * X10 CM15A device controller

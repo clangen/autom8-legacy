@@ -10,10 +10,14 @@ The autom8 server runs in both Windows and Linux. It runs best on a **Raspberry 
 
 ## License ##
 
-Standard 3-clause BSD.
+Standard 3-clause BSD
 
 ## Download ##
-[Binaries are pre-packaged source here](https://bitbucket.org/clangen/autom8/downloads)
+[Binaries are pre-packaged source are here](https://bitbucket.org/clangen/autom8/downloads)
+
+## Wiki ##
+
+[In depth and low-level documentation](https://bitbucket.org/clangen/autom8/wiki/Home)
 
 ## Supported hardware ##
 

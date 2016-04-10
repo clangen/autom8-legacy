@@ -57,10 +57,13 @@
         <item name="android:layout_marginRight">12dp</item>
     </style>
 
-    <style name="FingerprintText" parent="DeviceItemPrimaryText">
+    <style name="VerifyValueText" parent="DeviceItemPrimaryText">
         <item name="android:singleLine">false</item>
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
     </style>
 
     <style name="DeviceItemSecondaryText" parent="DeviceItemText">

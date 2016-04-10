@@ -46,7 +46,6 @@ public class VerifyConnectionActivity extends AppCompatActivity {
         mConnection = ConnectionLibrary.getDefaultConnection(this);
 
         if (mConnection == null) {
-
             finish();
         }
         else {
@@ -55,6 +54,8 @@ public class VerifyConnectionActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        ((TextView) findViewById(R.id.VerifyName)).setText(mConnection.getAlias());
+        ((TextView) findViewById(R.id.VerifyHost)).setText(mConnection.getHost());
         ((TextView) findViewById(R.id.VerifyFingerprint)).setText(mConnection.getFingerprint());
 
         findViewById(R.id.VerifyButton).setOnClickListener(

@@ -9,9 +9,8 @@
     <include layout="@layout/toolbar"/>
 
     <ScrollView
-        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1.0">
 
         <LinearLayout
@@ -23,11 +22,37 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:text="@string/verify_connection_header" />
 
             <TextView
-                style="@style/FingerprintText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/verify_connection_name" />
+
+            <TextView
+                style="@style/VerifyValueText"
+                android:id="@+id/VerifyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/verify_connection_host" />
+
+            <TextView
+                style="@style/VerifyValueText"
+                android:id="@+id/VerifyHost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/verify_connection_fingerprint" />
+
+            <TextView
+                style="@style/VerifyValueText"
                 android:id="@+id/VerifyFingerprint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

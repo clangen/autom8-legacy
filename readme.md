@@ -38,7 +38,7 @@ To compile you need to check out the sources. Make sure git is installed, then:
  
 ### autom8 client for Android ###
 
-The autom8 Android app makes use of the (Retrolambda Gradle plugin)[https://github.com/evant/gradle-retrolambda]. Make make sure you have JDK 8 installed, and have set the JAVA8_HOME environment variable appropriately.
+The autom8 Android app makes use of the [Retrolambda Gradle plugin](https://github.com/evant/gradle-retrolambda). Make make sure you have JDK 8 installed, and have set the JAVA8_HOME environment variable appropriately.
 
 1. Install Android Studio 2.0 or newer.
 2. Import the project

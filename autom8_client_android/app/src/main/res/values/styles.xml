@@ -6,11 +6,14 @@
         <item name="colorAccent">@color/color_accent</item>
     </style>
 
-    <style name="DeviceActivityTranslucentTheme" parent="@style/Theme.AppCompat.NoActionBar">
+    <style name="GenericTranslucentTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowShowWallpaper">false</item>
+    </style>
+
+    <style name="DeviceActivityTranslucentTheme" parent="@style/GenericTranslucentTheme">
         <item name="android:windowShowWallpaper">true</item>
-        <item name="android:listViewStyle">@style/TranslucentListView</item>
     </style>
 
     <style name="TranslucentListView" parent="android:style/Widget.ListView">

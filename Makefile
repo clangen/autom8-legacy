@@ -1,4 +1,4 @@
-# may be one of the following: drawin, linux, pi
+# may be one of the following: drawin, linux
 BUILD_TARGET := linux
 
 ifeq ($(BUILD_TARGET), darwin)
@@ -24,16 +24,6 @@ else ifeq ($(BUILD_TARGET), linux)
 	CFLAGS := $(C_DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -g
 	CXXFLAGS := $(CXX_DEFAULT_INCLUDES) $(LOCAL_INCLUDES) -Wno-extra-tokens -fexceptions -g
 	LIBRARY_FLAGS := -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
-	LD_FLAGS := -shared -o libautom8.so
-else ifeq ($(BUILD_TARGET), pi)
-	C := arm-linux-gnueabihf-gcc
-	CXX := arm-linux-gnueabihf-g++
-	DEFAULT_INCLUDES := -I$(HOME)/raspberrypi/rootfs/usr/include -I$(HOME)/raspberrypi/rootfs/usr/include/arm-linux-gnueabihf
-	DEFAULT_LIBRARIES := -L$(HOME)/raspberrypi/rootfs/usr/lib -L$(HOME)/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf
-	LOCAL_INCLUDES := -I./3rdparty/include -I./libautom8/include -g
-	CFLAGS := $(LOCAL_INCLUDES) $(DEFAULT_INCLUDES)  -Wno-extra-tokens -fPIC
-	CXXFLAGS := $(CFLAGS) -fexceptions
-	LIBRARY_FLAGS := $(DEFAULT_LIBRARIES) -licuuc -licudata -licui18n -lsqlite3 -lpthread -lssl -lcrypto -lboost_system -lboost_regex -lboost_date_time -lboost_filesystem -lboost_thread
 	LD_FLAGS := -shared -o libautom8.so
 endif
 
@@ -75,15 +65,13 @@ CXX_SOURCES = \
 	libautom8/src/device/x10/x10_security_sensor.cpp \
 	libautom8/src/device/x10/mochad/mochad_controller.cpp \
 	libautom8/src/device/x10/mochad/mochad_device_system.cpp \
-	libautom8/src/autom8.cpp \
-	autom8_cli/autom8_cli.cpp
+	libautom8/src/autom8.cpp
 
 CXX_OBJECTS = $(CXX_SOURCES:%.cpp=%.o)
 C_OBJECTS = $(C_SOURCES:%.c=%.o)
 
 all: $(C_OBJECTS) $(CXX_OBJECTS)
 	sh bin/gather_static_libraries
-	#$(CXX) -o autom8_cli/autom8_cli $(C_OBJECTS) $(CXX_OBJECTS) $(LIBRARY_FLAGS)
 	$(CXX) $(LD_FLAGS) $(C_OBJECTS) $(CXX_OBJECTS) $(LIBRARY_FLAGS)
 
 %.o: %.cpp
@@ -91,12 +79,6 @@ all: $(C_OBJECTS) $(CXX_OBJECTS)
 
 %.o: %.c
 	$(C) $(CFLAGS) -c -o $@ $<
-
-# push: all
-# 	scp libautom8.so pi@autom8:/home/pi/src/autom8/
-# 	scp autom8_cli/autom8_cli pi@autom8:/home/pi/src/autom8/autom8_cli
-# 	scp -r autom8_node/server/frontend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/frontend
-# 	scp -r autom8_node/server/backend/* pi@autom8:/home/pi/src/autom8/autom8_node/server/backend
 
 clean:
 	-rm -f $(CXX_OBJECTS) $(C_OBJECTS) *~

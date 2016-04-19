@@ -5,10 +5,12 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
@@ -20,6 +22,11 @@ android {
         targetSdkVersion 23
         versionCode 80
         versionName "0.8.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     buildTypes {

@@ -1,5 +1,6 @@
 package org.clangen.autom8.ui.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -53,6 +54,12 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
         INTENT_FILTER.addAction(ClientService.ACTION_CONNECTION_STATE_CHANGED);
         INTENT_FILTER.addAction(SettingsFragment.ACTION_TRANSLUCENCY_TOGGLED);
         INTENT_FILTER.addAction(DeviceLibrary.ACTION_DEVICE_LIBRARY_REFRESHED);
+    }
+
+    public static void startAndClearActivityStack(final Activity parent) {
+        final Intent intent = new Intent(parent, DevicesActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        parent.startActivity(intent);
     }
 
     @Override
@@ -110,6 +117,7 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
 
         if (requestCode == VerifyConnectionActivity.REQUEST_CODE) {
             if (resultCode == RESULT_CANCELED) {
+                ConnectionManagerActivity.start(this);
                 finish();
             }
         }
@@ -142,7 +150,7 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
                 return true;
 
             case MENU_ID_RECONNECT:
-                reconnect();
+                reconnectToServer();
                 return true;
         }
 
@@ -178,7 +186,7 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
         unbindService();
     }
 
-    private void reconnect() {
+    private void reconnectToServer() {
         if (mClientService != null) {
             try {
                 mClientService.reconnect();
@@ -217,6 +225,7 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
         mStatusView.setClientServerState(newState);
         mPagerFragment.setClientServerState(newState);
 
+        /* if we disconnect and the most recent connection is not verified... try to verify */
         if (newState == Client.STATE_DISCONNECTED) {
             final Connection connection = ConnectionLibrary.getDefaultConnection(this);
             if (connection != null && !connection.isVerified() && connection.getFingerprint().length() > 0) {
@@ -230,12 +239,9 @@ public class DevicesActivity extends AppCompatActivity implements ClientServiceP
             return;
         }
 
-        DialogInterface.OnClickListener yesClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                EditConnectionActivity.start(
-                    DevicesActivity.this,
-                    ConnectionLibrary.getDefaultConnection(DevicesActivity.this).getDatabaseId());
-            }
+        DialogInterface.OnClickListener yesClickListener = (dialog, which) -> {
+            final long id = ConnectionLibrary.getDefaultConnection(this).getDatabaseId();
+            EditConnectionActivity.start(DevicesActivity.this, id);
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(DevicesActivity.this);

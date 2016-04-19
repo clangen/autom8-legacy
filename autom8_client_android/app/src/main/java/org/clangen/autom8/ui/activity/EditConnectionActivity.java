@@ -77,6 +77,7 @@ public class EditConnectionActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_connection);
+
         init();
     }
 
@@ -91,7 +92,7 @@ public class EditConnectionActivity extends AppCompatActivity {
     private void init() {
         ToolbarUtil.initSolid(this);
 
-        final View mMainView = findViewById(R.id.EditConnectionView);
+        final View mainView = findViewById(R.id.EditConnectionView);
 
         Long connectionId = null;
 
@@ -109,12 +110,12 @@ public class EditConnectionActivity extends AppCompatActivity {
             setTitle(R.string.edit_create_connection);
         }
 
-        mViews.mAlias = (EditText) mMainView.findViewById(R.id.Name);
-        mViews.mHost = (EditText) mMainView.findViewById(R.id.Host);
-        mViews.mPort = (EditText) mMainView.findViewById(R.id.PortNumber);
-        mViews.mPassword = (EditText) mMainView.findViewById(R.id.Password);
-        mViews.mOk = mMainView.findViewById(R.id.OkButton);
-        mViews.mCancel = mMainView.findViewById(R.id.CancelButton);
+        mViews.mAlias = (EditText) mainView.findViewById(R.id.Name);
+        mViews.mHost = (EditText) mainView.findViewById(R.id.Host);
+        mViews.mPort = (EditText) mainView.findViewById(R.id.PortNumber);
+        mViews.mPassword = (EditText) mainView.findViewById(R.id.Password);
+        mViews.mOk = mainView.findViewById(R.id.OkButton);
+        mViews.mCancel = mainView.findViewById(R.id.CancelButton);
 
         mViews.mOk.setOnClickListener(mOnOkClickListener);
         mViews.mCancel.setOnClickListener(mOnCancelClickListener);

@@ -1,8 +1,8 @@
 #ifndef AUTOM8_SERVER_QT_H
 #define AUTOM8_SERVER_QT_H
 
-#include <QtGui/QMainWindow>
-#include <QSystemTrayIcon>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QSystemTrayIcon>
 #include <sigslot/sigslot.h>
 
 #ifndef Q_MOC_RUN
@@ -21,7 +21,7 @@ class MainWindow : public QMainWindow, public sigslot::has_slots<> {
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+	MainWindow(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	~MainWindow();
 
 private:
@@ -38,7 +38,7 @@ private:
 protected:
 	virtual void changeEvent(QEvent* e);
 	virtual void closeEvent(QCloseEvent* e);
-	virtual bool eventFilter(QObject *object, QEvent *event); 
+	virtual bool eventFilter(QObject *object, QEvent *event);
 
 private slots:
 	void onStartServerClicked();

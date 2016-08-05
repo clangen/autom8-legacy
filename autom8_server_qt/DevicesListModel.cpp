@@ -46,6 +46,8 @@ autom8::device_ptr DevicesListModel::getDeviceForRow(int index) {
 }
 
 void DevicesListModel::refreshDeviceList() {
+    beginResetModel();
+
     // disconnect from old devices, clear the list
     device_list::iterator it = mDevices.begin();
     for ( ; it != mDevices.end(); it++) {
@@ -64,13 +66,13 @@ void DevicesListModel::refreshDeviceList() {
     }
 
     // will cause the ListView to requery the model
-    reset();
+    endResetModel();
 }
 
 void DevicesListModel::onDeviceStatusChanged(autom8::device_ptr device) {
 	if (thread() != QThread::currentThread()) {
 		QMetaObject::invokeMethod(
-			this, 
+			this,
 			"onDeviceStatusChanged",
 			Qt::QueuedConnection,
 			Q_ARG(autom8::device_ptr, device));

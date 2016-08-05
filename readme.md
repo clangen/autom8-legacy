@@ -68,10 +68,10 @@ The server listens on TCP port 7901 by default.
 
 #### Install these things: ####
 
-1. Visual Studio 2010 with Service Pack 1
+1. Visual Studio 2015 with the 32-bit C++ compiler (https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx)
 2. Boost 1.60 (https://sourceforge.net/projects/boost/files/boost-binaries/1.60.0/)
-3. QT 4.8.6 (https://download.qt.io/archive/qt/4.8/4.8.6/qt-opensource-windows-x86-vs2010-4.8.6.exe)
-4. QT Visual Studio Addin 1.1.11 (http://download.qt.io/official_releases/vsaddin/qt-vs-addin-1.1.11-opensource.exe)
+3. QT 5.7 with 32-bit MSVC2015 libraries (http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe)
+4. Qt5Package VS Addin (https://visualstudiogallery.msdn.microsoft.com/c89ff880-8509-47a4-a262-e4fa07168408)
 5. ActiveHome Pro SDK (http://www.starbasestudios.net/ahk/ahsdk_install.exe)
 
 All other dependencies are included in the source.
@@ -85,15 +85,25 @@ The Visual Studio Solution (autom8.sln) assumes the following directory structur
             ...
         boost_1_60_0/
             ...
-        qt_4.8.6/
-            ...
 
-That is: autom8, Boost and QT sources all share the same parent directory.
+That is: autom8 and boost should share the same parent directory.
 
 #### Compile ####
 
 1. Open <autom8-src>/autom8.sln
-2. Compile and Run
+2. Configure the Qt5Package Addin:
+    - Main Menu -> QT -> Qt Options
+    - Qt Version -> Add
+        - Name: 5.7
+        - Path: d:\path\to\Qt\5.7\msvc2015 
+3. Configure the QTDIR environment variable:
+    - Main Menu -> View -> Other Windows -> Property Manager
+    - autom8_server_qt -> Debug | Win32
+    - Double click QtConfig
+    - User Macros
+        - Name: QTDIR
+        - Value: d:\path\to\Qt\5.7\msvc2015
+4. Compile and Run
 
 ### autom8 Server for Linux (with web-based admin and client app) ###
 

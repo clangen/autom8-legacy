@@ -20,7 +20,7 @@ using namespace autom8;
 #define PASSWORD "password"
 #define DEFAULT_PASSWORD "defaultchangeme"
 
-MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
+MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 : QMainWindow(parent, flags)
 , mPasswordChanged(false)
 {
@@ -71,7 +71,7 @@ void MainWindow::startServerIfDevicesPresent() {
 }
 
 autom8::device_ptr MainWindow::getSelectedDevice() {
-	QModelIndexList list = 
+	QModelIndexList list =
 		ui.DevicesListView->selectionModel()->selectedIndexes();
 
 	return list.count()
@@ -155,7 +155,7 @@ void MainWindow::changeEvent(QEvent* e) {
 	if (e->type() == QEvent::WindowStateChange) {
 		if (this->windowState() & Qt::WindowMinimized) {
 			// needs to be done asynchronously to allow the event queue
-			// to finsih processing related commands. 
+			// to finsih processing related commands.
 			QTimer::singleShot(500, this, SLOT(onMinimized()));
 		}
 	}
@@ -254,8 +254,8 @@ void MainWindow::onDeleteDeviceClicked() {
 		QMessageBox::StandardButton result = QMessageBox::question(
 			this,
 			QString("autom8 server"),
-				QString("Are you sure you want to delete \"") + 
-				QString::fromUtf8(device->label().c_str()) + 
+				QString("Are you sure you want to delete \"") +
+				QString::fromUtf8(device->label().c_str()) +
 				QString("?\""),
 			QMessageBox::Yes | QMessageBox::No);
 

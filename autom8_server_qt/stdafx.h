@@ -11,10 +11,10 @@
 
 #include <QtGui>
 #include <QAbstractItemModel>
-#include <QMessageBox>
-#include <QMainWindow>
 #include <QDate>
-#include <QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QApplication>
 
 #include <sqlite3.h>
 

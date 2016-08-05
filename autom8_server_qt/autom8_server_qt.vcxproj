@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,23 +22,28 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="Qt4VSPropertySheet.props" />
+    <Import Project="QtConfig.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="Qt4VSPropertySheet.props" />
+    <Import Project="QtConfig.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
-    <Import Project="Qt4VSPropertySheet.props" />
+    <Import Project="QtConfig.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -67,17 +72,17 @@
       <AdditionalOptions>/Zm150 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmain.lib;QtCore4.lib;QtGui4.lib;ssleay32MD.lib;libeay32MD.lib;3rdparty.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;ssleay32.lib;libeay32.lib;3rdparty.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)autom8_server_ui.exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;../3rdparty/lib;../release;../../boost_1_60_0/lib32-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;../3rdparty/lib;../release;../../boost_1_60_0/lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-1*" "$(SolutionDir)\release\"
-xcopy /y "$(QTDIR)\bin\QtCore4.dll" "$(SolutionDir)\release\"
-xcopy /y "$(QTDIR)\bin\QtGui4.dll" "$(SolutionDir)\release\"
+      <Command>xcopy /y "$(QTDIR)\bin\Qt5Core.dll" "$(SolutionDir)\release\"
+xcopy /y "$(QTDIR)\bin\Qt5Gui.dll" "$(SolutionDir)\release\"
+xcopy /y "$(QTDIR)\bin\Qt5Widgets.dll" "$(SolutionDir)\release\"
 xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\release\"
 xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
     </PostBuildEvent>
@@ -86,7 +91,7 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(Configuration);$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;.\;../3rdparty/include;../3rdparty/include/win32;../libautom8/include;../../boost_1_60_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_DLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -96,17 +101,19 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
       <AdditionalOptions>/Zm150 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;ssleay32MDd.lib;libeay32MD.lib;3rdpartyd.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;uuid.lib;ole32.lib;advapi32.lib;ws2_32.lib;gdi32.lib;comdlg32.lib;oleaut32.lib;imm32.lib;winmm.lib;winspool.lib;qtmaind.lib;Qt5CoreD.lib;Qt5GuiD.lib;Qt5WidgetsD.lib;ssleay32D.lib;libeay32D.lib;3rdpartyd.lib;libautom8_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)autom8_server_ui.exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;../3rdparty/lib;../debug;../../boost_1_60_0/lib32-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;../3rdparty/lib;../debug;../../boost_1_60_0/lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-gd-1*" "$(SolutionDir)\debug\"
-xcopy /y "$(QTDIR)\bin\QtCored4.dll" "$(SolutionDir)\debug\"
-xcopy /y "$(QTDIR)\bin\QtGuid4.dll" "$(SolutionDir)\debug\"</Command>
+      <Command>xcopy /y "$(QTDIR)\bin\Qt5CoreD.dll" "$(SolutionDir)\debug\"
+xcopy /y "$(QTDIR)\bin\Qt5GuiD.dll" "$(SolutionDir)\debug\"
+xcopy /y "$(QTDIR)\bin\Qt5WidgetsD.dll" "$(SolutionDir)\debug\"
+xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\debug\"
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">

@@ -46,13 +46,16 @@ Type: files; Name: {app}\boost_filesystem-vc100-mt-1_47.dll;
 Type: files; Name: {app}\boost_regex-vc100-mt-1_47.dll;
 Type: files; Name: {app}\boost_system-vc100-mt-1_47.dll;
 Type: files; Name: {app}\boost_thread-vc100-mt-1_47.dll;
+Type: files; Name: {app}\QtCore4.dll;
+Type: files; Name: {app}\QtGui4.dll;
 Type: files; Name: {app}\license.txt;
 
 [Files]
 Source: ..\..\release\autom8_server_ui.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\cm15a_controller.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\QtCore4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\QtGui4.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\Qt5Core.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\Qt5Gui.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\LICENSE; DestDir: {app}; Flags: ignoreversion

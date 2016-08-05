@@ -1,3 +1,4 @@
+.vs/
 *.o
 3rdparty/3rdparty.vcxproj.user
 3rdparty/lib/3rdparty.lib
@@ -7,6 +8,8 @@ autom8.opensdf
 autom8.sdf
 autom8.sublime-workspace
 autom8.suo
+autom8.VC.db
+autom8.VC.VC.opendb
 autom8_cli/autom8_cli
 autom8_cli/autom8_cli.vcxproj.user
 autom8_client_android/.idea/

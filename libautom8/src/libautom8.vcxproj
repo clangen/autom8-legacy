@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,11 +21,13 @@
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -54,7 +56,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../include/;../../3rdparty/include/;../../3rdparty/include/win32/;../../../boost_1_60_0/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0502;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;TIXML_USE_TICPP;TIXML_USE_STL;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0502;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -67,8 +69,8 @@
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
     <Link>
-      <AdditionalLibraryDirectories>../../3rdparty/lib/;../../../boost_1_60_0/lib32-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ssleay32MDd.lib;libeay32MDd.lib;3rdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../3rdparty/lib/;../../../boost_1_60_0/lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ssleay32D.lib;libeay32D.lib;3rdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
@@ -77,7 +79,8 @@
 
 xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-gd-1*" "$(SolutionDir)\debug\"
 xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\debug\"
-xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"</Command>
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"
+xcopy /y "$(SolutionDir)3rdparty\bin\*.dll" "$(SolutionDir)\debug\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,15 +95,16 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"</Command>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>../../3rdparty/lib/;../../../boost_1_60_0/lib32-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ssleay32MD.lib;libeay32MD.lib;3rdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../3rdparty/lib/;../../../boost_1_60_0/lib32-msvc-14.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ssleay32.lib;libeay32.lib;3rdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>lib /NOLOGO /OUT:"$(SolutionDir)\release\libautom8_static.lib" "$(SolutionDir)\libautom8\src\release\*.obj"
 
 xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-1*" "$(SolutionDir)\release\"
 xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\release\"
-xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"
+xcopy /y "$(SolutionDir)3rdparty\bin\*.dll" "$(SolutionDir)\release\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

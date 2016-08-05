@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <autom8/device/device_system.hpp>
 #include <string>
 

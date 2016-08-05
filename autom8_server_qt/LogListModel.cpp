@@ -61,7 +61,7 @@ static void endTransaction(sqlite3* connection) {
 	if (sInTransaction) {
 		EXEC_SQL(connection, "COMMIT TRANSACTION;");
 		sInTransaction = false;
-	}	
+	}
 }
 
 LogListModel::LogListModel(QObject *parent)
@@ -199,13 +199,16 @@ void LogListModel::clear() {
     }
 
     if (success) {
+        beginResetModel();
         mEntries.clear();
 		mPending.clear();
-        reset();
+        endResetModel();
     }
 }
 
 void LogListModel::loadEntries() {
+    beginResetModel();
+
     mEntries.clear();
 	mPending.clear();
 
@@ -237,7 +240,7 @@ void LogListModel::loadEntries() {
 
     sqlite3_finalize(stmt);
 
-	reset();
+    endResetModel();
 }
 
 void LogListModel::onDebugStringLogged(autom8::debug::debug_level level, std::string tag, std::string message) {
@@ -293,9 +296,11 @@ void LogListModel::onDebugStringLogged(autom8::debug::debug_level level, std::st
 
 void LogListModel::onTimerTick() {
 	if (mPending.size() > 0) {
+        beginResetModel();
+
 		{
 			boost::mutex::scoped_lock lock(mPendingMutex);
-			
+
 			for (size_t i = 0; i < mPending.size(); i++) {
 				mEntries.insert(mEntries.begin(), mPending[i]);
 			}
@@ -309,7 +314,8 @@ void LogListModel::onTimerTick() {
 		}
 
 		endTransaction(mConnection);
-		reset();
+        endResetModel();
+
 		beginTransaction(mConnection);
 	}
 }

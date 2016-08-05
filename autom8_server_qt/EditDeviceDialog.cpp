@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EditDeviceDialog.h"
 
-#include <QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 #include <autom8/device/device_system.hpp>
 #include <autom8/net/server.hpp>
@@ -10,7 +10,7 @@
 
 using namespace autom8;
 
-EditDeviceDialog::EditDeviceDialog(QWidget *parent, Qt::WFlags flags)
+EditDeviceDialog::EditDeviceDialog(QWidget *parent, Qt::WindowFlags flags)
 : QDialog(parent, flags)
 {
 	ui.setupUi(this);
@@ -70,7 +70,7 @@ void EditDeviceDialog::onOkClicked() {
 		return;
 	}
 
-	autom8::device_model &model = 
+	autom8::device_model &model =
 		autom8::device_system::instance()->model();
 
 	/* FIXME: shouldn't be necessary, but this was quick */

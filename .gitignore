@@ -1,3 +1,4 @@
+**/.vscode
 .vs/
 *.o
 3rdparty/3rdparty.vcxproj.user

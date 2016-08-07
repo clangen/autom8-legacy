@@ -1,19 +1,19 @@
 package org.clangen.autom8.connection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import org.clangen.autom8.R;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
+
+import org.clangen.autom8.R;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class ConnectionLibrary {
     private SQLiteDatabase mDatabase;

@@ -12,11 +12,6 @@ The autom8 server runs in both Windows and Linux. It runs best on a **Raspberry 
 
 Standard 3-clause BSD
 
-## Download ##
-[Binaries are pre-packaged source are here](https://bitbucket.org/clangen/autom8/downloads)
-
-## Wiki ##
-
 [In depth and low-level documentation](https://bitbucket.org/clangen/autom8/wiki/Home)
 
 ## Supported hardware ##
@@ -28,6 +23,13 @@ Standard 3-clause BSD
 * DS10A door/window sensor
 * MS10A motion detector
 * And probably more generic x10 sensors... but untested
+
+## Screenshots ##
+
+![server ui](https://raw.githubusercontent.com/clangen/clangen-projects-static/master/autom8/screenshots/autom8_server_01.png)
+![web client ui](https://raw.githubusercontent.com/clangen/clangen-projects-static/master/autom8/screenshots/autom8_client_01.png)
+![android ui 01](https://raw.githubusercontent.com/clangen/clangen-projects-static/master/autom8/screenshots/autom8_android_01.png)
+![android ui 02](https://raw.githubusercontent.com/clangen/clangen-projects-static/master/autom8/screenshots/autom8_android_02.png)
 
 ## Compiling ##
 

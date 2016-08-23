@@ -12,8 +12,6 @@ The autom8 server runs in both Windows and Linux. It runs best on a **Raspberry 
 
 Standard 3-clause BSD
 
-[In depth and low-level documentation](https://bitbucket.org/clangen/autom8/wiki/Home)
-
 ## Supported hardware ##
 
 * X10 CM15A device controller
@@ -36,7 +34,7 @@ Standard 3-clause BSD
 To compile you need to check out the sources. Make sure git is installed, then:
 
 * `cd ~/src/`
-* `git clone git@bitbucket.org:clangen/autom8.git`
+* `git clone git@github.com:clangen/autom8.git`
  
 ### autom8 client for Android ###
 

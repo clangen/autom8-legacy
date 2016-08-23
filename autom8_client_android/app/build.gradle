@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:2.1.3'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
     }
 }
@@ -20,8 +20,8 @@ android {
         applicationId "org.clangen.autom8"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 80
-        versionName "0.8.0"
+        versionCode 81
+        versionName "0.8.1"
     }
 
     compileOptions {

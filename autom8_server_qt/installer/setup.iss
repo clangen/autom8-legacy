@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define AppName "autom8"
-#define AppVerName "autom8 0.8.0"
+#define AppVerName "autom8 0.8.1"
 #define AppPublisher "casey langen"
 #define AppInstallDir "autom8"
 #define AppURL "http://autom8.io"

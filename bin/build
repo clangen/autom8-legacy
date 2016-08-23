@@ -21,7 +21,7 @@ elif [[ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]]; then
     echo "[*] detected windows"
 fi
 
-VERSION=0.8.0
+VERSION=0.8.1
 
 echo "[*] checking for nodejs and grunt"
 

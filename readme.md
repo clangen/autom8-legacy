@@ -182,7 +182,7 @@ https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 1. Create a new user as specified by the `-u` parameter (defaults to `autom8`). the autom8 server will be run as this user, and device configuration will be stored in the `~/user/.autom8`.
 2. Use npm to compile and install all required node dependencies for the app to run
 3. Install an init script called `autom8-server` to `/etc/init.d/` so you can run autom8 automatically at boot
-4. Copy (install) all required files to the path specified by the required `-p` parameter.
+4. Copy (install) all required files to the path specified by the required `-p` parameter. `-p /opt/autom8` is recommended.
 
 ##### Start the server #####
 

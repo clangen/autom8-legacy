@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <QTDIR>D:\src\Qt\5.7\msvc2015\</QTDIR>
+    <QTDIR>Z:\src\Qt\5.7\msvc2015\</QTDIR>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />

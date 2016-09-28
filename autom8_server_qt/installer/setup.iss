@@ -58,6 +58,7 @@ Source: ..\..\release\Qt5Gui.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\release\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
 Source: ..\..\LICENSE; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

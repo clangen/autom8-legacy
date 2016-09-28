@@ -84,7 +84,9 @@
 xcopy /y "$(QTDIR)\bin\Qt5Gui.dll" "$(SolutionDir)\release\"
 xcopy /y "$(QTDIR)\bin\Qt5Widgets.dll" "$(SolutionDir)\release\"
 xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\release\"
-xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"
+mkdir "$(SolutionDir)\release\platforms\"
+xcopy /y "$(QTDIR)\plugins\platforms\qwindows.dll" "$(SolutionDir)\release\platforms\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -113,7 +115,9 @@ xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"</Command>
 xcopy /y "$(QTDIR)\bin\Qt5GuiD.dll" "$(SolutionDir)\debug\"
 xcopy /y "$(QTDIR)\bin\Qt5WidgetsD.dll" "$(SolutionDir)\debug\"
 xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\debug\"
-xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"</Command>
+xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"
+mkdir "$(SolutionDir)\debug\platforms\"
+xcopy /y "$(QTDIR)\plugins\platforms\qwindowsd.dll" "$(SolutionDir)\debug\platforms\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">

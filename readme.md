@@ -177,7 +177,7 @@ https://sourceforge.net/projects/mochad/files/mochad-0.1.16.tar.gz/download
 3. Stage all files required for distribution to `build/stage`
 4. Copy an `install` script to `build/`
 
-**Note2**: `build/install` is a shell script that will:
+**Note 2**: `build/install` is a shell script that will:
 
 1. Create a new user as specified by the `-u` parameter (defaults to `autom8`). the autom8 server will be run as this user, and device configuration will be stored in the `~/user/.autom8`.
 2. Use npm to compile and install all required node dependencies for the app to run

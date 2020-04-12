@@ -3,7 +3,8 @@ package org.clangen.autom8.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.clangen.autom8.R;
 import org.clangen.autom8.util.ToolbarUtil;

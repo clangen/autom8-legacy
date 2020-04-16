@@ -23,8 +23,8 @@ android {
         applicationId "org.clangen.autom8"
         minSdkVersion 21 
         targetSdkVersion 28
-        versionCode 82
-        versionName "0.9.0"
+        versionCode 83
+        versionName "0.10.0"
     }
 
     compileOptions {

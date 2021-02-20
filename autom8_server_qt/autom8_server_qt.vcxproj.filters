@@ -46,15 +46,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="GeneratedFiles\ui_autom8_server_qt.h">
-      <Filter>gen</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_autom8_server_edit_device.h">
-      <Filter>gen</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="autom8_server_edit_device.ui">
       <Filter>res</Filter>
     </CustomBuild>
@@ -75,6 +66,13 @@
     </CustomBuild>
     <CustomBuild Include="LogListModel.h">
       <Filter>src</Filter>
+    </CustomBuild>
+    <CustomBuild Include="stdafx.h" />
+    <CustomBuild Include="GeneratedFiles\ui_autom8_server_edit_device.h">
+      <Filter>gen</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_autom8_server_qt.h">
+      <Filter>gen</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
